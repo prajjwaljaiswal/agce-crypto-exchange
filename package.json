@@ -1,0 +1,23 @@
+{
+  "name": "agce-frontend",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "packageManager": "pnpm@10.33.0",
+  "scripts": {
+    "dev": "turbo dev --filter=@agce/landing",
+    "build": "turbo build",
+    "lint": "turbo lint",
+    "typecheck": "turbo typecheck",
+    "build:india": "pnpm exec cross-env VITE_INSTANCE=india pnpm --filter @agce/landing build",
+    "build:abudhabi": "pnpm exec cross-env VITE_INSTANCE=abudhabi pnpm --filter @agce/landing build",
+    "build:dubai": "pnpm exec cross-env VITE_INSTANCE=dubai pnpm --filter @agce/landing build",
+    "build:global": "pnpm exec cross-env VITE_INSTANCE=global pnpm --filter @agce/landing build",
+    "build:all-landing": "pnpm build:india && pnpm build:abudhabi && pnpm build:dubai && pnpm build:global"
+  },
+  "devDependencies": {
+    "cross-env": "^7.0.3",
+    "turbo": "^2.5.4",
+    "typescript": "~6.0.2"
+  }
+}
