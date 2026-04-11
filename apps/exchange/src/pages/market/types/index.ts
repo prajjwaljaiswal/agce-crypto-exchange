@@ -14,15 +14,22 @@ export interface MarketPair {
   baseCurrency: string
   quoteCurrency: string
   price: string
+  priceUsd: string
   change: string
   positive: boolean
   high24h: string
   low24h: string
   volume: string
+  marketCap: string
   icon: string
 }
 
 export interface MarketTab {
+  key: string
+  label: string
+}
+
+export interface CategoryFilter {
   key: string
   label: string
 }

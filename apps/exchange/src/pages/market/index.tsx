@@ -1,112 +1,169 @@
-import { useState } from 'react'
+import { useState, useMemo } from 'react'
 import { Link } from 'react-router-dom'
-import { Star, TrendingUp, TrendingDown, Search } from 'lucide-react'
+import { Star, Search, ChevronDown, ChevronLeft, ChevronRight } from 'lucide-react'
 import type { FeaturedPair, MarketPair } from './types/index.js'
-import { FEATURED_PAIRS, SPOT_PAIRS, FUTURES_PAIRS, MARKET_TABS } from './data/index.js'
+import { MARKET_TABS, CATEGORY_FILTERS } from './data/index.js'
+import { useBinanceMarket } from './hooks/useBinanceMarket.js'
 
-// ─── Mini Chart Placeholder ───────────────────────────────────────────────────
+// ─── Mini Line Chart (SVG) ───────────────────────────────────────────────────
 
 function MiniChart({ positive }: { positive: boolean }) {
+  const points = [30, 45, 35, 55, 40, 60, 38, 52, 48, 65, 42, 58, 50, 70, 55, 62]
+  const width = 120
+  const height = 40
+  const stepX = width / (points.length - 1)
+
+  const pathD = points
+    .map((y, i) => {
+      const x = i * stepX
+      const scaledY = height - (y / 100) * height
+      return `${i === 0 ? 'M' : 'L'}${x},${scaledY}`
+    })
+    .join(' ')
+
+  const color = positive ? '#2bc287' : '#ef4444'
+
   return (
-    <div className="h-10 w-24 flex items-end gap-0.5">
-      {[40, 55, 35, 65, 45, 70, 50, 80, 60, 75].map((h, i) => (
+    <svg width={width} height={height} viewBox={`0 0 ${width} ${height}`} fill="none">
+      <path d={pathD} stroke={color} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" fill="none" />
+    </svg>
+  )
+}
+
+// ─── Price Range Bar ─────────────────────────────────────────────────────────
+
+function PriceRangeBar({ low, high }: { low: string; high: string }) {
+  return (
+    <div className="flex flex-col gap-1">
+      <div
+        className="h-[4px] w-full rounded-full overflow-hidden"
+        style={{ backgroundColor: 'var(--color-border)' }}
+      >
         <div
-          key={i}
-          className="flex-1 rounded-sm opacity-80"
+          className="h-full rounded-full"
           style={{
-            height: `${h}%`,
-            backgroundColor: positive ? 'var(--color-green)' : 'var(--color-red)',
+            width: '65%',
+            background: 'linear-gradient(90deg, #ef4444 0%, #2bc287 100%)',
           }}
         />
-      ))}
+      </div>
+      <div className="flex justify-between">
+        <span className="text-[11px]" style={{ color: 'var(--color-text-muted)' }}>{low}</span>
+        <span className="text-[11px]" style={{ color: 'var(--color-text-muted)' }}>{high}</span>
+      </div>
     </div>
   )
 }
 
-// ─── Featured Pair Card ───────────────────────────────────────────────────────
+// ─── Featured Pair Card ──────────────────────────────────────────────────────
 
 function FeaturedPairCard({ pair }: { pair: FeaturedPair }) {
   return (
     <div
-      className="rounded-2xl p-5 flex flex-col gap-4"
+      className="rounded-2xl p-6 relative overflow-hidden"
       style={{
         backgroundColor: 'var(--color-surface)',
         border: '1px solid var(--color-border)',
+        boxShadow: '0 0 12px rgba(0,0,0,0.1)',
       }}
     >
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-3">
-          <div
-            className="w-10 h-10 rounded-full flex items-center justify-center overflow-hidden shrink-0"
-            style={{ backgroundColor: '#2a2a2a' }}
-          >
-            <img
-              src={pair.icon}
-              alt={pair.baseCurrency}
-              className="w-8 h-8 object-contain"
-              onError={(e) => {
-                const t = e.currentTarget
-                t.style.display = 'none'
-                if (t.parentElement) {
-                  t.parentElement.textContent = pair.baseCurrency[0]
-                  t.parentElement.style.fontSize = '14px'
-                  t.parentElement.style.fontWeight = '700'
-                  t.parentElement.style.color = 'var(--color-primary)'
-                }
-              }}
-            />
-          </div>
-          <div>
-            <p className="font-semibold text-sm" style={{ color: 'var(--color-text)' }}>
-              {pair.symbol}
-            </p>
-            <p className="text-xs" style={{ color: 'var(--color-text-muted)' }}>
-              {pair.baseCurrency}
-            </p>
-          </div>
+      <div className="flex items-center gap-3 mb-4">
+        <div
+          className="w-6 h-6 rounded-full flex items-center justify-center overflow-hidden shrink-0"
+          style={{ backgroundColor: 'var(--color-surface-2)' }}
+        >
+          <img
+            src={pair.icon}
+            alt={pair.baseCurrency}
+            className="w-5 h-5 object-contain"
+            onError={(e) => {
+              const t = e.currentTarget
+              t.style.display = 'none'
+              if (t.parentElement) {
+                t.parentElement.textContent = pair.baseCurrency[0]
+                t.parentElement.style.fontSize = '10px'
+                t.parentElement.style.fontWeight = '700'
+                t.parentElement.style.color = 'var(--color-primary)'
+              }
+            }}
+          />
         </div>
+        <span className="font-bold text-lg" style={{ color: 'var(--color-text)' }}>
+          {pair.baseCurrency}
+        </span>
         <span
-          className="text-xs font-semibold px-2 py-1 rounded-md"
-          style={{
-            backgroundColor: pair.positive ? 'rgba(22,163,74,0.12)' : 'rgba(220,38,38,0.12)',
-            color: pair.positive ? 'var(--color-green)' : 'var(--color-red)',
-          }}
+          className="ml-auto font-bold text-lg"
+          style={{ color: pair.positive ? '#2bc287' : '#ef4444' }}
         >
           {pair.change}
         </span>
       </div>
 
-      <div className="flex items-end justify-between">
-        <div>
-          <p className="text-xl font-bold" style={{ color: 'var(--color-text)' }}>
-            {pair.price}
-          </p>
-          <p className="text-xs mt-1" style={{ color: 'var(--color-text-muted)' }}>
-            Vol: {pair.volume}
-          </p>
-        </div>
-        <MiniChart positive={pair.positive} />
-      </div>
+      <p className="text-4xl font-medium mb-3" style={{ color: 'var(--color-text)' }}>
+        {pair.price}
+      </p>
+
+      <p className="text-sm" style={{ color: 'var(--color-text-muted)' }}>
+        24H Volume：{pair.volume}
+      </p>
     </div>
   )
 }
 
-// ─── Sub-filter buttons ───────────────────────────────────────────────────────
+// ─── Loading Skeleton ────────────────────────────────────────────────────────
 
-type QuoteFilter = 'all' | 'usdt' | 'btc' | 'eth' | 'bnb'
-type SortFilter = 'none' | 'gainers' | 'losers' | 'trending'
+function SkeletonRow() {
+  return (
+    <tr style={{ borderBottom: '1px solid var(--color-border)' }}>
+      {Array.from({ length: 8 }).map((_, i) => (
+        <td key={i} className="py-4 px-4">
+          <div
+            className="h-4 rounded animate-pulse"
+            style={{
+              backgroundColor: 'var(--color-surface-2)',
+              width: i === 0 ? '160px' : i === 7 ? '60px' : '80px',
+            }}
+          />
+        </td>
+      ))}
+    </tr>
+  )
+}
 
-// ─── Market Table Row ─────────────────────────────────────────────────────────
+function SkeletonCard() {
+  return (
+    <div
+      className="rounded-2xl p-6 animate-pulse"
+      style={{
+        backgroundColor: 'var(--color-surface)',
+        border: '1px solid var(--color-border)',
+      }}
+    >
+      <div className="flex items-center gap-3 mb-4">
+        <div className="w-6 h-6 rounded-full" style={{ backgroundColor: 'var(--color-surface-2)' }} />
+        <div className="h-5 w-12 rounded" style={{ backgroundColor: 'var(--color-surface-2)' }} />
+      </div>
+      <div className="h-10 w-40 rounded mb-3" style={{ backgroundColor: 'var(--color-surface-2)' }} />
+      <div className="h-4 w-52 rounded" style={{ backgroundColor: 'var(--color-surface-2)' }} />
+    </div>
+  )
+}
 
-function MarketRow({ pair, isFavourite, onToggleFav }: {
+// ─── Market Table Row ────────────────────────────────────────────────────────
+
+function MarketRow({ pair, coinName, isFavourite, onToggleFav }: {
   pair: MarketPair
+  coinName: string
   isFavourite: boolean
   onToggleFav: () => void
 }) {
   return (
-    <tr style={{ borderBottom: '1px solid var(--color-border)' }}>
-      {/* Pair */}
-      <td className="py-3 px-4">
+    <tr
+      className="transition-colors"
+      style={{ borderBottom: '1px solid var(--color-border)' }}
+    >
+      {/* Name */}
+      <td className="py-4 px-4">
         <div className="flex items-center gap-3">
           <button
             onClick={onToggleFav}
@@ -116,13 +173,13 @@ function MarketRow({ pair, isFavourite, onToggleFav }: {
             <Star size={14} fill={isFavourite ? 'currentColor' : 'none'} />
           </button>
           <div
-            className="w-8 h-8 rounded-full flex items-center justify-center overflow-hidden shrink-0"
-            style={{ backgroundColor: '#2a2a2a' }}
+            className="w-7 h-7 rounded-full flex items-center justify-center overflow-hidden shrink-0"
+            style={{ backgroundColor: 'var(--color-surface-2)' }}
           >
             <img
               src={pair.icon}
               alt={pair.baseCurrency}
-              className="w-6 h-6 object-contain"
+              className="w-7 h-7 object-contain"
               onError={(e) => {
                 const t = e.currentTarget
                 t.style.display = 'none'
@@ -136,58 +193,68 @@ function MarketRow({ pair, isFavourite, onToggleFav }: {
             />
           </div>
           <div>
-            <p className="text-sm font-semibold" style={{ color: 'var(--color-text)' }}>
-              {pair.baseCurrency}
-              <span style={{ color: 'var(--color-text-muted)' }}>/{pair.quoteCurrency}</span>
+            <p className="text-[15px] font-semibold" style={{ color: 'var(--color-text)' }}>
+              {pair.baseCurrency}{pair.quoteCurrency}
             </p>
-            {/* Mobile: show volume under pair */}
-            <p className="text-xs md:hidden" style={{ color: 'var(--color-text-muted)' }}>
-              Vol: {pair.volume}
+            <p className="text-[13px]" style={{ color: 'var(--color-text-muted)' }}>
+              {coinName}
             </p>
           </div>
         </div>
       </td>
 
-      {/* Price */}
-      <td className="py-3 px-4 text-sm font-medium" style={{ color: 'var(--color-text)' }}>
-        {pair.price}
+      {/* Last Price */}
+      <td className="py-4 px-4">
+        <p className="text-[15px] font-medium" style={{ color: 'var(--color-text)' }}>
+          {pair.price}
+        </p>
+        <p className="text-[13px]" style={{ color: 'var(--color-text-muted)' }}>
+          {pair.priceUsd}
+        </p>
       </td>
 
       {/* 24H Change */}
-      <td className="py-3 px-4">
-        <div className="flex items-center gap-1">
-          {pair.positive
-            ? <TrendingUp size={13} style={{ color: 'var(--color-green)' }} />
-            : <TrendingDown size={13} style={{ color: 'var(--color-red)' }} />
-          }
-          <span
-            className="text-sm font-semibold"
-            style={{ color: pair.positive ? 'var(--color-green)' : 'var(--color-red)' }}
-          >
-            {pair.change}
-          </span>
-        </div>
+      <td className="py-4 px-4">
+        <span
+          className="text-[14px] font-medium"
+          style={{ color: pair.positive ? '#2bc287' : '#ef4444' }}
+        >
+          {pair.change}
+        </span>
       </td>
 
-      {/* 24H High / Low — hidden on mobile */}
-      <td className="py-3 px-4 hidden md:table-cell">
-        <p className="text-xs" style={{ color: 'var(--color-green)' }}>{pair.high24h}</p>
-        <p className="text-xs" style={{ color: 'var(--color-red)' }}>{pair.low24h}</p>
+      {/* 24h Chart */}
+      <td className="py-4 px-4 hidden lg:table-cell">
+        <MiniChart positive={pair.positive} />
       </td>
 
-      {/* 24H Volume — hidden on mobile */}
-      <td className="py-3 px-4 hidden md:table-cell text-sm" style={{ color: 'var(--color-text-muted)' }}>
-        {pair.volume}
+      {/* 24h Price Range */}
+      <td className="py-4 px-4 hidden xl:table-cell w-[180px]">
+        <PriceRangeBar low={pair.low24h} high={pair.high24h} />
+      </td>
+
+      {/* 24h Volume */}
+      <td className="py-4 px-4 hidden md:table-cell">
+        <span className="text-[14px] font-medium" style={{ color: 'var(--color-text)' }}>
+          {pair.volume}
+        </span>
+      </td>
+
+      {/* Market Cap */}
+      <td className="py-4 px-4 hidden lg:table-cell">
+        <span className="text-[15px] font-medium" style={{ color: 'var(--color-text)' }}>
+          {pair.marketCap}
+        </span>
       </td>
 
       {/* Action */}
-      <td className="py-3 px-4">
+      <td className="py-4 px-4">
         <Link
-          to="/market"
-          className="text-xs font-semibold px-3 py-1.5 rounded-lg transition-colors"
+          to={`/trade/${pair.baseCurrency}_${pair.quoteCurrency}`}
+          className="inline-flex items-center justify-center px-4 py-2 rounded-full text-[13px] font-medium no-underline transition-opacity hover:opacity-80"
           style={{
-            backgroundColor: 'rgba(209,170,103,0.12)',
-            color: 'var(--color-primary)',
+            backgroundColor: 'var(--color-surface-3)',
+            color: 'var(--color-text)',
           }}
         >
           Trade
@@ -197,14 +264,92 @@ function MarketRow({ pair, isFavourite, onToggleFav }: {
   )
 }
 
-// ─── MarketPage ───────────────────────────────────────────────────────────────
+// ─── Pagination ──────────────────────────────────────────────────────────────
+
+function Pagination({
+  currentPage,
+  totalPages,
+  onPageChange,
+}: {
+  currentPage: number
+  totalPages: number
+  onPageChange: (page: number) => void
+}) {
+  const getPages = () => {
+    const pages: (number | '...')[] = []
+    if (totalPages <= 7) {
+      for (let i = 1; i <= totalPages; i++) pages.push(i)
+    } else {
+      if (currentPage <= 4) {
+        for (let i = 1; i <= 7; i++) pages.push(i)
+        pages.push('...', totalPages)
+      } else if (currentPage >= totalPages - 3) {
+        pages.push(1, '...')
+        for (let i = totalPages - 6; i <= totalPages; i++) pages.push(i)
+      } else {
+        pages.push(1, '...')
+        for (let i = currentPage - 2; i <= currentPage + 2; i++) pages.push(i)
+        pages.push('...', totalPages)
+      }
+    }
+    return pages
+  }
+
+  return (
+    <div className="flex items-center justify-center gap-1 py-6">
+      <button
+        onClick={() => onPageChange(Math.max(1, currentPage - 1))}
+        disabled={currentPage === 1}
+        className="w-7 h-7 flex items-center justify-center rounded transition-colors disabled:opacity-30"
+        style={{ color: 'var(--color-text-muted)' }}
+      >
+        <ChevronLeft size={14} />
+      </button>
+
+      {getPages().map((page, i) =>
+        page === '...' ? (
+          <span key={`dots-${i}`} className="w-7 h-7 flex items-center justify-center text-sm" style={{ color: 'var(--color-text-muted)' }}>
+            ...
+          </span>
+        ) : (
+          <button
+            key={page}
+            onClick={() => onPageChange(page)}
+            className="w-7 h-7 flex items-center justify-center rounded text-sm font-medium transition-colors"
+            style={{
+              backgroundColor: currentPage === page ? 'var(--color-surface-3)' : 'transparent',
+              color: currentPage === page ? 'var(--color-text)' : 'var(--color-text-muted)',
+            }}
+          >
+            {page}
+          </button>
+        ),
+      )}
+
+      <button
+        onClick={() => onPageChange(Math.min(totalPages, currentPage + 1))}
+        disabled={currentPage === totalPages}
+        className="w-7 h-7 flex items-center justify-center rounded transition-colors disabled:opacity-30"
+        style={{ color: 'var(--color-text-muted)' }}
+      >
+        <ChevronRight size={14} />
+      </button>
+    </div>
+  )
+}
+
+// ─── MarketPage ──────────────────────────────────────────────────────────────
 
 export function MarketPage() {
+  const { pairs, featured, loading, error, coinNames } = useBinanceMarket()
+
   const [activeTab, setActiveTab] = useState('spot')
-  const [quoteFilter, setQuoteFilter] = useState<QuoteFilter>('all')
-  const [sortFilter, setSortFilter] = useState<SortFilter>('none')
+  const [categoryFilter, setCategoryFilter] = useState('all')
   const [searchQuery, setSearchQuery] = useState('')
+  const [searchOpen, setSearchOpen] = useState(false)
   const [favourites, setFavourites] = useState<Set<string>>(new Set())
+  const [currentPage, setCurrentPage] = useState(1)
+  const [pairType, setPairType] = useState('usdt-perp')
 
   const toggleFav = (symbol: string) => {
     setFavourites((prev) => {
@@ -215,210 +360,239 @@ export function MarketPage() {
     })
   }
 
-  const basePairs = activeTab === 'futures'
-    ? FUTURES_PAIRS
-    : activeTab === 'favourite'
-      ? SPOT_PAIRS.filter((p) => favourites.has(p.symbol))
-      : SPOT_PAIRS
+  const basePairs = activeTab === 'favourite'
+    ? pairs.filter((p) => favourites.has(p.symbol))
+    : pairs
 
-  const filteredPairs = basePairs
-    .filter((p) => {
-      if (quoteFilter !== 'all' && p.quoteCurrency.toLowerCase() !== quoteFilter) return false
-      if (searchQuery && !p.symbol.toLowerCase().includes(searchQuery.toLowerCase())) return false
-      if (sortFilter === 'gainers') return p.positive
-      if (sortFilter === 'losers') return !p.positive
+  const filteredPairs = useMemo(() => {
+    return basePairs.filter((p) => {
+      if (searchQuery && !p.symbol.toLowerCase().includes(searchQuery.toLowerCase()) &&
+          !p.baseCurrency.toLowerCase().includes(searchQuery.toLowerCase())) return false
       return true
     })
-    .sort((a, b) => {
-      if (sortFilter === 'trending') {
-        return parseFloat(b.change.replace('%', '').replace('+', '')) -
-          parseFloat(a.change.replace('%', '').replace('+', ''))
-      }
-      return 0
-    })
+  }, [basePairs, searchQuery])
 
-  const quoteButtons: { key: QuoteFilter; label: string }[] = [
-    { key: 'all', label: 'All' },
-    { key: 'usdt', label: 'USDT' },
-    { key: 'btc', label: 'BTC' },
-    { key: 'eth', label: 'ETH' },
-    { key: 'bnb', label: 'BNB' },
-  ]
-
-  const sortButtons: { key: SortFilter; label: string }[] = [
-    { key: 'gainers', label: 'Gainers' },
-    { key: 'losers', label: 'Losers' },
-    { key: 'trending', label: 'Trending' },
-  ]
+  const itemsPerPage = 20
+  const totalPages = Math.max(1, Math.ceil(filteredPairs.length / itemsPerPage))
+  const paginatedPairs = filteredPairs.slice(
+    (currentPage - 1) * itemsPerPage,
+    currentPage * itemsPerPage,
+  )
 
   return (
-    <div className="py-8 px-4 md:px-6 mx-auto max-w-[1400px]">
+    <div className="pb-8 mx-auto max-w-[1920px]">
 
       {/* ── Featured Pairs ─────────────────────────────────────── */}
-      <div className="mb-10">
-        <h2 className="text-xl font-bold mb-4" style={{ color: 'var(--color-text)' }}>
-          Featured Markets
-        </h2>
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-          {FEATURED_PAIRS.map((pair) => (
-            <FeaturedPairCard key={pair.symbol} pair={pair} />
-          ))}
+      <div className="px-4 md:px-6 lg:px-10 pt-7 pb-6">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 max-w-[1840px] mx-auto">
+          {loading
+            ? Array.from({ length: 3 }).map((_, i) => <SkeletonCard key={i} />)
+            : featured.map((pair) => (
+                <FeaturedPairCard key={pair.symbol} pair={pair} />
+              ))
+          }
         </div>
       </div>
 
-      {/* ── Live Prices ───────────────────────────────────────── */}
-      <div
-        className="rounded-2xl overflow-hidden"
-        style={{
-          backgroundColor: 'var(--color-surface)',
-          border: '1px solid var(--color-border)',
-        }}
-      >
-        {/* Header */}
-        <div className="px-4 md:px-6 pt-5 pb-0">
-          <h2 className="text-lg font-bold mb-4" style={{ color: 'var(--color-text)' }}>
-            Live Prices
-          </h2>
+      {/* ── Error Banner ──────────────────────────────────────── */}
+      {error && (
+        <div className="mx-4 md:mx-6 lg:mx-10 mb-4 px-4 py-3 rounded-lg text-sm" style={{ backgroundColor: 'rgba(239,68,68,0.1)', color: '#ef4444' }}>
+          Failed to load market data: {error}
+        </div>
+      )}
 
-          {/* Main tabs */}
-          <div className="flex gap-1 mb-4" style={{ borderBottom: '1px solid var(--color-border)' }}>
-            {MARKET_TABS.map((tab) => (
+      {/* ── Main Table Section ────────────────────────────────── */}
+      <div className="px-4 md:px-6 lg:px-10">
+        <div
+          className="rounded-none max-w-[1854px] mx-auto"
+          style={{ backgroundColor: 'var(--color-bg)' }}
+        >
+          {/* Tab Bar */}
+          <div
+            className="flex items-center justify-between px-6 h-16"
+            style={{
+              backgroundColor: 'var(--color-surface)',
+              borderBottom: '1px solid var(--color-border)',
+            }}
+          >
+            <div className="flex items-center gap-1">
+              {MARKET_TABS.map((tab) => (
+                <button
+                  key={tab.key}
+                  onClick={() => { setActiveTab(tab.key); setCurrentPage(1) }}
+                  className="relative px-4 py-2 text-[17px] font-semibold transition-colors"
+                  style={{
+                    color: activeTab === tab.key ? 'var(--color-text)' : 'var(--color-text-muted)',
+                  }}
+                >
+                  {tab.label}
+                  {activeTab === tab.key && (
+                    <span
+                      className="absolute bottom-0 left-1/2 -translate-x-1/2 h-[3px] w-4 rounded-[1px]"
+                      style={{ backgroundColor: 'var(--color-text)' }}
+                    />
+                  )}
+                </button>
+              ))}
+            </div>
+
+            <button
+              onClick={() => setSearchOpen(!searchOpen)}
+              className="p-2 rounded-lg transition-colors hover:opacity-80"
+              style={{ color: 'var(--color-text-muted)' }}
+              aria-label="Search"
+            >
+              <Search size={18} />
+            </button>
+          </div>
+
+          {/* Search bar */}
+          {searchOpen && (
+            <div className="px-6 py-3" style={{ borderBottom: '1px solid var(--color-border)' }}>
+              <div
+                className="flex items-center gap-2 rounded-lg px-3 py-2 max-w-sm"
+                style={{ backgroundColor: 'var(--color-surface-2)', border: '1px solid var(--color-border)' }}
+              >
+                <Search size={14} style={{ color: 'var(--color-text-muted)' }} />
+                <input
+                  autoFocus
+                  type="text"
+                  placeholder="Search pair..."
+                  value={searchQuery}
+                  onChange={(e) => { setSearchQuery(e.target.value); setCurrentPage(1) }}
+                  className="bg-transparent text-sm outline-none flex-1"
+                  style={{ color: 'var(--color-text)' }}
+                />
+              </div>
+            </div>
+          )}
+
+          {/* Category Filters + Pair Type */}
+          <div
+            className="flex items-center justify-between gap-4 px-6 py-3 overflow-x-auto"
+            style={{ borderBottom: '1px solid var(--color-border)' }}
+          >
+            <div className="flex items-center gap-2 shrink-0">
+              {CATEGORY_FILTERS.map((cat) => (
+                <button
+                  key={cat.key}
+                  onClick={() => { setCategoryFilter(cat.key); setCurrentPage(1) }}
+                  className="px-3 py-1.5 text-xs font-medium rounded-md whitespace-nowrap transition-colors"
+                  style={{
+                    backgroundColor: categoryFilter === cat.key ? 'var(--color-text)' : 'var(--color-surface-2)',
+                    color: categoryFilter === cat.key ? 'var(--color-bg)' : 'var(--color-text-muted)',
+                  }}
+                >
+                  {cat.label}
+                </button>
+              ))}
+            </div>
+
+            <div className="shrink-0">
               <button
-                key={tab.key}
-                onClick={() => setActiveTab(tab.key)}
-                className="px-4 py-2 text-sm font-semibold transition-colors relative"
+                onClick={() => setPairType(pairType === 'usdt-perp' ? 'usdt-spot' : 'usdt-perp')}
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-medium transition-colors"
                 style={{
-                  color: activeTab === tab.key ? 'var(--color-primary)' : 'var(--color-text-muted)',
-                  borderBottom: activeTab === tab.key ? '2px solid var(--color-primary)' : '2px solid transparent',
-                  marginBottom: '-1px',
+                  backgroundColor: 'var(--color-surface-2)',
+                  color: 'var(--color-text-muted)',
+                  border: '1px solid var(--color-border)',
                 }}
               >
-                {tab.label}
+                USDT Perp
+                <ChevronDown size={12} />
               </button>
-            ))}
-          </div>
-
-          {/* Sub-filters */}
-          <div className="flex flex-wrap items-center justify-between gap-3 mb-4">
-            <div className="flex flex-wrap gap-2">
-              {quoteButtons.map((btn) => (
-                <button
-                  key={btn.key}
-                  onClick={() => setQuoteFilter(btn.key)}
-                  className="px-3 py-1 text-xs font-semibold rounded-lg transition-colors"
-                  style={{
-                    backgroundColor: quoteFilter === btn.key ? 'var(--color-primary)' : 'rgba(255,255,255,0.05)',
-                    color: quoteFilter === btn.key ? '#0d0d0d' : 'var(--color-text-muted)',
-                  }}
-                >
-                  {btn.label}
-                </button>
-              ))}
-              <div
-                className="w-px mx-1 self-stretch"
-                style={{ backgroundColor: 'var(--color-border)' }}
-              />
-              {sortButtons.map((btn) => (
-                <button
-                  key={btn.key}
-                  onClick={() => setSortFilter(sortFilter === btn.key ? 'none' : btn.key)}
-                  className="px-3 py-1 text-xs font-semibold rounded-lg transition-colors"
-                  style={{
-                    backgroundColor: sortFilter === btn.key ? 'rgba(209,170,103,0.15)' : 'rgba(255,255,255,0.05)',
-                    color: sortFilter === btn.key ? 'var(--color-primary)' : 'var(--color-text-muted)',
-                  }}
-                >
-                  {btn.label}
-                </button>
-              ))}
-            </div>
-
-            {/* Search */}
-            <div
-              className="flex items-center gap-2 rounded-lg px-3 py-1.5"
-              style={{ backgroundColor: 'rgba(255,255,255,0.05)', border: '1px solid var(--color-border)' }}
-            >
-              <Search size={14} style={{ color: 'var(--color-text-muted)' }} />
-              <input
-                type="text"
-                placeholder="Search pair..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="bg-transparent text-xs outline-none w-28"
-                style={{ color: 'var(--color-text)' }}
-              />
             </div>
           </div>
-        </div>
 
-        {/* Table */}
-        <div className="overflow-x-auto">
-          <table className="w-full">
-            <thead>
-              <tr style={{ borderBottom: '1px solid var(--color-border)' }}>
-                <th
-                  className="py-2.5 px-4 text-left text-xs font-semibold"
-                  style={{ color: 'var(--color-text-muted)' }}
-                >
-                  Pair
-                </th>
-                <th
-                  className="py-2.5 px-4 text-left text-xs font-semibold"
-                  style={{ color: 'var(--color-text-muted)' }}
-                >
-                  Price
-                </th>
-                <th
-                  className="py-2.5 px-4 text-left text-xs font-semibold"
-                  style={{ color: 'var(--color-text-muted)' }}
-                >
-                  24H Change
-                </th>
-                <th
-                  className="py-2.5 px-4 text-left text-xs font-semibold hidden md:table-cell"
-                  style={{ color: 'var(--color-text-muted)' }}
-                >
-                  24H High / Low
-                </th>
-                <th
-                  className="py-2.5 px-4 text-left text-xs font-semibold hidden md:table-cell"
-                  style={{ color: 'var(--color-text-muted)' }}
-                >
-                  24H Vol
-                </th>
-                <th
-                  className="py-2.5 px-4 text-left text-xs font-semibold"
-                  style={{ color: 'var(--color-text-muted)' }}
-                >
-                  Action
-                </th>
-              </tr>
-            </thead>
-            <tbody>
-              {filteredPairs.length === 0 ? (
-                <tr>
-                  <td
-                    colSpan={6}
-                    className="py-12 text-center text-sm"
-                    style={{ color: 'var(--color-text-muted)' }}
-                  >
-                    {activeTab === 'favourite'
-                      ? 'No favourites yet. Star a pair to add it here.'
-                      : 'No pairs match your filters.'}
-                  </td>
+          {/* Table */}
+          <div className="overflow-x-auto">
+            <table className="w-full min-w-[800px]">
+              <thead>
+                <tr style={{ borderBottom: '1px solid var(--color-border)' }}>
+                  <th className="py-3 px-4 text-left text-xs font-medium" style={{ color: 'var(--color-text-muted)' }}>
+                    Name
+                  </th>
+                  <th className="py-3 px-4 text-left text-xs font-medium" style={{ color: 'var(--color-text-muted)' }}>
+                    <span className="flex items-center gap-1">
+                      Last Price
+                      <span className="inline-flex flex-col text-[8px] leading-none" style={{ color: 'var(--color-text-subtle)' }}>
+                        <span>▲</span><span>▼</span>
+                      </span>
+                    </span>
+                  </th>
+                  <th className="py-3 px-4 text-left text-xs font-medium" style={{ color: 'var(--color-text-muted)' }}>
+                    <span className="flex items-center gap-1">
+                      24H Change %
+                      <span className="inline-flex flex-col text-[8px] leading-none" style={{ color: 'var(--color-text-subtle)' }}>
+                        <span>▲</span><span>▼</span>
+                      </span>
+                    </span>
+                  </th>
+                  <th className="py-3 px-4 text-left text-xs font-medium hidden lg:table-cell" style={{ color: 'var(--color-text-muted)' }}>
+                    24h Chart
+                  </th>
+                  <th className="py-3 px-4 text-left text-xs font-medium hidden xl:table-cell" style={{ color: 'var(--color-text-muted)' }}>
+                    24h Price Range
+                  </th>
+                  <th className="py-3 px-4 text-left text-xs font-medium hidden md:table-cell" style={{ color: 'var(--color-text-muted)' }}>
+                    <span className="flex items-center gap-1">
+                      24h Volume
+                      <span className="inline-flex flex-col text-[8px] leading-none" style={{ color: 'var(--color-text-subtle)' }}>
+                        <span>▲</span><span>▼</span>
+                      </span>
+                    </span>
+                  </th>
+                  <th className="py-3 px-4 text-left text-xs font-medium hidden lg:table-cell" style={{ color: 'var(--color-text-muted)' }}>
+                    <span className="flex items-center gap-1">
+                      Market Cap
+                      <span className="inline-flex flex-col text-[8px] leading-none" style={{ color: 'var(--color-text-subtle)' }}>
+                        <span>▲</span><span>▼</span>
+                      </span>
+                    </span>
+                  </th>
+                  <th className="py-3 px-4 text-left text-xs font-medium" style={{ color: 'var(--color-text-muted)' }}>
+                    Action
+                  </th>
                 </tr>
-              ) : (
-                filteredPairs.map((pair) => (
-                  <MarketRow
-                    key={pair.symbol}
-                    pair={pair}
-                    isFavourite={favourites.has(pair.symbol)}
-                    onToggleFav={() => toggleFav(pair.symbol)}
-                  />
-                ))
-              )}
-            </tbody>
-          </table>
+              </thead>
+              <tbody>
+                {loading ? (
+                  Array.from({ length: 10 }).map((_, i) => <SkeletonRow key={i} />)
+                ) : paginatedPairs.length === 0 ? (
+                  <tr>
+                    <td
+                      colSpan={8}
+                      className="py-16 text-center text-sm"
+                      style={{ color: 'var(--color-text-muted)' }}
+                    >
+                      {activeTab === 'favourite'
+                        ? 'No favourites yet. Star a pair to add it here.'
+                        : 'No pairs match your filters.'}
+                    </td>
+                  </tr>
+                ) : (
+                  paginatedPairs.map((pair) => (
+                    <MarketRow
+                      key={pair.symbol}
+                      pair={pair}
+                      coinName={coinNames[pair.baseCurrency] ?? pair.baseCurrency}
+                      isFavourite={favourites.has(pair.symbol)}
+                      onToggleFav={() => toggleFav(pair.symbol)}
+                    />
+                  ))
+                )}
+              </tbody>
+            </table>
+          </div>
+
+          {/* Pagination */}
+          {filteredPairs.length > 0 && (
+            <Pagination
+              currentPage={currentPage}
+              totalPages={totalPages}
+              onPageChange={setCurrentPage}
+            />
+          )}
         </div>
       </div>
     </div>

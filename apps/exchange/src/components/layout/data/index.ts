@@ -6,12 +6,12 @@ import type { DemoPair, DropdownItem, FooterSection, FooterSocialLink } from '..
 // ─── Navbar ──────────────────────────────────────────────────────────────────
 
 export const TRADE_ITEMS: DropdownItem[] = [
-  { icon: BarChart2, label: 'Spot Trading', desc: 'Trade spot pairs with instant execution', href: '/trade/Header' },
+  { icon: BarChart2, label: 'Spot Trading', desc: 'Trade spot pairs with instant execution', href: '/trade/BTC_USDT' },
   { icon: Users, label: 'P2P', desc: 'Buy and sell crypto with other users', href: '/p2p-dashboard' },
 ]
 
 export const FUTURES_ITEMS: DropdownItem[] = [
-  { icon: LineChart, label: 'USDⓈ-M Futures', desc: 'Trade perpetual futures with leverage', href: '/usd_futures/header' },
+  { icon: LineChart, label: 'USDⓈ-M Futures', desc: 'Trade perpetual futures with leverage', href: '/usd_futures/BTC_USDT' },
 ]
 
 export const EARN_ITEMS: DropdownItem[] = [
@@ -53,13 +53,13 @@ export const FOOTER_SECTIONS: FooterSection[] = [
     key: 'products',
     title: 'Products',
     links: [
-      { label: 'Buy Crypto', href: '/trade/Header', isNew: true },
+      { label: 'Buy Crypto', href: '/trade/BTC_USDT', isNew: true },
       { label: 'P2P', href: '/p2p-dashboard' },
       { label: 'Convert & Block Trading', href: '/coming-soon' },
-      { label: 'Spot Trading', href: '/trade/Header' },
+      { label: 'Spot Trading', href: '/trade/BTC_USDT' },
       { label: 'Margin', href: '/coming-soon' },
       { label: 'Earn Center', href: '/earning' },
-      { label: 'Futures', href: '/usd_futures/header' },
+      { label: 'Futures', href: '/usd_futures/BTC_USDT' },
       { label: 'OTC', href: '/coming-soon' },
     ],
   },

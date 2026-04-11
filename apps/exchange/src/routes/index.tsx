@@ -53,6 +53,7 @@ import { SupportPage } from '../pages/profile/support/index.js'
 import { TwoFactorPage } from '../pages/profile/two-factor/index.js'
 
 import { ComingSoonPage } from '../pages/coming-soon/index.js'
+import { SpotTradePage } from '../pages/trade/spot/index.js'
 
 // ─── Auth guard ──────────────────────────────────────────────────────────────
 
@@ -157,7 +158,7 @@ export function AppRouter() {
             <Route path="notification" element={<NotificationPage />} />
 
             {/* Trade & Futures */}
-            <Route path="trade/:pairs" element={<ComingSoonPage />} />
+            <Route path="trade/:pairs" element={<SpotTradePage />} />
             <Route path="usd_futures/:pairs" element={<ComingSoonPage />} />
             <Route path="meme" element={<ComingSoonPage />} />
             <Route path="coin_list" element={<ComingSoonPage />} />
