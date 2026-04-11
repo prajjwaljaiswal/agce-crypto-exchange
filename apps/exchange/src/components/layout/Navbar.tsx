@@ -1,38 +1,10 @@
 import { useState, useRef, useCallback, useEffect } from 'react'
-import type { LucideIcon } from 'lucide-react'
-import {
-  ChevronDown, Menu, X, Search, Sun, Moon,
-  BarChart2, Users, LineChart, Coins, Gift, Smartphone,
-} from 'lucide-react'
+import { Link, useLocation } from 'react-router-dom'
+import { ChevronDown, Menu, X, Search, Sun, Moon, Smartphone } from 'lucide-react'
 import { useInstanceConfig, useFeatureFlag } from '@agce/hooks'
 import { useTheme } from '../../providers/index.js'
-
-// ─── Types ───────────────────────────────────────────────────────────────────
-
-type DropdownKey = 'trade' | 'futures' | 'earn' | 'download'
-
-interface DropdownItem {
-  icon: LucideIcon
-  label: string
-  desc: string
-  href: string
-}
-
-// ─── Static nav data ─────────────────────────────────────────────────────────
-
-const TRADE_ITEMS: DropdownItem[] = [
-  { icon: BarChart2, label: 'Spot Trading',  desc: 'Trade spot pairs with instant execution',   href: '#' },
-  { icon: Users,    label: 'P2P',           desc: 'Buy and sell crypto with other users',       href: '#' },
-]
-
-const FUTURES_ITEMS: DropdownItem[] = [
-  { icon: LineChart, label: 'USDⓈ-M Futures', desc: 'Trade perpetual futures with leverage', href: '#' },
-]
-
-const EARN_ITEMS: DropdownItem[] = [
-  { icon: Coins, label: 'Earning',     desc: 'Staking, savings and earn rewards',       href: '#' },
-  { icon: Gift,  label: 'Refer & Earn', desc: 'Invite friends and earn commission',     href: '#' },
-]
+import type { DropdownKey, DropdownItem } from './types/index.js'
+import { TRADE_ITEMS, FUTURES_ITEMS, EARN_ITEMS, DEMO_PAIRS } from './data/index.js'
 
 // ─── DropdownMenu sub-component ──────────────────────────────────────────────
 
@@ -41,11 +13,13 @@ function DropdownMenu({
   isOpen,
   onEnter,
   onLeave,
+  onItemClick,
 }: {
   items: DropdownItem[]
   isOpen: boolean
   onEnter: () => void
   onLeave: () => void
+  onItemClick: () => void
 }) {
   if (!isOpen) return null
 
@@ -57,9 +31,10 @@ function DropdownMenu({
       onMouseLeave={onLeave}
     >
       {items.map(({ icon: Icon, label, desc, href }) => (
-        <a
+        <Link
           key={label}
-          href={href}
+          to={href}
+          onClick={onItemClick}
           className="flex items-start gap-3 px-4 py-3.5 transition-colors hover:bg-[var(--color-surface-3)] no-underline"
         >
           <div
@@ -76,69 +51,13 @@ function DropdownMenu({
               {desc}
             </p>
           </div>
-        </a>
+        </Link>
       ))}
     </div>
   )
 }
 
-// ─── Download dropdown sub-component ─────────────────────────────────────────
-
-function DownloadDropdown({ isOpen, onEnter, onLeave }: {
-  isOpen: boolean
-  onEnter: () => void
-  onLeave: () => void
-}) {
-  if (!isOpen) return null
-
-  return (
-    <div
-      className="absolute right-0 top-full mt-1 rounded-xl p-4 shadow-2xl w-52 z-50"
-      style={{ backgroundColor: 'var(--color-surface-2)', border: '1px solid var(--color-border)' }}
-      onMouseEnter={onEnter}
-      onMouseLeave={onLeave}
-    >
-      {/* QR placeholder */}
-      <div
-        className="w-28 h-28 mx-auto rounded-xl mb-3 flex items-center justify-center"
-        style={{ backgroundColor: 'var(--color-surface-3)', border: '1px solid var(--color-border)' }}
-      >
-        {/* 5×5 dot grid — QR placeholder */}
-        <div className="grid grid-cols-5 gap-1 p-2">
-          {Array.from({ length: 25 }, (_, i) => (
-            <div
-              key={i}
-              className="w-3 h-3 rounded-sm"
-              style={{ backgroundColor: [0,1,2,3,4,5,9,10,14,15,19,20,21,22,23,24,7,12,17].includes(i) ? 'var(--color-text-muted)' : 'transparent' }}
-            />
-          ))}
-        </div>
-      </div>
-      <p className="text-xs text-center mb-3 leading-relaxed" style={{ color: 'var(--color-text-muted)' }}>
-        Scan to Download App<br />iOS &amp; Android
-      </p>
-      <button
-        className="w-full py-2 rounded-lg text-xs font-semibold"
-        style={{ backgroundColor: 'var(--color-primary)', color: '#222017' }}
-      >
-        Download
-      </button>
-    </div>
-  )
-}
-
 // ─── SearchModal sub-component ───────────────────────────────────────────────
-
-const DEMO_PAIRS = [
-  { base: 'BTC',  quote: 'USDT', name: 'Bitcoin',   price: '$43,234', change: '-1.07', up: false, color: '#f7931a' },
-  { base: 'ETH',  quote: 'USDT', name: 'Ethereum',  price: '$2,123',  change: '+5.67', up: true,  color: '#627eea' },
-  { base: 'BNB',  quote: 'USDT', name: 'BNB',       price: '$318',    change: '-2.43', up: false, color: '#f0b90b' },
-  { base: 'SOL',  quote: 'USDT', name: 'Solana',    price: '$96.59',  change: '+3.45', up: true,  color: '#9945ff' },
-  { base: 'ADA',  quote: 'USDT', name: 'Cardano',   price: '$0.52',   change: '+1.23', up: true,  color: '#0033ad' },
-  { base: 'DOGE', quote: 'USDT', name: 'Dogecoin',  price: '$0.082',  change: '-8.23', up: false, color: '#c2a633' },
-  { base: 'XRP',  quote: 'USDT', name: 'Ripple',    price: '$0.594',  change: '-3.21', up: false, color: '#00aae4' },
-  { base: 'MATIC',quote: 'USDT', name: 'Polygon',   price: '$0.89',   change: '+12.7', up: true,  color: '#8247e5' },
-]
 
 function SearchModal({ onClose }: { onClose: () => void }) {
   const [query, setQuery] = useState('')
@@ -195,7 +114,7 @@ function SearchModal({ onClose }: { onClose: () => void }) {
               type="search"
               value={query}
               onChange={(e) => setQuery(e.target.value)}
-              placeholder="Search pairs..."
+              placeholder="Search here..."
               className="flex-1 bg-transparent text-sm outline-none"
               style={{ color: 'var(--color-text)' }}
             />
@@ -255,6 +174,7 @@ export function Navbar() {
   const hasLaunchpad = useFeatureFlag('tokenLaunchpad')
   const hasP2P       = useFeatureFlag('p2p')
   const { theme, toggleTheme } = useTheme()
+  const location = useLocation()
 
   const [mobileOpen,    setMobileOpen]    = useState(false)
   const [openDropdown,  setOpenDropdown]  = useState<DropdownKey | null>(null)
@@ -264,7 +184,16 @@ export function Navbar() {
   const navRef    = useRef<HTMLDivElement>(null)
   const hoverTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
 
-  // Close all menus on outside click
+  // Check if current page is an auth page (no nav should be active)
+  const isAuthPage = ['/login', '/signup', '/forgot_password', '/account-verification'].some(
+    path => location.pathname.startsWith(path)
+  )
+
+  const isActive = (path: string, exact = true) => {
+    if (isAuthPage) return false
+    return exact ? location.pathname === path : location.pathname.includes(path)
+  }
+
   useEffect(() => {
     const handler = (e: MouseEvent | TouchEvent) => {
       if (navRef.current && !navRef.current.contains(e.target as Node)) {
@@ -280,7 +209,6 @@ export function Navbar() {
     }
   }, [])
 
-  // Cleanup hover timer on unmount
   useEffect(() => () => { if (hoverTimer.current) clearTimeout(hoverTimer.current) }, [])
 
   const openHover = useCallback((key: DropdownKey) => {
@@ -301,198 +229,224 @@ export function Navbar() {
     setMobileExpanded((prev) => (prev === key ? null : key))
   }
 
-  // Filter P2P from trade if feature is disabled for this instance
+  const closeNavbar = () => {
+    setMobileOpen(false)
+    setOpenDropdown(null)
+  }
+
   const tradeItems = hasP2P ? TRADE_ITEMS : TRADE_ITEMS.filter((i) => i.label !== 'P2P')
+
+  const activeNavStyle = { color: 'var(--color-primary)' }
+  const inactiveNavStyle = { color: 'var(--color-text-muted)' }
 
   return (
     <>
       <header
         ref={navRef}
         className="sticky top-0 z-50"
-        style={{ backgroundColor: 'var(--color-bg)', borderBottom: '1px solid var(--color-border)' }}
+        style={{ backgroundColor: '#070808', borderBottom: 'none' }}
       >
-        <div className="mx-auto flex h-16 max-w-[1400px] items-center justify-between px-6">
+        <div className="flex h-[60px] items-center justify-between px-6 lg:px-[100px]">
 
-          {/* ── Logo ── */}
-          <a href="/" className="flex items-center shrink-0 no-underline">
+          {/* Logo */}
+          <Link to="/" className="flex items-center shrink-0 no-underline" onClick={closeNavbar}>
             <img
-              src="/images/logo_light111.svg"
+              src="/images/logo_light.svg"
               alt="Arab Global Crypto Exchange"
-              className="h-8 w-auto"
-              style={{ objectFit: 'contain' }}
+              className="h-8 w-auto object-contain"
             />
-          </a>
+          </Link>
 
-          {/* ── Desktop nav ── */}
-          <nav className="hidden lg:flex items-center gap-1">
+          {/* Desktop nav */}
+          <nav className="hidden lg:flex items-center gap-0.5 ml-6">
 
-            {/* Trade */}
+            {/* Buy Crypto */}
             <div
               className="relative"
               onMouseEnter={() => openHover('trade')}
               onMouseLeave={closeHover}
             >
               <button
-                className="flex items-center gap-1 px-3 py-2 rounded-md text-sm transition-colors hover:text-[var(--color-text)]"
-                style={{ color: 'var(--color-text-muted)' }}
+                className="flex items-center gap-1 px-3 py-2 rounded-md text-[13px] font-medium transition-colors hover:text-white"
+                style={isActive('/trade', false) ? { color: 'white' } : { color: '#ccc' }}
                 onClick={() => toggleDesktopDropdown('trade')}
               >
-                Trade
-                <ChevronDown
-                  size={12}
-                  className={`transition-transform duration-200 ${openDropdown === 'trade' ? 'rotate-180' : ''}`}
-                />
+                Buy Crypto
+                <ChevronDown size={12} className={`transition-transform duration-200 ${openDropdown === 'trade' ? 'rotate-180' : ''}`} />
               </button>
               <DropdownMenu
                 items={tradeItems}
                 isOpen={openDropdown === 'trade'}
                 onEnter={() => openHover('trade')}
                 onLeave={closeHover}
+                onItemClick={closeNavbar}
               />
             </div>
 
-            {/* Futures */}
+            {/* Markets */}
+            <Link
+              to="/market"
+              className="px-3 py-2 rounded-md text-[13px] font-medium transition-colors hover:text-white no-underline"
+              style={isActive('/market') ? { color: 'white' } : { color: '#ccc' }}
+            >
+              Markets
+            </Link>
+
+            {/* Trade */}
             <div
               className="relative"
               onMouseEnter={() => openHover('futures')}
               onMouseLeave={closeHover}
             >
               <button
-                className="flex items-center gap-1 px-3 py-2 rounded-md text-sm transition-colors hover:text-[var(--color-text)]"
-                style={{ color: 'var(--color-text-muted)' }}
+                className="flex items-center gap-1 px-3 py-2 rounded-md text-[13px] font-medium transition-colors hover:text-white"
+                style={isActive('/trade', false) || isActive('/p2p', false) ? { color: 'white' } : { color: '#ccc' }}
                 onClick={() => toggleDesktopDropdown('futures')}
               >
-                Futures
-                <ChevronDown
-                  size={12}
-                  className={`transition-transform duration-200 ${openDropdown === 'futures' ? 'rotate-180' : ''}`}
-                />
+                Trade
+                <ChevronDown size={12} className={`transition-transform duration-200 ${openDropdown === 'futures' ? 'rotate-180' : ''}`} />
               </button>
               <DropdownMenu
-                items={FUTURES_ITEMS}
+                items={tradeItems}
                 isOpen={openDropdown === 'futures'}
                 onEnter={() => openHover('futures')}
                 onLeave={closeHover}
+                onItemClick={closeNavbar}
               />
             </div>
 
-            {/* Earn */}
+            {/* Futures */}
             <div
               className="relative"
               onMouseEnter={() => openHover('earn')}
               onMouseLeave={closeHover}
             >
               <button
-                className="flex items-center gap-1 px-3 py-2 rounded-md text-sm transition-colors hover:text-[var(--color-text)]"
-                style={{ color: 'var(--color-text-muted)' }}
+                className="flex items-center gap-1 px-3 py-2 rounded-md text-[13px] font-medium transition-colors hover:text-white"
+                style={isActive('/usd_futures', false) ? { color: 'white' } : { color: '#ccc' }}
                 onClick={() => toggleDesktopDropdown('earn')}
               >
-                Earn
-                <ChevronDown
-                  size={12}
-                  className={`transition-transform duration-200 ${openDropdown === 'earn' ? 'rotate-180' : ''}`}
-                />
+                Futures
+                <ChevronDown size={12} className={`transition-transform duration-200 ${openDropdown === 'earn' ? 'rotate-180' : ''}`} />
               </button>
               <DropdownMenu
-                items={EARN_ITEMS}
+                items={FUTURES_ITEMS}
                 isOpen={openDropdown === 'earn'}
                 onEnter={() => openHover('earn')}
                 onLeave={closeHover}
+                onItemClick={closeNavbar}
               />
             </div>
 
-            {/* Feature-gated: Launchpad */}
-            {hasLaunchpad && (
-              <a
-                href="#"
-                className="flex items-center gap-1 px-3 py-2 rounded-md text-sm transition-colors hover:text-[var(--color-text)] no-underline"
-                style={{ color: 'var(--color-text-muted)' }}
-              >
-                Launchpad
-                <span style={{ color: '#f3bb2c' }}>🚀</span>
-              </a>
-            )}
-
-            <a
-              href="#"
-              className="px-3 py-2 rounded-md text-sm transition-colors hover:text-[var(--color-text)] no-underline"
-              style={{ color: 'var(--color-text-muted)' }}
-            >
-              Market
-            </a>
-
-            <a
-              href="#"
-              className="px-3 py-2 rounded-md text-sm transition-colors hover:text-[var(--color-text)] no-underline"
-              style={{ color: 'var(--color-text-muted)' }}
-            >
-              Blogs &amp; News
-            </a>
-          </nav>
-
-          {/* ── Desktop right actions ── */}
-          <div className="hidden lg:flex items-center gap-2">
-
-            {/* Search */}
-            <button
-              onClick={() => setSearchOpen(true)}
-              className="p-2 rounded-lg transition-colors hover:bg-[var(--color-surface-2)]"
-              style={{ color: 'var(--color-text-muted)' }}
-              aria-label="Search pairs"
-            >
-              <Search size={16} />
-            </button>
-
-            {/* Theme toggle */}
-            <button
-              onClick={toggleTheme}
-              className="p-2 rounded-lg transition-colors hover:bg-[var(--color-surface-2)]"
-              style={{ color: 'var(--color-text-muted)' }}
-              aria-label="Toggle theme"
-            >
-              {theme === 'dark' ? <Sun size={16} /> : <Moon size={16} />}
-            </button>
-
-            {/* Download app */}
+            {/* Earn */}
             <div
               className="relative"
               onMouseEnter={() => openHover('download')}
               onMouseLeave={closeHover}
             >
               <button
-                className="p-2 rounded-lg transition-colors hover:bg-[var(--color-surface-2)]"
-                style={{ color: 'var(--color-text-muted)' }}
-                aria-label="Download app"
+                className="flex items-center gap-1 px-3 py-2 rounded-md text-[13px] font-medium transition-colors hover:text-white"
+                style={isActive('/earning') || isActive('/refer_earn') ? { color: 'white' } : { color: '#ccc' }}
                 onClick={() => toggleDesktopDropdown('download')}
               >
-                <Smartphone size={16} />
+                Earn
+                <ChevronDown size={12} className={`transition-transform duration-200 ${openDropdown === 'download' ? 'rotate-180' : ''}`} />
               </button>
-              <DownloadDropdown
+              <DropdownMenu
+                items={EARN_ITEMS}
                 isOpen={openDropdown === 'download'}
                 onEnter={() => openHover('download')}
                 onLeave={closeHover}
+                onItemClick={closeNavbar}
               />
             </div>
 
-            {/* Divider */}
-            <div className="w-px h-5 mx-1" style={{ backgroundColor: 'var(--color-border)' }} />
+            {/* More */}
+            <Link
+              to="/coming-soon"
+              className="flex items-center gap-1 px-3 py-2 rounded-md text-[13px] font-medium transition-colors hover:text-white no-underline"
+              style={{ color: '#ccc' }}
+            >
+              More
+              <ChevronDown size={12} />
+            </Link>
 
-            {/* Auth */}
+            {/* Square */}
+            <Link
+              to="/coming-soon"
+              className="px-3 py-2 rounded-md text-[13px] font-medium transition-colors hover:text-white no-underline"
+              style={{ color: '#ccc' }}
+            >
+              Square
+            </Link>
+
+            {/* Rewards */}
+            <Link
+              to="/coming-soon"
+              className="px-3 py-2 rounded-md text-[13px] font-medium transition-colors hover:text-white no-underline"
+              style={{ color: '#ccc' }}
+            >
+              Rewards
+            </Link>
+          </nav>
+
+          {/* Desktop right actions */}
+          <div className="hidden lg:flex items-center gap-1.5">
+
             <button
-              className="px-4 py-2 rounded-lg text-sm font-medium border transition-colors hover:border-[var(--color-primary)] hover:text-[var(--color-primary)]"
-              style={{ borderColor: 'var(--color-border-strong)', color: 'var(--color-text-muted)' }}
+              onClick={() => setSearchOpen(true)}
+              className="p-2 rounded-lg transition-colors hover:opacity-80"
+              style={{ color: 'white' }}
+              aria-label="Search pairs"
+            >
+              <Search size={16} />
+            </button>
+
+            <Link
+              to="/login"
+              className="px-3 py-1.5 text-[13px] font-semibold transition-colors hover:opacity-80 no-underline"
+              style={{ color: 'white' }}
             >
               Log In
-            </button>
-            <button
-              className="px-4 py-2 rounded-lg text-sm font-semibold transition-opacity hover:opacity-90"
-              style={{ backgroundColor: 'var(--color-primary)', color: '#222017' }}
+            </Link>
+
+            <Link
+              to="/signup"
+              className="px-4 py-1 rounded-full text-[11px] font-semibold transition-opacity hover:opacity-90 no-underline"
+              style={{ backgroundColor: 'white', color: '#070808' }}
             >
-              Register
+              Sign Up
+            </Link>
+
+            <div className="w-px h-4 mx-1.5" style={{ backgroundColor: '#484b51' }} />
+
+            <button
+              className="p-1.5 rounded-lg transition-colors hover:opacity-80"
+              style={{ color: 'white' }}
+              aria-label="Download app"
+            >
+              <Smartphone size={16} />
+            </button>
+
+            <button
+              onClick={toggleTheme}
+              className="p-1.5 rounded-lg transition-colors hover:opacity-80"
+              style={{ color: 'white' }}
+              aria-label="Toggle theme"
+            >
+              {theme === 'dark' ? <Sun size={16} /> : <Moon size={16} />}
+            </button>
+
+            <button
+              className="p-1.5 rounded-lg transition-colors hover:opacity-80"
+              style={{ color: 'white' }}
+              aria-label="Settings"
+            >
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="3"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>
             </button>
           </div>
 
-          {/* ── Mobile actions ── */}
+          {/* Mobile actions */}
           <div className="lg:hidden flex items-center gap-1">
             <button
               onClick={() => setSearchOpen(true)}
@@ -521,7 +475,7 @@ export function Navbar() {
           </div>
         </div>
 
-        {/* ── Mobile menu ── */}
+        {/* Mobile menu */}
         {mobileOpen && (
           <nav
             className="lg:hidden border-t"
@@ -529,11 +483,31 @@ export function Navbar() {
           >
             <div className="px-4 py-3 flex flex-col gap-0.5">
 
+              {/* Home */}
+              <Link
+                to="/"
+                onClick={closeNavbar}
+                className="px-3 py-2.5 rounded-md text-sm no-underline"
+                style={isActive('/') ? activeNavStyle : inactiveNavStyle}
+              >
+                Home
+              </Link>
+
+              {/* Market */}
+              <Link
+                to="/market"
+                onClick={closeNavbar}
+                className="px-3 py-2.5 rounded-md text-sm no-underline"
+                style={isActive('/market') ? activeNavStyle : inactiveNavStyle}
+              >
+                Market
+              </Link>
+
               {/* Trade accordion */}
               <div>
                 <button
                   className="w-full flex items-center justify-between px-3 py-2.5 rounded-md text-sm"
-                  style={{ color: 'var(--color-text-muted)' }}
+                  style={isActive('/trade', false) || isActive('/p2p', false) ? activeNavStyle : inactiveNavStyle}
                   onClick={() => toggleMobileExpanded('trade')}
                 >
                   Trade
@@ -545,14 +519,15 @@ export function Navbar() {
                 {mobileExpanded === 'trade' && (
                   <div className="ml-3 mt-0.5 mb-1.5 flex flex-col gap-0.5">
                     {tradeItems.map(({ icon: Icon, label, href }) => (
-                      <a
+                      <Link
                         key={label}
-                        href={href}
+                        to={href}
+                        onClick={closeNavbar}
                         className="flex items-center gap-2 px-3 py-2 rounded-md text-sm no-underline"
                         style={{ color: 'var(--color-text-subtle)' }}
                       >
                         <Icon size={13} /> {label}
-                      </a>
+                      </Link>
                     ))}
                   </div>
                 )}
@@ -562,7 +537,7 @@ export function Navbar() {
               <div>
                 <button
                   className="w-full flex items-center justify-between px-3 py-2.5 rounded-md text-sm"
-                  style={{ color: 'var(--color-text-muted)' }}
+                  style={isActive('/usd_futures', false) || isActive('/coin_futures', false) ? activeNavStyle : inactiveNavStyle}
                   onClick={() => toggleMobileExpanded('futures')}
                 >
                   Futures
@@ -574,27 +549,28 @@ export function Navbar() {
                 {mobileExpanded === 'futures' && (
                   <div className="ml-3 mt-0.5 mb-1.5 flex flex-col gap-0.5">
                     {FUTURES_ITEMS.map(({ icon: Icon, label, href }) => (
-                      <a
+                      <Link
                         key={label}
-                        href={href}
+                        to={href}
+                        onClick={closeNavbar}
                         className="flex items-center gap-2 px-3 py-2 rounded-md text-sm no-underline"
                         style={{ color: 'var(--color-text-subtle)' }}
                       >
                         <Icon size={13} /> {label}
-                      </a>
+                      </Link>
                     ))}
                   </div>
                 )}
               </div>
 
-              {/* Earn accordion */}
+              {/* Earning accordion */}
               <div>
                 <button
                   className="w-full flex items-center justify-between px-3 py-2.5 rounded-md text-sm"
-                  style={{ color: 'var(--color-text-muted)' }}
+                  style={isActive('/earning') || isActive('/refer_earn') ? activeNavStyle : inactiveNavStyle}
                   onClick={() => toggleMobileExpanded('earn')}
                 >
-                  Earn
+                  Earning
                   <ChevronDown
                     size={14}
                     className={`transition-transform duration-200 ${mobileExpanded === 'earn' ? 'rotate-180' : ''}`}
@@ -603,57 +579,85 @@ export function Navbar() {
                 {mobileExpanded === 'earn' && (
                   <div className="ml-3 mt-0.5 mb-1.5 flex flex-col gap-0.5">
                     {EARN_ITEMS.map(({ icon: Icon, label, href }) => (
-                      <a
+                      <Link
                         key={label}
-                        href={href}
+                        to={href}
+                        onClick={closeNavbar}
                         className="flex items-center gap-2 px-3 py-2 rounded-md text-sm no-underline"
                         style={{ color: 'var(--color-text-subtle)' }}
                       >
                         <Icon size={13} /> {label}
-                      </a>
+                      </Link>
                     ))}
                   </div>
                 )}
               </div>
 
+              {/* Quick Swap */}
+              <Link
+                to="/user_profile/swap"
+                onClick={closeNavbar}
+                className="px-3 py-2.5 rounded-md text-sm no-underline"
+                style={isActive('/user_profile/swap') ? activeNavStyle : inactiveNavStyle}
+              >
+                Quick Swap
+              </Link>
+
               {hasLaunchpad && (
-                <a
-                  href="#"
+                <Link
+                  to="/launchpad"
+                  onClick={closeNavbar}
                   className="px-3 py-2.5 rounded-md text-sm no-underline"
-                  style={{ color: 'var(--color-text-muted)' }}
+                  style={isActive('/launchpad') ? activeNavStyle : inactiveNavStyle}
                 >
                   Launchpad 🚀
-                </a>
+                </Link>
               )}
 
-              <a href="#" className="px-3 py-2.5 rounded-md text-sm no-underline" style={{ color: 'var(--color-text-muted)' }}>
-                Market
-              </a>
-              <a href="#" className="px-3 py-2.5 rounded-md text-sm no-underline" style={{ color: 'var(--color-text-muted)' }}>
+              {/* Meme+ */}
+              <Link
+                to="/meme"
+                onClick={closeNavbar}
+                className="px-3 py-2.5 rounded-md text-sm no-underline"
+                style={isActive('/meme') ? activeNavStyle : inactiveNavStyle}
+              >
+                Meme+
+              </Link>
+
+              {/* Blogs & News */}
+              <Link
+                to="/blogs"
+                onClick={closeNavbar}
+                className="px-3 py-2.5 rounded-md text-sm no-underline"
+                style={isActive('/blogs') ? activeNavStyle : inactiveNavStyle}
+              >
                 Blogs &amp; News
-              </a>
+              </Link>
 
               {/* Mobile auth */}
               <div className="mt-3 flex flex-col gap-2 pt-3" style={{ borderTop: '1px solid var(--color-border)' }}>
-                <button
-                  className="py-2.5 rounded-lg text-sm font-medium border"
+                <Link
+                  to="/login"
+                  onClick={closeNavbar}
+                  className="py-2.5 rounded-lg text-sm font-medium border text-center no-underline"
                   style={{ borderColor: 'var(--color-border-strong)', color: 'var(--color-text-muted)' }}
                 >
                   Log In
-                </button>
-                <button
-                  className="py-2.5 rounded-lg text-sm font-semibold"
+                </Link>
+                <Link
+                  to="/signup"
+                  onClick={closeNavbar}
+                  className="py-2.5 rounded-lg text-sm font-semibold text-center no-underline"
                   style={{ backgroundColor: 'var(--color-primary)', color: '#222017' }}
                 >
-                  Register
-                </button>
+                  Sign Up
+                </Link>
               </div>
             </div>
           </nav>
         )}
       </header>
 
-      {/* Search modal — portal-style overlay */}
       {searchOpen && <SearchModal onClose={() => setSearchOpen(false)} />}
     </>
   )

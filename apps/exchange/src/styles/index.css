@@ -358,3 +358,19 @@ button.feature-item.is-active p  { color: #000; }
   .trade_earn_section         { padding: 2rem 0 !important; }
   .center-image-wrapper .center-image { margin: 18px auto 0; }
 }
+
+/* ─── Hero banner animation ─── */
+
+@keyframes bannerHeroFloat {
+  0%   { transform: translateY(0) rotate(0deg) scale(1); }
+  50%  { transform: translateY(-12px) rotate(0.5deg) scale(1.01); }
+  100% { transform: translateY(0) rotate(0deg) scale(1); }
+}
+
+.banner-img-motion {
+  animation: bannerHeroFloat 6s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .banner-img-motion { animation: none; }
+}
