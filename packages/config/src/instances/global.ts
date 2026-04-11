@@ -41,8 +41,8 @@ export const globalConfig: InstanceConfig = {
     blockVPN: true,
   },
   theme: {
-    primaryColor: '#2563EB',
-    accentColor: '#7C3AED',
+    primaryColor: '#d1aa67',
+    accentColor: '#c49a54',
     logoUrl: '/logos/agce-global.svg',
   },
   fees: {

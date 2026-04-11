@@ -5,73 +5,81 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ## Commands
 
 ```bash
-# Root — runs across all workspaces via Turborepo
-pnpm dev                   # Start landing dev server
-pnpm build                 # Build all apps (turbo)
-pnpm lint                  # Lint all packages (turbo)
-pnpm typecheck             # Type-check all packages (turbo)
+# Development
+pnpm dev                    # Start exchange app dev server
 
-# Per-app dev
-pnpm --filter @agce/landing dev
-pnpm --filter @agce/exchange dev
+# Building
+pnpm build                  # Build all apps via Turborepo
+pnpm build:india            # Build landing for India instance
+pnpm build:abudhabi         # Build landing for Abu Dhabi instance
+pnpm build:dubai            # Build landing for Dubai instance
+pnpm build:global           # Build landing for global instance
+pnpm build:all-landing      # Build all 4 landing instances sequentially
 
-# Per-instance landing builds (outputs to apps/landing/dist/<instance>/)
-pnpm build:india
-pnpm build:abudhabi
-pnpm build:dubai
-pnpm build:global
-pnpm build:all-landing     # Builds all 4 instances sequentially
+# Quality
+pnpm lint                   # ESLint across all packages
+pnpm typecheck              # TypeScript check across all packages
 ```
 
-## Monorepo structure
+For a single app: `cd apps/exchange && pnpm dev` or `pnpm --filter @agce/exchange dev`.
 
+## Architecture
+
+**Turborepo + pnpm workspaces monorepo** with two layers:
+
+### Apps (`apps/`)
+- `@agce/exchange` — Trading platform (Phase 2, under active development)
+
+### Packages (`packages/`)
+All packages are consumed as TypeScript source via Vite aliases — no separate compile step.
+- `@agce/types` — TypeScript interfaces (`InstanceConfig`, `FeatureFlags`, etc.)
+- `@agce/config` — Per-instance config objects (`india`, `abudhabi`, `dubai`, `global`)
+- `@agce/hooks` — Shared React hooks (`useInstanceConfig`, `useFeatureFlag`, `useWebSocket`)
+- `@agce/ui` — Shared component library (`Button`, `ButtonLink`, `Badge`)
+
+### Package Imports
+Packages are resolved via aliases defined in both `vite.config.ts` and `tsconfig.app.json`:
+```typescript
+import { useInstanceConfig } from '@agce/hooks'
+import { Button } from '@agce/ui'
 ```
-apps/
-  landing/    @agce/landing  — public marketing site (Vite + React + Tailwind)
-  exchange/   @agce/exchange — trading platform (Phase 2, Vite + React)
-packages/
-  types/      @agce/types    — shared TypeScript interfaces (no runtime code)
-  config/     @agce/config   — per-instance configs and feature flags
-  ui/         @agce/ui       — shared React component library (Tailwind CSS v4)
-  hooks/      @agce/hooks    — shared React hooks (useInstanceConfig, useFeatureFlag, useWebSocket)
+Each alias maps `@agce/pkg` → `../../packages/pkg/src/index.ts`.
+
+## Multi-Instance System
+
+The platform supports 4 compliance jurisdictions, each with distinct fiat currency, regulator, and feature flags:
+
+| Instance | Jurisdiction |
+|----------|-------------|
+| `india`  | SEBI-regulated, INR, no derivatives/margin |
+| `abudhabi` | ADGM, USD, full feature set |
+| `dubai` | VARA, AED, full feature set |
+| `global` | Offshore, USD, full feature set |
+
+**Instance is selected at build time**, not runtime, via the `VITE_INSTANCE` env var:
+```bash
+VITE_INSTANCE=india pnpm build   # outputs to dist/india/
 ```
+You cannot switch instances in the browser. This is intentional for regulatory compliance.
 
-## Multi-instance system
+## Styling
 
-The `VITE_INSTANCE` env var (set at build time) selects which of the 4 exchange instances to build for:
-- `india` — FIU-IND, INR fiat, no derivatives
-- `abudhabi` — CMA regulated, AED, full products
-- `dubai` — VARA licensed, AED, full products + launchpad
-- `global` — best-practice baseline, USDT/USDC, full products
+Tailwind CSS v4 + CSS custom properties. Design tokens are defined in `apps/exchange/src/styles/index.css`. `App.tsx` overrides `--color-primary` and `--color-primary-hover` on mount based on the current instance config, so the UI automatically adapts per jurisdiction (e.g., gold theme defaults).
 
-**How it flows:**
-1. `VITE_INSTANCE=india` → `useInstanceConfig()` returns `indiaConfig` from `@agce/config`
-2. Components use `useFeatureFlag('perpetuals')` → `false` for India, `true` for Dubai
-3. `<FeatureGate flag="perpetuals">` renders its children only when the flag is `true`
-4. `config.theme.primaryColor` is applied to CSS variables in `App.tsx` on mount
-
-Each instance config lives in `packages/config/src/instances/<id>.ts` and is typed by `InstanceConfig` from `@agce/types`.
-
-## Package resolution
-
-All `@agce/*` packages are resolved to TypeScript source via Vite aliases in `vite.config.ts` — no separate build step for packages. Each app's `tsconfig.app.json` uses `paths` for TypeScript to match.
-
-## Stack
+## Tech Stack
 
 | Concern | Choice |
-|---|---|
+|---------|--------|
 | Build orchestration | Turborepo |
-| Package manager | pnpm workspaces |
-| Bundler | Vite 8 |
+| Bundler | Vite |
 | UI framework | React 19 |
-| Styling | Tailwind CSS v4 (CSS-first, no config file) |
-| Routing (landing) | React Router v7 |
-| Icons | Lucide React |
-| Animations | Motion |
-| Exchange routing (Phase 2) | TanStack Router |
-| Exchange state (Phase 2) | Zustand + TanStack Query v5 |
+| Styling | Tailwind CSS v4 |
+| Routing | TanStack Router (planned, not yet implemented) |
+| State / server state | Zustand + TanStack Query v5 (planned) |
+| TypeScript | Strict mode, v6 |
 
-## Project requirements
+## TypeScript Notes
 
-Full platform requirements are documented in `docs/AGCE_Requirements_Specification_v1.pdf`.
-The platform is a multi-jurisdiction crypto exchange (India, Abu Dhabi, Dubai, Global) built by Arab Global Virtual Assets Services LLC SPC.
+- Full strict mode enabled
+- `noUnusedLocals` and `noUnusedParameters` are enforced — remove unused imports/variables
+- ES module convention: use `.js` extensions in import paths even for `.ts` source files
