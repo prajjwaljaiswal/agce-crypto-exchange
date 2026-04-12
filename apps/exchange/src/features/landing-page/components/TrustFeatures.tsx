@@ -2,13 +2,22 @@ import { TRUST_ITEMS } from '../data/index.js'
 
 export function TrustFeatures() {
   return (
-    <section className="py-16 lg:py-24 bg-white">
+    <section
+      className="py-16 lg:py-24"
+      style={{ backgroundColor: 'var(--color-bg)' }}
+    >
       <div className="mx-auto max-w-[1400px] px-6">
         <div className="mb-12">
-          <p className="text-[40px] font-bold leading-[54.6px] mb-0 text-[#050505]">
+          <p
+            className="text-[40px] font-bold leading-[54.6px] mb-0"
+            style={{ color: 'var(--color-text)' }}
+          >
             <span className="block">ARAB GLOBAL Trade</span>
           </p>
-          <p className="text-[40px] font-semibold leading-[54.6px] text-[#1d1d1d]">
+          <p
+            className="text-[40px] font-semibold leading-[54.6px]"
+            style={{ color: 'var(--color-text)' }}
+          >
             Tour Safe and Trusted Crypto Exchange
           </p>
         </div>
@@ -17,9 +26,10 @@ export function TrustFeatures() {
           {TRUST_ITEMS.map(({ img, title, description }) => (
             <div
               key={title}
-              className="rounded-3xl overflow-hidden flex flex-col bg-white"
+              className="rounded-3xl overflow-hidden flex flex-col"
               style={{
-                border: '1px solid rgba(29,29,29,0.12)',
+                backgroundColor: 'var(--color-surface)',
+                border: '1px solid var(--color-border)',
                 boxShadow: '0px 4px 20px 0px rgba(0,0,0,0.05)',
               }}
             >
@@ -36,10 +46,18 @@ export function TrustFeatures() {
               </div>
 
               <div className="px-8 pb-8 pt-4 text-center">
-                <h3 className="text-[30px] font-semibold text-black mb-3 leading-[48px]">
+                <h3
+                  className="text-[30px] font-semibold mb-3 leading-[48px]"
+                  style={{ color: 'var(--color-text)' }}
+                >
                   {title}
                 </h3>
-                <p className="text-base text-black leading-6">{description}</p>
+                <p
+                  className="text-base leading-6"
+                  style={{ color: 'var(--color-text-muted)' }}
+                >
+                  {description}
+                </p>
               </div>
             </div>
           ))}

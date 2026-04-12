@@ -1,7 +1,5 @@
 import type {
   Banner,
-  Coin,
-  CoinTab,
   FeatureCopy,
   FeatureId,
   Platform,
@@ -32,38 +30,6 @@ export const BANNERS: Banner[] = [
   { id: 2, src: '/images/cardbnr_img2.jpg', alt: 'Exclusive Airdrop For New Users — AVL' },
   { id: 3, src: '/images/cardbnr_img3.jpg', alt: 'JYAI new listing' },
   { id: 4, src: '/images/cardbnr_img4.jpg', alt: 'Spot Listing Blub (BLUB)' },
-]
-
-// ─── Trending Crypto ─────────────────────────────────────────────────────────
-
-const HOT_COINS: Coin[] = [
-  { symbol: 'BTC', name: 'Bitcoin', price: '$87,339.15', change: '-2.4%', positive: false, icon: '/images/hot_bitcoin.svg' },
-  { symbol: 'ETH', name: 'Ethereum', price: '$2,944.15', change: '-2.34%', positive: false, icon: '/images/hot_eth.svg' },
-  { symbol: 'BTC', name: 'Bitcoin', price: '$10.75', change: '-0.98%', positive: false, icon: '/images/hot_bitcoin.svg' },
-  { symbol: 'ZEC', name: 'ZEC', price: '$530.64', change: '-0.27%', positive: false, icon: '/images/hot_zec.svg' },
-  { symbol: 'TOKEN', name: 'TokenFi', price: '$0.006', change: '-29.16%', positive: false, icon: '/images/hot_token.svg' },
-]
-
-const NEW_COINS: Coin[] = [
-  { symbol: 'TTD', name: 'Trade Tide Token', price: '$0.006', change: '-17.77%', positive: false, icon: '/images/coin_icon.svg' },
-  { symbol: 'HLS', name: 'Helios', price: '$0.006', change: '-1.54%', positive: false, icon: '/images/coin_icon2.svg' },
-  { symbol: 'ZKP', name: 'zkPass', price: '$0.128', change: '-11.19%', positive: false, icon: '/images/coin_icon3.svg' },
-  { symbol: 'ZIG', name: 'ZigCoin', price: '$0.057', change: '-1.33%', positive: false, icon: '/images/coin_icon4.svg' },
-  { symbol: 'VOOI', name: 'VOOI', price: '$0.028', change: '-7.95%', positive: false, icon: '/images/coin_icon5.svg' },
-]
-
-const TOP_GAINER_COINS: Coin[] = [
-  { symbol: 'SCOR', name: 'Scor', price: '$0.023', change: '+91.97%', positive: true, icon: '/images/gainers_icon.svg' },
-  { symbol: 'ANLOG', name: 'ANLOG', price: '$0.0006', change: '+79.18%', positive: true, icon: '/images/gainers_icon2.svg' },
-  { symbol: 'PINGPONG', name: 'PINGPONG', price: '$0.006', change: '+47.28%', positive: true, icon: '/images/gainers_icon3.svg' },
-  { symbol: 'ELIZAOS', name: 'elizaOS', price: '$0.004', change: '+44.68%', positive: true, icon: '/images/gainers_icon4.svg' },
-  { symbol: 'MAIGA', name: 'MAIGA Token', price: '$0.015', change: '+39.18%', positive: true, icon: '/images/gainers_icon5.svg' },
-]
-
-export const COIN_TABS: CoinTab[] = [
-  { key: 'hot', label: 'Hot', data: HOT_COINS },
-  { key: 'newCoins', label: 'New Coins', data: NEW_COINS },
-  { key: 'topGainers', label: 'Top Gainers', data: TOP_GAINER_COINS },
 ]
 
 // ─── Trade Anywhere ──────────────────────────────────────────────────────────

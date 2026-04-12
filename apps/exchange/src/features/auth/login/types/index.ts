@@ -1,14 +1,9 @@
-export type LoginTab = 'email' | 'mobile'
+export type LoginTab = 'email' | 'phone' | 'qrcode'
 
-export interface EmailLoginForm {
-  email: string
-  password: string
-  showPassword: boolean
-}
-
-export interface MobileLoginForm {
+export interface LoginForm {
+  identifier: string
   countryCode: string
   phone: string
   password: string
-  showPassword: boolean
+  bindIp: boolean
 }

@@ -14,6 +14,7 @@ export interface BinanceTicker {
 export interface BinanceMiniTicker {
   s: string
   c: string
+  o: string
   h: string
   l: string
   v: string

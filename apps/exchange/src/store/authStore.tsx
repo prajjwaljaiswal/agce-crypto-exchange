@@ -16,8 +16,8 @@ function readInitialToken(): string | null {
   const existing = window.localStorage.getItem(TOKEN_KEY)
   if (existing) return existing
   if (import.meta.env.DEV) {
-    window.localStorage.setItem(TOKEN_KEY, 'dev-fake-token')
-    return 'dev-fake-token'
+    // window.localStorage.setItem(TOKEN_KEY, 'dev-fake-token')
+    // return 'dev-fake-token'
   }
   return null
 }

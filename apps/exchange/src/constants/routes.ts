@@ -4,6 +4,9 @@ export const ROUTES = {
   AUTH: {
     LOGIN: '/login',
     SIGNUP: '/signup',
+    VERIFY_EMAIL: '/verify-email',
+    SET_PASSWORD: '/set-password',
+    SIGNUP_SUCCESS: '/signup-success',
     FORGOT_PASSWORD: '/forgot_password',
     ACCOUNT_VERIFY: '/account-verification/:authenticationToken',
     ACCOUNT_ACTIVATE: '/account-activate/:authenticationToken',

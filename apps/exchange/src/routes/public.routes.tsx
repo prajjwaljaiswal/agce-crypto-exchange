@@ -1,4 +1,4 @@
-import { Navigate, Route } from 'react-router-dom'
+import { Route } from 'react-router-dom'
 import { PublicLayout } from '../layouts/index.js'
 import { ROUTES } from '../constants/routes.js'
 
@@ -30,16 +30,9 @@ const stripLeadingSlash = (p: string) => p.replace(/^\//, '')
 export function publicRoutes() {
   return (
     <>
-      {/* Landing — with footer (dev redirects to dashboard) */}
+      {/* Landing — public in all environments, with footer */}
       <Route element={<PublicLayout showFooter />}>
-        <Route
-          index
-          element={
-            import.meta.env.DEV
-              ? <Navigate to={ROUTES.PROFILE.DASHBOARD} replace />
-              : <LandingPage />
-          }
-        />
+        <Route index element={<LandingPage />} />
       </Route>
 
       {/* Public — navbar only */}
