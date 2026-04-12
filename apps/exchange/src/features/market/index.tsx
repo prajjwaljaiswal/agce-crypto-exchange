@@ -1,7 +1,7 @@
 import { useState, useMemo } from 'react'
 import { Link } from 'react-router-dom'
 import { Star, Search, ChevronDown, ChevronLeft, ChevronRight } from 'lucide-react'
-import type { FeaturedPair, MarketPair } from './types/index.js'
+import type { FeaturedPair, MarketPair } from '@agce/types'
 import { MARKET_TABS, CATEGORY_FILTERS } from './data/index.js'
 import { useBinanceMarket } from './hooks/useBinanceMarket.js'
 

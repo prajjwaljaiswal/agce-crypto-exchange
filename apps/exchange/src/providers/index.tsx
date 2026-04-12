@@ -1,15 +1,18 @@
 import type { ReactNode } from 'react'
 import { ThemeProvider } from './ThemeProvider.js'
 import { PlatformStatusProvider } from './PlatformStatusProvider.js'
+import { AuthProvider } from '../store/authStore.js'
 
 // ─── Root provider wrapper ────────────────────────────────────────────────────
 
 export function AppProviders({ children }: { children: ReactNode }) {
   return (
     <ThemeProvider>
-      <PlatformStatusProvider>
-        {children}
-      </PlatformStatusProvider>
+      <AuthProvider>
+        <PlatformStatusProvider>
+          {children}
+        </PlatformStatusProvider>
+      </AuthProvider>
     </ThemeProvider>
   )
 }

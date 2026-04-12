@@ -1,0 +1,88 @@
+export const ROUTES = {
+  LANDING: '/',
+
+  AUTH: {
+    LOGIN: '/login',
+    SIGNUP: '/signup',
+    FORGOT_PASSWORD: '/forgot_password',
+    ACCOUNT_VERIFY: '/account-verification/:authenticationToken',
+    ACCOUNT_ACTIVATE: '/account-activate/:authenticationToken',
+  },
+
+  PUBLIC: {
+    MARKET: '/market',
+    EARNING: '/earning',
+    FEES: '/fees',
+    CONTACT: '/contact',
+    FAQ: '/FAQ',
+    BLOG_LIST: '/blogs',
+    BLOG_DETAILS: '/blogdetails',
+    ABOUT: '/aboutus',
+    REFERRAL: '/refer_earn',
+    LAUNCHPAD: '/launchpad',
+    ANNOUNCEMENT: '/announcement',
+    ANNOUNCEMENT_LIST: '/announcement_list/:title/:announce_title_id',
+    ANNOUNCEMENT_DETAILS: '/announcement_details/:title/:announce_title_id',
+    LAUNCHPAD_DETAILS: '/launchpadCoin_Details/:id',
+    NOTIFICATION: '/notification',
+    COMING_SOON: '/coming-soon',
+  },
+
+  TRADE: {
+    SPOT: '/trade/:pairs',
+    SPOT_FOR: (pair: string) => `/trade/${pair}`,
+    USD_FUTURES: '/usd_futures/:pairs',
+    MEME: '/meme',
+    COIN_LIST: '/coin_list',
+    TOKEN: '/token',
+    SECURITY_SYSTEM: '/security_system',
+  },
+
+  LEGAL: {
+    TERMS: '/TermsofUse',
+    PRIVACY: '/PrivacyDataProtectionPolicy',
+    AML: '/aml-kyc-policy',
+    RISK: '/RiskDisclosure',
+    DISCLAIMER: '/general-disclaimer',
+    COMPLAINTS: '/complaints-handling-procedure',
+  },
+
+  PROFILE: {
+    ROOT: '/user_profile',
+    DASHBOARD: '/user_profile/dashboard',
+    ASSET_OVERVIEW: '/user_profile/asset_overview',
+    WALLET: '/user_profile/wallet/:walletType',
+    SETTINGS: '/user_profile/profile_setting',
+    KYC: '/user_profile/kyc',
+    TWO_FACTOR: '/user_profile/two_factor_autentication',
+    ACTIVITY_LOGS: '/user_profile/activity_logs',
+    NOTIFICATION: '/user_profile/notification',
+    SUPPORT: '/user_profile/support',
+    SWAP: '/user_profile/swap',
+    SPOT_ORDERS: '/user_profile/spot_orders',
+    OPEN_ORDERS: '/user_profile/open_orders',
+    TRANSACTION_HISTORY: '/user_profile/transaction_history',
+    SWAP_HISTORY: '/user_profile/swap_history',
+    WALLET_TRANSFER_HISTORY: '/user_profile/wallet_transfer_History',
+    EARNING_HISTORY: '/user_profile/earning_plan_history',
+    BONUS_HISTORY: '/user_profile/bonus_history',
+    LAUNCHPAD_TRANSACTIONS: '/user_profile/launchpad_transactions',
+  },
+
+  ASSET: {
+    DEPOSIT: '/asset_managemnet/deposit',
+    WITHDRAW: '/asset_managemnet/withdraw',
+  },
+
+  SECURITY_SYSTEM: '/security_system',
+  REFERRAL_LIST: '/referal_list',
+
+  P2P: {
+    DASHBOARD: '/p2p-dashboard',
+    ORDER_DETAILS: '/p2p-order-details/:adId',
+    CREATE_POST: '/p2p-create-post',
+    MY_ADS: '/p2p-my-ads',
+    ORDERS: '/p2p-orders',
+    PROFILE: '/p2p-profile',
+  },
+} as const

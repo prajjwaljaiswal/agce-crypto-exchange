@@ -1,4 +1,4 @@
-import type { MarketTab, CategoryFilter } from '../types/index.js'
+import type { MarketTab, CategoryFilter } from '@agce/types'
 
 export const MARKET_TABS: MarketTab[] = [
   { key: 'favourite', label: 'Favorites' },
