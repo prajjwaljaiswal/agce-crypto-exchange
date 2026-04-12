@@ -1,5 +1,7 @@
 import {
   BarChart2, Users, LineChart, Coins, Gift,
+  Wallet, ArrowDownToLine, RefreshCw, ArrowLeftRight, CreditCard,
+  ClipboardList, History, Receipt,
 } from 'lucide-react'
 import type { DemoPair, DropdownItem, FooterSection, FooterSocialLink } from '../types/index.js'
 
@@ -17,6 +19,20 @@ export const FUTURES_ITEMS: DropdownItem[] = [
 export const EARN_ITEMS: DropdownItem[] = [
   { icon: Coins, label: 'Earning', desc: 'Staking, savings and earn rewards', href: '/earning' },
   { icon: Gift, label: 'Refer & Earn', desc: 'Invite friends and earn commission', href: '/refer_earn' },
+]
+
+export const WALLET_ITEMS: DropdownItem[] = [
+  { icon: Wallet, label: 'Assets', desc: 'Overview of your balances valued live', href: '/wallet/overview' },
+  { icon: ArrowDownToLine, label: 'Deposit', desc: 'Credit simulated funds to your paper wallet', href: '/wallet/deposit' },
+  { icon: RefreshCw, label: 'Convert', desc: 'Swap between assets at live Binance rates', href: '/wallet/convert' },
+  { icon: ArrowLeftRight, label: 'Transfer', desc: 'Move funds between virtual wallets', href: '/wallet/transfer' },
+  { icon: CreditCard, label: 'Loans', desc: 'Borrow against collateral (coming soon)', href: '/wallet/loans' },
+]
+
+export const ORDERS_ITEMS: DropdownItem[] = [
+  { icon: ClipboardList, label: 'Open Orders', desc: 'Active orders waiting to fill', href: '/orders/open' },
+  { icon: History, label: 'Order History', desc: 'Filled and canceled orders', href: '/orders/history' },
+  { icon: Receipt, label: 'Trade History', desc: 'Individual fills with fees', href: '/orders/trades' },
 ]
 
 export const DEMO_PAIRS: DemoPair[] = [

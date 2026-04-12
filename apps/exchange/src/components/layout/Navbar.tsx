@@ -4,7 +4,7 @@ import { ChevronDown, Menu, X, Search, Sun, Moon, Smartphone } from 'lucide-reac
 import { useInstanceConfig, useFeatureFlag } from '@agce/hooks'
 import { useTheme } from '../../providers/index.js'
 import type { DropdownKey, DropdownItem } from './types/index.js'
-import { TRADE_ITEMS, FUTURES_ITEMS, EARN_ITEMS, DEMO_PAIRS } from './data/index.js'
+import { TRADE_ITEMS, FUTURES_ITEMS, EARN_ITEMS, WALLET_ITEMS, ORDERS_ITEMS, DEMO_PAIRS } from './data/index.js'
 
 // ─── DropdownMenu sub-component ──────────────────────────────────────────────
 
@@ -361,6 +361,52 @@ export function Navbar() {
               />
             </div>
 
+            {/* Wallet */}
+            <div
+              className="relative"
+              onMouseEnter={() => openHover('wallet')}
+              onMouseLeave={closeHover}
+            >
+              <button
+                className="flex items-center gap-1 px-3 py-2 rounded-md text-[13px] font-medium transition-colors hover:text-white"
+                style={isActive('/wallet', false) ? { color: 'white' } : { color: '#ccc' }}
+                onClick={() => toggleDesktopDropdown('wallet')}
+              >
+                Wallet
+                <ChevronDown size={12} className={`transition-transform duration-200 ${openDropdown === 'wallet' ? 'rotate-180' : ''}`} />
+              </button>
+              <DropdownMenu
+                items={WALLET_ITEMS}
+                isOpen={openDropdown === 'wallet'}
+                onEnter={() => openHover('wallet')}
+                onLeave={closeHover}
+                onItemClick={closeNavbar}
+              />
+            </div>
+
+            {/* Orders */}
+            <div
+              className="relative"
+              onMouseEnter={() => openHover('orders')}
+              onMouseLeave={closeHover}
+            >
+              <button
+                className="flex items-center gap-1 px-3 py-2 rounded-md text-[13px] font-medium transition-colors hover:text-white"
+                style={isActive('/orders', false) ? { color: 'white' } : { color: '#ccc' }}
+                onClick={() => toggleDesktopDropdown('orders')}
+              >
+                Orders
+                <ChevronDown size={12} className={`transition-transform duration-200 ${openDropdown === 'orders' ? 'rotate-180' : ''}`} />
+              </button>
+              <DropdownMenu
+                items={ORDERS_ITEMS}
+                isOpen={openDropdown === 'orders'}
+                onEnter={() => openHover('orders')}
+                onLeave={closeHover}
+                onItemClick={closeNavbar}
+              />
+            </div>
+
             {/* More */}
             <Link
               to="/coming-soon"
@@ -579,6 +625,66 @@ export function Navbar() {
                 {mobileExpanded === 'earn' && (
                   <div className="ml-3 mt-0.5 mb-1.5 flex flex-col gap-0.5">
                     {EARN_ITEMS.map(({ icon: Icon, label, href }) => (
+                      <Link
+                        key={label}
+                        to={href}
+                        onClick={closeNavbar}
+                        className="flex items-center gap-2 px-3 py-2 rounded-md text-sm no-underline"
+                        style={{ color: 'var(--color-text-subtle)' }}
+                      >
+                        <Icon size={13} /> {label}
+                      </Link>
+                    ))}
+                  </div>
+                )}
+              </div>
+
+              {/* Wallet accordion */}
+              <div>
+                <button
+                  className="w-full flex items-center justify-between px-3 py-2.5 rounded-md text-sm"
+                  style={isActive('/wallet', false) ? activeNavStyle : inactiveNavStyle}
+                  onClick={() => toggleMobileExpanded('wallet')}
+                >
+                  Wallet
+                  <ChevronDown
+                    size={14}
+                    className={`transition-transform duration-200 ${mobileExpanded === 'wallet' ? 'rotate-180' : ''}`}
+                  />
+                </button>
+                {mobileExpanded === 'wallet' && (
+                  <div className="ml-3 mt-0.5 mb-1.5 flex flex-col gap-0.5">
+                    {WALLET_ITEMS.map(({ icon: Icon, label, href }) => (
+                      <Link
+                        key={label}
+                        to={href}
+                        onClick={closeNavbar}
+                        className="flex items-center gap-2 px-3 py-2 rounded-md text-sm no-underline"
+                        style={{ color: 'var(--color-text-subtle)' }}
+                      >
+                        <Icon size={13} /> {label}
+                      </Link>
+                    ))}
+                  </div>
+                )}
+              </div>
+
+              {/* Orders accordion */}
+              <div>
+                <button
+                  className="w-full flex items-center justify-between px-3 py-2.5 rounded-md text-sm"
+                  style={isActive('/orders', false) ? activeNavStyle : inactiveNavStyle}
+                  onClick={() => toggleMobileExpanded('orders')}
+                >
+                  Orders
+                  <ChevronDown
+                    size={14}
+                    className={`transition-transform duration-200 ${mobileExpanded === 'orders' ? 'rotate-180' : ''}`}
+                  />
+                </button>
+                {mobileExpanded === 'orders' && (
+                  <div className="ml-3 mt-0.5 mb-1.5 flex flex-col gap-0.5">
+                    {ORDERS_ITEMS.map(({ icon: Icon, label, href }) => (
                       <Link
                         key={label}
                         to={href}

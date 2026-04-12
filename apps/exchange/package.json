@@ -12,6 +12,7 @@
   },
   "dependencies": {
     "@agce/config": "workspace:*",
+    "@agce/binance": "workspace:*",
     "@agce/hooks": "workspace:*",
     "@agce/types": "workspace:*",
     "@agce/ui": "workspace:*",

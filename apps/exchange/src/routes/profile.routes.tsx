@@ -13,6 +13,7 @@ import { DepositPage } from '../features/profile/deposit/index.js'
 import { WithdrawPage } from '../features/profile/withdraw/index.js'
 import { SpotOrdersPage } from '../features/profile/orders/spot/index.js'
 import { OpenOrdersPage } from '../features/profile/orders/open/index.js'
+import { TradeHistoryPage } from '../features/profile/orders/trade-history/index.js'
 import { TransactionHistoryPage } from '../features/profile/orders/transactions/index.js'
 import { SwapHistoryPage } from '../features/profile/orders/swap-history/index.js'
 import { WalletTransferHistoryPage } from '../features/profile/orders/wallet-transfer/index.js'
@@ -47,6 +48,7 @@ export function profileRoutes() {
         <Route path={underProfile(ROUTES.PROFILE.SWAP)} element={<SwapPage />} />
         <Route path={underProfile(ROUTES.PROFILE.SPOT_ORDERS)} element={<SpotOrdersPage />} />
         <Route path={underProfile(ROUTES.PROFILE.OPEN_ORDERS)} element={<OpenOrdersPage />} />
+        <Route path={underProfile(ROUTES.PROFILE.TRADE_HISTORY)} element={<TradeHistoryPage />} />
         <Route path={underProfile(ROUTES.PROFILE.TRANSACTION_HISTORY)} element={<TransactionHistoryPage />} />
         <Route path={underProfile(ROUTES.PROFILE.SWAP_HISTORY)} element={<SwapHistoryPage />} />
         <Route path={underProfile(ROUTES.PROFILE.WALLET_TRANSFER_HISTORY)} element={<WalletTransferHistoryPage />} />

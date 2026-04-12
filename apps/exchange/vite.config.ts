@@ -11,7 +11,11 @@ export default defineConfig({
       '@agce/config': path.resolve(__dirname, '../../packages/config/src/index.ts'),
       '@agce/ui': path.resolve(__dirname, '../../packages/ui/src/index.ts'),
       '@agce/hooks': path.resolve(__dirname, '../../packages/hooks/src/index.ts'),
+      '@agce/binance': path.resolve(__dirname, '../../packages/binance/src/index.ts'),
     },
+  },
+  server: {
+    host: true,
   },
   build: {
     outDir: `dist/${process.env['VITE_INSTANCE'] ?? 'global'}`,

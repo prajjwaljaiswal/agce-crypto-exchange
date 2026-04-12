@@ -1,8 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
-import {
-  fetchBinanceTickers,
-  subscribeBinanceMiniTickers,
-} from '../../../api/binance.js'
+import { get24hrTickers, subscribeMiniTickers } from '@agce/binance'
 import type { Coin } from '../types/index.js'
 
 const SYMBOLS = [
@@ -117,7 +114,7 @@ export function useTrendingCoins(topN = 5) {
       try {
         setLoading(true)
         setError(null)
-        const tickers = await fetchBinanceTickers(SYMBOLS)
+        const tickers = await get24hrTickers(SYMBOLS)
         if (cancelled) return
         tickersRef.current.clear()
         for (const t of tickers) {
@@ -149,7 +146,7 @@ export function useTrendingCoins(topN = 5) {
   useEffect(() => {
     if (!hasTickers) return
 
-    const unsubscribe = subscribeBinanceMiniTickers(SYMBOLS, (msg) => {
+    const unsubscribe = subscribeMiniTickers(SYMBOLS, (msg) => {
       const base = extractBase(msg.s)
       const close = parseFloat(msg.c)
       const open = parseFloat(msg.o)

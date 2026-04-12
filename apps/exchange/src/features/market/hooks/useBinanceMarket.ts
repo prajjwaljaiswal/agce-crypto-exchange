@@ -1,10 +1,6 @@
 import { useState, useEffect, useRef, useCallback } from 'react'
 import type { MarketPair, FeaturedPair } from '@agce/types'
-import {
-  fetchBinanceTickers,
-  subscribeBinanceMiniTickers,
-  type BinanceTicker,
-} from '../../../api/binance.js'
+import { get24hrTickers, subscribeMiniTickers, type Ticker24hr } from '@agce/binance'
 
 const FEATURED_SYMBOLS = ['BTCUSDT', 'ETHUSDT', 'BCHUSDT']
 
@@ -56,7 +52,7 @@ function formatPrice(price: number): string {
   return price.toFixed(10)
 }
 
-function tickerToMarketPair(t: BinanceTicker): MarketPair {
+function tickerToMarketPair(t: Ticker24hr): MarketPair {
   const base = extractBase(t.symbol)
   const price = parseFloat(t.lastPrice)
   const change = parseFloat(t.priceChangePercent)
@@ -78,7 +74,7 @@ function tickerToMarketPair(t: BinanceTicker): MarketPair {
   }
 }
 
-function tickerToFeatured(t: BinanceTicker): FeaturedPair {
+function tickerToFeatured(t: Ticker24hr): FeaturedPair {
   const base = extractBase(t.symbol)
   const price = parseFloat(t.lastPrice)
   const change = parseFloat(t.priceChangePercent)
@@ -110,7 +106,7 @@ export function useBinanceMarket() {
       setError(null)
 
       const symbols = [...new Set([...FEATURED_SYMBOLS, ...TABLE_SYMBOLS])]
-      const data = await fetchBinanceTickers(symbols)
+      const data = await get24hrTickers(symbols)
 
       const tableMap = new Map<string, MarketPair>()
       const featMap = new Map<string, FeaturedPair>()
@@ -147,7 +143,7 @@ export function useBinanceMarket() {
 
     const allSymbols = [...new Set([...FEATURED_SYMBOLS, ...TABLE_SYMBOLS])]
 
-    const unsubscribe = subscribeBinanceMiniTickers(allSymbols, (msg) => {
+    const unsubscribe = subscribeMiniTickers(allSymbols, (msg) => {
       const symbol = msg.s
 
       if (pairsRef.current.has(symbol)) {

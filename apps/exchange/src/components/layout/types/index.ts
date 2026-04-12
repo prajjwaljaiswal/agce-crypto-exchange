@@ -2,7 +2,7 @@ import type { LucideIcon } from 'lucide-react'
 
 // ─── Navbar ──────────────────────────────────────────────────────────────────
 
-export type DropdownKey = 'trade' | 'futures' | 'earn' | 'download'
+export type DropdownKey = 'trade' | 'futures' | 'earn' | 'download' | 'wallet' | 'orders'
 
 export interface DropdownItem {
   icon: LucideIcon

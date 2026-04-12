@@ -11,7 +11,8 @@
       "@agce/types": ["../../packages/types/src/index.ts"],
       "@agce/config": ["../../packages/config/src/index.ts"],
       "@agce/ui": ["../../packages/ui/src/index.ts"],
-      "@agce/hooks": ["../../packages/hooks/src/index.ts"]
+      "@agce/hooks": ["../../packages/hooks/src/index.ts"],
+      "@agce/binance": ["../../packages/binance/src/index.ts"]
     }
   },
   "include": ["src"]

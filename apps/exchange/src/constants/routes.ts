@@ -12,6 +12,20 @@ export const ROUTES = {
     ACCOUNT_ACTIVATE: '/account-activate/:authenticationToken',
   },
 
+  WALLET: {
+    OVERVIEW: '/wallet/overview',
+    DEPOSIT: '/wallet/deposit',
+    CONVERT: '/wallet/convert',
+    TRANSFER: '/wallet/transfer',
+    LOAN: '/wallet/loans',
+  },
+
+  ORDERS: {
+    OPEN: '/orders/open',
+    HISTORY: '/orders/history',
+    TRADES: '/orders/trades',
+  },
+
   PUBLIC: {
     MARKET: '/market',
     EARNING: '/earning',
@@ -64,6 +78,7 @@ export const ROUTES = {
     SWAP: '/user_profile/swap',
     SPOT_ORDERS: '/user_profile/spot_orders',
     OPEN_ORDERS: '/user_profile/open_orders',
+    TRADE_HISTORY: '/user_profile/trade_history',
     TRANSACTION_HISTORY: '/user_profile/transaction_history',
     SWAP_HISTORY: '/user_profile/swap_history',
     WALLET_TRANSFER_HISTORY: '/user_profile/wallet_transfer_History',

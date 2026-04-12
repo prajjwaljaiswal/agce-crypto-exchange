@@ -17,6 +17,14 @@ import { AnnouncementPage } from '../features/announcements/index.js'
 import { NotificationPage } from '../features/profile/notifications/index.js'
 import { ComingSoonPage } from '../features/coming-soon/index.js'
 import { SpotTradePage } from '../features/trade/spot/index.js'
+import { AssetOverviewPage } from '../features/profile/asset-overview/index.js'
+import { OpenOrdersPage } from '../features/profile/orders/open/index.js'
+import { SpotOrdersPage } from '../features/profile/orders/spot/index.js'
+import { TradeHistoryPage } from '../features/profile/orders/trade-history/index.js'
+import { WalletDepositPage } from '../features/wallet/deposit.js'
+import { WalletConvertPage } from '../features/wallet/convert.js'
+import { WalletTransferPage } from '../features/wallet/transfer.js'
+import { WalletLoansPage } from '../features/wallet/loans.js'
 
 import { TermsOfUsePage } from '../features/legal/terms-of-use/index.js'
 import { PrivacyPolicyPage } from '../features/legal/privacy-policy/index.js'
@@ -49,6 +57,18 @@ export function publicRoutes() {
         <Route path={stripLeadingSlash(ROUTES.PUBLIC.LAUNCHPAD)} element={<LaunchpadPage />} />
         <Route path={stripLeadingSlash(ROUTES.PUBLIC.ANNOUNCEMENT)} element={<AnnouncementPage />} />
         <Route path={stripLeadingSlash(ROUTES.PUBLIC.NOTIFICATION)} element={<NotificationPage />} />
+
+        {/* Wallet — public paper trading views */}
+        <Route path={stripLeadingSlash(ROUTES.WALLET.OVERVIEW)} element={<AssetOverviewPage />} />
+        <Route path={stripLeadingSlash(ROUTES.WALLET.DEPOSIT)} element={<WalletDepositPage />} />
+        <Route path={stripLeadingSlash(ROUTES.WALLET.CONVERT)} element={<WalletConvertPage />} />
+        <Route path={stripLeadingSlash(ROUTES.WALLET.TRANSFER)} element={<WalletTransferPage />} />
+        <Route path={stripLeadingSlash(ROUTES.WALLET.LOAN)} element={<WalletLoansPage />} />
+
+        {/* Orders — public paper views */}
+        <Route path={stripLeadingSlash(ROUTES.ORDERS.OPEN)} element={<OpenOrdersPage />} />
+        <Route path={stripLeadingSlash(ROUTES.ORDERS.HISTORY)} element={<SpotOrdersPage />} />
+        <Route path={stripLeadingSlash(ROUTES.ORDERS.TRADES)} element={<TradeHistoryPage />} />
 
         {/* Trade */}
         <Route path={stripLeadingSlash(ROUTES.TRADE.SPOT)} element={<SpotTradePage />} />
