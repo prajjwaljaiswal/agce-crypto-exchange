@@ -48,6 +48,12 @@
   --color-text-dark-muted: #555555;
 }
 
+html,
+body {
+  overflow-x: hidden;
+  overscroll-behavior-x: none;
+}
+
 body {
   background-color: var(--color-bg);
   color: var(--color-text);
@@ -64,6 +70,14 @@ body {
 ::-webkit-scrollbar { width: 6px; height: 6px; }
 ::-webkit-scrollbar-track { background: var(--color-surface); }
 ::-webkit-scrollbar-thumb { background: var(--color-surface-3); border-radius: 3px; }
+
+.scrollbar-hide {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
 
 /* ─── Platform Features — Trade & Earn interactive hub ─── */
 

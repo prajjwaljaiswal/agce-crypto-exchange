@@ -13,13 +13,7 @@ const AuthContext = createContext<AuthContextValue | null>(null)
 
 function readInitialToken(): string | null {
   if (typeof window === 'undefined') return null
-  const existing = window.localStorage.getItem(TOKEN_KEY)
-  if (existing) return existing
-  if (import.meta.env.DEV) {
-    window.localStorage.setItem(TOKEN_KEY, 'dev-fake-token')
-    return 'dev-fake-token'
-  }
-  return null
+  return window.localStorage.getItem(TOKEN_KEY)
 }
 
 export function AuthProvider({ children }: { children: ReactNode }) {

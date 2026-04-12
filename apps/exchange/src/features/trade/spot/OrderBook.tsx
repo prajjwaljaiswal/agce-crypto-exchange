@@ -11,7 +11,7 @@ import {
 import type { RawBookEntry, BookMode } from './types.js'
 
 const PRECISION_OPTIONS = [0.01, 0.1, 1, 10, 50, 100, 1000]
-const BOOK_ROW_LIMIT = 12
+const BOOK_ROW_LIMIT = 10
 
 function groupBookSide(entries: RawBookEntry[], precision: number, side: 'bid' | 'ask'): RawBookEntry[] {
   const groups = new Map<number, number>()
@@ -71,6 +71,17 @@ export function OrderBook({ symbol, bids, asks, lastPrice, prevPrice, base, quot
   )
   const maxAsk = askRows.length ? Math.max(...askRows.map(r => r.total)) : 1
   const maxBid = bidRows.length ? Math.max(...bidRows.map(r => r.total)) : 1
+
+  // Live buy/sell depth ratio — sums of visible bid vs ask quote totals.
+  const { buyPct, sellPct } = useMemo(() => {
+    const bidTotal = bidRows.reduce((s, r) => s + r.total, 0)
+    const askTotal = askRows.reduce((s, r) => s + r.total, 0)
+    const sum = bidTotal + askTotal
+    if (sum <= 0) return { buyPct: 50, sellPct: 50 }
+    const bp = (bidTotal / sum) * 100
+    return { buyPct: bp, sellPct: 100 - bp }
+  }, [bidRows, askRows])
+
   const precisionLabel = precision >= 1 ? precision.toString() : precision.toString()
 
 
@@ -251,13 +262,13 @@ export function OrderBook({ symbol, bids, asks, lastPrice, prevPrice, base, quot
 
           {/* Buy/Sell ratio bar */}
           <div className="px-4 py-3 shrink-0" style={{ borderTop: '1px solid var(--color-border)' }}>
-            <div className="flex items-center justify-between text-xs mb-1.5">
-              <span style={{ color: '#0ecb81' }}>B 52.17%</span>
-              <span style={{ color: '#f6465d' }}>47.83% S</span>
+            <div className="flex items-center justify-between text-xs mb-1.5 tabular-nums">
+              <span style={{ color: '#0ecb81' }}>B {buyPct.toFixed(2)}%</span>
+              <span style={{ color: '#f6465d' }}>{sellPct.toFixed(2)}% S</span>
             </div>
             <div className="flex h-1.5 rounded-full overflow-hidden">
-              <div style={{ width: '52.17%', background: '#0ecb81' }} />
-              <div style={{ width: '47.83%', background: '#f6465d' }} />
+              <div style={{ width: `${buyPct}%`, background: '#0ecb81' }} />
+              <div style={{ width: `${sellPct}%`, background: '#f6465d' }} />
             </div>
           </div>
         </>

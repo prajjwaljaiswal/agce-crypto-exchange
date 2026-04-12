@@ -1,8 +1,9 @@
 import { useState, useRef, useCallback, useEffect } from 'react'
-import { Link, useLocation } from 'react-router-dom'
-import { ChevronDown, Menu, X, Search, Sun, Moon, Smartphone } from 'lucide-react'
+import { Link, useLocation, useNavigate } from 'react-router-dom'
+import { ChevronDown, Menu, X, Search, Sun, Moon, Smartphone, User, LogOut } from 'lucide-react'
 import { useInstanceConfig, useFeatureFlag } from '@agce/hooks'
 import { useTheme } from '../../providers/index.js'
+import { useAuth } from '../../store/authStore.js'
 import type { DropdownKey, DropdownItem } from './types/index.js'
 import { TRADE_ITEMS, FUTURES_ITEMS, EARN_ITEMS, WALLET_ITEMS, ORDERS_ITEMS, DEMO_PAIRS } from './data/index.js'
 
@@ -174,7 +175,25 @@ export function Navbar() {
   const hasLaunchpad = useFeatureFlag('tokenLaunchpad')
   const hasP2P       = useFeatureFlag('p2p')
   const { theme, toggleTheme } = useTheme()
+  const { isAuthenticated, logout } = useAuth()
   const location = useLocation()
+  const navigate = useNavigate()
+
+  const [logoutConfirmOpen, setLogoutConfirmOpen] = useState(false)
+
+  const requestLogout = useCallback(() => {
+    setLogoutConfirmOpen(true)
+  }, [])
+
+  const confirmLogout = useCallback(() => {
+    setLogoutConfirmOpen(false)
+    logout()
+    navigate('/login')
+  }, [logout, navigate])
+
+  const cancelLogout = useCallback(() => {
+    setLogoutConfirmOpen(false)
+  }, [])
 
   const [mobileOpen,    setMobileOpen]    = useState(false)
   const [openDropdown,  setOpenDropdown]  = useState<DropdownKey | null>(null)
@@ -361,51 +380,55 @@ export function Navbar() {
               />
             </div>
 
-            {/* Wallet */}
-            <div
-              className="relative"
-              onMouseEnter={() => openHover('wallet')}
-              onMouseLeave={closeHover}
-            >
-              <button
-                className="flex items-center gap-1 px-3 py-2 rounded-md text-[13px] font-medium transition-colors hover:text-white"
-                style={isActive('/wallet', false) ? { color: 'white' } : { color: '#ccc' }}
-                onClick={() => toggleDesktopDropdown('wallet')}
+            {/* Wallet (auth-only) */}
+            {isAuthenticated && (
+              <div
+                className="relative"
+                onMouseEnter={() => openHover('wallet')}
+                onMouseLeave={closeHover}
               >
-                Wallet
-                <ChevronDown size={12} className={`transition-transform duration-200 ${openDropdown === 'wallet' ? 'rotate-180' : ''}`} />
-              </button>
-              <DropdownMenu
-                items={WALLET_ITEMS}
-                isOpen={openDropdown === 'wallet'}
-                onEnter={() => openHover('wallet')}
-                onLeave={closeHover}
-                onItemClick={closeNavbar}
-              />
-            </div>
+                <button
+                  className="flex items-center gap-1 px-3 py-2 rounded-md text-[13px] font-medium transition-colors hover:text-white"
+                  style={isActive('/wallet', false) ? { color: 'white' } : { color: '#ccc' }}
+                  onClick={() => toggleDesktopDropdown('wallet')}
+                >
+                  Wallet
+                  <ChevronDown size={12} className={`transition-transform duration-200 ${openDropdown === 'wallet' ? 'rotate-180' : ''}`} />
+                </button>
+                <DropdownMenu
+                  items={WALLET_ITEMS}
+                  isOpen={openDropdown === 'wallet'}
+                  onEnter={() => openHover('wallet')}
+                  onLeave={closeHover}
+                  onItemClick={closeNavbar}
+                />
+              </div>
+            )}
 
-            {/* Orders */}
-            <div
-              className="relative"
-              onMouseEnter={() => openHover('orders')}
-              onMouseLeave={closeHover}
-            >
-              <button
-                className="flex items-center gap-1 px-3 py-2 rounded-md text-[13px] font-medium transition-colors hover:text-white"
-                style={isActive('/orders', false) ? { color: 'white' } : { color: '#ccc' }}
-                onClick={() => toggleDesktopDropdown('orders')}
+            {/* Orders (auth-only) */}
+            {isAuthenticated && (
+              <div
+                className="relative"
+                onMouseEnter={() => openHover('orders')}
+                onMouseLeave={closeHover}
               >
-                Orders
-                <ChevronDown size={12} className={`transition-transform duration-200 ${openDropdown === 'orders' ? 'rotate-180' : ''}`} />
-              </button>
-              <DropdownMenu
-                items={ORDERS_ITEMS}
-                isOpen={openDropdown === 'orders'}
-                onEnter={() => openHover('orders')}
-                onLeave={closeHover}
-                onItemClick={closeNavbar}
-              />
-            </div>
+                <button
+                  className="flex items-center gap-1 px-3 py-2 rounded-md text-[13px] font-medium transition-colors hover:text-white"
+                  style={isActive('/orders', false) ? { color: 'white' } : { color: '#ccc' }}
+                  onClick={() => toggleDesktopDropdown('orders')}
+                >
+                  Orders
+                  <ChevronDown size={12} className={`transition-transform duration-200 ${openDropdown === 'orders' ? 'rotate-180' : ''}`} />
+                </button>
+                <DropdownMenu
+                  items={ORDERS_ITEMS}
+                  isOpen={openDropdown === 'orders'}
+                  onEnter={() => openHover('orders')}
+                  onLeave={closeHover}
+                  onItemClick={closeNavbar}
+                />
+              </div>
+            )}
 
             {/* More */}
             <Link
@@ -448,21 +471,49 @@ export function Navbar() {
               <Search size={16} />
             </button>
 
-            <Link
-              to="/login"
-              className="px-3 py-1.5 text-[13px] font-semibold transition-colors hover:opacity-80 no-underline"
-              style={{ color: 'white' }}
-            >
-              Log In
-            </Link>
+            {isAuthenticated ? (
+              <>
+                <Link
+                  to="/user_profile/dashboard"
+                  onClick={closeNavbar}
+                  aria-label="Go to dashboard"
+                  className="flex items-center justify-center w-9 h-9 rounded-full transition-opacity hover:opacity-90 no-underline"
+                  style={{
+                    backgroundColor: 'var(--color-primary)',
+                    color: '#222017',
+                  }}
+                >
+                  <User size={16} strokeWidth={2.2} />
+                </Link>
+                <button
+                  type="button"
+                  onClick={requestLogout}
+                  aria-label="Log out"
+                  className="p-2 rounded-lg transition-colors hover:opacity-80"
+                  style={{ color: 'white' }}
+                >
+                  <LogOut size={16} />
+                </button>
+              </>
+            ) : (
+              <>
+                <Link
+                  to="/login"
+                  className="px-3 py-1.5 text-[13px] font-semibold transition-colors hover:opacity-80 no-underline"
+                  style={{ color: 'white' }}
+                >
+                  Log In
+                </Link>
 
-            <Link
-              to="/signup"
-              className="px-4 py-1 rounded-full text-[11px] font-semibold transition-opacity hover:opacity-90 no-underline"
-              style={{ backgroundColor: 'white', color: '#070808' }}
-            >
-              Sign Up
-            </Link>
+                <Link
+                  to="/signup"
+                  className="px-4 py-1 rounded-full text-[11px] font-semibold transition-opacity hover:opacity-90 no-underline"
+                  style={{ backgroundColor: 'white', color: '#070808' }}
+                >
+                  Sign Up
+                </Link>
+              </>
+            )}
 
             <div className="w-px h-4 mx-1.5" style={{ backgroundColor: '#484b51' }} />
 
@@ -639,65 +690,69 @@ export function Navbar() {
                 )}
               </div>
 
-              {/* Wallet accordion */}
-              <div>
-                <button
-                  className="w-full flex items-center justify-between px-3 py-2.5 rounded-md text-sm"
-                  style={isActive('/wallet', false) ? activeNavStyle : inactiveNavStyle}
-                  onClick={() => toggleMobileExpanded('wallet')}
-                >
-                  Wallet
-                  <ChevronDown
-                    size={14}
-                    className={`transition-transform duration-200 ${mobileExpanded === 'wallet' ? 'rotate-180' : ''}`}
-                  />
-                </button>
-                {mobileExpanded === 'wallet' && (
-                  <div className="ml-3 mt-0.5 mb-1.5 flex flex-col gap-0.5">
-                    {WALLET_ITEMS.map(({ icon: Icon, label, href }) => (
-                      <Link
-                        key={label}
-                        to={href}
-                        onClick={closeNavbar}
-                        className="flex items-center gap-2 px-3 py-2 rounded-md text-sm no-underline"
-                        style={{ color: 'var(--color-text-subtle)' }}
-                      >
-                        <Icon size={13} /> {label}
-                      </Link>
-                    ))}
-                  </div>
-                )}
-              </div>
+              {/* Wallet accordion (auth-only) */}
+              {isAuthenticated && (
+                <div>
+                  <button
+                    className="w-full flex items-center justify-between px-3 py-2.5 rounded-md text-sm"
+                    style={isActive('/wallet', false) ? activeNavStyle : inactiveNavStyle}
+                    onClick={() => toggleMobileExpanded('wallet')}
+                  >
+                    Wallet
+                    <ChevronDown
+                      size={14}
+                      className={`transition-transform duration-200 ${mobileExpanded === 'wallet' ? 'rotate-180' : ''}`}
+                    />
+                  </button>
+                  {mobileExpanded === 'wallet' && (
+                    <div className="ml-3 mt-0.5 mb-1.5 flex flex-col gap-0.5">
+                      {WALLET_ITEMS.map(({ icon: Icon, label, href }) => (
+                        <Link
+                          key={label}
+                          to={href}
+                          onClick={closeNavbar}
+                          className="flex items-center gap-2 px-3 py-2 rounded-md text-sm no-underline"
+                          style={{ color: 'var(--color-text-subtle)' }}
+                        >
+                          <Icon size={13} /> {label}
+                        </Link>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              )}
 
-              {/* Orders accordion */}
-              <div>
-                <button
-                  className="w-full flex items-center justify-between px-3 py-2.5 rounded-md text-sm"
-                  style={isActive('/orders', false) ? activeNavStyle : inactiveNavStyle}
-                  onClick={() => toggleMobileExpanded('orders')}
-                >
-                  Orders
-                  <ChevronDown
-                    size={14}
-                    className={`transition-transform duration-200 ${mobileExpanded === 'orders' ? 'rotate-180' : ''}`}
-                  />
-                </button>
-                {mobileExpanded === 'orders' && (
-                  <div className="ml-3 mt-0.5 mb-1.5 flex flex-col gap-0.5">
-                    {ORDERS_ITEMS.map(({ icon: Icon, label, href }) => (
-                      <Link
-                        key={label}
-                        to={href}
-                        onClick={closeNavbar}
-                        className="flex items-center gap-2 px-3 py-2 rounded-md text-sm no-underline"
-                        style={{ color: 'var(--color-text-subtle)' }}
-                      >
-                        <Icon size={13} /> {label}
-                      </Link>
-                    ))}
-                  </div>
-                )}
-              </div>
+              {/* Orders accordion (auth-only) */}
+              {isAuthenticated && (
+                <div>
+                  <button
+                    className="w-full flex items-center justify-between px-3 py-2.5 rounded-md text-sm"
+                    style={isActive('/orders', false) ? activeNavStyle : inactiveNavStyle}
+                    onClick={() => toggleMobileExpanded('orders')}
+                  >
+                    Orders
+                    <ChevronDown
+                      size={14}
+                      className={`transition-transform duration-200 ${mobileExpanded === 'orders' ? 'rotate-180' : ''}`}
+                    />
+                  </button>
+                  {mobileExpanded === 'orders' && (
+                    <div className="ml-3 mt-0.5 mb-1.5 flex flex-col gap-0.5">
+                      {ORDERS_ITEMS.map(({ icon: Icon, label, href }) => (
+                        <Link
+                          key={label}
+                          to={href}
+                          onClick={closeNavbar}
+                          className="flex items-center gap-2 px-3 py-2 rounded-md text-sm no-underline"
+                          style={{ color: 'var(--color-text-subtle)' }}
+                        >
+                          <Icon size={13} /> {label}
+                        </Link>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              )}
 
               {/* Quick Swap */}
               <Link
@@ -741,30 +796,140 @@ export function Navbar() {
               </Link>
 
               {/* Mobile auth */}
-              <div className="mt-3 flex flex-col gap-2 pt-3" style={{ borderTop: '1px solid var(--color-border)' }}>
-                <Link
-                  to="/login"
-                  onClick={closeNavbar}
-                  className="py-2.5 rounded-lg text-sm font-medium border text-center no-underline"
-                  style={{ borderColor: 'var(--color-border-strong)', color: 'var(--color-text-muted)' }}
-                >
-                  Log In
-                </Link>
-                <Link
-                  to="/signup"
-                  onClick={closeNavbar}
-                  className="py-2.5 rounded-lg text-sm font-semibold text-center no-underline"
-                  style={{ backgroundColor: 'var(--color-primary)', color: '#222017' }}
-                >
-                  Sign Up
-                </Link>
-              </div>
+              {isAuthenticated ? (
+                <div className="mt-3 flex flex-col gap-2 pt-3" style={{ borderTop: '1px solid var(--color-border)' }}>
+                  <Link
+                    to="/user_profile/dashboard"
+                    onClick={closeNavbar}
+                    className="flex items-center justify-center gap-2 py-2.5 rounded-lg text-sm font-semibold text-center no-underline"
+                    style={{ backgroundColor: 'var(--color-primary)', color: '#222017' }}
+                  >
+                    <User size={14} strokeWidth={2.2} /> Dashboard
+                  </Link>
+                  <button
+                    type="button"
+                    onClick={() => { closeNavbar(); requestLogout() }}
+                    className="flex items-center justify-center gap-2 py-2.5 rounded-lg text-sm font-medium border text-center"
+                    style={{ borderColor: 'var(--color-border-strong)', color: '#ef4444' }}
+                  >
+                    <LogOut size={14} /> Log Out
+                  </button>
+                </div>
+              ) : (
+                <div className="mt-3 flex flex-col gap-2 pt-3" style={{ borderTop: '1px solid var(--color-border)' }}>
+                  <Link
+                    to="/login"
+                    onClick={closeNavbar}
+                    className="py-2.5 rounded-lg text-sm font-medium border text-center no-underline"
+                    style={{ borderColor: 'var(--color-border-strong)', color: 'var(--color-text-muted)' }}
+                  >
+                    Log In
+                  </Link>
+                  <Link
+                    to="/signup"
+                    onClick={closeNavbar}
+                    className="py-2.5 rounded-lg text-sm font-semibold text-center no-underline"
+                    style={{ backgroundColor: 'var(--color-primary)', color: '#222017' }}
+                  >
+                    Sign Up
+                  </Link>
+                </div>
+              )}
             </div>
           </nav>
         )}
       </header>
 
       {searchOpen && <SearchModal onClose={() => setSearchOpen(false)} />}
+      {logoutConfirmOpen && (
+        <LogoutConfirmModal onCancel={cancelLogout} onConfirm={confirmLogout} />
+      )}
     </>
+  )
+}
+
+// ─── LogoutConfirmModal sub-component ────────────────────────────────────────
+
+function LogoutConfirmModal({
+  onCancel,
+  onConfirm,
+}: {
+  onCancel: () => void
+  onConfirm: () => void
+}) {
+  useEffect(() => {
+    const handler = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') onCancel()
+      if (e.key === 'Enter') onConfirm()
+    }
+    document.addEventListener('keydown', handler)
+    return () => document.removeEventListener('keydown', handler)
+  }, [onCancel, onConfirm])
+
+  return (
+    <div
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="logout-confirm-title"
+      className="fixed inset-0 z-[110] flex items-center justify-center px-4"
+      style={{ backgroundColor: 'rgba(0,0,0,0.65)' }}
+      onClick={onCancel}
+    >
+      <div
+        className="w-full max-w-[400px] rounded-2xl overflow-hidden shadow-2xl"
+        style={{
+          backgroundColor: 'var(--color-surface)',
+          border: '1px solid var(--color-border)',
+          color: 'var(--color-text)',
+        }}
+        onClick={(e) => e.stopPropagation()}
+      >
+        <div className="px-6 pt-6 pb-5 text-center">
+          <div
+            className="mx-auto mb-4 h-12 w-12 rounded-full flex items-center justify-center"
+            style={{ backgroundColor: 'rgba(239,68,68,0.12)' }}
+          >
+            <LogOut size={22} style={{ color: '#ef4444' }} />
+          </div>
+          <h2
+            id="logout-confirm-title"
+            className="text-lg font-semibold mb-1"
+            style={{ color: 'var(--color-text)' }}
+          >
+            Log out of your account?
+          </h2>
+          <p className="text-sm leading-relaxed" style={{ color: 'var(--color-text-muted)' }}>
+            You'll need to sign in again to access your wallet, orders and personalised data.
+          </p>
+        </div>
+
+        <div
+          className="flex items-center gap-3 px-6 py-4"
+          style={{ borderTop: '1px solid var(--color-border)' }}
+        >
+          <button
+            type="button"
+            onClick={onCancel}
+            autoFocus
+            className="flex-1 h-10 rounded-lg text-sm font-medium transition-colors"
+            style={{
+              backgroundColor: 'var(--color-surface-2)',
+              color: 'var(--color-text)',
+              border: '1px solid var(--color-border-strong)',
+            }}
+          >
+            Cancel
+          </button>
+          <button
+            type="button"
+            onClick={onConfirm}
+            className="flex-1 h-10 rounded-lg text-sm font-semibold text-white transition-opacity hover:opacity-90"
+            style={{ backgroundColor: '#ef4444' }}
+          >
+            Log Out
+          </button>
+        </div>
+      </div>
+    </div>
   )
 }

@@ -136,11 +136,11 @@ function NewcomerPerks() {
     <div
       className="rounded-xl p-6"
       style={{
-        backgroundColor: '#ffffff',
-        border: '1px solid #e5e7eb',
+        backgroundColor: 'var(--color-surface)',
+        border: '1px solid var(--color-border)',
       }}
     >
-      <h2 className="text-xl font-bold mb-5" style={{ color: '#111' }}>
+      <h2 className="text-xl font-bold mb-5" style={{ color: 'var(--color-text)' }}>
         Newcomer Perks
       </h2>
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
@@ -148,30 +148,30 @@ function NewcomerPerks() {
         <div
           className="rounded-xl p-5 relative overflow-hidden"
           style={{
-            backgroundColor: '#ffffff',
+            backgroundColor: 'var(--color-surface-2)',
             border: '1.5px solid var(--color-primary)',
           }}
         >
-          <p className="text-xs mb-2" style={{ color: '#999' }}>
+          <p className="text-xs mb-2" style={{ color: 'var(--color-text-muted)' }}>
             Step 1
           </p>
-          <p className="text-sm font-bold leading-snug mb-3" style={{ color: '#111' }}>
+          <p className="text-sm font-bold leading-snug mb-3" style={{ color: 'var(--color-text)' }}>
             Verify identity and claim{' '}
             <span style={{ color: 'var(--color-primary)' }}>15 USDT</span> in...
           </p>
           <div className="flex items-center gap-1 mb-4">
             <CountdownUnit value="13D" />
-            <span className="text-sm font-bold" style={{ color: '#333' }}>:</span>
+            <span className="text-sm font-bold" style={{ color: 'var(--color-text)' }}>:</span>
             <CountdownUnit value="10" />
-            <span className="text-sm font-bold" style={{ color: '#333' }}>:</span>
+            <span className="text-sm font-bold" style={{ color: 'var(--color-text)' }}>:</span>
             <CountdownUnit value="12" />
-            <span className="text-sm font-bold" style={{ color: '#333' }}>:</span>
+            <span className="text-sm font-bold" style={{ color: 'var(--color-text)' }}>:</span>
             <CountdownUnit value="23" />
           </div>
           <Link
             to="/user_profile/kyc"
             className="inline-block text-xs font-semibold px-5 py-2 rounded-full no-underline"
-            style={{ backgroundColor: 'var(--color-primary)', color: '#fff' }}
+            style={{ backgroundColor: 'var(--color-primary)', color: '#0d0d0d' }}
           >
             Verify Now
           </Link>
@@ -188,24 +188,24 @@ function NewcomerPerks() {
         <div
           className="rounded-xl p-5"
           style={{
-            backgroundColor: '#f3f4f6',
-            border: '1px solid #e5e7eb',
+            backgroundColor: 'var(--color-surface-2)',
+            border: '1px solid var(--color-border)',
           }}
         >
-          <p className="text-xs mb-2" style={{ color: '#999' }}>
+          <p className="text-xs mb-2" style={{ color: 'var(--color-text-muted)' }}>
             Step 2
           </p>
-          <p className="text-base font-bold mb-2" style={{ color: '#111' }}>
+          <p className="text-base font-bold mb-2" style={{ color: 'var(--color-text)' }}>
             First Deposit
           </p>
           <div className="flex items-center gap-2">
             <span
               className="w-4 h-4 rounded-full flex items-center justify-center"
-              style={{ backgroundColor: '#6b7280' }}
+              style={{ backgroundColor: 'var(--color-surface-3)' }}
             >
-              <span className="text-[8px] font-bold text-white">$</span>
+              <span className="text-[8px] font-bold" style={{ color: 'var(--color-text)' }}>$</span>
             </span>
-            <span className="text-xs" style={{ color: '#666' }}>
+            <span className="text-xs" style={{ color: 'var(--color-text-muted)' }}>
               20 USDT Credits Claimable
             </span>
           </div>
@@ -215,14 +215,14 @@ function NewcomerPerks() {
         <div
           className="rounded-xl p-5"
           style={{
-            backgroundColor: '#f3f4f6',
-            border: '1px solid #e5e7eb',
+            backgroundColor: 'var(--color-surface-2)',
+            border: '1px solid var(--color-border)',
           }}
         >
-          <p className="text-xs mb-2" style={{ color: '#999' }}>
+          <p className="text-xs mb-2" style={{ color: 'var(--color-text-muted)' }}>
             Step 3
           </p>
-          <p className="text-base font-bold" style={{ color: '#111' }}>
+          <p className="text-base font-bold" style={{ color: 'var(--color-text)' }}>
             Transaction
           </p>
         </div>
@@ -236,9 +236,9 @@ function CountdownUnit({ value }: { value: string }) {
     <span
       className="text-xs font-bold px-2 py-1 rounded"
       style={{
-        backgroundColor: '#f3f4f6',
-        color: '#111',
-        border: '1px solid #e5e7eb',
+        backgroundColor: 'var(--color-surface-3)',
+        color: 'var(--color-text)',
+        border: '1px solid var(--color-border)',
       }}
     >
       {value}
@@ -401,9 +401,9 @@ function VIPServicesCard() {
   return (
     <div
       className="rounded-xl p-6"
-      style={{ backgroundColor: '#ffffff', border: '1px solid #e5e7eb' }}
+      style={{ backgroundColor: 'var(--color-surface)', border: '1px solid var(--color-border)' }}
     >
-      <h3 className="text-xl font-bold mb-5" style={{ color: '#111' }}>
+      <h3 className="text-xl font-bold mb-5" style={{ color: 'var(--color-text)' }}>
         AGCE VIP Services
       </h3>
       <div className="flex flex-col gap-4 mb-6">
@@ -424,9 +424,9 @@ function VIPServicesCard() {
         to="/coming-soon"
         className="block text-center text-sm font-medium py-3 rounded-lg no-underline transition-colors"
         style={{
-          border: '1px solid #d1d5db',
-          color: '#333',
-          backgroundColor: '#ffffff',
+          border: '1px solid var(--color-border-strong)',
+          color: 'var(--color-text)',
+          backgroundColor: 'var(--color-surface-2)',
         }}
       >
         How to Apply
@@ -439,7 +439,7 @@ function VIPBullet({ icon, text }: { icon: React.ReactNode; text: string }) {
   return (
     <div className="flex items-center gap-3">
       {icon}
-      <span className="text-sm font-medium" style={{ color: '#222' }}>
+      <span className="text-sm font-medium" style={{ color: 'var(--color-text)' }}>
         {text}
       </span>
     </div>
@@ -450,14 +450,14 @@ function AnnouncementsCard() {
   return (
     <div
       className="rounded-xl p-6"
-      style={{ backgroundColor: '#ffffff', border: '1px solid #e5e7eb' }}
+      style={{ backgroundColor: 'var(--color-surface)', border: '1px solid var(--color-border)' }}
     >
       <div className="flex items-center justify-between mb-5">
-        <h3 className="text-xl font-bold" style={{ color: '#111' }}>
+        <h3 className="text-xl font-bold" style={{ color: 'var(--color-text)' }}>
           Announcements
         </h3>
         <Link to="/announcement">
-          <ChevronRight size={20} style={{ color: '#999' }} />
+          <ChevronRight size={20} style={{ color: 'var(--color-text-muted)' }} />
         </Link>
       </div>
       <div className="flex flex-col gap-0">
@@ -465,12 +465,12 @@ function AnnouncementsCard() {
           <div
             key={idx}
             className={idx > 0 ? 'pt-4 mt-4' : ''}
-            style={idx > 0 ? { borderTop: '1px solid #e5e7eb' } : undefined}
+            style={idx > 0 ? { borderTop: '1px solid var(--color-border)' } : undefined}
           >
-            <p className="text-xs mb-2" style={{ color: '#999' }}>
+            <p className="text-xs mb-2" style={{ color: 'var(--color-text-muted)' }}>
               {item.timeAgo}
             </p>
-            <p className="text-sm leading-relaxed" style={{ color: '#333' }}>
+            <p className="text-sm leading-relaxed" style={{ color: 'var(--color-text)' }}>
               {item.title}
             </p>
           </div>
@@ -484,28 +484,28 @@ function DownloadAppCard() {
   return (
     <div
       className="rounded-xl p-6"
-      style={{ backgroundColor: '#ffffff', border: '1px solid #e5e7eb' }}
+      style={{ backgroundColor: 'var(--color-surface)', border: '1px solid var(--color-border)' }}
     >
       <div className="flex items-center justify-between mb-4">
-        <h3 className="text-base font-bold" style={{ color: '#111' }}>
+        <h3 className="text-base font-bold" style={{ color: 'var(--color-text)' }}>
           Download AGCE App
         </h3>
-        <ChevronRight size={18} style={{ color: '#999' }} />
+        <ChevronRight size={18} style={{ color: 'var(--color-text-muted)' }} />
       </div>
       <div className="flex items-center justify-between">
         <div>
-          <p className="text-sm font-semibold" style={{ color: '#111' }}>
+          <p className="text-sm font-semibold" style={{ color: 'var(--color-text)' }}>
             AGCE
           </p>
-          <p className="text-xs mt-0.5" style={{ color: '#999' }}>
+          <p className="text-xs mt-0.5" style={{ color: 'var(--color-text-muted)' }}>
             Scan to download
           </p>
         </div>
         <div
           className="w-14 h-14 rounded-lg flex items-center justify-center"
-          style={{ backgroundColor: '#f3f4f6', border: '1px solid #e5e7eb' }}
+          style={{ backgroundColor: 'var(--color-surface-2)', border: '1px solid var(--color-border)' }}
         >
-          <span className="text-xs" style={{ color: '#999' }}>QR</span>
+          <span className="text-xs" style={{ color: 'var(--color-text-muted)' }}>QR</span>
         </div>
       </div>
     </div>
@@ -520,28 +520,28 @@ function ReferralCard() {
   return (
     <div
       className="rounded-xl p-6"
-      style={{ backgroundColor: '#ffffff', border: '1px solid #e5e7eb' }}
+      style={{ backgroundColor: 'var(--color-surface)', border: '1px solid var(--color-border)' }}
     >
       <div className="flex items-center justify-between mb-3">
-        <h3 className="text-base font-bold" style={{ color: '#111' }}>
+        <h3 className="text-base font-bold" style={{ color: 'var(--color-text)' }}>
           Referral Commission
         </h3>
         <Link to="/refer_earn">
-          <ChevronRight size={18} style={{ color: '#999' }} />
+          <ChevronRight size={18} style={{ color: 'var(--color-text-muted)' }} />
         </Link>
       </div>
-      <p className="text-sm mb-4" style={{ color: '#333' }}>
+      <p className="text-sm mb-4" style={{ color: 'var(--color-text)' }}>
         Earn <span style={{ color: 'var(--color-primary)' }}>40%</span> commission or up to 500 USDT rewards!
       </p>
       <div
         className="flex items-center justify-between rounded-lg px-3 py-2.5"
-        style={{ backgroundColor: '#f9fafb', border: '1px dashed #d1d5db' }}
+        style={{ backgroundColor: 'var(--color-surface-2)', border: '1px dashed var(--color-border-strong)' }}
       >
         <div>
-          <p className="text-xs" style={{ color: '#999' }}>
+          <p className="text-xs" style={{ color: 'var(--color-text-muted)' }}>
             Referralcode
           </p>
-          <p className="text-sm font-semibold tracking-wide" style={{ color: '#111' }}>
+          <p className="text-sm font-semibold tracking-wide" style={{ color: 'var(--color-text)' }}>
             VFBHUAXABW
           </p>
         </div>
@@ -549,7 +549,7 @@ function ReferralCard() {
           onClick={() => copyToClipboard('VFBHUAXABW')}
           className="transition-opacity hover:opacity-70"
         >
-          <Copy size={14} style={{ color: '#999' }} />
+          <Copy size={14} style={{ color: 'var(--color-text-muted)' }} />
         </button>
       </div>
     </div>
@@ -560,17 +560,17 @@ function TwoFactorCard() {
   return (
     <div
       className="rounded-xl p-6"
-      style={{ backgroundColor: '#ffffff', border: '1px solid #e5e7eb' }}
+      style={{ backgroundColor: 'var(--color-surface)', border: '1px solid var(--color-border)' }}
     >
       <div className="flex items-center justify-between mb-3">
-        <h3 className="text-base font-bold" style={{ color: '#111' }}>
+        <h3 className="text-base font-bold" style={{ color: 'var(--color-text)' }}>
           2.factor authentication
         </h3>
         <Link to="/user_profile/two_factor_autentication">
-          <ChevronRight size={18} style={{ color: '#999' }} />
+          <ChevronRight size={18} style={{ color: 'var(--color-text-muted)' }} />
         </Link>
       </div>
-      <p className="text-sm leading-relaxed" style={{ color: '#666' }}>
+      <p className="text-sm leading-relaxed" style={{ color: 'var(--color-text-muted)' }}>
         Enable 2-Factor Authentication to add an extra security layer and prevent unauthorized access to your account.
       </p>
     </div>

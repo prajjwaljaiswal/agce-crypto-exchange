@@ -3,12 +3,19 @@ import { Link, useNavigate } from 'react-router-dom'
 import { Check, Eye, EyeOff, Fingerprint } from 'lucide-react'
 import { Navbar } from '../../../components/layout/Navbar.js'
 import { ROUTES } from '../../../constants/routes.js'
+import { useAuth } from '../../../store/authStore.js'
 import type { LoginTab, LoginForm } from './types/index.js'
+
+// Demo credentials — hard-coded until a real auth backend is wired up.
+const DEMO_USERNAME = 'agce'
+const DEMO_PASSWORD = '1234'
 
 export function LoginPage() {
   const navigate = useNavigate()
+  const { login } = useAuth()
   const [activeTab, setActiveTab] = useState<LoginTab>('email')
   const [showPassword, setShowPassword] = useState(false)
+  const [error, setError] = useState<string | null>(null)
   const [form, setForm] = useState<LoginForm>({
     identifier: '',
     countryCode: '+91',
@@ -20,12 +27,20 @@ export function LoginPage() {
   function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault()
     if (activeTab === 'qrcode') return
-    // TODO: submit credentials to API before requesting OTP
-    const email =
+
+    const username =
       activeTab === 'email'
-        ? form.identifier
-        : `${form.countryCode}${form.phone}`
-    navigate(ROUTES.AUTH.VERIFY_EMAIL, { state: { email, mode: 'login' } })
+        ? form.identifier.trim()
+        : `${form.countryCode}${form.phone}`.trim()
+
+    if (username === DEMO_USERNAME && form.password === DEMO_PASSWORD) {
+      setError(null)
+      login(`agce-demo-${Date.now()}`)
+      navigate(ROUTES.PROFILE.DASHBOARD, { replace: true })
+      return
+    }
+
+    setError('Invalid username or password. Try agce / 1234.')
   }
 
   return (
@@ -398,6 +413,20 @@ export function LoginPage() {
               </Link>
             </div>
 
+            {error && activeTab !== 'qrcode' && (
+              <div
+                role="alert"
+                className="mt-4 px-4 py-3 rounded-lg text-sm"
+                style={{
+                  backgroundColor: 'rgba(239,68,68,0.1)',
+                  color: '#ef4444',
+                  border: '1px solid rgba(239,68,68,0.25)',
+                }}
+              >
+                {error}
+              </div>
+            )}
+
             {/* Next */}
             <button
               type="submit"
@@ -407,7 +436,7 @@ export function LoginPage() {
                 color: 'var(--color-text)',
               }}
             >
-              Next
+              {activeTab === 'qrcode' ? 'Next' : 'Log In'}
             </button>
           </form>
 

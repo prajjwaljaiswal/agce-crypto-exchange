@@ -2,7 +2,7 @@ import { useState, useMemo } from 'react'
 import { Link } from 'react-router-dom'
 import { Star, Search, ChevronDown, ChevronLeft, ChevronRight } from 'lucide-react'
 import type { FeaturedPair, MarketPair } from '@agce/types'
-import { MARKET_TABS, CATEGORY_FILTERS } from './data/index.js'
+import { MARKET_TABS, CATEGORY_FILTERS, COIN_CATEGORIES, ALPHA_BASES } from './data/index.js'
 import { useBinanceMarket } from './hooks/useBinanceMarket.js'
 
 // ─── Mini Line Chart (SVG) ───────────────────────────────────────────────────
@@ -340,6 +340,16 @@ function Pagination({
 
 // ─── MarketPage ──────────────────────────────────────────────────────────────
 
+const PAIR_TYPE_LABEL: Record<string, string> = {
+  favourite: 'USDT',
+  spot:      'USDT Spot',
+  futures:   'USDT Perp',
+  cryptos:   'USDT',
+  alpha:     'USDT Alpha',
+}
+
+const parseChangePct = (change: string): number => parseFloat(change)
+
 export function MarketPage() {
   const { pairs, featured, loading, error, coinNames } = useBinanceMarket()
 
@@ -349,7 +359,6 @@ export function MarketPage() {
   const [searchOpen, setSearchOpen] = useState(false)
   const [favourites, setFavourites] = useState<Set<string>>(new Set())
   const [currentPage, setCurrentPage] = useState(1)
-  const [pairType, setPairType] = useState('usdt-perp')
 
   const toggleFav = (symbol: string) => {
     setFavourites((prev) => {
@@ -360,17 +369,41 @@ export function MarketPage() {
     })
   }
 
-  const basePairs = activeTab === 'favourite'
-    ? pairs.filter((p) => favourites.has(p.symbol))
-    : pairs
+  // Tab-level filter runs first — narrows the universe before category/search.
+  const basePairs = useMemo(() => {
+    if (activeTab === 'favourite') {
+      return pairs.filter((p) => favourites.has(p.symbol))
+    }
+    if (activeTab === 'alpha') {
+      return pairs.filter((p) => ALPHA_BASES.includes(p.baseCurrency))
+    }
+    return pairs
+  }, [pairs, activeTab, favourites])
 
   const filteredPairs = useMemo(() => {
-    return basePairs.filter((p) => {
-      if (searchQuery && !p.symbol.toLowerCase().includes(searchQuery.toLowerCase()) &&
-          !p.baseCurrency.toLowerCase().includes(searchQuery.toLowerCase())) return false
-      return true
-    })
-  }, [basePairs, searchQuery])
+    let result = basePairs
+
+    if (categoryFilter === 'hot') {
+      // Top 10 most-active by absolute 24h change — updates live with WS ticks.
+      result = [...result]
+        .sort((a, b) => Math.abs(parseChangePct(b.change)) - Math.abs(parseChangePct(a.change)))
+        .slice(0, 10)
+    } else if (categoryFilter !== 'all') {
+      const bases = COIN_CATEGORIES[categoryFilter] ?? []
+      result = result.filter((p) => bases.includes(p.baseCurrency))
+    }
+
+    if (searchQuery) {
+      const q = searchQuery.toLowerCase()
+      result = result.filter(
+        (p) =>
+          p.symbol.toLowerCase().includes(q) ||
+          p.baseCurrency.toLowerCase().includes(q),
+      )
+    }
+
+    return result
+  }, [basePairs, categoryFilter, searchQuery])
 
   const itemsPerPage = 20
   const totalPages = Math.max(1, Math.ceil(filteredPairs.length / itemsPerPage))
@@ -409,18 +442,18 @@ export function MarketPage() {
         >
           {/* Tab Bar */}
           <div
-            className="flex items-center justify-between px-6 h-16"
+            className="flex items-center gap-2 px-4 md:px-6 h-16"
             style={{
               backgroundColor: 'var(--color-surface)',
               borderBottom: '1px solid var(--color-border)',
             }}
           >
-            <div className="flex items-center gap-1">
+            <div className="flex items-center gap-1 overflow-x-auto scrollbar-hide flex-1 min-w-0">
               {MARKET_TABS.map((tab) => (
                 <button
                   key={tab.key}
                   onClick={() => { setActiveTab(tab.key); setCurrentPage(1) }}
-                  className="relative px-4 py-2 text-[17px] font-semibold transition-colors"
+                  className="relative shrink-0 px-4 py-2 text-[17px] font-semibold whitespace-nowrap transition-colors"
                   style={{
                     color: activeTab === tab.key ? 'var(--color-text)' : 'var(--color-text-muted)',
                   }}
@@ -438,7 +471,7 @@ export function MarketPage() {
 
             <button
               onClick={() => setSearchOpen(!searchOpen)}
-              className="p-2 rounded-lg transition-colors hover:opacity-80"
+              className="shrink-0 p-2 rounded-lg transition-colors hover:opacity-80"
               style={{ color: 'var(--color-text-muted)' }}
               aria-label="Search"
             >
@@ -469,15 +502,15 @@ export function MarketPage() {
 
           {/* Category Filters + Pair Type */}
           <div
-            className="flex items-center justify-between gap-4 px-6 py-3 overflow-x-auto"
+            className="flex items-center gap-3 px-4 md:px-6 py-3"
             style={{ borderBottom: '1px solid var(--color-border)' }}
           >
-            <div className="flex items-center gap-2 shrink-0">
+            <div className="flex items-center gap-2 overflow-x-auto scrollbar-hide flex-1 min-w-0">
               {CATEGORY_FILTERS.map((cat) => (
                 <button
                   key={cat.key}
                   onClick={() => { setCategoryFilter(cat.key); setCurrentPage(1) }}
-                  className="px-3 py-1.5 text-xs font-medium rounded-md whitespace-nowrap transition-colors"
+                  className="shrink-0 px-3 py-1.5 text-xs font-medium rounded-md whitespace-nowrap transition-colors"
                   style={{
                     backgroundColor: categoryFilter === cat.key ? 'var(--color-text)' : 'var(--color-surface-2)',
                     color: categoryFilter === cat.key ? 'var(--color-bg)' : 'var(--color-text-muted)',
@@ -490,15 +523,14 @@ export function MarketPage() {
 
             <div className="shrink-0">
               <button
-                onClick={() => setPairType(pairType === 'usdt-perp' ? 'usdt-spot' : 'usdt-perp')}
-                className="flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-medium transition-colors"
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-medium whitespace-nowrap transition-colors"
                 style={{
                   backgroundColor: 'var(--color-surface-2)',
                   color: 'var(--color-text-muted)',
                   border: '1px solid var(--color-border)',
                 }}
               >
-                USDT Perp
+                {PAIR_TYPE_LABEL[activeTab] ?? 'USDT'}
                 <ChevronDown size={12} />
               </button>
             </div>
@@ -565,7 +597,7 @@ export function MarketPage() {
                       className="py-16 text-center text-sm"
                       style={{ color: 'var(--color-text-muted)' }}
                     >
-                      {activeTab === 'favourite'
+                      {activeTab === 'favourite' && favourites.size === 0
                         ? 'No favourites yet. Star a pair to add it here.'
                         : 'No pairs match your filters.'}
                     </td>
