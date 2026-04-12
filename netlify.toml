@@ -1,0 +1,8 @@
+[build]
+  command = "pnpm build"
+  publish = "apps/exchange/dist/global"
+
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
