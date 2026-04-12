@@ -3,19 +3,15 @@ import { Link, useNavigate } from 'react-router-dom'
 import { Check, Eye, EyeOff, Fingerprint } from 'lucide-react'
 import { Navbar } from '../../../components/layout/Navbar.js'
 import { ROUTES } from '../../../constants/routes.js'
-import { useAuth } from '../../../store/authStore.js'
+import { useRequestOtp } from '../hooks.js'
 import type { LoginTab, LoginForm } from './types/index.js'
-
-// Demo credentials — hard-coded until a real auth backend is wired up.
-const DEMO_USERNAME = 'agce'
-const DEMO_PASSWORD = '1234'
 
 export function LoginPage() {
   const navigate = useNavigate()
-  const { login } = useAuth()
+  const requestOtpMutation = useRequestOtp()
   const [activeTab, setActiveTab] = useState<LoginTab>('email')
   const [showPassword, setShowPassword] = useState(false)
-  const [error, setError] = useState<string | null>(null)
+  const [formError, setFormError] = useState<string | null>(null)
   const [form, setForm] = useState<LoginForm>({
     identifier: '',
     countryCode: '+91',
@@ -24,24 +20,37 @@ export function LoginPage() {
     bindIp: false,
   })
 
-  function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
+  async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault()
     if (activeTab === 'qrcode') return
 
-    const username =
+    const identifier =
       activeTab === 'email'
         ? form.identifier.trim()
         : `${form.countryCode}${form.phone}`.trim()
 
-    if (username === DEMO_USERNAME && form.password === DEMO_PASSWORD) {
-      setError(null)
-      login(`agce-demo-${Date.now()}`)
-      navigate(ROUTES.PROFILE.DASHBOARD, { replace: true })
+    if (!identifier || !form.password) {
+      setFormError('Enter your credentials to continue.')
       return
     }
 
-    setError('Invalid username or password. Try agce / 1234.')
+    setFormError(null)
+    try {
+      await requestOtpMutation.mutate(identifier, 'LOGIN')
+      navigate(ROUTES.AUTH.VERIFY_EMAIL, {
+        state: {
+          email: identifier,
+          mode: 'login',
+          password: form.password,
+          bindIp: form.bindIp,
+        },
+      })
+    } catch {
+      /* error surfaced via requestOtpMutation.error */
+    }
   }
+
+  const errorText = formError ?? requestOtpMutation.error
 
   return (
     <div
@@ -413,7 +422,7 @@ export function LoginPage() {
               </Link>
             </div>
 
-            {error && activeTab !== 'qrcode' && (
+            {errorText && activeTab !== 'qrcode' && (
               <div
                 role="alert"
                 className="mt-4 px-4 py-3 rounded-lg text-sm"
@@ -423,20 +432,25 @@ export function LoginPage() {
                   border: '1px solid rgba(239,68,68,0.25)',
                 }}
               >
-                {error}
+                {errorText}
               </div>
             )}
 
             {/* Next */}
             <button
               type="submit"
-              className="mt-8 w-full h-[60px] rounded-full text-[18px] font-medium transition-opacity hover:opacity-90"
+              disabled={requestOtpMutation.isPending && activeTab !== 'qrcode'}
+              className="mt-8 w-full h-[60px] rounded-full text-[18px] font-medium transition-opacity hover:opacity-90 disabled:opacity-60 disabled:cursor-not-allowed"
               style={{
                 backgroundColor: 'var(--color-surface-3)',
                 color: 'var(--color-text)',
               }}
             >
-              {activeTab === 'qrcode' ? 'Next' : 'Log In'}
+              {activeTab === 'qrcode'
+                ? 'Next'
+                : requestOtpMutation.isPending
+                  ? 'Sending OTP…'
+                  : 'Log In'}
             </button>
           </form>
 

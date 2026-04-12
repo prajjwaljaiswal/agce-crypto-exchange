@@ -111,3 +111,26 @@ export interface CategoryFilter {
   key: string
   label: string
 }
+
+// ─── Auth + KYC ──────────────────────────────────────────────────────────────
+
+export type {
+  Jurisdiction,
+  OtpPurpose,
+  AuthUser,
+  AuthTokens,
+  AuthSession,
+  OtpRequestPayload,
+  SignupPayload,
+  PasswordLoginPayload,
+  AuthResponse,
+} from './auth.js'
+
+export type {
+  DiditStatus,
+  KycLevel,
+  KycDecision,
+  KycStartSessionPayload,
+  KycSessionResponse,
+  KycStatusResponse,
+} from './kyc.js'

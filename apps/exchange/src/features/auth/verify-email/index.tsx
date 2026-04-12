@@ -3,6 +3,8 @@ import { useLocation, useNavigate } from 'react-router-dom'
 import { Copy } from 'lucide-react'
 import { Navbar } from '../../../components/layout/Navbar.js'
 import { ROUTES } from '../../../constants/routes.js'
+import { useLogin, useRequestOtp } from '../hooks.js'
+import { useAuth } from '../../../store/authStore.js'
 import type { VerifyEmailLocationState } from './types/index.js'
 
 const OTP_LENGTH = 6
@@ -17,11 +19,16 @@ function maskEmail(email: string): string {
 export function VerifyEmailPage() {
   const location = useLocation()
   const navigate = useNavigate()
+  const { setSession } = useAuth()
+  const loginMutation = useLogin()
+  const resendMutation = useRequestOtp()
   const state = location.state as VerifyEmailLocationState | null
+  const mode = state?.mode ?? 'signup'
   const email = state?.email ?? 'j***9@gmail.com'
   const displayEmail = state?.email ? maskEmail(email) : email
 
   const [digits, setDigits] = useState<string[]>(Array(OTP_LENGTH).fill(''))
+  const [formError, setFormError] = useState<string | null>(null)
   const inputsRef = useRef<Array<HTMLInputElement | null>>([])
 
   const focusInput = (idx: number) => {
@@ -80,22 +87,53 @@ export function VerifyEmailPage() {
     }
   }
 
-  const handleResend = () => {
-    // TODO: call resend API
-  }
-
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault()
-    if (!isComplete) return
-    // TODO: verify OTP with API before continuing
-    if (state?.mode === 'login') {
-      navigate(ROUTES.PROFILE.DASHBOARD)
-    } else {
-      navigate(ROUTES.AUTH.SET_PASSWORD, { state: { email: state?.email } })
+  const handleResend = async () => {
+    if (!state?.email) return
+    setFormError(null)
+    try {
+      await resendMutation.mutate(state.email, mode === 'login' ? 'LOGIN' : 'SIGNUP')
+    } catch {
+      /* error surfaced via resendMutation.error */
     }
   }
 
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault()
+    if (!isComplete) return
+    const otp = digits.join('')
+    setFormError(null)
+
+    if (mode === 'login') {
+      if (!state?.email || !state?.password) {
+        setFormError('Missing login details. Please go back and try again.')
+        return
+      }
+      try {
+        const result = await loginMutation.mutate({
+          identifier: state.email,
+          password: state.password,
+          otp,
+          bindIp: state.bindIp ?? false,
+        })
+        setSession({
+          accessToken: result.accessToken,
+          refreshToken: result.refreshToken,
+          userId: result.userId,
+          identifier: state.email,
+        })
+        navigate(ROUTES.PROFILE.DASHBOARD, { replace: true })
+      } catch {
+        /* error surfaced via loginMutation.error */
+      }
+      return
+    }
+
+    // signup flow — verify the OTP later during final signup call
+    navigate(ROUTES.AUTH.SET_PASSWORD, { state: { email: state?.email, otp } })
+  }
+
   const isComplete = digits.every((d) => d !== '')
+  const errorText = formError ?? loginMutation.error ?? resendMutation.error
 
   return (
     <div
@@ -177,17 +215,31 @@ export function VerifyEmailPage() {
               </button>
             </div>
 
+            {errorText && (
+              <div
+                role="alert"
+                className="mt-4 px-4 py-3 rounded-lg text-sm"
+                style={{
+                  backgroundColor: 'rgba(239,68,68,0.1)',
+                  color: '#ef4444',
+                  border: '1px solid rgba(239,68,68,0.25)',
+                }}
+              >
+                {errorText}
+              </div>
+            )}
+
             {/* Next */}
             <button
               type="submit"
-              disabled={!isComplete}
+              disabled={!isComplete || loginMutation.isPending}
               className="mt-10 w-full h-[67px] rounded-full text-[20px] font-medium transition-opacity hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed"
               style={{
                 backgroundColor: 'var(--color-surface-3)',
                 color: 'var(--color-text)',
               }}
             >
-              Next
+              {loginMutation.isPending ? 'Verifying…' : 'Next'}
             </button>
           </form>
 

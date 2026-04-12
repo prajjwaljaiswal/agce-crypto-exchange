@@ -1,5 +1,6 @@
 export interface SetPasswordLocationState {
   email?: string
+  otp?: string
 }
 
 export interface PasswordRuleState {

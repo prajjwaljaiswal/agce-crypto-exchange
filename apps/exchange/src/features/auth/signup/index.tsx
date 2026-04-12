@@ -3,10 +3,12 @@ import { Link, useNavigate } from 'react-router-dom'
 import { ChevronDown } from 'lucide-react'
 import { Navbar } from '../../../components/layout/Navbar.js'
 import { ROUTES } from '../../../constants/routes.js'
+import { useRequestOtp } from '../hooks.js'
 import type { SignupTab, SignupStep1Form } from './types/index.js'
 
 export function SignupPage() {
   const navigate = useNavigate()
+  const requestOtpMutation = useRequestOtp()
   const [activeTab, setActiveTab] = useState<SignupTab>('email')
   const [showReferral, setShowReferral] = useState(false)
   const [form, setForm] = useState<SignupStep1Form>({
@@ -16,12 +18,21 @@ export function SignupPage() {
     referralCode: '',
   })
 
-  function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
+  async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault()
-    if (activeTab === 'email' && form.email) {
-      navigate(ROUTES.AUTH.VERIFY_EMAIL, { state: { email: form.email } })
+    const identifier =
+      activeTab === 'email'
+        ? form.email.trim()
+        : `${form.countryCode}${form.phone}`.trim()
+    if (!identifier) return
+    try {
+      await requestOtpMutation.mutate(identifier, 'SIGNUP')
+      navigate(ROUTES.AUTH.VERIFY_EMAIL, {
+        state: { email: identifier, mode: 'signup' },
+      })
+    } catch {
+      /* error surfaced via requestOtpMutation.error */
     }
-    // TODO: phone verification flow
   }
 
   return (
@@ -185,16 +196,31 @@ export function SignupPage() {
                 />
               )}
 
+              {requestOtpMutation.error && (
+                <div
+                  role="alert"
+                  className="mt-4 px-4 py-3 rounded-lg text-sm"
+                  style={{
+                    backgroundColor: 'rgba(239,68,68,0.1)',
+                    color: '#ef4444',
+                    border: '1px solid rgba(239,68,68,0.25)',
+                  }}
+                >
+                  {requestOtpMutation.error}
+                </div>
+              )}
+
               {/* Next */}
               <button
                 type="submit"
-                className="mt-8 w-full h-[60px] rounded-full text-lg font-medium transition-opacity hover:opacity-90"
+                disabled={requestOtpMutation.isPending}
+                className="mt-8 w-full h-[60px] rounded-full text-lg font-medium transition-opacity hover:opacity-90 disabled:opacity-60 disabled:cursor-not-allowed"
                 style={{
                   backgroundColor: 'var(--color-surface-3)',
                   color: 'var(--color-text)',
                 }}
               >
-                Next
+                {requestOtpMutation.isPending ? 'Sending…' : 'Next'}
               </button>
             </form>
 

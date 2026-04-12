@@ -1,8 +1,12 @@
 import { useState, useMemo } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 import { Check, Eye, EyeOff } from 'lucide-react'
+import { useInstanceConfig } from '@agce/hooks'
 import { Navbar } from '../../../components/layout/Navbar.js'
 import { ROUTES } from '../../../constants/routes.js'
+import { useSignup } from '../hooks.js'
+import { jurisdictionFromInstance } from '../api.js'
+import { useAuth } from '../../../store/authStore.js'
 import type { SetPasswordLocationState, PasswordRuleState } from './types/index.js'
 
 function evaluatePassword(password: string, username: string): PasswordRuleState {
@@ -50,23 +54,50 @@ function Rule({ valid, label }: { valid: boolean; label: string }) {
 export function SetPasswordPage() {
   const location = useLocation()
   const navigate = useNavigate()
+  const { setSession } = useAuth()
+  const signupMutation = useSignup()
+  const instanceConfig = useInstanceConfig()
   const state = location.state as SetPasswordLocationState | null
   const email = state?.email ?? ''
+  const otp = state?.otp ?? ''
   const username = email.split('@')[0] ?? ''
 
   const [password, setPassword] = useState('')
   const [showPassword, setShowPassword] = useState(false)
+  const [formError, setFormError] = useState<string | null>(null)
 
   const rules = useMemo(() => evaluatePassword(password, username), [password, username])
   const isValid =
     rules.notAllNumbers && rules.notAllLetters && rules.minLength && rules.notUsername
 
-  function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
+  async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault()
     if (!isValid) return
-    // TODO: submit signup with { email, password } via API before redirecting
-    navigate(ROUTES.AUTH.SIGNUP_SUCCESS)
+    if (!email || !otp) {
+      setFormError('Missing signup details. Please restart signup.')
+      return
+    }
+    setFormError(null)
+    try {
+      const result = await signupMutation.mutate({
+        identifier: email,
+        otp,
+        password,
+        jurisdiction: jurisdictionFromInstance(instanceConfig.id),
+      })
+      setSession({
+        accessToken: result.accessToken,
+        refreshToken: result.refreshToken,
+        userId: result.userId,
+        identifier: email,
+      })
+      navigate(ROUTES.AUTH.SIGNUP_SUCCESS, { replace: true })
+    } catch {
+      /* error surfaced via signupMutation.error */
+    }
   }
+
+  const errorText = formError ?? signupMutation.error
 
   return (
     <div
@@ -134,17 +165,31 @@ export function SetPasswordPage() {
               <Rule valid={rules.notUsername} label="Cannot contain username" />
             </div>
 
+            {errorText && (
+              <div
+                role="alert"
+                className="mt-5 px-4 py-3 rounded-lg text-sm"
+                style={{
+                  backgroundColor: 'rgba(239,68,68,0.1)',
+                  color: '#ef4444',
+                  border: '1px solid rgba(239,68,68,0.25)',
+                }}
+              >
+                {errorText}
+              </div>
+            )}
+
             {/* Confirm */}
             <button
               type="submit"
-              disabled={!isValid}
+              disabled={!isValid || signupMutation.isPending}
               className="mt-8 w-full h-[56px] rounded-full text-[20px] font-medium transition-opacity hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50"
               style={{
                 backgroundColor: 'var(--color-surface-3)',
                 color: 'var(--color-text)',
               }}
             >
-              Confirm
+              {signupMutation.isPending ? 'Creating account…' : 'Confirm'}
             </button>
           </form>
         </div>

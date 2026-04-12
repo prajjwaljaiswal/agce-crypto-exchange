@@ -1,0 +1,539 @@
+{
+  "info": {
+    "_postman_id": "d4e5f6a7-b8c9-0123-defa-4567890abcde",
+    "name": "AGCE KYC Service",
+    "description": "KYC verification service for Arab Global Crypto Exchange (Didit-backed).\n\n## Setup\n1. Import this collection AND the AGCE Local environment\n2. **Run Auth → Signup first** so `accessToken` and `userId` are populated\n3. Then **Run KYC → Start Session** — saves `kycSessionId` automatically\n4. Use the webhook requests to simulate Didit status updates (HMAC is signed automatically by a pre-request script)\n\n## Variables (shared with Auth collection)\n- `baseUrlKyc` — KYC service base URL (default `http://localhost:3001`)\n- `accessToken` — set by Auth signup/login\n- `userId` — set by Auth signup/login\n- `kycSessionId` — set by KYC Start Session\n- `diditWebhookSecret` — for HMAC signing (matches kyc_service .env)\n- `jurisdiction` — INDIA / ABU_DHABI / DUBAI / GLOBAL\n\n## Webhook signing\nWebhook requests in this collection have a **pre-request script** that:\n1. Builds the webhook payload using current variables\n2. Canonicalizes it (sorted keys)\n3. Computes HMAC-SHA256 with `diditWebhookSecret`\n4. Sets `X-Signature-V2` and `X-Timestamp` headers\n5. Replaces the body with the canonical signed payload\n\nNo manual signing needed — just hit Send.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Health",
+      "item": [
+        {
+          "name": "Health Check (Gateway)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status is 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Returns ok', () => {",
+                  "  const json = pm.response.json();",
+                  "  pm.expect(json.status).to.eql('ok');",
+                  "});",
+                  "// Note: when accessed via the gateway, this returns the gateway's",
+                  "// own health (service: 'agce-gateway'), not the kyc-service's."
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrlKyc}}/healthz",
+              "host": ["{{baseUrlKyc}}"],
+              "path": ["healthz"]
+            },
+            "description": "Hits the **gateway** health endpoint (not the kyc-service directly). This verifies the gateway is reachable."
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "KYC",
+      "item": [
+        {
+          "name": "Start Session",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status is 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Returns session', () => {",
+                  "  const json = pm.response.json();",
+                  "  pm.expect(json.success).to.be.true;",
+                  "  pm.expect(json.data).to.have.property('sessionId');",
+                  "  pm.expect(json.data).to.have.property('diditUrl');",
+                  "});",
+                  "",
+                  "if (pm.response.code === 200) {",
+                  "  const data = pm.response.json().data;",
+                  "  if (data.sessionId) {",
+                  "    pm.environment.set('kycSessionId', data.sessionId);",
+                  "    console.log('Saved kycSessionId:', data.sessionId);",
+                  "  }",
+                  "  if (data.diditUrl) {",
+                  "    console.log('Open this URL to verify:', data.diditUrl);",
+                  "  }",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{accessToken}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{}"
+            },
+            "url": {
+              "raw": "{{baseUrlKyc}}/api/v1/kyc/session",
+              "host": ["{{baseUrlKyc}}"],
+              "path": ["api", "v1", "kyc", "session"]
+            },
+            "description": "Starts a Didit verification session for the authenticated user. Empty body is fine — the service uses the JWT's `jurisdiction` and the user's contact details automatically.\n\nReturns:\n- `sessionId` — Didit session UUID (saved to env)\n- `diditUrl` — open this in iframe / WebView for verification\n- `status`, `level`, `jurisdiction`\n\nIf an active session already exists, it's returned instead of creating a new one."
+          },
+          "response": []
+        },
+        {
+          "name": "Start Session (with details)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status is 200', () => pm.response.to.have.status(200));",
+                  "if (pm.response.code === 200) {",
+                  "  const data = pm.response.json().data;",
+                  "  if (data.sessionId) pm.environment.set('kycSessionId', data.sessionId);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{accessToken}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"jurisdiction\": \"{{jurisdiction}}\",\n  \"firstName\": \"Abhay\",\n  \"lastName\": \"Bagoriya\",\n  \"email\": \"abhay@example.com\",\n  \"phone\": \"+911234567890\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrlKyc}}/api/v1/kyc/session",
+              "host": ["{{baseUrlKyc}}"],
+              "path": ["api", "v1", "kyc", "session"]
+            },
+            "description": "Same as Start Session but with pre-filled personal details, which Didit pre-populates on the verification form so the user doesn't have to type them."
+          },
+          "response": []
+        },
+        {
+          "name": "Get KYC Status",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status is 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Has KYC fields', () => {",
+                  "  const json = pm.response.json();",
+                  "  pm.expect(json.success).to.be.true;",
+                  "  pm.expect(json.data).to.have.property('status');",
+                  "  pm.expect(json.data).to.have.property('level');",
+                  "});",
+                  "console.log('Current status:', pm.response.json().data?.status);"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{accessToken}}" }
+            ],
+            "url": {
+              "raw": "{{baseUrlKyc}}/api/v1/kyc/status",
+              "host": ["{{baseUrlKyc}}"],
+              "path": ["api", "v1", "kyc", "status"]
+            },
+            "description": "Returns the latest KYC status for the authenticated user. If the cached status is `PENDING` and stale (>30s old), the service polls Didit as a fallback."
+          },
+          "response": []
+        },
+        {
+          "name": "Delete KYC Session (GDPR)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status is 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Deleted', () => pm.expect(pm.response.json().success).to.be.true);"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "DELETE",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{accessToken}}" }
+            ],
+            "url": {
+              "raw": "{{baseUrlKyc}}/api/v1/kyc/session",
+              "host": ["{{baseUrlKyc}}"],
+              "path": ["api", "v1", "kyc", "session"]
+            },
+            "description": "GDPR right-to-erasure: deletes the user's verification session both in Didit and in our local database. Used when a user requests account deletion."
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Webhook (Didit Simulation)",
+      "description": "These requests simulate Didit's webhooks. Each one has a pre-request script that signs the payload with HMAC-SHA256-V2 using `diditWebhookSecret`.\n\n**IMPORTANT:** the `kycSessionId` env var must point to a session that exists in the kyc_service Mongo. Either:\n1. Run **Start Session** first (with a valid Didit API key + workflow), OR\n2. Manually seed Mongo with a KYC record using the SESSION_ID from `kycSessionId`",
+      "item": [
+        {
+          "name": "Webhook: Approved",
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "exec": [
+                  "// Build webhook payload",
+                  "const ts = Math.floor(Date.now() / 1000);",
+                  "const body = {",
+                  "  session_id: pm.environment.get('kycSessionId') || 'test-session-id',",
+                  "  status: 'Approved',",
+                  "  webhook_type: 'status.updated',",
+                  "  created_at: ts,",
+                  "  timestamp: ts,",
+                  "  workflow_id: 'wf-postman',",
+                  "  vendor_data: pm.environment.get('userId') || 'test-user'",
+                  "};",
+                  "",
+                  "// Canonicalize (sort keys recursively)",
+                  "const sortKeys = (obj) => {",
+                  "  if (Array.isArray(obj)) return obj.map(sortKeys);",
+                  "  if (obj !== null && typeof obj === 'object') {",
+                  "    return Object.keys(obj).sort().reduce((acc, k) => {",
+                  "      acc[k] = sortKeys(obj[k]);",
+                  "      return acc;",
+                  "    }, {});",
+                  "  }",
+                  "  return obj;",
+                  "};",
+                  "",
+                  "const canonical = JSON.stringify(sortKeys(body));",
+                  "const secret = pm.environment.get('diditWebhookSecret');",
+                  "const signature = CryptoJS.HmacSHA256(canonical, secret).toString(CryptoJS.enc.Hex);",
+                  "",
+                  "// Inject body + headers",
+                  "pm.variables.set('webhookBody', canonical);",
+                  "pm.variables.set('webhookSig', signature);",
+                  "pm.variables.set('webhookTs', ts.toString());",
+                  "",
+                  "console.log('Webhook prepared: status=Approved, session_id=' + body.session_id);"
+                ],
+                "type": "text/javascript"
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Webhook accepted', () => pm.response.to.have.status(200));"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "X-Signature-V2", "value": "{{webhookSig}}" },
+              { "key": "X-Timestamp", "value": "{{webhookTs}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{{webhookBody}}"
+            },
+            "url": {
+              "raw": "{{baseUrlKyc}}/api/v1/kyc/webhook",
+              "host": ["{{baseUrlKyc}}"],
+              "path": ["api", "v1", "kyc", "webhook"]
+            },
+            "description": "Simulates Didit sending an `Approved` webhook. The pre-request script:\n1. Builds the webhook payload with `status: Approved`\n2. Canonicalizes (sorts keys recursively)\n3. Computes HMAC-SHA256 with `diditWebhookSecret`\n4. Sets `X-Signature-V2` and `X-Timestamp` headers\n\n**Effect:** kyc_service updates the local DB and emits a Kafka event that auth_service consumes to update `User.kycStatus` to APPROVED."
+          },
+          "response": []
+        },
+        {
+          "name": "Webhook: Declined",
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "exec": [
+                  "const ts = Math.floor(Date.now() / 1000);",
+                  "const body = {",
+                  "  session_id: pm.environment.get('kycSessionId') || 'test-session-id',",
+                  "  status: 'Declined',",
+                  "  webhook_type: 'status.updated',",
+                  "  created_at: ts,",
+                  "  timestamp: ts,",
+                  "  workflow_id: 'wf-postman',",
+                  "  vendor_data: pm.environment.get('userId') || 'test-user'",
+                  "};",
+                  "",
+                  "const sortKeys = (obj) => {",
+                  "  if (Array.isArray(obj)) return obj.map(sortKeys);",
+                  "  if (obj !== null && typeof obj === 'object') {",
+                  "    return Object.keys(obj).sort().reduce((acc, k) => {",
+                  "      acc[k] = sortKeys(obj[k]);",
+                  "      return acc;",
+                  "    }, {});",
+                  "  }",
+                  "  return obj;",
+                  "};",
+                  "",
+                  "const canonical = JSON.stringify(sortKeys(body));",
+                  "const secret = pm.environment.get('diditWebhookSecret');",
+                  "const signature = CryptoJS.HmacSHA256(canonical, secret).toString(CryptoJS.enc.Hex);",
+                  "",
+                  "pm.variables.set('webhookBody', canonical);",
+                  "pm.variables.set('webhookSig', signature);",
+                  "pm.variables.set('webhookTs', ts.toString());"
+                ],
+                "type": "text/javascript"
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Webhook accepted', () => pm.response.to.have.status(200));"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "X-Signature-V2", "value": "{{webhookSig}}" },
+              { "key": "X-Timestamp", "value": "{{webhookTs}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{{webhookBody}}"
+            },
+            "url": {
+              "raw": "{{baseUrlKyc}}/api/v1/kyc/webhook",
+              "host": ["{{baseUrlKyc}}"],
+              "path": ["api", "v1", "kyc", "webhook"]
+            },
+            "description": "Simulates a `Declined` webhook. Sets `User.kycStatus` to REJECTED."
+          },
+          "response": []
+        },
+        {
+          "name": "Webhook: In Review",
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "exec": [
+                  "const ts = Math.floor(Date.now() / 1000);",
+                  "const body = {",
+                  "  session_id: pm.environment.get('kycSessionId') || 'test-session-id',",
+                  "  status: 'In Review',",
+                  "  webhook_type: 'status.updated',",
+                  "  created_at: ts,",
+                  "  timestamp: ts,",
+                  "  workflow_id: 'wf-postman',",
+                  "  vendor_data: pm.environment.get('userId') || 'test-user'",
+                  "};",
+                  "",
+                  "const sortKeys = (obj) => {",
+                  "  if (Array.isArray(obj)) return obj.map(sortKeys);",
+                  "  if (obj !== null && typeof obj === 'object') {",
+                  "    return Object.keys(obj).sort().reduce((acc, k) => {",
+                  "      acc[k] = sortKeys(obj[k]);",
+                  "      return acc;",
+                  "    }, {});",
+                  "  }",
+                  "  return obj;",
+                  "};",
+                  "",
+                  "const canonical = JSON.stringify(sortKeys(body));",
+                  "const secret = pm.environment.get('diditWebhookSecret');",
+                  "const signature = CryptoJS.HmacSHA256(canonical, secret).toString(CryptoJS.enc.Hex);",
+                  "",
+                  "pm.variables.set('webhookBody', canonical);",
+                  "pm.variables.set('webhookSig', signature);",
+                  "pm.variables.set('webhookTs', ts.toString());"
+                ],
+                "type": "text/javascript"
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Webhook accepted', () => pm.response.to.have.status(200));"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "X-Signature-V2", "value": "{{webhookSig}}" },
+              { "key": "X-Timestamp", "value": "{{webhookTs}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{{webhookBody}}"
+            },
+            "url": {
+              "raw": "{{baseUrlKyc}}/api/v1/kyc/webhook",
+              "host": ["{{baseUrlKyc}}"],
+              "path": ["api", "v1", "kyc", "webhook"]
+            },
+            "description": "Simulates an `In Review` webhook (manual review pending). Maps to internal `PENDING` status."
+          },
+          "response": []
+        },
+        {
+          "name": "Webhook: Bad Signature (should fail)",
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "exec": [
+                  "// Intentionally use a wrong signature",
+                  "const ts = Math.floor(Date.now() / 1000);",
+                  "const body = {",
+                  "  session_id: pm.environment.get('kycSessionId') || 'test-session-id',",
+                  "  status: 'Approved',",
+                  "  webhook_type: 'status.updated',",
+                  "  created_at: ts,",
+                  "  timestamp: ts,",
+                  "  workflow_id: 'wf-postman',",
+                  "  vendor_data: pm.environment.get('userId') || 'test-user'",
+                  "};",
+                  "pm.variables.set('webhookBody', JSON.stringify(body));",
+                  "pm.variables.set('webhookSig', 'this-is-a-bad-signature');",
+                  "pm.variables.set('webhookTs', ts.toString());"
+                ],
+                "type": "text/javascript"
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Returns 401', () => pm.response.to.have.status(401));",
+                  "pm.test('Error mentions signature', () => {",
+                  "  const json = pm.response.json();",
+                  "  pm.expect(json.error.message.toLowerCase()).to.include('signature');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "X-Signature-V2", "value": "{{webhookSig}}" },
+              { "key": "X-Timestamp", "value": "{{webhookTs}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{{webhookBody}}"
+            },
+            "url": {
+              "raw": "{{baseUrlKyc}}/api/v1/kyc/webhook",
+              "host": ["{{baseUrlKyc}}"],
+              "path": ["api", "v1", "kyc", "webhook"]
+            },
+            "description": "Sends a webhook with a deliberately wrong signature. Should return **401 Unauthorized** with `Invalid webhook signature`."
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Auth Tests",
+      "item": [
+        {
+          "name": "No Bearer Token (should 401)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Returns 401', () => pm.response.to.have.status(401));",
+                  "pm.test('Error mentions bearer', () => {",
+                  "  const msg = pm.response.json().error.message.toLowerCase();",
+                  "  pm.expect(msg).to.match(/bearer|unauthorized/);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrlKyc}}/api/v1/kyc/status",
+              "host": ["{{baseUrlKyc}}"],
+              "path": ["api", "v1", "kyc", "status"]
+            },
+            "description": "Tests that authenticated endpoints reject requests without a Bearer token."
+          },
+          "response": []
+        },
+        {
+          "name": "Invalid Bearer Token (should 401)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Returns 401', () => pm.response.to.have.status(401));"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer not.a.real.jwt" }
+            ],
+            "url": {
+              "raw": "{{baseUrlKyc}}/api/v1/kyc/status",
+              "host": ["{{baseUrlKyc}}"],
+              "path": ["api", "v1", "kyc", "status"]
+            },
+            "description": "Tests that the JWT signature is actually verified (not just presence-checked)."
+          },
+          "response": []
+        }
+      ]
+    }
+  ]
+}

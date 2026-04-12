@@ -1,0 +1,461 @@
+{
+  "info": {
+    "_postman_id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+    "name": "AGCE Auth Service",
+    "description": "Authentication & user management service for Arab Global Crypto Exchange.\n\n## Setup\n1. Import this collection AND the AGCE Local environment\n2. Select the **AGCE Local** environment in the top-right dropdown\n3. Run **Auth → Request OTP (Signup)** then **Auth → Signup (Email)**\n4. The signup response auto-saves `accessToken`, `refreshToken`, and `userId` to the environment\n5. Both Auth and KYC collections share these variables\n\n## Variables (in environment file)\n- `baseUrlAuth` — Auth service base URL (default `http://localhost:3000`)\n- `identifier` — email or phone under test\n- `password` — test password\n- `otp` — current OTP (dev OTP is always `123456`)\n- `jurisdiction` — INDIA / ABU_DHABI / DUBAI / GLOBAL\n- `accessToken`, `refreshToken`, `userId` — auto-populated",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Health",
+      "item": [
+        {
+          "name": "Health Check (Gateway)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status is 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Returns ok', () => {",
+                  "  const json = pm.response.json();",
+                  "  pm.expect(json.status).to.eql('ok');",
+                  "});",
+                  "// Note: when accessed via the gateway, this returns the gateway's",
+                  "// own health (service: 'agce-gateway'), not the auth-service's."
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrlAuth}}/healthz",
+              "host": ["{{baseUrlAuth}}"],
+              "path": ["healthz"]
+            },
+            "description": "Hits the **gateway** health endpoint (not the auth-service directly). This verifies the gateway is reachable. To check auth-service specifically, the gateway would need to expose `/healthz/auth` (not currently configured)."
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Auth",
+      "item": [
+        {
+          "name": "Request OTP (Signup)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('OTP sent successfully', () => {",
+                  "  pm.response.to.have.status(200);",
+                  "  pm.expect(pm.response.json().success).to.be.true;",
+                  "});",
+                  "console.log('Dev OTP is 123456. In production, check the SMS/email channel.');"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"identifier\": \"{{identifier}}\",\n  \"purpose\": \"SIGNUP\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrlAuth}}/api/v1/auth/otp",
+              "host": ["{{baseUrlAuth}}"],
+              "path": ["api", "v1", "auth", "otp"]
+            },
+            "description": "Generates a 6-digit OTP for signup verification.\n\nIn dev mode (`NODE_ENV != production`), the OTP is always **`123456`**. In production it's randomly generated and delivered via SMS/email."
+          },
+          "response": []
+        },
+        {
+          "name": "Request OTP (Login)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('OTP sent', () => pm.response.to.have.status(200));"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"identifier\": \"{{identifier}}\",\n  \"purpose\": \"LOGIN\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrlAuth}}/api/v1/auth/otp",
+              "host": ["{{baseUrlAuth}}"],
+              "path": ["api", "v1", "auth", "otp"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Signup (Email)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Signup successful', () => {",
+                  "  pm.response.to.have.status(200);",
+                  "  const json = pm.response.json();",
+                  "  pm.expect(json.success).to.be.true;",
+                  "  pm.expect(json.data).to.have.property('accessToken');",
+                  "  pm.expect(json.data).to.have.property('refreshToken');",
+                  "  pm.expect(json.data.user.isRegistered).to.be.true;",
+                  "});",
+                  "",
+                  "if (pm.response.code === 200) {",
+                  "  const data = pm.response.json().data;",
+                  "  pm.environment.set('accessToken', data.accessToken);",
+                  "  pm.environment.set('refreshToken', data.refreshToken);",
+                  "  pm.environment.set('userId', data.userId);",
+                  "  console.log('Saved accessToken, refreshToken, userId to environment');",
+                  "  console.log('You can now run KYC requests with the same environment.');",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"action\": \"signup\",\n  \"identifier\": \"{{identifier}}\",\n  \"otp\": \"{{otp}}\",\n  \"password\": \"{{password}}\",\n  \"jurisdiction\": \"{{jurisdiction}}\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrlAuth}}/api/v1/auth",
+              "host": ["{{baseUrlAuth}}"],
+              "path": ["api", "v1", "auth"]
+            },
+            "description": "Create a new user account using email.\n\n**Password rules:**\n- Min 8 chars\n- Not all numbers\n- Not all letters (case-sensitive)\n- Not equal to identifier\n\n**Required flow:**\n1. First call `Request OTP (Signup)`\n2. (Dev) OTP is `123456` automatically\n3. Run this request"
+          },
+          "response": []
+        },
+        {
+          "name": "Signup (Phone)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Signup successful', () => pm.response.to.have.status(200));",
+                  "if (pm.response.code === 200) {",
+                  "  const data = pm.response.json().data;",
+                  "  pm.environment.set('accessToken', data.accessToken);",
+                  "  pm.environment.set('refreshToken', data.refreshToken);",
+                  "  pm.environment.set('userId', data.userId);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"action\": \"signup\",\n  \"identifier\": \"+911234567890\",\n  \"otp\": \"{{otp}}\",\n  \"password\": \"SecurePass123\",\n  \"jurisdiction\": \"{{jurisdiction}}\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrlAuth}}/api/v1/auth",
+              "host": ["{{baseUrlAuth}}"],
+              "path": ["api", "v1", "auth"]
+            },
+            "description": "Phone signup uses E.164 format: `+<country code><number>`."
+          },
+          "response": []
+        },
+        {
+          "name": "Login (Password + OTP)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Login successful', () => pm.response.to.have.status(200));",
+                  "if (pm.response.code === 200) {",
+                  "  const data = pm.response.json().data;",
+                  "  pm.environment.set('accessToken', data.accessToken);",
+                  "  pm.environment.set('refreshToken', data.refreshToken);",
+                  "  pm.environment.set('userId', data.userId);",
+                  "  console.log('Tokens refreshed');",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"action\": \"login\",\n  \"method\": \"password\",\n  \"identifier\": \"{{identifier}}\",\n  \"password\": \"{{password}}\",\n  \"otp\": \"{{otp}}\",\n  \"bindIp\": false\n}"
+            },
+            "url": {
+              "raw": "{{baseUrlAuth}}/api/v1/auth",
+              "host": ["{{baseUrlAuth}}"],
+              "path": ["api", "v1", "auth"]
+            },
+            "description": "Login with password + OTP. Set `bindIp: true` to whitelist the current IP for this account."
+          },
+          "response": []
+        },
+        {
+          "name": "Login (Password + Bind IP)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Login successful', () => pm.response.to.have.status(200));",
+                  "if (pm.response.code === 200) {",
+                  "  const data = pm.response.json().data;",
+                  "  pm.environment.set('accessToken', data.accessToken);",
+                  "  pm.environment.set('refreshToken', data.refreshToken);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"action\": \"login\",\n  \"method\": \"password\",\n  \"identifier\": \"{{identifier}}\",\n  \"password\": \"{{password}}\",\n  \"otp\": \"{{otp}}\",\n  \"bindIp\": true\n}"
+            },
+            "url": {
+              "raw": "{{baseUrlAuth}}/api/v1/auth",
+              "host": ["{{baseUrlAuth}}"],
+              "path": ["api", "v1", "auth"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Login (Passkey)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Login successful', () => pm.response.to.have.status(200));"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"action\": \"login\",\n  \"method\": \"passkey\",\n  \"identifier\": \"{{identifier}}\",\n  \"passkey\": {\n    \"credentialId\": \"AQIDBAUGBwgJCgsMDQ4PEA\",\n    \"signature\": \"MEUCIQD...\",\n    \"clientDataJSON\": \"eyJ0eXBlIjoid2ViYXV0aG4uZ2V0Ii...\",\n    \"authenticatorData\": \"SZYN5YgOjGh0NBcPZHZgW4/krrmihjLHmVzzuoMdl2M\"\n  },\n  \"bindIp\": false\n}"
+            },
+            "url": {
+              "raw": "{{baseUrlAuth}}/api/v1/auth",
+              "host": ["{{baseUrlAuth}}"],
+              "path": ["api", "v1", "auth"]
+            },
+            "description": "Login with a WebAuthn passkey. **Note:** Full WebAuthn signature verification is a placeholder in the current code — this request will only work after implementing real verification with `@simplewebauthn/server`."
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Validation Tests",
+      "item": [
+        {
+          "name": "Password: All Numbers (should fail)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Returns 400', () => pm.response.to.have.status(400));",
+                  "pm.test('Error mentions all numbers', () => pm.expect(pm.response.json().error.message).to.include('all numbers'));"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"action\": \"signup\",\n  \"identifier\": \"numtest@agce.com\",\n  \"otp\": \"{{otp}}\",\n  \"password\": \"12345678\",\n  \"jurisdiction\": \"INDIA\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrlAuth}}/api/v1/auth",
+              "host": ["{{baseUrlAuth}}"],
+              "path": ["api", "v1", "auth"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Password: All Letters (should fail)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Returns 400', () => pm.response.to.have.status(400));",
+                  "pm.test('Error mentions all letters', () => pm.expect(pm.response.json().error.message).to.include('all letters'));"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"action\": \"signup\",\n  \"identifier\": \"lettest@agce.com\",\n  \"otp\": \"{{otp}}\",\n  \"password\": \"AbcDefGh\",\n  \"jurisdiction\": \"INDIA\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrlAuth}}/api/v1/auth",
+              "host": ["{{baseUrlAuth}}"],
+              "path": ["api", "v1", "auth"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Password: Too Short (should fail)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Returns 422', () => pm.response.to.have.status(422));"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"action\": \"signup\",\n  \"identifier\": \"short@agce.com\",\n  \"otp\": \"{{otp}}\",\n  \"password\": \"short1\",\n  \"jurisdiction\": \"INDIA\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrlAuth}}/api/v1/auth",
+              "host": ["{{baseUrlAuth}}"],
+              "path": ["api", "v1", "auth"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Invalid Identifier Format (should fail)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Returns 422', () => pm.response.to.have.status(422));"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"action\": \"signup\",\n  \"identifier\": \"bademail\",\n  \"otp\": \"{{otp}}\",\n  \"password\": \"SecurePass123\",\n  \"jurisdiction\": \"INDIA\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrlAuth}}/api/v1/auth",
+              "host": ["{{baseUrlAuth}}"],
+              "path": ["api", "v1", "auth"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Wrong OTP (should fail)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Returns 400', () => pm.response.to.have.status(400));"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"action\": \"signup\",\n  \"identifier\": \"wrongotp@agce.com\",\n  \"otp\": \"000000\",\n  \"password\": \"SecurePass123\",\n  \"jurisdiction\": \"INDIA\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrlAuth}}/api/v1/auth",
+              "host": ["{{baseUrlAuth}}"],
+              "path": ["api", "v1", "auth"]
+            }
+          },
+          "response": []
+        }
+      ]
+    }
+  ]
+}

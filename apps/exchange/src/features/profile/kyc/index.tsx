@@ -1,4 +1,3 @@
-import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import {
   Lock,
@@ -13,10 +12,31 @@ import {
   ArrowRight,
   ShieldCheck,
 } from 'lucide-react'
+import { useState } from 'react'
+import type { DiditStatus, KycDecision, KycStartSessionPayload } from '@agce/types'
+import { useInstanceConfig } from '@agce/hooks'
+import { jurisdictionFromInstance } from '../../auth/api.js'
+import { useAuth } from '../../../store/authStore.js'
+import { useKycStatus, useStartKycSession } from './hooks.js'
 
-// ─── Verification Status (simulated) ────────────────────────────────────────
+// ─── Verification Status ────────────────────────────────────────────────────
 
-type VerificationStatus = 'none' | 'failed' | 'complete'
+type VerificationStatus = 'none' | 'failed' | 'complete' | 'pending'
+
+function mapDiditStatus(status: DiditStatus | undefined): VerificationStatus {
+  switch (status) {
+    case 'Approved':
+      return 'complete'
+    case 'Declined':
+      return 'failed'
+    case 'In Progress':
+    case 'In Review':
+    case 'Resubmitted':
+      return 'pending'
+    default:
+      return 'none'
+  }
+}
 
 // ─── Locked Feature Row ──────────────────────────────────────────────────────
 
@@ -157,7 +177,13 @@ function FAQSection() {
 
 // ─── Identity Card (initial / no verification) ──────────────────────────────
 
-function IdentityCardInitial() {
+interface StartVerificationProps {
+  onStart: () => void
+  isPending: boolean
+  error: string | null
+}
+
+function IdentityCardInitial({ onStart, isPending, error }: StartVerificationProps) {
   return (
     <div
       className="rounded-xl relative overflow-hidden"
@@ -170,13 +196,20 @@ function IdentityCardInitial() {
         <p className="text-base mb-6" style={{ color: '#84878a' }}>
           It takes only 2-5 minutes to verify your account.
         </p>
-        <Link
-          to="/user_profile/kyc"
-          className="inline-block text-sm font-medium px-8 py-3 rounded-full no-underline"
+        <button
+          type="button"
+          onClick={onStart}
+          disabled={isPending}
+          className="inline-block text-sm font-medium px-8 py-3 rounded-full disabled:opacity-60 disabled:cursor-not-allowed"
           style={{ backgroundColor: '#303236', color: '#ffffff' }}
         >
-          Verify Now
-        </Link>
+          {isPending ? 'Starting…' : 'Verify Now'}
+        </button>
+        {error && (
+          <p className="text-sm mt-3" style={{ color: '#e7000b' }}>
+            {error}
+          </p>
+        )}
       </div>
       <img
         src="/images/kyc_illustration.svg"
@@ -188,9 +221,38 @@ function IdentityCardInitial() {
   )
 }
 
+function IdentityCardPending() {
+  return (
+    <div
+      className="rounded-xl p-8"
+      style={{ border: '1px solid #f2f3f4', backgroundColor: '#ffffff' }}
+    >
+      <h2 className="text-2xl font-semibold mb-2" style={{ color: '#303236' }}>
+        Verification in Progress
+      </h2>
+      <p className="text-base" style={{ color: '#84878a' }}>
+        Your verification is being reviewed. This usually takes a few minutes — you can leave this page and come back.
+      </p>
+    </div>
+  )
+}
+
 // ─── Identity Card (failed verification) ─────────────────────────────────────
 
-function IdentityCardFailed() {
+function IdentityCardFailed({
+  decision,
+  onRetry,
+  isPending,
+  error,
+}: {
+  decision?: KycDecision
+  onRetry: () => void
+  isPending: boolean
+  error: string | null
+}) {
+  const reason =
+    decision?.decline_reason ??
+    'Your identity verification is currently incomplete. To complete the process, please submit the required information and finish facial recognition.'
   return (
     <div className="flex flex-col gap-5">
       {/* User info row */}
@@ -233,20 +295,28 @@ function IdentityCardFailed() {
             Verification Incomplete
           </p>
           <p className="text-sm mt-1" style={{ color: '#303236' }}>
-            Your identity verification is currently incomplete. To complete the process, please submit the required information and finish facial recognition.
+            {reason}
           </p>
         </div>
       </div>
 
+      {error && (
+        <p className="text-sm" style={{ color: '#e7000b' }}>
+          {error}
+        </p>
+      )}
+
       {/* Action buttons */}
       <div className="flex items-center gap-3">
-        <Link
-          to="/user_profile/kyc"
-          className="inline-block text-sm font-medium px-8 py-3 rounded-full no-underline"
+        <button
+          type="button"
+          onClick={onRetry}
+          disabled={isPending}
+          className="inline-block text-sm font-medium px-8 py-3 rounded-full disabled:opacity-60 disabled:cursor-not-allowed"
           style={{ backgroundColor: '#303236', color: '#ffffff' }}
         >
-          Try Again
-        </Link>
+          {isPending ? 'Starting…' : 'Try Again'}
+        </button>
         <Link
           to="/user_profile/support"
           className="inline-block text-sm font-medium px-8 py-3 rounded-full no-underline"
@@ -395,9 +465,47 @@ function IdentityCardComplete() {
 
 // ─── KycPage ─────────────────────────────────────────────────────────────────
 
+function buildStartSessionPayload(
+  jurisdiction: KycStartSessionPayload['jurisdiction'],
+  identifier: string | null,
+): KycStartSessionPayload {
+  const payload: KycStartSessionPayload = { jurisdiction }
+  if (identifier) {
+    if (identifier.includes('@')) payload.email = identifier
+    else if (identifier.startsWith('+')) payload.phone = identifier
+  }
+  return payload
+}
+
 export function KycPage() {
-  // Simulated status — change to 'none' or 'failed' to see other states
-  const [status] = useState<VerificationStatus>('complete')
+  const { data: kycStatus, refetch } = useKycStatus()
+  const startSession = useStartKycSession()
+  const instanceConfig = useInstanceConfig()
+  const { session } = useAuth()
+  const [launchError, setLaunchError] = useState<string | null>(null)
+
+  const status: VerificationStatus = mapDiditStatus(kycStatus?.status)
+
+  const handleStart = async () => {
+    setLaunchError(null)
+    try {
+      const payload = buildStartSessionPayload(
+        jurisdictionFromInstance(instanceConfig.id),
+        session?.identifier ?? null,
+      )
+      const result = await startSession.mutate(payload)
+      if (result.diditUrl) {
+        window.location.href = result.diditUrl
+        return
+      }
+      setLaunchError('Verification URL unavailable. Please try again.')
+      await refetch()
+    } catch {
+      /* error surfaced via startSession.error */
+    }
+  }
+
+  const startError = launchError ?? startSession.error
 
   return (
     <div className="flex flex-col gap-6">
@@ -418,11 +526,9 @@ export function KycPage() {
         <div className="flex-1 min-w-0 flex flex-col gap-6">
           {status === 'complete' ? (
             <IdentityCardComplete />
-          ) : status === 'failed' ? (
-            <IdentityCardFailed />
-          ) : (
+          ) : status === 'pending' ? (
             <>
-              <IdentityCardInitial />
+              <IdentityCardPending />
               <div className="flex flex-col gap-4">
                 <div className="flex items-center gap-2">
                   <Lock size={18} style={{ color: '#303236' }} />
@@ -435,20 +541,45 @@ export function KycPage() {
                 ))}
               </div>
             </>
-          )}
-
-          {status === 'failed' && (
-            <div className="flex flex-col gap-4">
-              <div className="flex items-center gap-2">
-                <Lock size={18} style={{ color: '#303236' }} />
-                <h3 className="text-base font-medium" style={{ color: '#303236' }}>
-                  Locked Features - Verify to Unlock
-                </h3>
+          ) : status === 'failed' ? (
+            <>
+              <IdentityCardFailed
+                decision={kycStatus?.decision}
+                onRetry={handleStart}
+                isPending={startSession.isPending}
+                error={startError}
+              />
+              <div className="flex flex-col gap-4">
+                <div className="flex items-center gap-2">
+                  <Lock size={18} style={{ color: '#303236' }} />
+                  <h3 className="text-base font-medium" style={{ color: '#303236' }}>
+                    Locked Features - Verify to Unlock
+                  </h3>
+                </div>
+                {LOCKED_FEATURES.map((feature) => (
+                  <LockedFeatureRow key={feature.title} feature={feature} />
+                ))}
               </div>
-              {LOCKED_FEATURES.map((feature) => (
-                <LockedFeatureRow key={feature.title} feature={feature} />
-              ))}
-            </div>
+            </>
+          ) : (
+            <>
+              <IdentityCardInitial
+                onStart={handleStart}
+                isPending={startSession.isPending}
+                error={startError}
+              />
+              <div className="flex flex-col gap-4">
+                <div className="flex items-center gap-2">
+                  <Lock size={18} style={{ color: '#303236' }} />
+                  <h3 className="text-base font-medium" style={{ color: '#303236' }}>
+                    Locked Features - Verify to Unlock
+                  </h3>
+                </div>
+                {LOCKED_FEATURES.map((feature) => (
+                  <LockedFeatureRow key={feature.title} feature={feature} />
+                ))}
+              </div>
+            </>
           )}
         </div>
 
