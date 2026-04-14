@@ -1,0 +1,562 @@
+/* Scoped to signup wizard inside .form_block_login */
+
+.form_block_login .signup-wizard-step-meta {
+  text-align: center;
+  font-size: 0.8rem;
+  margin: -4px 0 8px;
+  opacity: 0.65;
+  letter-spacing: 0.02em;
+}
+
+/* Step indicator (1–4) */
+.form_block_login .signup-wizard-steps-bar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  margin: 0 0 18px;
+  padding: 0;
+  list-style: none;
+}
+
+.form_block_login .signup-wizard-steps-bar li {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.22);
+  transition: transform 0.2s ease, background 0.2s ease;
+}
+
+body.light_theme .form_block_login .signup-wizard-steps-bar li {
+  background: rgba(0, 0, 0, 0.15);
+}
+
+.form_block_login .signup-wizard-steps-bar li.is-done {
+  background: rgba(209, 170, 103, 0.55);
+}
+
+.form_block_login .signup-wizard-steps-bar li.is-active {
+  background: #d1aa67;
+  transform: scale(1.25);
+}
+
+body.light_theme .form_block_login .signup-wizard-steps-bar li.is-active {
+  background: #c49a4e;
+}
+
+body.light_theme .form_block_login .signup-wizard-step-meta {
+  opacity: 0.55;
+}
+
+.form_block_login .signup-wizard-referral-toggle {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding: 10px 0 0px;
+  margin-bottom: 0px;
+  background: none;
+  border: none;
+  color: inherit;
+  font-size: 0.9rem;
+  cursor: pointer;
+  text-align: left;
+  opacity: 0.85;
+}
+
+.form_block_login .signup-wizard-referral-toggle i {
+  transition: transform 0.2s ease;
+}
+
+.form_block_login .signup-wizard-referral-toggle.is-open i {
+  transform: rotate(180deg);
+}
+
+.form_block_login .signup-wizard-divider {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  color: #A0A3A7;
+  margin: 10px 0px 20px;
+  font-size: 0.85rem;
+  opacity: 0.8;
+}
+
+.form_block_login .signup-wizard-divider::before,
+.form_block_login .signup-wizard-divider::after {
+  content: "";
+  flex: 1;
+  height: 1px;
+  background: rgba(255, 255, 255, 0.15);
+}
+
+body.light_theme .form_block_login .signup-wizard-divider::before,
+body.light_theme .form_block_login .signup-wizard-divider::after {
+  background: #F2F3F4;
+}
+
+.form_block_login .signup-wizard-social-row {
+  display: flex;
+  justify-content: center;
+  gap: 14px;
+  margin-bottom: 8px;
+}
+
+.form_block_login .signup-wizard-social-btn {
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  border: 1px solid #F2F3F4;
+  background: rgba(255, 255, 255, 0.06);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  padding: 0;
+}
+
+.form_block_login .signup-wizard-social-btn img {
+  width: 24px;
+  height: 24px;
+  object-fit: contain;
+}
+
+body.light_theme .form_block_login .signup-wizard-social-btn {
+  border-color: rgb(0 0 0 / 4%);
+}
+
+.form_block_login .signup-wizard-otp-stack {
+  width: 100%;
+}
+
+.form_block_login .signup-wizard-otp-row {
+  display: flex;
+  gap: 10px;
+  justify-content: space-between;
+  align-items: stretch;
+  margin-bottom: 10px;
+  flex-wrap: nowrap;
+}
+
+.form_block_login .signup-wizard-otp-cell {
+  flex: 1 1;
+  min-width: 0;
+  width: 100%;
+  max-width: 50px;
+  height: 58px;
+  text-align: center;
+  font-size: 1.15rem;
+  font-weight: 600;
+  border-radius: 10px;
+  border: 1px solid transparent;
+  background: #F5F6F7 !important;
+  color: inherit;
+  transition: border-color 0.15s ease, background 0.15s ease;
+}
+
+.form_block_login .signup-wizard-otp-cell:focus {
+  outline: none;
+  border: 1px solid #1a1a1a !important;
+}
+
+body.light_theme .form_block_login .signup-wizard-otp-cell {
+  background: #f2f3f4;
+}
+
+body.light_theme .form_block_login .signup-wizard-otp-cell:focus {
+  border: 1px solid #1a1a1a !important;
+}
+
+.form_block_login .signup-wizard-otp-actions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+  width: 100%;
+}
+
+.form_block_login .signup-wizard-otp-link {
+  background: none;
+  border: none;
+  text-decoration: underline;
+  cursor: pointer;
+  font-size: 14px;
+  color: inherit;
+  opacity: 0.9;
+  padding: 0;
+}
+
+.form_block_login .signup-wizard-otp-link:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+  text-decoration: none;
+}
+
+.form_block_login .signup-wizard-otp-paste {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.form_block_login .signup-wizard-otp-paste i {
+  font-size: 1rem;
+  text-decoration: none;
+}
+
+.form_block_login .signup-wizard-rule-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 5px;
+  font-size: 12px;
+  margin-bottom: 0px;
+  opacity: 0.9;
+}
+
+.form_block_login .signup-wizard-rule-row.is-ok i {
+  color: #161616;
+}
+
+.form_block_login .signup-wizard-rule-row.is-bad i {
+  color: #121212;
+}
+
+.form_block_login .signup-wizard-priv-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.85rem;
+  margin: 16px 0 20px;
+}
+
+.form_block_login .signup-wizard-priv-table th,
+.form_block_login .signup-wizard-priv-table td {
+  padding: 10px 8px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  text-align: center;
+  font-size: 16px;
+}
+
+body.light_theme .form_block_login .signup-wizard-priv-table th,
+body.light_theme .form_block_login .signup-wizard-priv-table td {
+  border-bottom-color: rgba(0, 0, 0, 0.08);
+}
+
+body.light_theme .form_block_login .signup-wizard-priv-table td i.ri-check-line {
+  color: #000;
+} 
+
+.form_block_login .signup-wizard-priv-table th:first-child,
+.form_block_login .signup-wizard-priv-table td:first-child {
+  text-align: left;
+}
+
+.form_block_login .signup-wizard-priv-table th {
+  font-weight: 300;
+  opacity: 0.65;
+  font-size: 19px;
+}
+
+h3.mb-2.verify_hd {
+  font-size: 40px;
+  font-weight: 600;
+}
+
+h3.mb-2.verify_hd span { color: #D1AA67; }
+
+.form_block_login .signup-wizard-welcome-img {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  margin: 0 auto 12px;
+}
+
+.form_block_login .signup-wizard-welcome-img img {
+  max-width: 220px;
+  height: auto;
+  display: block;
+  margin: 0 auto;
+}
+
+.form_block_login .signup-wizard-secure {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  font-size: 0.78rem;
+  margin-top: 1px;
+  opacity: 0.65;
+}
+
+.form_block_login .signup-wizard-subtitle {
+  font-size: 0.9rem;
+  margin: 0 0 16px;
+  opacity: 0.75;
+  line-height: 1.45;
+}
+
+/* Match .login_btn primary actions for button.next_btn and submit */
+.form_block_login .login_btn button.next_btn {
+  padding: 17px;
+  border-radius: 50px;
+  cursor: pointer;
+  pointer-events: auto;
+  color: #ffffff;
+  border: none;
+  width: 100%;
+  background: #303236 !important;
+  font-weight: 400;
+  font-size: 16px;
+}
+
+.form_block_login .login_btn button.next_btn:hover:not(:disabled) {
+  opacity: 0.9;
+}
+
+.form_block_login .login_btn button.next_btn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.form_block_login .login_btn input[type="submit"],
+.form_block_login .login_btn input[type="button"] {
+  padding: 12px;
+  border-radius: 50px;
+  cursor: pointer;
+  color: #000;
+  border: none;
+  width: 100%;
+  background: #d1aa67 !important;
+  font-weight: 400;
+  font-size: 16px;
+}
+
+.form_block_login .login_btn input[type="submit"]:hover:not(:disabled),
+.form_block_login .login_btn input[type="button"]:hover:not(:disabled) {
+  opacity: 0.9;
+}
+
+.form_block_login .login_btn input[type="submit"]:disabled,
+.form_block_login .login_btn input[type="button"]:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.form_block_login .signup-wizard-back {
+  display: block;
+  width: 100%;
+  margin-top: 12px;
+  padding: 8px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  text-decoration: underline;
+  font-size: 0.9rem;
+  color: inherit;
+  opacity: 0.85;
+}
+
+/* -------------------------------------------------------------------------- */
+/* Signup split layout: fill viewport (no strip below black / white columns) */
+/* Root cause: .sign_in_form_s used align-items: center so columns did not      */
+/* stretch to full viewport height.                                            */
+/* -------------------------------------------------------------------------- */
+
+body.signupbg {
+  min-height: 100vh;
+  min-height: 100dvh;
+  margin: 0;
+  /* Fallback behind columns if anything is 1px short */
+  background: linear-gradient(90deg, #000000 0%, #000000 50%, #ffffff 50%, #ffffff 100%);
+}
+
+body.signupbg #root {
+  min-height: 100vh;
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+}
+
+body.signupbg .login_fullhieght {
+  flex: 1 1 auto;
+  width: 100%;
+  /* Match visible area below fixed header (see style.css #root:has(header.sticky-top) padding-top: 58px) */
+  min-height: calc(100vh - 58px);
+  min-height: calc(100dvh - 58px);
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+  padding: 0 !important;
+  margin: 0;
+  background-color: transparent;
+}
+
+body.signupbg .sign_in_form_s {
+  flex: 1 1 auto;
+  width: 100%;
+  min-height: 0;
+  min-height: 100%;
+  align-items: stretch;
+  align-content: stretch;
+  box-sizing: border-box;
+}
+
+body.signupbg .sign_rewards {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  min-height: 100%;
+  min-height: calc(100vh - 58px);
+  min-height: calc(100dvh - 58px);
+  min-width: 0;
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+  background-color: #000000;
+}
+
+body.signupbg .login_section.bgsignup {
+  flex: 1 1 auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100%;
+  min-height: calc(100vh - 58px);
+  min-height: calc(100dvh - 58px);
+  width: 100%;
+  max-width: none;
+  margin: 0;
+  box-sizing: border-box;
+  background-color: #ffffff;
+}
+
+/* Tablet / mobile: left promo hidden in global CSS — single column, full white */
+@media screen and (max-width: 991px) {
+  body.signupbg {
+    background: #ffffff;
+  }
+
+  body.signupbg .sign_in_form_s {
+    grid-template-columns: 1fr;
+    min-height: calc(100vh - 58px);
+    min-height: calc(100dvh - 58px);
+  }
+
+  body.signupbg .login_section.bgsignup {
+    min-height: calc(100vh - 58px);
+    min-height: calc(100dvh - 58px);
+    max-width: 100%;
+  }
+}
+
+/* Short viewports (mobile browser chrome) */
+@media screen and (max-width: 575px) {
+  body.signupbg .login_fullhieght,
+  body.signupbg .sign_in_form_s,
+  body.signupbg .login_section.bgsignup,
+  body.signupbg .sign_rewards {
+    min-height: calc(100svh - 58px);
+  }
+}
+
+/* -------------------------------------------------------------------------- */
+/* Steps 2–4: hide left promo; single column; centered form (Create Account)   */
+/* -------------------------------------------------------------------------- */
+
+body.signupbg.signup-wizard-full-steps {
+  background: #ffffff;
+}
+
+body.signupbg.signup-wizard-full-steps .sign_in_form_s {
+  grid-template-columns: 1fr !important;
+  max-width: 100%;
+}
+
+body.signupbg.signup-wizard-full-steps .sign_rewards {
+  display: none !important;
+}
+
+body.signupbg.signup-wizard-full-steps .login_section.bgsignup {
+  max-width: 100%;
+  width: 100%;
+  flex: 1 1 auto;
+  justify-content: center;
+  align-items: center;
+  background-color: #ffffff;
+}
+
+body.signupbg.signup-wizard-full-steps .login_form_right {
+  width: 100%;
+  max-width: 520px;
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: 24px;
+  padding-right: 24px;
+  box-sizing: border-box;
+}
+
+body.signupbg.signup-wizard-full-steps .form_block_login {
+  margin-left: auto;
+  margin-right: auto;
+  width: 100%;
+}
+
+@media screen and (max-width: 991px) {
+  body.signupbg.signup-wizard-full-steps {
+    background: #ffffff;
+  }
+
+  body.signupbg.signup-wizard-full-steps .login_form_right {
+    padding-left: 16px;
+    padding-right: 16px;
+  }
+}
+
+/* --- Input text visibility fixes (light mode + WebKit selects) --- */
+.form_block_login .input_filed,
+.form_block_login select.input_filed,
+.form_block_login textarea.input_filed {
+  -webkit-text-fill-color: #84888C;
+}
+
+.form_block_login .input_filed::placeholder {
+  color: #84888C;
+  -webkit-text-fill-color: #84888C;
+  opacity: 1;
+}
+
+body.light_theme .form_block_login .input_filed,
+body.light_theme .form_block_login select.input_filed,
+body.light_theme .form_block_login textarea.input_filed,
+body.light_theme .login_section .form_block_login select.input_filed,
+body.light_theme .login_fullhieght .login_section .form_block_login select.input_filed {
+  color: #0d0d0d !important;
+  -webkit-text-fill-color: #0d0d0d !important;
+  background-color: #f5f6f7 !important;
+}
+
+body.light_theme .form_block_login .input_filed::placeholder {
+  color: #6b7075 !important;
+  -webkit-text-fill-color: #6b7075 !important;
+  opacity: 1;
+}
+
+.form_block_login .signup-wizard-otp-cell {
+  -webkit-text-fill-color: inherit;
+}
+
+body.light_theme .form_block_login .signup-wizard-otp-cell {
+  color: #0d0d0d !important;
+  -webkit-text-fill-color: #0d0d0d !important;
+  background-color: #f5f6f7 !important;
+}
+
+/* bootstrap.css sets `color-scheme: dark` on :root; force light on auth inputs
+   in light_theme so native form controls render with light system styling. */
+body.light_theme .form_block_login .input_filed,
+body.light_theme .form_block_login select.input_filed,
+body.light_theme .form_block_login textarea.input_filed,
+body.light_theme .form_block_login .signup-wizard-otp-cell {
+  color-scheme: light;
+}

@@ -1,68 +1,84 @@
-import { TRUST_ITEMS } from '../data/index.js'
+import { useState } from 'react'
+import { HOW_IT_WORKS_STEPS, TRUST_CARDS } from '../data.js'
 
 export function TrustFeatures() {
+  const [activeTab, setActiveTab] = useState(0)
+
   return (
-    <section
-      className="py-16 lg:py-24"
-      style={{ backgroundColor: 'var(--color-bg)' }}
-    >
-      <div className="mx-auto max-w-[1400px] px-6">
-        <div className="mb-12">
-          <p
-            className="text-[40px] font-bold leading-[54.6px] mb-0"
-            style={{ color: 'var(--color-text)' }}
-          >
-            <span className="block">ARAB GLOBAL Trade</span>
-          </p>
-          <p
-            className="text-[40px] font-semibold leading-[54.6px]"
-            style={{ color: 'var(--color-text)' }}
-          >
-            Tour Safe and Trusted Crypto Exchange
-          </p>
+    <div className="latest_resources">
+      <div className="container">
+        <div className="d-flex invest_tradetop">
+          <div className="resourceslft">
+            <h2>
+              <span>ARAB GLOBAL Trade</span>
+              Tour Safe and Trusted Crypto Exchange
+            </h2>
+          </div>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          {TRUST_ITEMS.map(({ img, title, description }) => (
-            <div
-              key={title}
-              className="rounded-3xl overflow-hidden flex flex-col"
-              style={{
-                backgroundColor: 'var(--color-surface)',
-                border: '1px solid var(--color-border)',
-                boxShadow: '0px 4px 20px 0px rgba(0,0,0,0.05)',
-              }}
+        <div
+          className="latest_resources_tabs"
+          role="tablist"
+          aria-label="Exchange highlights"
+        >
+          {TRUST_CARDS.map((card, index) => (
+            <button
+              key={card.id}
+              type="button"
+              role="tab"
+              id={`latest-resources-tab-${card.id}`}
+              aria-selected={activeTab === index}
+              aria-controls={`latest-resources-panel-${card.id}`}
+              className={activeTab === index ? 'active' : ''}
+              onClick={() => setActiveTab(index)}
             >
-              <div
-                className="flex items-center justify-center overflow-hidden"
-                style={{ height: '280px', padding: '24px 24px 0' }}
-              >
-                <img
-                  src={img}
-                  alt={title}
-                  className="w-full max-h-[260px] object-contain"
-                  style={{ objectPosition: 'center bottom' }}
-                />
-              </div>
+              {card.tabLabel}
+            </button>
+          ))}
+        </div>
 
-              <div className="px-8 pb-8 pt-4 text-center">
-                <h3
-                  className="text-[30px] font-semibold mb-3 leading-[48px]"
-                  style={{ color: 'var(--color-text)' }}
-                >
-                  {title}
-                </h3>
-                <p
-                  className="text-base leading-6"
-                  style={{ color: 'var(--color-text-muted)' }}
-                >
-                  {description}
-                </p>
+        <div className="row latest_resources_cards_row">
+          {TRUST_CARDS.map((card, index) => (
+            <div
+              key={card.id}
+              id={`latest-resources-panel-${card.id}`}
+              role="tabpanel"
+              aria-labelledby={`latest-resources-tab-${card.id}`}
+              className={`col-sm-4 latest_resources_col ${activeTab === index ? 'active' : ''}`}
+            >
+              <div className="resources_news">
+                <div className="news_img">
+                  <img className="blogimg dark_img" src={card.icon} alt={card.title} />
+                </div>
+                <div className="resources_cnt">
+                  <h3>{card.title}</h3>
+                  <p>{card.description}</p>
+                </div>
               </div>
             </div>
           ))}
         </div>
       </div>
-    </section>
+
+      <div className="howwork_bl">
+        <div className="container">
+          <h2>How it works</h2>
+          <p>A powerful crypto platform designed for speed, security</p>
+
+          <ul className="howwork_list">
+            {HOW_IT_WORKS_STEPS.map((step) => (
+              <li key={step.step}>
+                <div className="howwork_icon">
+                  <img src={step.icon} alt={step.title} />
+                </div>
+                <span className="steps">{step.step}</span>
+                <h3>{step.title}</h3>
+                <p>{step.description}</p>
+              </li>
+            ))}
+          </ul>
+        </div>
+      </div>
+    </div>
   )
 }

@@ -1,111 +1,121 @@
-import { useNavigate, Link } from 'react-router-dom'
-import { TrendingUp, TrendingDown } from 'lucide-react'
-import type { Coin } from '../types/index.js'
-import { useTrendingCoins } from '../hooks/useTrendingCoins.js'
+import { useState } from 'react'
+import { NavLink, useNavigate } from 'react-router-dom'
+import { MOCK_HOT_PAIRS, MOCK_NEW_LISTINGS, MOCK_TOP_GAINERS } from '../data.js'
+import type { TrendingPair } from '../types.js'
+import { formatLandingPercent, formatLandingUsd } from '../utils.js'
 
-const TABS = [
-  { key: 'hot', label: 'Hot' },
-  { key: 'gainers', label: 'Top Gainers' },
-  { key: 'losers', label: 'Top Losers' },
-] as const
+interface RowProps {
+  item: TrendingPair
+  iconWidth?: number
+  onClick: (item: TrendingPair) => void
+}
 
-function CoinRow({ coin, onClick }: { coin: Coin; onClick: () => void }) {
+function TrendingRow({ item, iconWidth = 28, onClick }: RowProps) {
   return (
-    <div
-      className="flex items-center justify-between py-3 cursor-pointer transition-colors hover:opacity-80"
-      style={{ borderBottom: '1px solid var(--color-border)' }}
-      onClick={onClick}
-    >
-      <div className="flex items-center gap-3">
-        <div
-          className="shrink-0 rounded-full overflow-hidden flex items-center justify-center w-9 h-9"
-          style={{ backgroundColor: 'var(--color-surface-2)' }}
-        >
-          <img
-            src={coin.icon}
-            alt={coin.symbol}
-            className="w-7 h-7 object-cover"
-            onError={(e) => {
-              const t = e.currentTarget
-              t.style.display = 'none'
-              if (t.parentElement) {
-                t.parentElement.textContent = coin.symbol[0]
-                t.parentElement.style.fontSize = '13px'
-                t.parentElement.style.fontWeight = '700'
-                t.parentElement.style.color = 'var(--color-text-muted)'
-              }
-            }}
-          />
+    <tr onClick={() => onClick(item)}>
+      <td className="first_coloum">
+        <div className="td_first landing_pair_row">
+          <div className="icon">
+            <img
+              alt={item.baseCurrency}
+              src={item.iconSrc || '/images/option-img/btc_icon.svg'}
+              width={iconWidth}
+              height={iconWidth}
+              className="img-fluid icon_img coinimg"
+            />
+          </div>
+          <div className="landing_pair_names">
+            <span className="landing_pair_symbol">{item.baseCurrency}</span>
+            <span className="landing_pair_sub">{item.assetName}</span>
+          </div>
         </div>
-
-        <div>
-          <p
-            className="text-sm font-semibold leading-none mb-0.5"
-            style={{ color: 'var(--color-text)' }}
+      </td>
+      <td className="price_right_top text-end">
+        <div className="landing_pair_price_stack">
+          <span className="landing_pair_price">{formatLandingUsd(item.buyPrice)}</span>
+          <span
+            className={`landing_pair_chg ${item.changePercentage >= 0 ? 'green' : 'red'}`}
           >
-            {coin.symbol}
-          </p>
-          <p className="text-xs" style={{ color: 'var(--color-text-muted)' }}>
-            {coin.name}
-          </p>
+            {formatLandingPercent(item.changePercentage)}
+          </span>
         </div>
-      </div>
-
-      <div className="text-right">
-        <p className="text-sm font-semibold" style={{ color: 'var(--color-text)' }}>
-          {coin.price}
-        </p>
-        <div className="flex items-center justify-end gap-1 mt-0.5">
-          {coin.positive ? (
-            <TrendingUp size={11} style={{ color: 'var(--color-green)' }} />
-          ) : (
-            <TrendingDown size={11} style={{ color: 'var(--color-red)' }} />
-          )}
-          <p
-            className="text-xs font-medium"
-            style={{
-              color: coin.positive ? 'var(--color-green)' : 'var(--color-red)',
-            }}
-          >
-            {coin.change}
-          </p>
-        </div>
-      </div>
-    </div>
+      </td>
+    </tr>
   )
 }
 
-function SkeletonRow() {
+interface PanelProps {
+  id: string
+  labelledBy: string
+  title: string
+  pairs: TrendingPair[]
+  iconWidth: number
+  highlight?: boolean
+  isActive: boolean
+  onRowClick: (item: TrendingPair) => void
+}
+
+function TrendingPanel({
+  id,
+  labelledBy,
+  title,
+  pairs,
+  iconWidth,
+  highlight,
+  isActive,
+  onRowClick,
+}: PanelProps) {
+  const className = [
+    'hot_spot_outer',
+    highlight ? 'hot_spot_outer--highlight' : '',
+    isActive ? 'active' : '',
+  ]
+    .filter(Boolean)
+    .join(' ')
+
   return (
-    <div
-      className="flex items-center justify-between py-3"
-      style={{ borderBottom: '1px solid var(--color-border)' }}
-    >
-      <div className="flex items-center gap-3">
-        <div
-          className="shrink-0 rounded-full w-9 h-9 animate-pulse"
-          style={{ backgroundColor: 'var(--color-surface-2)' }}
-        />
-        <div className="space-y-1.5">
-          <div
-            className="h-3 w-16 rounded animate-pulse"
-            style={{ backgroundColor: 'var(--color-surface-2)' }}
-          />
-          <div
-            className="h-2 w-20 rounded animate-pulse"
-            style={{ backgroundColor: 'var(--color-surface-2)' }}
-          />
-        </div>
+    <div id={id} role="tabpanel" aria-labelledby={labelledBy} className={className}>
+      <div className="top_heading">
+        <h4>{title}</h4>
       </div>
-      <div className="space-y-1.5 text-right">
-        <div
-          className="h-3 w-16 rounded animate-pulse ml-auto"
-          style={{ backgroundColor: 'var(--color-surface-2)' }}
-        />
-        <div
-          className="h-2 w-12 rounded animate-pulse ml-auto"
-          style={{ backgroundColor: 'var(--color-surface-2)' }}
-        />
+      <div className="hot_trading_s">
+        <div className="table-responsive">
+          <table>
+            <tbody>
+              {pairs.length > 0 ? (
+                pairs.map((item) => (
+                  <TrendingRow
+                    key={item.id}
+                    item={item}
+                    iconWidth={iconWidth}
+                    onClick={onRowClick}
+                  />
+                ))
+              ) : (
+                <tr>
+                  <td colSpan={3} className="p-0">
+                    <div className="favouriteData text-center">
+                      <img
+                        src="/images/no_data_vector.svg"
+                        className="img-fluid dark_img"
+                        width={96}
+                        height={96}
+                        alt="no data"
+                      />
+                      <img
+                        src="/images/no_data_vector_light.png"
+                        className="img-fluid light_img"
+                        width={96}
+                        height={96}
+                        alt="no data"
+                      />
+                    </div>
+                  </td>
+                </tr>
+              )}
+            </tbody>
+          </table>
+        </div>
       </div>
     </div>
   )
@@ -113,120 +123,102 @@ function SkeletonRow() {
 
 export function TrendingCrypto() {
   const navigate = useNavigate()
-  const { hot, gainers, losers, loading, error } = useTrendingCoins(5)
+  const [activeMobileTab, setActiveMobileTab] = useState(0)
 
-  const groups: Record<(typeof TABS)[number]['key'], Coin[]> = {
-    hot,
-    gainers,
-    losers,
-  }
-
-  const handleRowClick = (coin: Coin) => {
-    navigate(`/trade/${coin.symbol}_USDT`)
+  const onRowClick = (item: TrendingPair) => {
+    if (!item.baseCurrency || !item.quoteCurrency) return
+    try {
+      localStorage.setItem('RecentPair', JSON.stringify(item))
+    } catch {
+      /* noop */
+    }
+    navigate(`/trade/${item.baseCurrency}_${item.quoteCurrency}`)
   }
 
   return (
-    <section
-      className="py-16 lg:py-20"
-      style={{ backgroundColor: 'var(--color-bg)' }}
-    >
-      <div className="mx-auto max-w-[1400px] px-6">
-        <div className="text-center mb-10">
-          <div
-            className="inline-block text-[15px] px-[18px] py-[7px] rounded-[50px] mb-4"
-            style={{
-              backgroundColor: 'var(--color-primary)',
-              color: '#222017',
-              border: '1px solid rgba(34,32,23,0.14)',
-            }}
+    <div className="crypto_section trending_crypto">
+      <div className="container">
+        <div className="features_bage">Platform Features</div>
+        <h2>Trending Cryptocurrencies</h2>
+        <p>Trade 1,000+ cryptocurrencies in real time.</p>
+
+        <div
+          className="trending_crypto_tabs"
+          role="tablist"
+          aria-label="Trending categories"
+        >
+          <button
+            type="button"
+            role="tab"
+            id="trending-tab-hot"
+            aria-selected={activeMobileTab === 0}
+            aria-controls="trending-panel-hot"
+            className={activeMobileTab === 0 ? 'active' : ''}
+            onClick={() => setActiveMobileTab(0)}
           >
-            Live Market
-          </div>
-          <h2
-            className="text-3xl lg:text-4xl font-bold mb-3"
-            style={{ color: 'var(--color-text)' }}
+            Hot
+          </button>
+          <button
+            type="button"
+            role="tab"
+            id="trending-tab-new"
+            aria-selected={activeMobileTab === 1}
+            aria-controls="trending-panel-new"
+            className={activeMobileTab === 1 ? 'active' : ''}
+            onClick={() => setActiveMobileTab(1)}
           >
-            Trending Cryptocurrencies
-          </h2>
-          <p className="text-base" style={{ color: 'var(--color-text-muted)' }}>
-            Trade 1,000+ cryptocurrencies in real time.
-          </p>
+            New Coins
+          </button>
+          <button
+            type="button"
+            role="tab"
+            id="trending-tab-gainers"
+            aria-selected={activeMobileTab === 2}
+            aria-controls="trending-panel-gainers"
+            className={activeMobileTab === 2 ? 'active' : ''}
+            onClick={() => setActiveMobileTab(2)}
+          >
+            Top Gainers
+          </button>
         </div>
 
-        {error && (
-          <div
-            className="max-w-md mx-auto mb-6 px-4 py-3 rounded-lg text-sm text-center"
-            style={{
-              backgroundColor: 'rgba(220,38,38,0.1)',
-              color: 'var(--color-red)',
-            }}
-          >
-            Failed to load live prices: {error}
-          </div>
-        )}
-
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          {TABS.map(({ key, label }) => (
-            <div
-              key={key}
-              className="rounded-2xl p-5"
-              style={{
-                backgroundColor: 'var(--color-surface)',
-                border: '1px solid var(--color-border)',
-                boxShadow: '0 2px 12px rgba(0,0,0,0.06)',
-              }}
-            >
-              <div className="flex items-center justify-between mb-4">
-                <h3
-                  className="font-semibold text-base"
-                  style={{ color: 'var(--color-text)' }}
-                >
-                  {label}
-                </h3>
-              </div>
-
-              <div
-                className="flex justify-between mb-1 pb-2"
-                style={{ borderBottom: '1px solid var(--color-border)' }}
-              >
-                <span
-                  className="text-xs"
-                  style={{ color: 'var(--color-text-muted)' }}
-                >
-                  Name
-                </span>
-                <span
-                  className="text-xs"
-                  style={{ color: 'var(--color-text-muted)' }}
-                >
-                  Price / 24h
-                </span>
-              </div>
-
-              {loading
-                ? Array.from({ length: 5 }).map((_, i) => <SkeletonRow key={i} />)
-                : groups[key].map((coin) => (
-                    <CoinRow
-                      key={coin.symbol + coin.name}
-                      coin={coin}
-                      onClick={() => handleRowClick(coin)}
-                    />
-                  ))}
-            </div>
-          ))}
+        <div className="crypto_dashboard">
+          <TrendingPanel
+            id="trending-panel-hot"
+            labelledBy="trending-tab-hot"
+            title="Hot"
+            pairs={MOCK_HOT_PAIRS}
+            iconWidth={28}
+            highlight
+            isActive={activeMobileTab === 0}
+            onRowClick={onRowClick}
+          />
+          <TrendingPanel
+            id="trending-panel-new"
+            labelledBy="trending-tab-new"
+            title="New Coins"
+            pairs={MOCK_NEW_LISTINGS}
+            iconWidth={30}
+            isActive={activeMobileTab === 1}
+            onRowClick={onRowClick}
+          />
+          <TrendingPanel
+            id="trending-panel-gainers"
+            labelledBy="trending-tab-gainers"
+            title="Top Gainers"
+            pairs={MOCK_TOP_GAINERS}
+            iconWidth={30}
+            isActive={activeMobileTab === 2}
+            onRowClick={onRowClick}
+          />
         </div>
 
-        {/* View More link */}
-        <div className="mt-8 text-center">
-          <Link
-            to="/market"
-            className="inline-flex items-center gap-2 text-sm font-medium no-underline"
-            style={{ color: 'var(--color-primary)' }}
-          >
-            View More →
-          </Link>
+        <div className="viewmorebtn">
+          <NavLink to="/market">
+            View More <i className="ri-arrow-right-line" />
+          </NavLink>
         </div>
       </div>
-    </section>
+    </div>
   )
 }

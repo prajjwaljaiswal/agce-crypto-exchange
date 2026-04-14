@@ -5,7 +5,11 @@
       "Bash(python3 -c ':*)",
       "mcp__plugin_figma_figma__get_screenshot",
       "Bash(pnpm dev:*)",
-      "Bash(pnpm add:*)"
+      "Bash(pnpm add:*)",
+      "Read(//c/projects/agce-ui/arab_global_exchange/src/Routing/**)",
+      "Read(//c/projects/agce-ui/arab_global_exchange/src/customComponents/**)",
+      "Bash(npx tsc:*)",
+      "Bash(pnpm --filter @agce/exchange dev)"
     ]
   }
 }

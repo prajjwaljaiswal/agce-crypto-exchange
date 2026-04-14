@@ -1,396 +1,73 @@
-@import "tailwindcss";
+/* Tailwind v4 — import theme + utilities only, NO preflight.
+   The legacy /css-new/style.css ships with its own reset/typography; running
+   Tailwind's preflight on top of it strips margin/padding from <ul>, <p>,
+   <h3>, etc. and breaks the footer and other legacy sections. */
+@import 'tailwindcss/theme.css' layer(theme);
+@import 'tailwindcss/utilities.css' layer(utilities);
 
-/* ─── Design tokens — Arab Global Exchange (gold theme) ─── */
-:root {
-  --color-primary: #d1aa67;
-  --color-primary-hover: #c49a54;
-  --color-gold-light: #e2caa0;
-  --color-cream: #fcf5ea;
-
-  --color-bg: #0d0d0d;
-  --color-surface: #161616;
-  --color-surface-2: #1e1e1e;
-  --color-surface-3: #2a2a2a;
-
-  --color-border: rgba(255 255 255 / 0.08);
-  --color-border-strong: rgba(255 255 255 / 0.16);
-  --color-border-light: #cecfd0;
-
-  --color-text: #ffffff;
-  --color-text-muted: #a0a0a0;
-  --color-text-subtle: #666666;
-
-  --color-text-dark: #222017;
-  --color-text-dark-muted: #878787;
-
-  --color-green: #16a34a;
-  --color-red: #dc2626;
-
-  --font-sans: 'Inter', system-ui, sans-serif;
+/* Tailwind v4 uses --default-font-family on html via preflight; override to
+   match reference (Inter) so utilities and base both align. */
+@theme {
+  --default-font-family: 'Inter', sans-serif;
+  --font-sans: 'Inter', sans-serif;
 }
 
-/* ─── Light theme overrides (toggled via ThemeProvider) ─── */
-[data-theme="light"] {
-  --color-bg: #f5f5f5;
-  --color-surface: #ffffff;
-  --color-surface-2: #eeeeee;
-  --color-surface-3: #e0e0e0;
-
-  --color-border: rgba(0 0 0 / 0.08);
-  --color-border-strong: rgba(0 0 0 / 0.16);
-  --color-border-light: #d0d0d0;
-
-  --color-text: #111111;
-  --color-text-muted: #555555;
-  --color-text-subtle: #888888;
-
-  --color-text-dark: #111111;
-  --color-text-dark-muted: #555555;
-}
-
-html,
+/*
+ * Ported from agce-ui/arab_global_exchange/src/index.css.
+ * Match reference: body uses "Inter". Do NOT set a system-font stack here —
+ * Vite injects this stylesheet after /css-new/style.css, so a system-font
+ * override here would win the cascade and silently change the typeface.
+ */
 body {
-  overflow-x: hidden;
-  overscroll-behavior-x: none;
-}
-
-body {
-  background-color: var(--color-bg);
-  color: var(--color-text);
-  font-family: var(--font-sans);
+  margin: 0;
+  font-family: 'Inter', sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
-/* Utility: invert dark-only SVG icons / images so they're visible in dark mode */
-[data-theme="dark"] .theme-icon-invert {
-  filter: invert(1) hue-rotate(180deg);
+code {
+  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
+    monospace;
 }
 
-::-webkit-scrollbar { width: 6px; height: 6px; }
-::-webkit-scrollbar-track { background: var(--color-surface); }
-::-webkit-scrollbar-thumb { background: var(--color-surface-3); border-radius: 3px; }
+/*
+ * The legacy design system is loaded via <link> tags in index.html:
+ *   /css-new/bootstrap.min.css, /css-new/bootstrap.css  (Bootstrap 5.3.3)
+ *   /css-new/style.css                                  (main, ~27k lines)
+ *   /css-new/light_theme.css
+ *   /css-new/slick.css
+ *   /font/style.css                                     (HarmonyOS Sans)
+ *
+ * Feature-scoped CSS lives alongside its feature, e.g.
+ *   features/landing-page/home.css
+ *
+ * Tailwind v4 is still loaded above for any new, non-legacy components.
+ * Do not add global resets here that would conflict with /css-new/style.css.
+ */
 
-.scrollbar-hide {
-  scrollbar-width: none;
-  -ms-overflow-style: none;
-}
-.scrollbar-hide::-webkit-scrollbar {
-  display: none;
-}
-
-/* ─── Platform Features — Trade & Earn interactive hub ─── */
-
-.trade_earn_section {
-  background-color: var(--color-bg);
-  color: var(--color-text);
-  position: relative;
-  padding: 5rem 0 4rem;
-  text-align: center;
-}
-
-.trade_earn_section::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 360px;
-  background-color: var(--color-surface);
-  pointer-events: none;
-}
-
-.trade_earn_section h2 {
-  letter-spacing: -0.5px;
-  margin-bottom: 0;
-}
-
-/* Badge pill */
-.features_bage {
-  font-size: 15px;
-  background-color: var(--color-primary);
-  color: #222017;
-  border: 1px solid rgba(34, 32, 23, 0.14);
-  display: inline-block;
-  padding: 7px 18px;
-  border-radius: 50px;
-  margin-bottom: 15px;
-}
-
-/* Container inside section sits above the ::before layer */
-.fhub-container {
-  position: relative;
-  z-index: 1;
-  max-width: 1320px;
-  margin: 0 auto;
-  padding: 0 1rem;
-}
-
-/* Responsive 3-column grid */
-.fhub-row {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 1rem;
-}
-
-.fhub-col {
-  width: 100%;
-}
-
-/* Card wrapping the whole hub */
-.features-hub.features-card {
-  background-color: var(--color-surface);
-  border-radius: 2rem;
-  padding: 2rem 1rem 3rem;
-  margin-top: 40px;
-  border: 1px solid var(--color-border);
-}
-
-/* Entrance animations */
-@keyframes fhubFadeIn {
-  from { opacity: 0; transform: translateY(-10px); }
-  to   { opacity: 1; transform: translateY(0); }
-}
-
-@keyframes fhubZoomIn {
-  from { opacity: 0; transform: scale(0.9); }
-  to   { opacity: 1; transform: scale(1); }
-}
-
-.fhub-fade-in { animation: fhubFadeIn 1.2s ease-in-out; }
-.fhub-zoom-in { animation: fhubZoomIn 1s ease-in-out; }
-
-/* Feature item cards (left / right columns) */
-button.feature-item {
-  display: block;
-  width: 100%;
-  min-height: 124px;
-  background: var(--color-surface-2);
-  border: 1px solid var(--color-border);
-  border-radius: 16px;
-  padding: 1.25rem 1.35rem;
-  text-align: center;
-  margin-bottom: 32px;
-  cursor: pointer;
-  transition: background 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease;
-  color: var(--color-text-muted);
-}
-
-button.feature-item h3 {
-  font-size: 20px;
-  font-weight: 400;
-  margin: 0 0 0.5rem;
-  color: var(--color-text-muted);
-  transition: color 0.25s ease;
-}
-
-button.feature-item p {
-  margin: 0;
-  font-size: 14px;
-  line-height: 1.5;
-  color: var(--color-text-muted);
-  font-weight: 400;
-}
-
-button.feature-item.is-active {
-  background: var(--color-surface-3);
-  border-color: var(--color-primary);
-  box-shadow: 0 8px 28px rgba(209, 170, 103, 0.2);
-}
-
-button.feature-item.is-active h3 { color: var(--color-primary); }
-button.feature-item.is-active p  { color: var(--color-text); }
-
-/* Center hub */
-.features-hub-center {
-  position: relative;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  min-height: 400px;
-  padding: 1rem 0 2rem;
-  text-align: center;
-}
-
-/* Fixed-square wrapper; scales down on narrow viewports */
-.center-image-wrapper {
-  position: relative;
-  z-index: 0;
-  box-sizing: border-box;
-  width: 414px;
-  max-width: 100%;
-  aspect-ratio: 1;
-  height: auto;
-  margin: 0 auto;
-  overflow: visible;
-  isolation: isolate;
-  flex-shrink: 0;
-}
-
-/* Phone / center graphic */
-.center-image-wrapper .center-image {
-  position: relative;
-  z-index: 2;
-  width: 89%;
-  max-width: 400px;
-  height: auto;
-  margin: 22px auto 0;
-  display: block;
-  pointer-events: none;
-  object-fit: contain;
-}
-
-/* Rotating gold arc */
-.feature-hub-arc-spinner {
-  position: absolute;
-  inset: 0;
-  z-index: 3;
-  pointer-events: none;
-  transform-origin: 50% 50%;
-  will-change: transform;
-}
-
-.feature-hub-arc-spinner > svg {
-  width: 100%;
-  height: 100%;
-  display: block;
-  overflow: visible;
-  shape-rendering: geometricPrecision;
-}
-
-/* Connector hit-targets (absolutely positioned over hub) */
-.feature-connector-hit {
-  position: absolute;
-  background: transparent;
-  border: none;
-  padding: 0;
-  margin: 0;
-  cursor: pointer;
-  z-index: 4;
-  line-height: 0;
-  border-radius: 8px;
-  transition: filter 0.25s ease, opacity 0.25s ease;
-}
-
-.feature-connector-hit.is-active {
-  filter: drop-shadow(0 0 6px rgba(209, 170, 103, 0.45));
-}
-
-.feature-connector-hit:focus-visible {
-  outline: 2px solid #d1aa67;
-  outline-offset: 4px;
-}
-
-.feature-connector-hit svg {
-  display: block;
-  max-width: min(176px, 28vw);
-  height: auto;
-}
-
-/* SVG connector wrappers */
-.feature-connector-inner {
-  position: relative;
-  display: inline-block;
-  width: 100%;
-  max-width: min(176px, 28vw);
-  vertical-align: top;
-}
-
-.feature-connector-inner .feature-connector-lines {
-  display: block;
-  width: 100%;
-  height: auto;
-}
-
-/* Vector circles hidden — badge img overlays hub node */
-.feature-connector-inner .feature-connector-lines circle {
-  opacity: 0;
-}
-
-/* Icon badges */
-.feature-connector-badge {
-  position: absolute;
-  display: block;
-  width: 43px;
-  height: 43px;
-  object-fit: contain;
-  pointer-events: none;
-  border-radius: 50%;
-  transition: box-shadow 0.2s ease, outline 0.2s ease, opacity 0.2s ease;
-}
-
-.feature-connector-inner--tl .feature-connector-badge { top: 0; }
-.feature-connector-inner--tr .feature-connector-badge { right: calc((10 / 176) * 100% - 12.5px); top: 0; }
-.feature-connector-inner--bl .feature-connector-badge { top: 58px; }
-.feature-connector-inner--br .feature-connector-badge { right: calc((10 / 176) * 100% - 12.5px); top: 58px; }
-
-.feature-connector-hit:not(.is-active) .feature-connector-badge { opacity: 0.92; }
-
-.feature-connector-hit.is-active .feature-connector-badge {
-  opacity: 1;
-  outline: 2px solid #d1aa67;
-  outline-offset: 2px;
-  box-shadow: 0 0 12px rgba(209, 170, 103, 0.45);
-}
-
-/* Corner positions of connector hit-targets relative to center-image-wrapper */
-.top-left-pos    { left: -73px;  top: 6%;    transform: translateX(-8%); }
-.bottom-left-pos { left: -30px;  bottom: 1%; transform: translateX(-8%); }
-.top-right-pos   { right: -73px; top: 6%;    transform: translateX(8%);  }
-.bottom-right-pos{ right: -29px; bottom: 1%; transform: translateX(8%);  }
-
-/* ── Responsive overrides ── */
-
-@media (min-width: 768px) {
-  .fhub-col { width: calc(33.333% - 0.667rem); }
-  .fhub-col.order-2.md-order-1 { order: 1; }
-  .fhub-col.order-1.md-order-2 { order: 2; }
-  .fhub-col.order-3 { order: 3; }
-  .feature-left,
-  .feature-right { padding: 0 1rem; padding-top: 2.5rem; }
-}
-
-@media (max-width: 1440px) {
-  .top-left-pos    { left: -81px; top: 4%; }
-  .bottom-left-pos { left: -53px; }
-  .bottom-right-pos{ right: -53px; }
-  .top-right-pos   { right: -78px; top: 3%; }
-}
-
-@media (max-width: 1200px) {
-  button.feature-item     { padding: 15px; margin-bottom: 18px; }
-  button.feature-item h3  { font-size: 16px; }
+/*
+ * Navbar visibility guard — force the user header menu visible on desktop
+ * and hidden/overlay on mobile, independent of Bootstrap's `.collapse`
+ * toggling so class-cascade quirks (multiple Bootstrap builds, custom
+ * overrides) cannot accidentally hide the nav items.
+ */
+@media (min-width: 992px) {
+  header .navigation .agce-navbar-collapse {
+    display: flex !important;
+    flex-basis: auto !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    height: auto !important;
+    max-height: none !important;
+    overflow: visible !important;
+  }
 }
 
 @media (max-width: 991.98px) {
-  .features-hub-center     { min-height: 320px; }
-  .feature-connector-hit   { display: none; }
-  .features-hub.features-card {
-    padding: 0 !important;
-    margin-bottom: 0 !important;
-    margin-top: 50px;
+  header .navigation .agce-navbar-collapse:not(.show) {
+    display: none !important;
   }
-  .center-image-wrapper .center-image { margin: 12px auto 0; }
-}
-
-@media (max-width: 575px) {
-  .trade_earn_section         { padding: 2rem 0 !important; }
-  .center-image-wrapper .center-image { margin: 18px auto 0; }
-}
-
-/* ─── Hero banner animation ─── */
-
-@keyframes bannerHeroFloat {
-  0%   { transform: translateY(0) rotate(0deg) scale(1); }
-  50%  { transform: translateY(-12px) rotate(0.5deg) scale(1.01); }
-  100% { transform: translateY(0) rotate(0deg) scale(1); }
-}
-
-.banner-img-motion {
-  animation: bannerHeroFloat 6s ease-in-out infinite;
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .banner-img-motion { animation: none; }
+  header .navigation .agce-navbar-collapse.show {
+    display: flex !important;
+  }
 }

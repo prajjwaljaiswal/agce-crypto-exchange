@@ -1,0 +1,197 @@
+/* Login 2-step flow — scoped under .form_block_login */
+
+body.loginbg .login-page-center {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: calc(100dvh - 96px);
+  padding: 24px 16px 40px;
+  box-sizing: border-box;
+}
+
+body.loginbg .login-page-center .login_section {
+  width: 100%;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.col-sm-12.input_block.qrcode_scan_block {
+  text-align: center;
+}
+
+.col-sm-12.input_block.qrcode_scan_block label {
+  text-align: center;
+}
+
+.form_block_login.login-wizard-root .signup-wizard-otp-actions.login-otp-actions-paste-only {
+  justify-content: flex-end;
+}
+
+@media (max-height: 560px) {
+  body.loginbg .login-page-center {
+    min-height: auto;
+    justify-content: flex-start;
+    padding-top: 16px;
+  }
+}
+
+.form_block_login.login-wizard-root .login-wizard-title {
+  font-size: 40px;
+  font-weight: 600;
+  margin: 0 0 20px;
+  text-align: left;
+  letter-spacing: -0.02em;
+}
+
+.form_block_login.login-wizard-root .login-wizard-tabs {
+  display: flex;
+  gap: 0;
+  margin: 0 0 20px;
+  padding: 0;
+  list-style: none;
+}
+
+.form_block_login.login-wizard-root .login-wizard-tabs button {
+  flex: 1 1;
+  padding: 8px 8px 5px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 0.9rem;
+  color: inherit;
+  opacity: 0.55;
+  position: relative;
+  text-align: center;
+}
+
+.form_block_login.login-wizard-root .login-wizard-tabs button.is-active {
+  opacity: 1;
+  font-weight: 600;
+}
+
+.form_block_login.login-wizard-root .login-wizard-tabs button.is-active::after {
+  content: "";
+  position: absolute;
+  left: 30%;
+  right: 30%;
+  bottom: 0;
+  height: 2px;
+  background: #373737;
+  border-radius: 2px;
+}
+
+.form_block_login.login-wizard-root .login-wizard-bind-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin: 8px 0 20px;
+  font-size: 0.85rem;
+}
+
+.form_block_login.login-wizard-root .login-wizard-bind-row label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  margin: 0;
+  font-weight: 400;
+}
+
+.form_block_login.login-wizard-root .login-wizard-bind-row input[type="checkbox"] {
+  width: 16px;
+  height: 16px;
+  accent-color: #d1aa67;
+}
+
+.form_block_login.login-wizard-root .login-wizard-bind-row a {
+  color: #1a1d21;
+}
+
+.form_block_login.login-wizard-root .login-wizard-next-btn {
+  display: block;
+  width: 100%;
+  padding: 16px 20px;
+  border-radius: 999px;
+  border: none;
+  background: #1a1d21;
+  color: #fff;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  margin-top: 4px;
+}
+
+body.light_theme .form_block_login.login-wizard-root .login-wizard-next-btn {
+  background: #1a1d21;
+  color: #fff;
+}
+
+.form_block_login.login-wizard-root .login-wizard-next-btn:hover:not(:disabled) {
+  opacity: 0.92;
+}
+
+.form_block_login.login-wizard-root .login-wizard-next-btn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.form_block_login.login-wizard-root .login-wizard-passkey-outline {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  width: 100%;
+  padding: 14px 16px;
+  margin-top: 4px;
+  border-radius: 12px;
+  border: 1px solid #F2F3F4;
+  background: rgba(255, 255, 255, 0.04);
+  color: inherit;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+body.light_theme .form_block_login.login-wizard-root .login-wizard-passkey-outline {
+  background: #fff;
+}
+
+.form_block_login.login-wizard-root .login-wizard-passkey-outline:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.form_block_login.login-wizard-root .login-wizard-create-link {
+  display: block;
+  text-align: center;
+  margin-top: 0px;
+  font-size: 14px;
+  text-decoration: underline;
+  color: #4e4e4e;
+  opacity: 0.9;
+}
+
+/* Verification options modal method rows */
+.login-method-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 0;
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+  cursor: pointer;
+}
+
+body.light_theme .login-method-row {
+  border-bottom-color: rgba(0,0,0,0.08);
+}
+
+.login-method-row:last-child {
+  border-bottom: none;
+}
+
+.login-method-row-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}

@@ -1,7 +1,7 @@
-import path from 'node:path'
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 import tailwindcss from '@tailwindcss/vite'
+import path from 'node:path'
 
 export default defineConfig({
   plugins: [react(), tailwindcss()],
@@ -9,15 +9,15 @@ export default defineConfig({
     alias: {
       '@agce/types': path.resolve(__dirname, '../../packages/types/src/index.ts'),
       '@agce/config': path.resolve(__dirname, '../../packages/config/src/index.ts'),
-      '@agce/ui': path.resolve(__dirname, '../../packages/ui/src/index.ts'),
       '@agce/hooks': path.resolve(__dirname, '../../packages/hooks/src/index.ts'),
-      '@agce/binance': path.resolve(__dirname, '../../packages/binance/src/index.ts'),
+      '@agce/ui': path.resolve(__dirname, '../../packages/ui/src/index.ts'),
+      '@': path.resolve(__dirname, './src'),
     },
   },
   server: {
     host: true,
-  },
-  build: {
-    outDir: `dist/${process.env['VITE_INSTANCE'] ?? 'global'}`,
+    port: 5173,
+    strictPort: false,
+    open: true,
   },
 })
