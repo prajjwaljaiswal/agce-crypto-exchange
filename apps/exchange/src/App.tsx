@@ -1,4 +1,4 @@
-import { Route, Routes } from 'react-router-dom'
+import { Route, Routes, useLocation } from 'react-router-dom'
 import { AppProviders } from './providers/index.js'
 import { UserHeader } from './components/layout/UserHeader.js'
 import { Footer } from './components/layout/Footer.js'
@@ -14,7 +14,18 @@ import { RegistrationVerification } from './features/auth/RegistrationVerificati
 import { RegistrationResult } from './features/auth/RegistrationResult.js'
 import './App.css'
 
+const AUTH_ROUTE_PREFIXES = [
+  '/signup',
+  '/login',
+  '/forgot_password',
+  '/account-verification',
+  '/account-activate',
+]
+
 function AppInner() {
+  const { pathname } = useLocation()
+  const isAuthRoute = AUTH_ROUTE_PREFIXES.some((prefix) => pathname.startsWith(prefix))
+
   return (
     <>
       <UserHeader />
@@ -39,7 +50,7 @@ function AppInner() {
           <Route path="*" element={<div className="container py-5">Coming soon</div>} />
         </Routes>
       </main>
-      <Footer />
+      {!isAuthRoute && <Footer />}
     </>
   )
 }

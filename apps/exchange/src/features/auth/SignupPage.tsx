@@ -271,7 +271,7 @@ export function SignupPage() {
           ? accountTab === 'email'
             ? 'Verify your email'
             : 'Verify your phone'
-          : 'Welcome to AGCE'
+          : ''
 
   const otpDigitsDisplay = getOtpDigitsStr()
 
@@ -297,7 +297,7 @@ export function SignupPage() {
 
           {/* Right form panel */}
           <div className="login_section bgsignup">
-            <div className="login_form_right">
+            <div className={`login_form_right${wizardStep === 4 ? " signup-wizard-welcome-wide" : ""}`}>
               <div className="form_block_login">
                 <h2>{signupFormTitle}</h2>
 
@@ -638,10 +638,6 @@ export function SignupPage() {
                             Welcome to AGCE Verify your identity to claim{' '}
                             <span>exciting bonus</span>.
                           </h3>
-                          <p className="signup-wizard-subtitle" style={{ textAlign: 'center' }}>
-                            Verify your identity to claim{' '}
-                            <span style={{ color: '#d1aa67' }}>exciting bonus</span>.
-                          </p>
                         </div>
                         <div className="col-sm-12 input_block">
                           <table className="signup-wizard-priv-table">

@@ -221,10 +221,17 @@ body.light_theme .form_block_login .signup-wizard-otp-cell:focus {
 }
 
 .form_block_login .signup-wizard-priv-table {
-  width: 100%;
+  width: 520px;
+  max-width: 100%;
+  margin: 15px auto;
   border-collapse: collapse;
   font-size: 0.85rem;
-  margin: 16px 0 20px;
+}
+
+body.signupbg.signup-wizard-full-steps .login_form_right.signup-wizard-welcome-wide .col-sm-12.login_btn {
+  width: 520px;
+  max-width: 100%;
+  margin: 0 auto;
 }
 
 .form_block_login .signup-wizard-priv-table th,
@@ -242,7 +249,7 @@ body.light_theme .form_block_login .signup-wizard-priv-table td {
 
 body.light_theme .form_block_login .signup-wizard-priv-table td i.ri-check-line {
   color: #000;
-} 
+}
 
 .form_block_login .signup-wizard-priv-table th:first-child,
 .form_block_login .signup-wizard-priv-table td:first-child {
@@ -257,24 +264,22 @@ body.light_theme .form_block_login .signup-wizard-priv-table td i.ri-check-line 
 
 h3.mb-2.verify_hd {
   font-size: 40px;
-  font-weight: 600;
+  font-weight: 500;
+  margin-top: -70px;
 }
 
-h3.mb-2.verify_hd span { color: #D1AA67; }
+h3.mb-2.verify_hd span {
+  color: #D1AA67;
+}
 
 .form_block_login .signup-wizard-welcome-img {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  width: 100%;
-  margin: 0 auto 12px;
+  text-align: center;
+  margin-bottom: 12px;
 }
 
 .form_block_login .signup-wizard-welcome-img img {
   max-width: 220px;
   height: auto;
-  display: block;
-  margin: 0 auto;
 }
 
 .form_block_login .signup-wizard-secure {
@@ -452,6 +457,7 @@ body.signupbg .login_section.bgsignup {
 
 /* Short viewports (mobile browser chrome) */
 @media screen and (max-width: 575px) {
+
   body.signupbg .login_fullhieght,
   body.signupbg .sign_in_form_s,
   body.signupbg .login_section.bgsignup,
@@ -496,6 +502,11 @@ body.signupbg.signup-wizard-full-steps .login_form_right {
   box-sizing: border-box;
 }
 
+/* Step 4 (welcome / verify bonus): wider content; steps 2–3 stay at 520px above */
+body.signupbg.signup-wizard-full-steps .login_form_right.signup-wizard-welcome-wide {
+  max-width: 700px;
+}
+
 body.signupbg.signup-wizard-full-steps .form_block_login {
   margin-left: auto;
   margin-right: auto;
@@ -513,50 +524,149 @@ body.signupbg.signup-wizard-full-steps .form_block_login {
   }
 }
 
-/* --- Input text visibility fixes (light mode + WebKit selects) --- */
-.form_block_login .input_filed,
-.form_block_login select.input_filed,
-.form_block_login textarea.input_filed {
-  -webkit-text-fill-color: #84888C;
+@media screen and (max-width: 767px) {
+  h3.mb-2.verify_hd {
+    font-size: 1.35rem;
+    margin-top: -24px;
+    line-height: 1.25;
+  }
+
+  body.signupbg .sign_rewards {
+    display: none;
+  }
+
+  .form_block_login .login_btn button.next_btn {
+    padding: 10px 14px;
+    font-size: 13px;
+  }
+
+  body.signupbg .login_section.bgsignup .form_block_login h2 {
+    font-size: 1.5rem;
+    line-height: 1.2;
+  }
+
+  body.signupbg.signup-wizard-full-steps .login_form_right,
+  body.signupbg.signup-wizard-full-steps .login_form_right.signup-wizard-welcome-wide {
+    padding-left: 14px;
+    padding-right: 14px;
+  }
+
+  .form_block_login .signup-wizard-otp-row {
+    gap: 6px;
+  }
+
+  .form_block_login .signup-wizard-otp-cell {
+    height: 50px;
+    font-size: 1.05rem;
+  }
+
+  .form_block_login .signup-wizard-priv-table th,
+  .form_block_login .signup-wizard-priv-table td {
+    font-size: 0.8125rem;
+    padding: 8px 5px;
+  }
+
+  .form_block_login .signup-wizard-priv-table th {
+    font-size: 0.9rem;
+  }
 }
 
-.form_block_login .input_filed::placeholder {
-  color: #84888C;
-  -webkit-text-fill-color: #84888C;
-  opacity: 1;
-}
+/* Narrow phones */
+@media screen and (max-width: 575px) {
+  body.signupbg .login_section.bgsignup .form_block_login h2 {
+    font-size: 1.25rem;
+  }
 
-body.light_theme .form_block_login .input_filed,
-body.light_theme .form_block_login select.input_filed,
-body.light_theme .form_block_login textarea.input_filed,
-body.light_theme .login_section .form_block_login select.input_filed,
-body.light_theme .login_fullhieght .login_section .form_block_login select.input_filed {
-  color: #0d0d0d !important;
-  -webkit-text-fill-color: #0d0d0d !important;
-  background-color: #f5f6f7 !important;
-}
+  body.signupbg .login_section.bgsignup .nav.nav-tabs.login-pills {
+    display: flex;
+    flex-wrap: nowrap;
+    gap: 4px;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: thin;
+    padding-bottom: 2px;
+  }
 
-body.light_theme .form_block_login .input_filed::placeholder {
-  color: #6b7075 !important;
-  -webkit-text-fill-color: #6b7075 !important;
-  opacity: 1;
-}
+  body.signupbg .login_section.bgsignup .nav.nav-tabs.login-pills .nav-link {
+    font-size: 0.8125rem;
+    padding: 8px 12px;
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
 
-.form_block_login .signup-wizard-otp-cell {
-  -webkit-text-fill-color: inherit;
-}
+  body.signupbg .form_block_login .row {
+    gap: 12px;
+  }
 
-body.light_theme .form_block_login .signup-wizard-otp-cell {
-  color: #0d0d0d !important;
-  -webkit-text-fill-color: #0d0d0d !important;
-  background-color: #f5f6f7 !important;
-}
+  body.signupbg.signup-wizard-full-steps .login_form_right,
+  body.signupbg.signup-wizard-full-steps .login_form_right.signup-wizard-welcome-wide {
+    padding-left: 12px;
+    padding-right: 12px;
+  }
 
-/* bootstrap.css sets `color-scheme: dark` on :root; force light on auth inputs
-   in light_theme so native form controls render with light system styling. */
-body.light_theme .form_block_login .input_filed,
-body.light_theme .form_block_login select.input_filed,
-body.light_theme .form_block_login textarea.input_filed,
-body.light_theme .form_block_login .signup-wizard-otp-cell {
-  color-scheme: light;
+  .form_block_login .signup-wizard-subtitle {
+    font-size: 0.8125rem;
+    margin-bottom: 12px;
+  }
+
+  .form_block_login .signup-wizard-otp-row {
+    gap: 4px;
+  }
+
+  .form_block_login .signup-wizard-otp-cell {
+    height: 46px;
+    font-size: 0.95rem;
+    border-radius: 8px;
+  }
+
+  .form_block_login .signup-wizard-otp-link {
+    font-size: 0.8125rem;
+  }
+
+  .form_block_login .signup-wizard-rule-row {
+    font-size: 11px;
+    gap: 4px;
+  }
+
+  .form_block_login .signup-wizard-social-btn {
+    width: 44px;
+    height: 44px;
+  }
+
+  h3.mb-2.verify_hd {
+    font-size: 1.1rem;
+    margin-top: -50px;
+    margin-bottom: 8px;
+  }
+
+  .form_block_login .signup-wizard-welcome-img img {
+    max-width: 150px;
+  }
+
+  .form_block_login .signup-wizard-priv-table {
+    width: 100%;
+    max-width: 100%;
+    margin-left: 0;
+    margin-right: 0;
+  }
+
+  .form_block_login .signup-wizard-priv-table th,
+  .form_block_login .signup-wizard-priv-table td {
+    font-size: 0.7rem;
+    padding: 6px 3px;
+  }
+
+  .form_block_login .signup-wizard-priv-table th {
+    font-size: 0.75rem;
+  }
+
+  body.signupbg.signup-wizard-full-steps .login_form_right.signup-wizard-welcome-wide .col-sm-12.login_btn {
+    width: 100%;
+  }
+
+  .form_block_login .login_btn input[type="submit"],
+  .form_block_login .login_btn input[type="button"] {
+    padding: 11px 12px;
+    font-size: 0.875rem;
+  }
 }
