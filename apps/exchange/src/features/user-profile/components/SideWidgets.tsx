@@ -140,7 +140,7 @@ export function SecurityCenterCard() {
 
       <Link
         className="dash_primary_btn dash_primary_btn--green"
-        to="/user_profile/two_factor_autentication"
+        to="/user_profile/two_factor_authentication"
       >
         Enable 2FA
       </Link>

@@ -7,10 +7,11 @@ import { WithdrawOtpInput } from '../components/WithdrawOtpInput.js'
 import { WithdrawSummaryBar } from '../components/WithdrawSummaryBar.js'
 import { WithdrawFaq } from '../components/WithdrawFaq.js'
 import { RecentWithdrawals } from '../components/RecentWithdrawals.js'
-
-const AVAILABLE_BALANCE = 1250
-const WITHDRAWAL_FEE = 0.5
-const MAX_WITHDRAWAL = 1000000
+import {
+  MOCK_AVAILABLE_BALANCE,
+  MOCK_WITHDRAWAL_FEE,
+  MOCK_MAX_WITHDRAWAL,
+} from '../__mocks__/withdraw.js'
 
 export function WithdrawPage() {
   const [selectedCoin] = useState('USDT')
@@ -22,12 +23,12 @@ export function WithdrawPage() {
   const receiveAmount = useMemo(() => {
     const parsed = Number(amount)
     if (!Number.isFinite(parsed) || parsed <= 0) return '0'
-    const received = parsed - WITHDRAWAL_FEE
+    const received = parsed - MOCK_WITHDRAWAL_FEE
     return received > 0 ? received.toString() : '0'
   }, [amount])
 
   const handleMax = () => {
-    setAmount(String(Math.min(AVAILABLE_BALANCE, MAX_WITHDRAWAL)))
+    setAmount(String(Math.min(MOCK_AVAILABLE_BALANCE, MOCK_MAX_WITHDRAWAL)))
   }
 
   const handleRequestOtp = () => {
@@ -53,9 +54,9 @@ export function WithdrawPage() {
           <WithdrawAmountInput
             amount={amount}
             coin={selectedCoin}
-            availableBalance={AVAILABLE_BALANCE.toString()}
-            withdrawalFee={WITHDRAWAL_FEE.toString()}
-            maximumWithdrawal={MAX_WITHDRAWAL.toString()}
+            availableBalance={MOCK_AVAILABLE_BALANCE.toString()}
+            withdrawalFee={MOCK_WITHDRAWAL_FEE.toString()}
+            maximumWithdrawal={MOCK_MAX_WITHDRAWAL.toString()}
             onAmountChange={setAmount}
             onMax={handleMax}
           />
@@ -68,7 +69,7 @@ export function WithdrawPage() {
 
           <WithdrawSummaryBar
             receiveAmount={receiveAmount}
-            networkFee={WITHDRAWAL_FEE.toString()}
+            networkFee={MOCK_WITHDRAWAL_FEE.toString()}
             coin={selectedCoin}
             onSubmit={handleSubmit}
           />

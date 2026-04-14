@@ -1,3 +1,6 @@
 export { Button } from './components/Button.js'
 export { ButtonLink } from './components/ButtonLink.js'
 export { Badge } from './components/Badge.js'
+export { Modal } from './components/Modal.js'
+export { VerificationOptionRow } from './components/VerificationOptionRow.js'
+export { TablePagination } from './components/TablePagination.js'

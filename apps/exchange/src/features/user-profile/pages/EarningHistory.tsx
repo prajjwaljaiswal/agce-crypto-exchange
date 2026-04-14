@@ -1,30 +1,3 @@
-const PLANS = [
-  {
-    id: 1,
-    currency: 'USDT',
-    wallet: 'Flexible',
-    duration: '—',
-    start: '2026-03-01',
-    mature: '—',
-    subscription: '2000.00',
-    bonus: '12.45',
-    receivable: '2012.45',
-    status: 'ACTIVE',
-  },
-  {
-    id: 2,
-    currency: 'BTC',
-    wallet: 'Locked',
-    duration: '30 Days',
-    start: '2026-02-10',
-    mature: '2026-03-12',
-    subscription: '0.0500',
-    bonus: '0.00065',
-    receivable: '0.05065',
-    status: 'COMPLETED',
-  },
-]
-
 export function EarningHistory() {
   return (
     <div className="dashboard_right">

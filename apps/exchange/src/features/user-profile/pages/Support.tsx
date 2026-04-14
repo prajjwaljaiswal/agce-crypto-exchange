@@ -1,29 +1,4 @@
-const TICKETS = [
-  {
-    id: 1,
-    ticketId: 'TCK-001',
-    category: 'Withdrawal',
-    subject: 'Withdrawal pending',
-    priority: 'High',
-    status: 'Open',
-  },
-  {
-    id: 2,
-    ticketId: 'TCK-002',
-    category: 'KYC',
-    subject: 'Verification failed',
-    priority: 'Medium',
-    status: 'In Progress',
-  },
-  {
-    id: 3,
-    ticketId: 'TCK-003',
-    category: 'Other',
-    subject: 'General inquiry',
-    priority: 'Low',
-    status: 'Closed',
-  },
-]
+import { MOCK_TICKETS } from './__mocks__/tickets.js'
 
 export function Support() {
   return (
@@ -111,7 +86,7 @@ export function Support() {
                   </tr>
                 </thead>
                 <tbody>
-                  {TICKETS.map((t) => (
+                  {MOCK_TICKETS.map((t) => (
                     <tr key={t.id}>
                       <td>{t.id}</td>
                       <td>{t.ticketId}</td>

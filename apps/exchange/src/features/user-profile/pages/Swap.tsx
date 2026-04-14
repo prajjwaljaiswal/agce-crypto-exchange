@@ -1,25 +1,4 @@
-const RECENT_SWAPS = [
-  {
-    id: 1,
-    date: '2026-04-14 11:20:44',
-    pair: 'USDT → BTC',
-    pay: '1000.00 USDT',
-    get: '0.01487 BTC',
-    fee: '1.00 USDT',
-    rate: '1 BTC = 67250.12 USDT',
-    status: 'SUCCESS',
-  },
-  {
-    id: 2,
-    date: '2026-04-13 08:44:12',
-    pair: 'USDT → ETH',
-    pay: '500.00 USDT',
-    get: '0.1449 ETH',
-    fee: '0.50 USDT',
-    rate: '1 ETH = 3450.45 USDT',
-    status: 'SUCCESS',
-  },
-]
+import { MOCK_RECENT_SWAPS } from './__mocks__/swaps.js'
 
 export function Swap() {
   return (
@@ -104,7 +83,7 @@ export function Swap() {
                 </tr>
               </thead>
               <tbody>
-                {RECENT_SWAPS.map((s) => (
+                {MOCK_RECENT_SWAPS.map((s) => (
                   <tr key={s.id}>
                     <td>{s.id}</td>
                     <td>{s.date}</td>

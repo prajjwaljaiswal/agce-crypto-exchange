@@ -1,9 +1,9 @@
 import { NavLink, Outlet } from 'react-router-dom'
 
 const NAV_ITEMS = [
-  { to: '/asset_managemnet/deposit', label: 'Deposit Crypto', icon: 'ri-download-2-line' },
-  { to: '/asset_managemnet/deposit_fiat', label: 'Deposit Fiat', icon: 'ri-bank-line' },
-  { to: '/asset_managemnet/withdraw', label: 'Withdraw', icon: 'ri-upload-2-line' },
+  { to: '/asset_management/deposit', label: 'Deposit Crypto', icon: 'ri-download-2-line' },
+  { to: '/asset_management/deposit_fiat', label: 'Deposit Fiat', icon: 'ri-bank-line' },
+  { to: '/asset_management/withdraw', label: 'Withdraw', icon: 'ri-upload-2-line' },
 ]
 
 export function AssetManagementLayout() {

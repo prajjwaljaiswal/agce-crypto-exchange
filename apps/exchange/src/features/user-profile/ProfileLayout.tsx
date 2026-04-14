@@ -1,8 +1,14 @@
-import { useEffect, useMemo, useState } from 'react'
-import { Link, Outlet, useLocation, useNavigate } from 'react-router-dom'
+import { useState } from 'react'
+import { Link, Outlet, useNavigate } from 'react-router-dom'
+import { useSidebarState } from '@agce/hooks'
 import { useAuth } from '../../providers/index.js'
+import { usePageTitle } from './hooks/usePageTitle.js'
+import {
+  isWalletPageTitle,
+  pageIconFromTitle,
+} from './hooks/pageTitleFromPath.js'
 
-type SectionKey = 'assets' | 'orders' | 'account' | null
+type SectionKey = 'assets' | 'orders' | 'account'
 
 const capitalizeWallet = (str: string) => {
   if (!str) return 'Wallet'
@@ -10,85 +16,18 @@ const capitalizeWallet = (str: string) => {
 }
 
 export function ProfileLayout() {
-  const location = useLocation()
   const navigate = useNavigate()
   const { logout } = useAuth()
 
   // TODO: replace with wallet types fetched from backend (ProfileContext)
   const [walletTypes] = useState<string[]>([])
 
-  const [currentPage, setCurrentPage] = useState<string>('Dashboard')
-  const [isActive, setIsActive] = useState(false)
-  const [openSection, setOpenSection] = useState<SectionKey>(null)
+  const currentPage = usePageTitle()
+  const isWalletPage = isWalletPageTitle(currentPage)
+  const pageIcon = pageIconFromTitle(currentPage)
 
-  // Dynamic page detection — mirrors legacy ProfilePage useEffect
-  useEffect(() => {
-    const path = location.pathname
-
-    if (path.includes('/user_profile/dashboard')) setCurrentPage('Dashboard')
-    else if (path.includes('asset_overview')) setCurrentPage('Overview')
-    else if (path.includes('wallet/')) {
-      const walletMatch = path.match(/wallet\/([^/]+)/)
-      if (walletMatch && walletMatch[1]) {
-        setCurrentPage(capitalizeWallet(walletMatch[1]))
-      }
-    } else if (path.includes('spot_orders')) setCurrentPage('Spot Order')
-    else if (path.includes('transaction_history'))
-      setCurrentPage('Transaction History')
-    else if (path.includes('open_orders')) setCurrentPage('Open Order')
-    else if (path.includes('swap_history')) setCurrentPage('Swap History')
-    else if (path.includes('profile_setting')) setCurrentPage('Settings')
-    else if (path.includes('kyc')) setCurrentPage('Verification')
-    else if (path.includes('support')) setCurrentPage('Support')
-    else if (path.includes('two_factor_autentication'))
-      setCurrentPage('Security')
-    else if (path.includes('wallet_transfer_History'))
-      setCurrentPage('Wallet Transfer History')
-    else if (path.endsWith('/user_profile/swap')) setCurrentPage('Quick Swap')
-    else if (path.includes('notification')) setCurrentPage('Notification')
-    else if (path.includes('activity_logs')) setCurrentPage('Activity logs')
-    else if (path.includes('earning_plan_history'))
-      setCurrentPage('Earning Plan History')
-    else if (path === '/earning') setCurrentPage('Earning')
-  }, [location.pathname])
-
-  const isWalletPage = useMemo(() => {
-    return (
-      currentPage?.includes('Wallet') && currentPage !== 'Wallet Transfer History'
-    )
-  }, [currentPage])
-
-  const getPageIcon = useMemo(() => {
-    const iconMap: Record<string, string> = {
-      Dashboard: '/images/dasboard_home.svg',
-      Overview: '/images/dashboard_assets.svg',
-      'Spot Order': '/images/dashboard_order.svg',
-      'Open Order': '/images/dashboard_order.svg',
-      'Transaction History': '/images/dashboard_order.svg',
-      'Swap History': '/images/dashboard_order.svg',
-      'Wallet Transfer History': '/images/dashboard_order.svg',
-      'Earning Plan History': '/images/dashboard_order.svg',
-      Settings: '/images/dashboard_profile.svg',
-      Verification: '/images/dashboard_profile.svg',
-      Support: '/images/dashboard_profile.svg',
-      Earning: '/images/earning_icon3.svg',
-      Security: '/images/dashboard_security.svg',
-      'Quick Swap': '/images/quick-swap.svg',
-      Notification: '/images/dashboard_notification.svg',
-      'Activity logs': '/images/dashboard_logs.svg',
-    }
-
-    if (isWalletPage) return '/images/dashboard_assets.svg'
-    return iconMap[currentPage] || '/images/dasboard_home.svg'
-  }, [currentPage, isWalletPage])
-
-  const toggleContent = (page?: string) => {
-    setIsActive((v) => !v)
-    if (page) setCurrentPage(page)
-  }
-
-  const toggleSection = (key: Exclude<SectionKey, null>) =>
-    setOpenSection((cur) => (cur === key ? null : key))
+  const { isActive, toggleActive, openSection, toggleSection } =
+    useSidebarState<SectionKey>()
 
   const handleLogout = () => {
     logout()
@@ -110,13 +49,9 @@ export function ProfileLayout() {
 
   return (
     <>
-      <div
-        className="mobile_view"
-        id="toggleBtn"
-        onClick={() => toggleContent()}
-      >
+      <div className="mobile_view" id="toggleBtn" onClick={toggleActive}>
         <img
-          src={getPageIcon}
+          src={pageIcon}
           alt={currentPage}
           width={20}
           height={20}
@@ -142,7 +77,7 @@ export function ProfileLayout() {
           <ul className="list-unstyled ps-0 navi_sidebar">
             {/* Dashboard */}
             <li
-              onClick={() => toggleContent('Dashboard')}
+              onClick={toggleActive}
               className={`${currentPage === 'Dashboard' ? 'active' : ''} mb-1`}
             >
               <Link to="/user_profile/dashboard">
@@ -173,7 +108,7 @@ export function ProfileLayout() {
               >
                 <ul className="btn-toggle-nav list-unstyled fw-normal pb-1 small">
                   <li
-                    onClick={() => toggleContent('Overview')}
+                    onClick={toggleActive}
                     className={currentPage === 'Overview' ? 'active' : ''}
                   >
                     <Link to="/user_profile/asset_overview" className="rounded">
@@ -186,7 +121,7 @@ export function ProfileLayout() {
                       return (
                         <li
                           key={wallet}
-                          onClick={() => toggleContent(walletLabel)}
+                          onClick={toggleActive}
                           className={currentPage === walletLabel ? 'active' : ''}
                         >
                           <Link
@@ -227,7 +162,7 @@ export function ProfileLayout() {
               >
                 <ul className="btn-toggle-nav list-unstyled fw-normal pb-1 small">
                   <li
-                    onClick={() => toggleContent('Spot Order')}
+                    onClick={toggleActive}
                     className={currentPage === 'Spot Order' ? 'active' : ''}
                   >
                     <Link to="/user_profile/spot_orders" className="rounded">
@@ -235,7 +170,7 @@ export function ProfileLayout() {
                     </Link>
                   </li>
                   <li
-                    onClick={() => toggleContent('Open Order')}
+                    onClick={toggleActive}
                     className={currentPage === 'Open Order' ? 'active' : ''}
                   >
                     <Link to="/user_profile/open_orders" className="rounded">
@@ -243,7 +178,7 @@ export function ProfileLayout() {
                     </Link>
                   </li>
                   <li
-                    onClick={() => toggleContent('Transaction History')}
+                    onClick={toggleActive}
                     className={
                       currentPage === 'Transaction History' ? 'active' : ''
                     }
@@ -256,7 +191,7 @@ export function ProfileLayout() {
                     </Link>
                   </li>
                   <li
-                    onClick={() => toggleContent('Swap History')}
+                    onClick={toggleActive}
                     className={currentPage === 'Swap History' ? 'active' : ''}
                   >
                     <Link to="/user_profile/swap_history" className="rounded">
@@ -264,20 +199,20 @@ export function ProfileLayout() {
                     </Link>
                   </li>
                   <li
-                    onClick={() => toggleContent('Wallet Transfer History')}
+                    onClick={toggleActive}
                     className={
                       currentPage === 'Wallet Transfer History' ? 'active' : ''
                     }
                   >
                     <Link
-                      to="/user_profile/wallet_transfer_History"
+                      to="/user_profile/wallet_transfer_history"
                       className="rounded"
                     >
                       Internal Wallet Transfer
                     </Link>
                   </li>
                   <li
-                    onClick={() => toggleContent('Earning Plan History')}
+                    onClick={toggleActive}
                     className={
                       currentPage === 'Earning Plan History' ? 'active' : ''
                     }
@@ -318,7 +253,7 @@ export function ProfileLayout() {
               >
                 <ul className="btn-toggle-nav list-unstyled fw-normal pb-1 small">
                   <li
-                    onClick={() => toggleContent('Settings')}
+                    onClick={toggleActive}
                     className={currentPage === 'Settings' ? 'active' : ''}
                   >
                     <Link to="/user_profile/profile_setting" className="rounded">
@@ -326,7 +261,7 @@ export function ProfileLayout() {
                     </Link>
                   </li>
                   <li
-                    onClick={() => toggleContent('Verification')}
+                    onClick={toggleActive}
                     className={currentPage === 'Verification' ? 'active' : ''}
                   >
                     <Link to="/user_profile/kyc" className="rounded">
@@ -334,7 +269,7 @@ export function ProfileLayout() {
                     </Link>
                   </li>
                   <li
-                    onClick={() => toggleContent('Support')}
+                    onClick={toggleActive}
                     className={currentPage === 'Support' ? 'active' : ''}
                   >
                     <Link to="/user_profile/support" className="rounded">
@@ -347,7 +282,7 @@ export function ProfileLayout() {
 
             {/* Earning */}
             <li
-              onClick={() => toggleContent('Earning')}
+              onClick={toggleActive}
               className={`${currentPage === 'Earning' ? 'active' : ''} mb-1`}
             >
               <Link to="/earning">
@@ -361,10 +296,10 @@ export function ProfileLayout() {
 
             {/* Security */}
             <li
-              onClick={() => toggleContent('Security')}
+              onClick={toggleActive}
               className={`${currentPage === 'Security' ? 'active' : ''} mb-1`}
             >
-              <Link to="/user_profile/two_factor_autentication">
+              <Link to="/user_profile/two_factor_authentication">
                 <i
                   className="ri-shield-check-line navi_sidebar_icon"
                   aria-hidden
@@ -375,7 +310,7 @@ export function ProfileLayout() {
 
             {/* Quick Swap */}
             <li
-              onClick={() => toggleContent('Quick Swap')}
+              onClick={toggleActive}
               className={`${currentPage === 'Quick Swap' ? 'active' : ''} mb-1`}
             >
               <Link to="/user_profile/swap">
@@ -386,7 +321,7 @@ export function ProfileLayout() {
 
             {/* Notification */}
             <li
-              onClick={() => toggleContent('Notification')}
+              onClick={toggleActive}
               className={`${currentPage === 'Notification' ? 'active' : ''} mb-1`}
             >
               <Link to="/user_profile/notification">
@@ -400,7 +335,7 @@ export function ProfileLayout() {
 
             {/* Activity logs */}
             <li
-              onClick={() => toggleContent('Activity logs')}
+              onClick={toggleActive}
               className={`${currentPage === 'Activity logs' ? 'active' : ''} mb-1`}
             >
               <Link to="/user_profile/activity_logs">

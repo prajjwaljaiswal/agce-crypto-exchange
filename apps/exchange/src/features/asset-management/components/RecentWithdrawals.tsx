@@ -1,10 +1,19 @@
+import { useState } from 'react'
+import { useDisclosure } from '@agce/hooks'
 import { RECENT_WITHDRAWALS, shortenHash } from '../constants.js'
+import type { WithdrawalRecord } from '../constants.js'
 import { CopyIcon } from './CopyIcon.js'
 import { WithdrawalDetailsModal } from './WithdrawalDetailsModal.js'
 
-const DETAILS_MODAL_ID = 'recent_withdrawal_table'
-
 export function RecentWithdrawals() {
+  const details = useDisclosure()
+  const [selected, setSelected] = useState<WithdrawalRecord | null>(null)
+
+  const openDetails = (record: WithdrawalRecord) => {
+    setSelected(record)
+    details.open()
+  }
+
   return (
     <div className="recent_deposit_list">
       <div className="top_heading">
@@ -58,8 +67,7 @@ export function RecentWithdrawals() {
                     <button
                       type="button"
                       className="bg-transparent border-0 p-0 text-inherit"
-                      data-bs-toggle="modal"
-                      data-bs-target={`#${DETAILS_MODAL_ID}`}
+                      onClick={() => openDetails(row)}
                       style={{ cursor: 'pointer' }}
                     >
                       View
@@ -111,8 +119,7 @@ export function RecentWithdrawals() {
                   <button
                     type="button"
                     className="withdraw_card_view_btn"
-                    data-bs-toggle="modal"
-                    data-bs-target={`#${DETAILS_MODAL_ID}`}
+                    onClick={() => openDetails(row)}
                   >
                     View
                   </button>
@@ -123,12 +130,13 @@ export function RecentWithdrawals() {
         </div>
       </div>
 
-      {RECENT_WITHDRAWALS[0] ? (
+      {selected && (
         <WithdrawalDetailsModal
-          modalId={DETAILS_MODAL_ID}
-          record={RECENT_WITHDRAWALS[0]}
+          isOpen={details.isOpen}
+          onClose={details.close}
+          record={selected}
         />
-      ) : null}
+      )}
     </div>
   )
 }

@@ -1,4 +1,5 @@
 import { Link } from 'react-router-dom'
+import { useInstanceConfig } from '@agce/hooks'
 
 interface WalletRow {
   coin: string
@@ -44,6 +45,7 @@ const ACCOUNT_ROWS = [
 ]
 
 export function AssetOverview() {
+  const instance = useInstanceConfig()
   return (
     <div className="dashboard_right">
       <div className="row">
@@ -60,9 +62,9 @@ export function AssetOverview() {
                 <div>
                   <div className="wallet-title">14566.12 USDT</div>
                   <div className="wallet-sub mt-1">
-                    ≈ 1202100.75 INR
+                    ≈ 1202100.75 {instance.fiat.currency}
                     <Link
-                      to="/asset_managemnet/deposit"
+                      to="/asset_management/deposit"
                       className="cursor-pointer"
                     >
                       Deposit crypto instantly with one-click{' '}
@@ -72,13 +74,13 @@ export function AssetOverview() {
                 </div>
                 <div className="d-flex gap-2 mt-3 mt-md-0">
                   <Link
-                    to="/asset_managemnet/deposit"
+                    to="/asset_management/deposit"
                     className="btn btn-deposit px-4"
                   >
                     Deposit
                   </Link>
                   <Link
-                    to="/asset_managemnet/withdraw"
+                    to="/asset_management/withdraw"
                     className="btn btn-outline-custom px-4"
                   >
                     Withdraw
@@ -159,10 +161,10 @@ export function AssetOverview() {
                               <td>{row.total}</td>
                               <td className="right_td">
                                 <div className="d-flex gap-3 justify-content-end">
-                                  <Link to="/asset_managemnet/deposit">
+                                  <Link to="/asset_management/deposit">
                                     Deposit
                                   </Link>
-                                  <Link to="/asset_managemnet/withdraw">
+                                  <Link to="/asset_management/withdraw">
                                     Withdraw
                                   </Link>
                                   <Link to={`/trade/${row.coin}_USDT`}>

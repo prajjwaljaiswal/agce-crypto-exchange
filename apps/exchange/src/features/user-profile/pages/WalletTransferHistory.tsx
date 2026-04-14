@@ -1,22 +1,3 @@
-const TRANSFERS = [
-  {
-    id: 1,
-    date: '2026-04-14 13:25:00',
-    currency: 'USDT',
-    from: 'Spot',
-    to: 'Main',
-    status: 'SUCCESS',
-  },
-  {
-    id: 2,
-    date: '2026-04-13 09:12:44',
-    currency: 'BTC',
-    from: 'Main',
-    to: 'Earning',
-    status: 'SUCCESS',
-  },
-]
-
 export function WalletTransferHistory() {
   return (
     <div className="dashboard_right">

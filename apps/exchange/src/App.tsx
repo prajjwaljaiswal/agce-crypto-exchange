@@ -47,7 +47,7 @@ const NO_FOOTER_ROUTE_PREFIXES = [
   '/account-verification',
   '/account-activate',
   '/user_profile',
-  '/asset_managemnet',
+  '/asset_management',
 ]
 
 function AppInner() {
@@ -85,12 +85,12 @@ function AppInner() {
             <Route path="open_orders" element={<OpenOrders />} />
             <Route path="transaction_history" element={<TransactionHistory />} />
             <Route path="swap_history" element={<SwapHistory />} />
-            <Route path="wallet_transfer_History" element={<WalletTransferHistory />} />
+            <Route path="wallet_transfer_history" element={<WalletTransferHistory />} />
             <Route path="earning_plan_history" element={<EarningHistory />} />
             <Route path="profile_setting" element={<Settings />} />
             <Route path="kyc" element={<KycVerification />} />
             <Route path="support" element={<Support />} />
-            <Route path="two_factor_autentication" element={<TwoFactor />} />
+            <Route path="two_factor_authentication" element={<TwoFactor />} />
             <Route path="swap" element={<Swap />} />
             <Route path="notification" element={<Notifications />} />
             <Route path="activity_logs" element={<ActivityLogs />} />
@@ -98,7 +98,7 @@ function AppInner() {
 
 
           <Route element={<RequireAuth />}>
-            <Route path="/asset_managemnet" element={<AssetManagementLayout />}>
+            <Route path="/asset_management" element={<AssetManagementLayout />}>
               <Route index element={<DepositPage />} />
               <Route path="deposit" element={<DepositPage />} />
               <Route path="deposit_fiat" element={<DepositFiatPage />} />

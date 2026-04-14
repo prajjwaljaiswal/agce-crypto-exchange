@@ -1,24 +1,3 @@
-const SWAPS = [
-  {
-    id: 1,
-    date: '2026-04-14 11:20:44',
-    paid: '1000.00 USDT',
-    received: '0.01487 BTC',
-    rate: '1 BTC = 67250.12 USDT',
-    fee: '1.00 USDT',
-    status: 'SUCCESS',
-  },
-  {
-    id: 2,
-    date: '2026-04-13 15:42:11',
-    paid: '500.00 USDT',
-    received: '0.1449 ETH',
-    rate: '1 ETH = 3450.45 USDT',
-    fee: '0.50 USDT',
-    status: 'SUCCESS',
-  },
-]
-
 export function SwapHistory() {
   return (
     <div className="dashboard_right">

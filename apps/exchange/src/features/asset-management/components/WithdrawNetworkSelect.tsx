@@ -1,3 +1,5 @@
+import { Modal } from '@agce/ui'
+import { useDisclosure } from '@agce/hooks'
 import { WITHDRAW_NETWORK_OPTIONS } from '../constants.js'
 
 interface WithdrawNetworkSelectProps {
@@ -11,14 +13,12 @@ export function WithdrawNetworkSelect({
   address,
   onAddressChange,
 }: WithdrawNetworkSelectProps) {
+  const picker = useDisclosure()
+
   return (
     <div className="select_network_s select-option">
       <h2>Withdraw to</h2>
-      <div
-        className="search_icon_s"
-        data-bs-toggle="modal"
-        data-bs-target="#network_pop_up"
-      >
+      <div className="search_icon_s" onClick={picker.open} role="button">
         {selectedNetwork}
       </div>
 
@@ -57,71 +57,59 @@ export function WithdrawNetworkSelect({
         assets.
       </p>
 
-      <div
-        className="modal fade search_form search_coin"
-        id="network_pop_up"
-        tabIndex={-1}
-        aria-labelledby="exampleModalLabel"
-        aria-hidden="true"
+      <Modal
+        isOpen={picker.isOpen}
+        onClose={picker.close}
+        modalClassName="search_form search_coin"
       >
-        <div className="modal-dialog">
-          <div className="modal-content">
-            <div className="modal-header">
-              <button
-                type="button"
-                className="btn-close"
-                data-bs-dismiss="modal"
-                aria-label="Close"
-              />
-            </div>
-            <div className="modal-body">
-              <div className="network_top_p">
-                <svg
-                  className="bn-svg h-m w-m flex-shrink-0"
-                  viewBox="0 0 24 24"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <path
-                    fillRule="evenodd"
-                    clipRule="evenodd"
-                    d="M12 21a9 9 0 100-18 9 9 0 000 18zm-1.25-5.5V18h2.5v-2.5h-2.5zm0-9.5v7h2.5V6h-2.5z"
-                    fill="currentColor"
-                  />
-                </svg>
-                <p>
-                  Only supported networks on the AGCE platform are shown. If you provide
-                  an address from an unsupported network, your withdrawal request may be
-                  rejected.
-                </p>
-              </div>
-
-              <div className="hot_trading_t">
-                <table>
-                  <tbody>
-                    {WITHDRAW_NETWORK_OPTIONS.map((network) => (
-                      <tr key={network.code} data-bs-dismiss="modal">
-                        <td>
-                          <div className="td_first">
-                            <div className="price_heading">
-                              {network.code} <br />
-                              <span />
-                            </div>
-                          </div>
-                        </td>
-                        <td className="right_t price_tb">
-                          {network.range}
-                          <br />
-                          <span>{network.eta}</span>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            </div>
-          </div>
+        <div className="network_top_p">
+          <svg
+            className="bn-svg h-m w-m flex-shrink-0"
+            viewBox="0 0 24 24"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              fillRule="evenodd"
+              clipRule="evenodd"
+              d="M12 21a9 9 0 100-18 9 9 0 000 18zm-1.25-5.5V18h2.5v-2.5h-2.5zm0-9.5v7h2.5V6h-2.5z"
+              fill="currentColor"
+            />
+          </svg>
+          <p>
+            Only supported networks on the AGCE platform are shown. If you
+            provide an address from an unsupported network, your withdrawal
+            request may be rejected.
+          </p>
         </div>
-      </div>
+
+        <div className="hot_trading_t">
+          <table>
+            <tbody>
+              {WITHDRAW_NETWORK_OPTIONS.map((network) => (
+                <tr
+                  key={network.code}
+                  onClick={picker.close}
+                  style={{ cursor: 'pointer' }}
+                >
+                  <td>
+                    <div className="td_first">
+                      <div className="price_heading">
+                        {network.code} <br />
+                        <span />
+                      </div>
+                    </div>
+                  </td>
+                  <td className="right_t price_tb">
+                    {network.range}
+                    <br />
+                    <span>{network.eta}</span>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </Modal>
     </div>
   )
 }
