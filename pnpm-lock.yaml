@@ -20,9 +20,6 @@ importers:
 
   apps/exchange:
     dependencies:
-      '@agce/binance':
-        specifier: workspace:*
-        version: link:../../packages/binance
       '@agce/config':
         specifier: workspace:*
         version: link:../../packages/config
@@ -35,24 +32,21 @@ importers:
       '@agce/ui':
         specifier: workspace:*
         version: link:../../packages/ui
-      lightweight-charts:
-        specifier: ^5.1.0
-        version: 5.1.0
       lucide-react:
         specifier: ^0.514.0
         version: 0.514.0(react@19.2.5)
       react:
-        specifier: ^19.2.4
+        specifier: ^19.2.5
         version: 19.2.5
       react-dom:
-        specifier: ^19.2.4
+        specifier: ^19.2.5
         version: 19.2.5(react@19.2.5)
       react-router-dom:
         specifier: ^7.14.0
         version: 7.14.0(react-dom@19.2.5(react@19.2.5))(react@19.2.5)
     devDependencies:
       '@tailwindcss/vite':
-        specifier: ^4.1.0
+        specifier: ^4.2.2
         version: 4.2.2(vite@8.0.8(@types/node@24.12.2)(jiti@2.6.1))
       '@types/react':
         specifier: ^19.2.14
@@ -64,13 +58,13 @@ importers:
         specifier: ^6.0.1
         version: 6.0.1(vite@8.0.8(@types/node@24.12.2)(jiti@2.6.1))
       tailwindcss:
-        specifier: ^4.1.0
+        specifier: ^4.2.2
         version: 4.2.2
       typescript:
         specifier: ~6.0.2
         version: 6.0.2
       vite:
-        specifier: ^8.0.4
+        specifier: ^8.0.8
         version: 8.0.8(@types/node@24.12.2)(jiti@2.6.1)
 
   packages/binance: {}
@@ -427,9 +421,6 @@ packages:
     resolution: {integrity: sha512-Qohcme7V1inbAfvjItgw0EaxVX5q2rdVEZHRBrEQdRZTssLDGsL8Lwrznl8oQ/6kuTJONLaDcGjkNP247XEhcA==}
     engines: {node: '>=10.13.0'}
 
-  fancy-canvas@2.1.0:
-    resolution: {integrity: sha512-nifxXJ95JNLFR2NgRV4/MxVP45G9909wJTEKz5fg/TZS20JJZA6hfgRVh/bC9bwl2zBtBNcYPjiBE4njQHVBwQ==}
-
   fdir@6.5.0:
     resolution: {integrity: sha512-tIbYtZbucOs0BRGqPJkshJUYdL+SDH7dVM8gjy+ERp3WAUjLEFJE+02kanyHtwjWOnwrKYBiwAmM0p4kLJAnXg==}
     engines: {node: '>=12.0.0'}
@@ -527,9 +518,6 @@ packages:
   lightningcss@1.32.0:
     resolution: {integrity: sha512-NXYBzinNrblfraPGyrbPoD19C1h9lfI/1mzgWYvXUTe414Gz/X1FD2XBZSZM7rRTrMA8JL3OtAaGifrIKhQ5yQ==}
     engines: {node: '>= 12.0.0'}
-
-  lightweight-charts@5.1.0:
-    resolution: {integrity: sha512-jEAYR4ODYeyNZcWUigsoLTl52rbPmgXnvd5FLIv/ZoA/2sSDw63YKnef8n4yhzum7W926yHeFwlm7ididKb7YQ==}
 
   lucide-react@0.514.0:
     resolution: {integrity: sha512-HXD0OAMd+JM2xCjlwG1EGW9Nuab64dhjO3+MvdyD+pSUeOTBaVAPhQblKIYmmX4RyBYbdzW0VWnJpjJmxWGr6w==}
@@ -911,8 +899,6 @@ snapshots:
       graceful-fs: 4.2.11
       tapable: 2.3.2
 
-  fancy-canvas@2.1.0: {}
-
   fdir@6.5.0(picomatch@4.0.4):
     optionalDependencies:
       picomatch: 4.0.4
@@ -974,10 +960,6 @@ snapshots:
       lightningcss-linux-x64-musl: 1.32.0
       lightningcss-win32-arm64-msvc: 1.32.0
       lightningcss-win32-x64-msvc: 1.32.0
-
-  lightweight-charts@5.1.0:
-    dependencies:
-      fancy-canvas: 2.1.0
 
   lucide-react@0.514.0(react@19.2.5):
     dependencies:

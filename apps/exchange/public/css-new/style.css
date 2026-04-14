@@ -3,6 +3,45 @@
 body {
     font-family: "Inter", sans-serif;
     background-color: #181A20;
+    overflow-x: hidden;
+    max-width: 100%;
+    position: relative;
+}
+
+@supports (overflow: clip) {
+    body {
+        overflow-x: clip;
+        overflow-y: auto;
+    }
+}
+
+html {
+    /* Lenis (App.js) smooth scroll — native smooth off to avoid double easing */
+    scroll-behavior: auto !important;
+    overflow-x: hidden;
+    max-width: 100%;
+    overscroll-behavior-x: none;
+}
+
+@supports (overflow: clip) {
+    html {
+        overflow-x: clip;
+        overflow-y: auto;
+    }
+}
+
+/* React mount — clip any child wider than viewport (fixes mobile sideways “pan”) */
+#root {
+    overflow-x: hidden;
+    max-width: 100%;
+}
+
+/* clip does not force overflow-y away from visible like hidden does — avoids clipping tall header dropdowns */
+@supports (overflow: clip) {
+    #root {
+        overflow-x: clip;
+        overflow-y: visible;
+    }
 }
 
 h1 {
@@ -76,6 +115,7 @@ header .logo img.eaglelogo {
     padding-left: 20px;
     width: 100%;
     border-radius: 50px;
+    overflow: visible;
 }
 
 .navigation nav ul li a {
@@ -444,8 +484,8 @@ span.sub_heading_img {
     background: #ffffff;
     justify-content: center;
     padding: 5px 12px 6px;
-    letter-spacing: 1px;
-    /* border: 1px solid #D1AA67; */
+    letter-spacing: 0px;
+    border: 1px solid #fff;
 
 
 }
@@ -785,7 +825,6 @@ button.btn.btn-danger {
 
 .hot_trading_s table tbody tr:hover {
     box-shadow: 0px 0px 20px #f3ba2b49;
-    transform: scale(1.02);
 }
 
 .hot_trading_s table tbody tr:hover .right_t a {
@@ -1317,15 +1356,20 @@ img.animation_effect.bitcoin1 {
     border-radius: 24px;
     overflow: hidden;
     min-height: 540px;
+    transition: all 0.5s;
     padding: 24px;
     background-color: #fff;
     text-align: center;
     box-shadow: 0px 2px 20px #00000015;
 }
 
+.resources_news:hover {
+    transform: scale(1.05);
+}
+
 .howwork_bl {
     width: 100%;
-    padding: 140px 0px 40px;
+    padding: 140px 0px 0px;
     text-align: center;
     position: relative;
     z-index: 1;
@@ -2361,15 +2405,22 @@ body .slick-dots li.slick-active button:before {
 }
 
 .navbar-expand-lg .navbar-nav .dropdown-menu {
-    background-color: #111214;
-    width: 280px;
+    background-color: #ffffff;
+    width: 350px;
     border: none;
-    border-radius: 10px;
+    border-radius: 0px 0px 10px 10px;
     padding: 0px;
     margin-top: 18px;
     box-shadow: 0 10px 16px rgb(140 140 140 / 25%);
-    min-width: 280px;
-    overflow: hidden;
+    min-width: 350px;
+    /* Scroll when many items; avoid overflow:hidden (kills inner scroll + clips with long mega menus) */
+    overflow-x: hidden;
+    overflow-y: auto;
+    max-height: min(75vh, calc(100dvh - 100px));
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior-y: contain;
+    overscroll-behavior-x: none;
+    touch-action: pan-y;
 }
 
 .navbar-expand-lg .navbar-nav .dropdown-menu li {
@@ -2380,10 +2431,11 @@ body .slick-dots li.slick-active button:before {
 .navbar-expand-lg .navbar-nav .dropdown-menu .dropdown-item,
 .navbar-expand-lg .navbar-nav .dropdown-menu a {
     color: #fff;
-    padding: 12px 18px !important;
+    padding: 12px 20px !important;
     display: flex;
     align-items: flex-start;
     font-size: 14px;
+    gap: 4px;
     font-weight: 400;
     transition: all 0.2s ease;
     border: none;
@@ -2395,7 +2447,7 @@ body .slick-dots li.slick-active button:before {
 
 .navbar-expand-lg .navbar-nav .dropdown-menu .dropdown-item:hover,
 .navbar-expand-lg .navbar-nav .dropdown-menu a:hover {
-    background-color: #2B313C;
+    background-color:#f1f1f1;
     color: #fff;
 }
 
@@ -2432,33 +2484,83 @@ body .slick-dots li.slick-active button:before {
     min-width: 0;
     display: flex;
     flex-direction: column;
-    gap: 2px;
+    gap: 1px;
 }
 
 .navigation .navbar-nav .dropdown-menu .dropdown-item .dropdown-item-text,
 .navbar-expand-lg .navbar-nav .dropdown-menu .dropdown-item .dropdown-item-text {
-    font-weight: 500;
+    font-weight: 300;
     white-space: nowrap;
     overflow: hidden;
+    line-height: 23px;
+    font-size: 14px;
     text-overflow: ellipsis;
     padding: 0px;
-    color: #fff;
+    color: #000000;
+}
+
+.navigation .navbar-nav .dropdown-menu .dropdown-item .dropdown-item-content sub {
+    bottom: 0px;
+    font-size: 10px;
+    background-color: #8FFCDE;
+    padding: 3px 6px;
+    border-radius: 3px;
+    margin-left: 3px;
 }
 
 .navigation .navbar-nav .dropdown-menu .dropdown-item .dropdown-item-desc,
 .navbar-expand-lg .navbar-nav .dropdown-menu .dropdown-item .dropdown-item-desc {
-    font-size: 11px;
-    font-weight: 400;
-    color: #848E9C;
+    font-size: 12px;
+    font-weight: 300;
+    color: #84888C;
     line-height: 1.3;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
 }
 
+/* Trade / Futures submenus: icon strip + wider panel */
+.navigation .navbar-nav .dropdown-menu.dropdown-menu--trade,
+.navbar-expand-lg .navbar-nav .dropdown-menu.dropdown-menu--trade,
+.navigation .navbar-nav .dropdown-menu.dropdown-menu--futures,
+.navbar-expand-lg .navbar-nav .dropdown-menu.dropdown-menu--futures,
+.navigation .navbar-nav .dropdown-menu.dropdown-menu--earning,
+.navbar-expand-lg .navbar-nav .dropdown-menu.dropdown-menu--earning,
+.navigation .navbar-nav .dropdown-menu.dropdown-menu--more,
+.navbar-expand-lg .navbar-nav .dropdown-menu.dropdown-menu--more {
+    min-width: 380px;
+}
+
+.navigation .navbar-nav .dropdown-menu.dropdown-menu--trade .nav_submenu_icon,
+.navbar-expand-lg .navbar-nav .dropdown-menu.dropdown-menu--trade .nav_submenu_icon,
+.navigation .navbar-nav .dropdown-menu.dropdown-menu--futures .nav_submenu_icon,
+.navbar-expand-lg .navbar-nav .dropdown-menu.dropdown-menu--futures .nav_submenu_icon,
+.navigation .navbar-nav .dropdown-menu.dropdown-menu--earning .nav_submenu_icon,
+.navbar-expand-lg .navbar-nav .dropdown-menu.dropdown-menu--earning .nav_submenu_icon,
+.navigation .navbar-nav .dropdown-menu.dropdown-menu--more .nav_submenu_icon,
+.navbar-expand-lg .navbar-nav .dropdown-menu.dropdown-menu--more .nav_submenu_icon {
+    width: 34px;
+    height: 34px;
+    object-fit: contain;
+    flex-shrink: 0;
+    margin-right: 0px;
+    display: block;
+}
+
+.navigation .navbar-nav .dropdown-menu.dropdown-menu--trade .dropdown-item .dropdown-item-desc,
+.navbar-expand-lg .navbar-nav .dropdown-menu.dropdown-menu--trade .dropdown-item .dropdown-item-desc,
+.navigation .navbar-nav .dropdown-menu.dropdown-menu--futures .dropdown-item .dropdown-item-desc,
+.navbar-expand-lg .navbar-nav .dropdown-menu.dropdown-menu--futures .dropdown-item .dropdown-item-desc,
+.navigation .navbar-nav .dropdown-menu.dropdown-menu--earning .dropdown-item .dropdown-item-desc,
+.navbar-expand-lg .navbar-nav .dropdown-menu.dropdown-menu--earning .dropdown-item .dropdown-item-desc,
+.navigation .navbar-nav .dropdown-menu.dropdown-menu--more .dropdown-item .dropdown-item-desc,
+.navbar-expand-lg .navbar-nav .dropdown-menu.dropdown-menu--more .dropdown-item .dropdown-item-desc {
+    white-space: normal;
+}
+
 .navigation .navbar-nav .nav-link.active,
 .navbar-nav .nav-link.show {
-    color: #ffb800;
+    color: #d1aa67
 }
 
 .navigation nav ul li ul li a {
@@ -2771,9 +2873,26 @@ input.code_scaner {
     padding-top: 24px;
 }
 
+/* Site header: fixed at top (works with body overflow-x + Lenis; chart routes omit header) */
 header.sticky-top {
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    width: 100% !important;
     z-index: 9999999;
     background-color: #111214;
+    box-shadow: 0 1px 0 rgba(0, 0, 0, 0.35);
+    overflow: visible;
+}
+
+/* Reserve space so page content starts below the fixed header */
+#root:has(header.sticky-top) {
+    padding-top: 58px;
+}
+
+html:has(header.sticky-top) {
+    scroll-padding-top: 58px;
 }
 
 .profile_cvtrade .search_form .user_profile_pick input {
@@ -2940,8 +3059,7 @@ section.pb-5.kyc_form_s {
 }
 
 body .login_section .login-pills li .nav-link.active {
-    color: #fff !important;
-    font-weight: 600;
+    color: #0a0a0a !important;
 }
 
 
@@ -3034,19 +3152,18 @@ canvas.qr_img.img-fluid {
 
 .login_section {
     justify-content: space-between;
-    max-width: 430px;
+    max-width: 510px;
     display: flex;
     margin: 0 auto;
-    border-radius: 24px;
-    overflow: hidden;
+    /* border-radius: 24px; */
+    /* overflow: hidden; */
     padding: 0px;
-    border: 1px solid #333B47;
 }
 
 .login_fullhieght {
 
-    padding: 60px 0px 90px;
-    background-color: #181A20;
+    padding:0px;
+    background-color: #ffffff;
 }
 
 .icon_notificaton_r ul li.wallet_tb:hover .wallet_profile_tab {
@@ -3202,7 +3319,9 @@ ul.ac_wallet_info li a {
 }
 
 .login_form_right {
-    width: 100%;
+    width: 550px;
+    margin: 0 auto;
+    max-width: 100%;
 }
 
 .meme_coin_top {
@@ -3421,54 +3540,53 @@ button.btn.btn-sm.otpinput {
     border-radius: 50px;
 }
 
-/* Placeholder text black karne ke liye */
+/* Input placeholder (default + .input_filed) */
 .input_filed::placeholder {
-    color: #ebebeb !important;
+    color: #84888C !important;
     opacity: 1;
-    /* Some browsers reduce opacity by default */
 }
 
-/* For cross-browser compatibility */
 .input_filed::-webkit-input-placeholder {
-    color: #ebebeb !important;
+    color: #84888C !important;
 }
 
 .input_filed:-moz-placeholder {
-    color: #ebebeb !important;
+    color: #84888C !important;
 }
 
 .input_filed::-moz-placeholder {
-    color: #ebebeb !important;
+    color: #84888C !important;
 }
 
 .input_filed:-ms-input-placeholder {
-    color: #ebebeb !important;
+    color: #84888C !important;
 }
 
-
-
-/* Placeholder text black karne ke liye */
+/* Light theme: same token — #84888C */
 body.light_theme .input_filed::placeholder {
-    color: #ededed !important;
-    opacity: 1;
-    /* Some browsers reduce opacity by default */
+    color: #84888C !important;
+    opacity: 1 !important;
 }
 
-/* For cross-browser compatibility */
 body.light_theme .input_filed::-webkit-input-placeholder {
-    color: #ededed !important;
+    color: #84888C !important;
+    -webkit-text-fill-color: #84888C !important;
+    opacity: 1 !important;
 }
 
 body.light_theme .input_filed:-moz-placeholder {
-    color: #ededed !important;
+    color: #84888C !important;
+    opacity: 1 !important;
 }
 
 body.light_theme .input_filed::-moz-placeholder {
-    color: #ededed !important;
+    color: #84888C !important;
+    opacity: 1 !important;
 }
 
 body.light_theme .input_filed:-ms-input-placeholder {
-    color: #ededed !important;
+    color: #84888C !important;
+    opacity: 1 !important;
 }
 
 .disclaimer {
@@ -3685,10 +3803,11 @@ section.faq_sec .section-title {
 }
 
 .form_block_login h2 {
-    font-size: 30px;
+    font-size: 40px;
     font-weight: 600;
-    color: #fff;
+    color: #1d1d1d;
     margin: 0px;
+    text-transform: capitalize;
 }
 
 .form_block_login form {
@@ -3696,48 +3815,40 @@ section.faq_sec .section-title {
 }
 
 .form_block_login .row {
-    gap: 24px;
+    gap: 18px;
 }
 
 .form_block_login .col-sm-12.input_block {
     display: flex;
     flex-direction: column;
-    gap: 8px;
+    gap: 10px;
 }
 
 .modal.search_form input:focus {
     border: none;
 }
 
-.themecolor_icon i.ri-sun-line {
-    display: none;
-}
-
-body.light_theme .themecolor_icon i.ri-moon-line {
-    display: none;
-}
-
 .form_block_login label {
     font-size: 14px;
-    font-weight: 500;
-    color: #9ba2ad;
+    font-weight: 400;
+    color: #181818;
     text-align: left;
 }
 
 .form_block_login .input_filed {
     width: 100%;
-    color: #000;
-    border: 1px solid #707A8A;
-    font-size: 13px;
+    color: #84888C;
+    font-size: 14px;
     padding: 14px 12px;
-    border-radius: 5px;
-    background-color: #ffffff00 !important;
+    border-radius: 8px;
+    border: none;
+    background-color: #F5F6F7;
 }
 
 .login_section .form_block_login {
-    padding: 36px;
-    color: #F5F5F5;
-    background-color: #181A20;
+    padding: 0px;
+    color: #000000;
+    background-color: #ffffff;
 }
 
 
@@ -3750,12 +3861,6 @@ body.light_theme .themecolor_icon i.ri-moon-line {
     margin-top: 32px;
 }
 
-.form_block_login .input_filed {
-    color: #fff;
-    font-size: 13px;
-    border-radius: 8px;
-    background-color: #ffffff00;
-}
 
 .forgot_password a {
     color: #fff;
@@ -3819,11 +3924,11 @@ button:disabled {
 }
 
 .login_section input:focus {
-    border: 1px solid #F0B90B !important;
+    border: 0px solid #f0bb0b00 !important;
 }
 
 ::placeholder {
-    color: #707A8A;
+    color: #84888C;
 }
 
 .phone-input-wrapper {
@@ -3857,31 +3962,39 @@ button:disabled {
 }
 
 .sign_in_form_s {
-    display: flex;
-    width: 1100px;
+    display: grid;
+    width: 100%;
+    grid-template-columns: repeat(2, 1fr);
     max-width: 100%;
     margin: 0 auto;
     color: #fff;
     align-items: center;
-    gap: 24px;
+    gap: 0px;
 }
 
 .sign_in_form_s .rewards_vector {
-    max-width: 490px;
+    max-width: 410px;
     width: 100%;
     margin: 20px auto;
     opacity: 1;
     padding: 0px;
+    position: relative;
 }
 
 .sign_rewards {
-    width: 100%;
+    width: 800px;
+    min-width: 800px;
     text-align: center;
+    max-width: 100%;
+    padding: 90px 0px;
+    background-color: #000;
 }
 
 .sign_rewards h2 {
-    font-size: 32px;
+    font-size: 42px;
     line-height: 140%;
+    max-width: 640px;
+    margin: 0 auto;
 }
 
 .sign_rewards h2 span {
@@ -4168,14 +4281,31 @@ ul.earning_assets_list li span {
     width: 100%;
     align-items: center;
     justify-content: space-between;
-    padding: 11px 0px !important;
+    padding: 3px 0px !important;
     background: transparent;
-    color: #707A8A !important;
+    color: #84888C !important;
+    position: relative;
     border-radius: 0;
     font-weight: 400;
-    font-size: 16px;
+    font-size: 15px;
     border: none;
 }
+
+.login_section .nav.nav-tabs li button:before {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    opacity: 0;
+    left: 0;
+    width: 15px;
+    height: 2px;
+    background-color: #000;
+    right: 0px;
+    margin: 0 auto;
+}
+
+.login_section .nav.nav-tabs li button.active:before{ opacity: 1; }
+
 
 input:-internal-autofill-selected {
     background-color: transparent !important;
@@ -4778,7 +4908,7 @@ img.round_img {
 
 .hot_trading_t th,
 td {
-    padding: 16px 0px;
+    padding: 16px 5px;
     text-align: left;
 }
 
@@ -6439,14 +6569,14 @@ footer address {
     line-height: 145%;
 }
 
-.trade_platform_section ul {
+.trade_platform_section ul.trade_platform_cards_grid {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
     margin-top: 60px;
     gap: 32px;
 }
 
-.trade_platform_section ul li {
+.trade_platform_section ul.trade_platform_cards_grid li {
     width: 100%;
     border: 1px solid #ffffff14;
     background-color: #ffffff15;
@@ -6457,27 +6587,27 @@ footer address {
     -webkit-backdrop-filter: blur(15px);
 }
 
-.trade_platform_section ul li:hover {
+.trade_platform_section ul.trade_platform_cards_grid li:hover {
     background-color: #D1AA6740;
     border: 1px solid #D1AA67;
     box-shadow: 0px 0px 30px #D1AA67;
 }
 
-.trade_platform_section ul li .platform_vector {
+.trade_platform_section ul.trade_platform_cards_grid li .platform_vector {
     /* max-width: 160px; */
     display: flex;
     justify-content: flex-end;
 }
 
-.trade_platform_section ul li .platform_vector img {
+.trade_platform_section ul.trade_platform_cards_grid li .platform_vector img {
     max-width: 160px;
 }
 
-.trade_platform_section ul li h3 {
+.trade_platform_section ul.trade_platform_cards_grid li h3 {
     font-size: 20px;
 }
 
-.trade_platform_section ul li p {
+.trade_platform_section ul.trade_platform_cards_grid li p {
     font-size: 16px;
     color: #ffffff70;
     margin: 20px 0px 0px;
@@ -6699,9 +6829,14 @@ td {
 
 .hot_spot_outer {
     width: 100%;
+    transition: all 0.5s;
     padding: 32px 36px;
     border: 1px solid #ffffff15;
     border-radius: 28px;
+}
+
+.hot_spot_outer:hover {
+    transform: scale(1.05);
 }
 
 .icon_notificaton_r .annousment_left:hover {
@@ -7360,6 +7495,66 @@ footer .menu li a:hover {
     color: #D1AA67;
 }
 
+/* Footer Services: "Trade Crypto" expands to sub-links on click */
+footer .footer_menu_has_sub {
+    width: 100%;
+}
+
+footer .footer_trade_crypto_toggle {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    gap: 8px;
+    margin: 0;
+    padding: 0;
+    border: none;
+    background: none;
+    font-family: inherit;
+    font-size: 13px;
+    font-weight: 300;
+    line-height: inherit;
+    color: #A0A3A7;
+    cursor: pointer;
+    text-align: left;
+}
+
+footer .footer_trade_crypto_toggle:hover,
+footer .footer_menu_has_sub.open .footer_trade_crypto_toggle {
+    color: #D1AA67;
+}
+
+footer .footer_trade_crypto_chevron {
+    flex-shrink: 0;
+    font-size: 16px;
+    line-height: 1;
+    transition: transform 0.2s ease;
+}
+
+footer .footer_menu_has_sub.open .footer_trade_crypto_chevron {
+    transform: rotate(180deg);
+}
+
+footer ul.footer_menu_sub {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    margin: 8px 0 2px 0;
+    padding: 4px 0 4px 0px;
+    list-style: none;
+}
+
+footer ul.footer_menu_sub[hidden] {
+    display: none !important;
+}
+
+footer ul.footer_menu_sub:not([hidden]) {
+    display: flex;
+}
+
+footer ul.footer_menu_sub li a:hover {
+    color: #D1AA67;
+}
+
 /* Left column: heading + scan + social — align start (not centered) */
 .footer_left {
     display: flex;
@@ -7475,7 +7670,8 @@ footer .menu {
 
 
 .crypto_section.trending_crypto .features_bage {
-    background-color: #ffffff; }
+    background-color: #ffffff;
+}
 
 .dashboard_right {
     padding-top: 15px;
@@ -8742,6 +8938,13 @@ td.tradebtn a {
     color: #ffffffa6 !important;
 }
 
+section.crypto_exchange_section .scan_vector {
+    max-width: 220px;
+    border: 1px solid #DFE0E2;
+    padding: 24px;
+    border-radius: 16px;
+}
+
 .chat_right {
     width: auto;
     float: right;
@@ -9111,6 +9314,10 @@ body .trade_summary_table_lft_position_order.position_order .table-responsive {
         vertical-align: middle;
     }
 
+    .navbar-expand-lg .navbar-nav .dropdown-menu {
+        border-radius: 0px;
+        box-shadow: none; }
+
     .navbar-collapse {
         background-color: #111114 !important;
         max-height: calc(100vh - 0px);
@@ -9130,10 +9337,6 @@ body .trade_summary_table_lft_position_order.position_order .table-responsive {
         flex: 1 1 auto;
         min-height: 0;
         padding-bottom: 24px;
-    }
-
-    body.light_theme .navbar-collapse {
-        background-color: #ececec !important;
     }
 
     .no-data-row .no-data-wrapper,
@@ -11033,15 +11236,16 @@ ul.daylist li span {
     justify-content: space-between;
 }
 
-.topheading_footer .icon_i .ri-subtract-fill {
+/* Footer accordion (mobile): down = collapsed, up = expanded */
+.topheading_footer .icon_i .ri-arrow-up-s-line {
     display: none;
 }
 
-.active .topheading_footer .icon_i .ri-subtract-fill {
+.active .topheading_footer .icon_i .ri-arrow-up-s-line {
     display: block;
 }
 
-.active .topheading_footer .icon_i .ri-add-fill {
+.active .topheading_footer .icon_i .ri-arrow-down-s-line {
     display: none;
 }
 
@@ -12071,6 +12275,10 @@ span.newtag {
     margin-top: 40px;
 }
 
+footer .order-last {
+    order: inherit !important;
+}
+
 .all_product_data table td {
     vertical-align: middle;
 }
@@ -12997,82 +13205,65 @@ section.st_sec .card-body {
 
 /* Normal placeholder */
 input::placeholder {
-    color: #9ca3af;
-    /* light gray */
+    color: #84888C;
     opacity: 1;
-    /* Firefox fix */
 }
 
-/* Chrome / Edge / Safari */
 input::-webkit-input-placeholder {
-    color: #9ca3af;
+    color: #84888C;
 }
 
-/* Firefox */
 input::-moz-placeholder {
-    color: #9ca3af;
+    color: #84888C;
 }
 
-/* IE / Old Edge */
 input:-ms-input-placeholder {
-    color: #9ca3af;
+    color: #84888C;
 }
 
 ::-webkit-input-placeholder {
-    color: #bfbfbf;
+    color: #84888C;
 }
 
 ::-moz-placeholder {
-    color: #bfbfbf;
+    color: #84888C;
 }
 
 :-ms-input-placeholder {
-    color: #bfbfbf;
+    color: #84888C;
 }
 
 :-moz-placeholder {
-    color: #bfbfbf;
+    color: #84888C;
 }
 
 
 
-/* Normal placeholder */
+/* Light theme: input placeholders — #84888C (!important beats .input_filed) */
 body.light_theme input::placeholder {
-    color: #666;
-    /* light gray */
-    opacity: 1;
-    /* Firefox fix */
+    color: #84888C !important;
+    opacity: 1 !important;
 }
 
-/* Chrome / Edge / Safari */
 body.light_theme input::-webkit-input-placeholder {
-    color: #666;
+    color: #84888C !important;
+    -webkit-text-fill-color: #84888C !important;
+    opacity: 1 !important;
 }
 
-/* Firefox */
 body.light_theme input::-moz-placeholder {
-    color: #666;
+    color: #84888C !important;
+    opacity: 1 !important;
 }
 
-/* IE / Old Edge */
 body.light_theme input:-ms-input-placeholder {
-    color: #666;
+    color: #84888C !important;
+    opacity: 1 !important;
 }
 
-body.light_theme::-webkit-input-placeholder {
-    color: #666;
-}
-
-body.light_theme::-moz-placeholder {
-    color: #666;
-}
-
-body.light_theme:-ms-input-placeholder {
-    color: #666;
-}
-
-body.light_theme:-moz-placeholder {
-    color: #666;
+body.light_theme input:-moz-placeholder {
+    color: #84888C !important;
+    opacity: 1 !important;
 }
 
 
@@ -13158,7 +13349,6 @@ label {
 }
 
 .login_section .form_block_login p {
-    text-align: center;
     font-size: 14px;
     color: #87909f;
 }
@@ -13701,13 +13891,17 @@ body .text-success {
 }
 
 .form-control::placeholder {
-    color: white !important;
+    color: #84888C !important;
     opacity: 1;
 }
 
 body.light_theme .form-control::placeholder {
-    color: #666 !important;
+    color: #84888C !important;
     opacity: 1;
+}
+
+body.light_theme .custom-select__placeholder {
+    color: #84888C !important;
 }
 
 
@@ -15373,7 +15567,7 @@ button.btn_claim:active {
 }
 
 .chatmessages .chat-footer input::placeholder {
-    color: #7C8495;
+    color: #84888C;
 }
 
 .chatmessages .icon-btn {
@@ -16742,6 +16936,10 @@ button.p2p-submit-button {
     border-radius: 10px;
 }
 
+footer .container {
+    max-width: 1200px;
+}
+
 
 @media screen and (max-width:1700px) {
 
@@ -16824,6 +17022,42 @@ button.p2p-submit-button {
 
     ul.kyclist {
         font-size: 12px;
+    }
+
+    #root:has(header.sticky-top) {
+        padding-top: 40px;
+    }
+    
+    html:has(header.sticky-top) {
+        scroll-padding-top: 40px;
+    }
+
+    .banner_content h1 {
+        font-size: 55px;
+    }
+
+    .banner_img {
+        max-width: 500px;
+    }
+
+    .hot_spot_outer {
+        padding: 24px 30px;
+    }
+
+    .crypto_section h2 {
+        font-size: 44px;
+    }
+
+    .hero_section_main {
+        min-height: 750px;
+    }
+
+    header {
+        padding: 9px 40px;
+    }
+
+    .banner_content h1 span.sub_heading {
+        font-size: 44px;
     }
 
     .navigation {
@@ -17053,7 +17287,7 @@ button.p2p-submit-button {
     }
 
     .navigation nav ul li.dropdown .dropdown-toggle {
-        font-size: 11px;
+        font-size: 12px;
     }
 
     .withdrawal_rightside {
@@ -17090,12 +17324,9 @@ button.p2p-submit-button {
     }
 
     .navigation nav ul li a {
-        font-size: 11px;
+        font-size: 12px;
     }
 
-    .navigation nav ul {
-        gap: 8px;
-    }
 
     .user_login .active {
         display: block;
@@ -17197,6 +17428,54 @@ button.p2p-submit-button {
 
     .register_verified_form p {
         font-size: 16px;
+    }
+
+    .navigation .navbar-nav .dropdown-menu .dropdown-item .dropdown-item-text, .navbar-expand-lg .navbar-nav .dropdown-menu .dropdown-item .dropdown-item-text {
+        font-size: 12px; }
+
+    section.crypto_exchange_section .scan_vector {
+        max-width: 150px;
+        padding: 15px;
+        border-radius: 12px;
+    }
+
+    .exchange_future_s {
+        min-width: 450px;
+    }
+
+    .cryptofuture_s {
+        gap: 40px;
+    }
+
+    ul.maclist li h6 {
+        font-size: 15px;
+    }
+
+    .trade_platform_section h2 {
+        font-size: 32px;
+    }
+
+    .scan_app_bl .scan_content a.btn {
+        font-size: 16px;
+        margin-top: 30px;
+    }
+
+    .scan_app_bl.d-flex {
+        margin: 50px 0px;
+        gap: 30px;
+    }
+
+    .banner_content h1 span.sub_heading {
+        font-size: 28px;
+    }
+
+    span.sub_heading_img {
+        width: 42px;
+        height: 42px;
+        line-height: 39px;
+        top: 2px;
+        left: -2px;
+        padding: 2px;
     }
 
     .register_verified_form h1 {
@@ -17398,10 +17677,6 @@ button.p2p-submit-button {
         height: 28px;
     }
 
-    .navigation nav ul {
-        gap: 10px;
-    }
-
     .giveway_hero h1 {
         font-size: 26px;
     }
@@ -17478,10 +17753,6 @@ button.p2p-submit-button {
 
     .profit_cost_cnt h2 {
         padding-bottom: 10px;
-    }
-
-    .resources_news .news_img {
-        height: 200px;
     }
 
     .resources_news h3 {
@@ -17758,10 +18029,6 @@ button.p2p-submit-button {
 
     .anytime_anywhere p {
         font-size: 17px;
-    }
-
-    .navigation nav ul li.dropdown .dropdown-toggle {
-        font-size: 11px;
     }
 
     .section-padding.feature_bg.pc_bg {
@@ -18182,8 +18449,40 @@ button.p2p-submit-button {
         font-size: 36px;
     }
 
+    .signup_email button {
+        font-size: 15px;
+        padding: 11px 24px;
+    }
+
+
+    .social_withus_outer ul li a {
+        width: 48px;
+        padding: 5px;
+        height: 48px;
+    }
+
+    .crypto_section h2 {
+        font-size: 36px;
+    }
+
     .banner_content h1 {
         font-size: 36px;
+        line-height: 150%;
+    }
+
+    .banner_content p {
+        font-size: 16px;
+        margin-top: 15px;
+        line-height: 170%;
+    }
+
+    .banner_img {
+        max-width: 390px;
+        margin-top: -60px;
+    }
+
+    .banner_bottom_vector {
+        max-width: 650px;
     }
 
     .earining_calculator_form h2 {
@@ -18319,10 +18618,6 @@ button.p2p-submit-button {
         gap: 20px;
     }
 
-    .navigation nav ul li a {
-        font-size: 9px;
-    }
-
     .dashboardsummary_bottom a.btn {
         font-size: 12px;
     }
@@ -18331,9 +18626,6 @@ button.p2p-submit-button {
         font-size: 15px;
     }
 
-    .navigation nav ul {
-        gap: 8px;
-    }
 
     button.btn_claim {
         font-size: 14px;
@@ -18657,6 +18949,19 @@ button.p2p-submit-button {
         min-height: 300px;
     }
 
+    .hero_section_main .row {
+        flex-wrap: wrap;
+    }
+
+    .banner_content h1 span.sub_heading {
+        display: block;
+        width: 262px;
+        font-size: 24px;
+        margin-top: 12px !important;
+        margin: 0 auto;
+        padding-right: 15px;
+    }
+
     .bottm_lightbox_two .bs_box_header i {
         font-size: 22px;
         background-color: #D1AA67;
@@ -18725,6 +19030,10 @@ button.p2p-submit-button {
 
     .exchange_earning_bnr h2 {
         font-size: 24px;
+    }
+
+    .howwork_bl {
+        padding: 80px 0px 10px;
     }
 
     .exchange_earning_bnr p {
@@ -19179,7 +19488,7 @@ button.p2p-submit-button {
     }
 
     header .logo {
-        max-width: 90px;
+        max-width: 150px;
     }
 
     .lightlogo,
@@ -19199,10 +19508,26 @@ button.p2p-submit-button {
         font-size: 12px;
     }
 
+    .viewmorebtn a {
+        font-size: 15px;
+    }
+
     .earningtop_search {
         position: relative;
         top: 0px;
         right: 15px;
+    }
+
+    body .trade_earn_section {
+        padding: 3rem 0rem !important;
+    }
+
+    .trade_earn_section:before {
+        height: 260px;
+    }
+
+    .latest_resources .row {
+        margin-top: 12px;
     }
 
     .td_btn_balance button.walletbtn {
@@ -19453,7 +19778,7 @@ button.p2p-submit-button {
     }
 
     .hero_section_main {
-        padding-top: 20px;
+        padding-top: 32px;
     }
 
     header .button_outer {
@@ -19538,12 +19863,12 @@ button.p2p-submit-button {
         padding-bottom: 10px;
     }
 
-    .resources_news .news_img {
-        height: 160px;
+    .resources_cnt {
+        padding: 12px 0px;
     }
 
-    .resources_cnt {
-        padding: 20px;
+    .resources_news .news_img img {
+        max-height: 300px;
     }
 
     .resources_news h3 {
@@ -19768,16 +20093,58 @@ button.p2p-submit-button {
     }
 
     .banner_content p {
-        font-size: 16px;
+        font-size: 15px;
+        width: 100%;
         margin-top: 10px;
         margin-bottom: 5px;
     }
 
+    .signup_email {
+        margin: 0 auto;
+    }
+
+    .social_withus_outer {
+        justify-content: center !important;
+    }
+
     body .banner_img {
-        width: 80%;
+        width: 400px;
         left: 0px;
-        max-width: 80%;
-        margin-top: 40px;
+        max-width: 100%;
+        margin-top: 10px;
+    }
+
+    .cardbnr_crypto_slide .slick-slide {
+        margin-right: 0px;
+    }
+
+    ul.howwork_list li .howwork_icon {
+        width: 140px;
+        padding: 24px;
+        height: 140px;
+    }
+
+    ul.howwork_list li h3 {
+        font-size: 18px;
+    }
+
+    .exchange_future_s {
+        min-width: 350px;
+    }
+
+    .scan_app_bl.d-flex {
+        margin: 20px 0px;
+        gap: 24px;
+    }
+
+    .scan_app_bl .scan_content span {
+        font-size: 14px;
+    }
+
+    ul.howwork_list {
+        gap: 24px;
+        width: 100%;
+        margin-top: 60px;
     }
 
     .ranking_outer ul li {
@@ -19862,6 +20229,10 @@ button.p2p-submit-button {
 
     .navi_sidebar li button {
         padding: 5px 20px 5px 20px;
+    }
+
+    .crypto_dashboard {
+        margin-top: 15px;
     }
 
     .navigation {
@@ -20030,6 +20401,24 @@ button.p2p-submit-button {
         border-radius: 10px;
         width: 100%;
         margin-top: 10px;
+    }
+
+    #root:has(header.sticky-top) {
+        padding-top: 35px;
+    }
+    
+    html:has(header.sticky-top) {
+        scroll-padding-top: 35px;
+    }
+
+    section.crypto_exchange_section .scan_vector {
+        max-width: 120px;
+        padding: 12px;
+        border-radius: 10px;
+    }
+
+    footer .order-last {
+        order: 6 !important;
     }
 
     .recent_deposit_list .top_heading {
@@ -20485,13 +20874,17 @@ button.p2p-submit-button {
     }
 
     .cryptofuture_s {
-        flex-direction: column;
+        flex-direction: column-reverse;
         gap: 24px;
     }
 
     img.animation_effect.bitcoin1 {
         width: 50px;
         left: 5%;
+    }
+
+    ul.maclist {
+        padding-top: 0px;
     }
 
     img.animation_effect.bitcoin2 {
@@ -20505,7 +20898,29 @@ button.p2p-submit-button {
     }
 
     section.crypto_exchange_section {
-        padding: 20px 0px;
+        padding: 20px 0px 0px;
+    }
+
+    body .trade_earn_section {
+        padding: 2rem 0rem !important;
+    }
+
+    .center-image-wrapper .center-image {
+        margin: 18px auto 0;
+    }
+
+    body .trade_earn_section .col-md-4.order-2.order-md-1 {
+        padding: 0px 10px;
+        margin-top: -20px;
+    }
+
+    .trade_platform_section h2 {
+        font-size: 26px;
+        text-align: center;
+    }
+
+    body .trade_earn_section .col-md-4.order-3 {
+        margin-top: 0px;
     }
 
     .resourceslft {
@@ -20534,12 +20949,21 @@ button.p2p-submit-button {
     }
 
     .resources_news {
-        min-height: 370px;
+        min-height: 340px;
+    }
+
+    .social_footer ul,
+    .social_footer ul.social_footer_icons {
+        display: flex;
     }
 
     .date {
         font-size: 12px;
         margin-bottom: 10px;
+    }
+
+    ul.howwork_list li p {
+        font-size: 14px;
     }
 
     button.downloadbtn {
@@ -20809,7 +21233,7 @@ button.p2p-submit-button {
     }
 
     .navbar-collapse {
-        margin-top: 30px;
+        margin-top: 40px;
     }
 
     header .navbar-expand-lg .navbar-nav .nav-link {
@@ -21011,7 +21435,16 @@ button.p2p-submit-button {
     }
 
     body h2 {
-        font-size: 24px;
+        font-size: 26px;
+    }
+
+    .crypto_future_cnt h2 {
+        text-align: center;
+    }
+
+    .scan_app_bl.d-flex {
+        margin: 12px 0px;
+        justify-content: center;
     }
 
     #popup-box {
@@ -21095,13 +21528,32 @@ button.p2p-submit-button {
     }
 
     .hero_section_main {
-        padding: 30px 0px 0px;
+        padding: 50px 0px 30px;
         min-height: 100%;
     }
 
     .banner_content p {
+        display: none;
         font-size: 14px;
-        margin: 8px 0px 0px;
+        margin: 15px 0px 10px
+    }
+
+    .hero_section_main .signup_email {
+        margin-top: 24px;
+    }
+
+    .trade_platform_section ul.trade_platform_cards_grid {
+        grid-template-columns: repeat(1, 1fr);
+    }
+
+    .social_withus_outer ul {
+        gap: 48px;
+        justify-content: center;
+    }
+
+    .social_withus_outer {
+        gap: 48px !important;
+        margin-top: 20px;
     }
 
     .sign_form [type="button"] {
@@ -22830,6 +23282,7 @@ button.p2p-submit-button {
         padding-top: 0px;
         width: 100%;
         text-align: center;
+        margin: 0px;
     }
 
     .banner_img {
@@ -23851,6 +24304,14 @@ button.p2p-submit-button {
         width: 81%;
     }
 
+    .trade_platform_section ul.trade_platform_cards_grid li .platform_vector img {
+        max-width: 110px;
+    }
+
+    body .trade_platform_section .trade_platform_slide_card .platform_vector {
+        justify-content: center;
+    }
+
     .kyc_form_multistep .form_bl_step .inquery_fill {
         font-size: 13px;
     }
@@ -23871,6 +24332,18 @@ button.p2p-submit-button {
         width: 100%;
     }
 
+
+    footer .scan_vector {
+        display: none;
+    }
+
+    footer span.scan_text {
+        display: none;
+    }
+
+    .footer_left h3 {
+        display: none;
+    }
 
     body .earning_right_tab form.searchinput input {
         width: 90%;
@@ -23910,6 +24383,14 @@ button.p2p-submit-button {
 
     .top_total_bar {
         gap: 40px;
+    }
+
+    body .trending_crypto_tabs {
+        margin-bottom: 16px;
+    }
+
+    .crypto_future_cnt h2 br {
+        display: none;
     }
 
     ul.active_package_top li {
@@ -23987,6 +24468,10 @@ button.p2p-submit-button {
         margin-bottom: 0px !important;
     }
 
+    .latest_resources:before {
+        display: none;
+    }
+
     .scaner_pop_up .modal-body {
         padding-top: 0px;
     }
@@ -24012,6 +24497,15 @@ button.p2p-submit-button {
 
     .withdraw_amount_cnt {
         margin-top: 10px;
+    }
+
+    .social_footer {
+        margin-top: 0px;
+    }
+
+    .footer_section.order-last {
+        order: 1;
+        padding-top: 20px;
     }
 
     footer .menu {
@@ -24048,6 +24542,16 @@ button.p2p-submit-button {
 
     .all_product_data {
         margin-top: 30px;
+    }
+
+    .feature-left.animate-fade-in.ps-md-4.pe-md-4.pt-md-5 {
+        flex-direction: column-reverse;
+        display: flex;
+    }
+
+    body .center-image-wrapper {
+        width: 280px;
+        margin-top: -15px !important;
     }
 
     .losser_stock {
@@ -24136,10 +24640,6 @@ button.p2p-submit-button {
 
     .refrefer_earn_outer .card-header.ref_header h4 {
         font-size: 22px;
-    }
-
-    .resources_news .news_img {
-        height: 130px;
     }
 
 }
@@ -24333,6 +24833,15 @@ button.p2p-submit-button {
 
     .termsofuse h3 {
         font-size: 20px;
+    }
+
+    ul.maclist {
+        max-width: 100%;
+        display: none;
+    }
+
+    ul.maclist li {
+        gap: 10px;
     }
 
     .form-container.kyc_form_multistep {
@@ -24779,10 +25288,6 @@ button.p2p-submit-button {
         font-size: 22px;
     }
 
-    body h2 {
-        font-size: 22px;
-    }
-
     .crypto_dashboard {
         margin-top: 8px;
     }
@@ -25057,10 +25562,6 @@ button.p2p-submit-button {
         font-size: 12px;
     }
 
-    footer .row div {
-        margin: 0 auto;
-    }
-
     .balance_chart_left h3 {
         font-size: 15px;
     }
@@ -25328,7 +25829,7 @@ button.p2p-submit-button {
     }
 
     .banner_content h1 {
-        font-size: 22px;
+        font-size: 26px;
         line-height: 150%;
     }
 
@@ -25497,7 +25998,7 @@ button.p2p-submit-button {
     }
 
     footer h3 {
-        font-size: 14px;
+        font-size: 20px;
     }
 
     footer address {
@@ -25589,20 +26090,56 @@ button.p2p-submit-button {
         max-width: 250px;
     }
 
+    .resources_news .news_img img {
+        max-height: 200px;
+    }
+
     .login_section {
         min-height: calc(100vh - 54px) !important;
     }
 
     .crypto_section p {
-        padding-top: 5px;
+        padding-top: 0px;
+        font-size: 14px;
+    }
+
+    .features_bage {
+        font-size: 13px;
     }
 
     .earning_list_block .slick-dots {
         bottom: -24px;
     }
 
+    body footer.p-0 {
+        padding: 24px 0px 15px !important;
+    }
+
     .hot_trading_s table tr td {
         font-size: 11px;
+    }
+
+    .signup_email button {
+        font-size: 12px;
+        padding: 8px 20px;
+    }
+
+    .signup_email input {
+        font-size: 12px;
+    }
+
+    .social_withus_outer span {
+        font-size: 12px;
+    }
+
+    ul.howwork_list li .howwork_icon {
+        width: 100px;
+        height: 100px;
+    }
+
+    .social_footer ul,
+    .social_footer ul.social_footer_icons {
+        padding-top: 7px;
     }
 
     .hot_trading_s table tr td span.green {
@@ -25617,6 +26154,38 @@ button.p2p-submit-button {
         padding: 5px !important;
     }
 
+    .social_withus_outer ul {
+        gap: 24px;
+    }
+
+    .social_withus_outer {
+        gap: 24px !important;
+    }
+
+    .latest_resources .row {
+        margin-top: 15px;
+    }
+
+    .howwork_bl {
+        padding: 50px 0px 10px;
+    }
+
+    .howwork_bl p {
+        font-size: 14px;
+        padding-top: 5px;
+    }
+
+    ul.howwork_list {
+        flex-direction: column;
+        margin-top: 24px;
+    }
+
+    .social_footer ul,
+    .social_footer ul.social_footer_icons {
+        flex-wrap: wrap;
+        gap: 6px 10px;
+    }
+
 }
 
 @media screen and (max-width:480px) {
@@ -25625,8 +26194,12 @@ button.p2p-submit-button {
         padding: 12px !important;
     }
 
+    body.light_theme .navbar-toggler {
+        top: 9px !important;
+    }
+
     .crypto_section h2 {
-        font-size: 20px;
+        font-size: 24px;
     }
 
     .table_pop_up.modal table tr td {
@@ -25635,10 +26208,6 @@ button.p2p-submit-button {
 
     .withdrawal_top_list span {
         font-size: 11px;
-    }
-
-    body h2 {
-        font-size: 20px;
     }
 
     .exchange_earning_bnr h2 {
@@ -25687,8 +26256,8 @@ button.p2p-submit-button {
     }
 
     header .logo {
-        min-width: 75px !important;
-        max-width: 75px;
+        min-width: 118px !important;
+        max-width: 118px;
     }
 
     .learnbtn {
@@ -25699,6 +26268,23 @@ button.p2p-submit-button {
     .security_list li h3 {
         font-size: 22px;
         margin: 7px;
+    }
+
+    span.sub_heading_img {
+        top: 0px;
+        left: -4px;
+        padding: 2px;
+    }
+
+    .hero_section_main {
+        padding: 30px 0px 30px;
+    }
+
+    .banner_content h1 span.sub_heading {
+        width: 230px;
+        font-size: 20px;
+        padding-right: 10px;
+        padding: 3px 10px 3px 3px;
     }
 
     .deposit_crypto_left::before {
@@ -25778,17 +26364,12 @@ button.p2p-submit-button {
     }
 
     footer p {
-        font-size: 12px;
-        line-height: 20px;
+        font-size: 14px;
+        line-height: 24px;
     }
 
     address {
         font-size: 12px;
-    }
-
-    footer .row div {
-        margin: 0 auto;
-        max-width: 100%;
     }
 
     .themecolor_icon {
@@ -26928,14 +27509,6 @@ ul.security-tips-list {
 
 }
 
-body.light_theme header i.ri-moon-line.dark-text {
-    display: none;
-}
-
-header i.ri-sun-line.light-text {
-    display: none;
-}
-
 body.light_theme header i.ri-sun-line.light-text {
     display: block;
 }
@@ -26958,4 +27531,51 @@ body.light_theme .issuelist_data table tr td i.ri-file-copy-line {
 
 .trade_movers_tb .table_info_data table {
     height: 100%;
+}
+
+/* Last: login/signup light theme — placeholders (value text stays dark below) */
+html body.light_theme .login_section .form_block_login .input_filed::placeholder,
+html body.light_theme .login_section .form_block_login .input_filed::-webkit-input-placeholder,
+html body.light_theme .login_section .form_block_login .input_filed::-moz-placeholder,
+html body.light_theme .login_section .form_block_login .input_filed:-ms-input-placeholder {
+    color: #84888C !important;
+    -webkit-text-fill-color: #84888C !important;
+    opacity: 1 !important;
+}
+
+html body.light_theme .login_section .form_block_login input.input_filed {
+    color: #000000 !important;
+    -webkit-text-fill-color: #000000 !important;
+}
+
+/* Light theme: hero only — white placeholders (beats body.light_theme input::placeholder) */
+body.light_theme .hero_section_main input::placeholder,
+body.light_theme .hero_section_main textarea::placeholder {
+    color: #ffffff !important;
+    opacity: 1 !important;
+}
+
+body.light_theme .hero_section_main input::-webkit-input-placeholder,
+body.light_theme .hero_section_main textarea::-webkit-input-placeholder {
+    color: #ffffff !important;
+    -webkit-text-fill-color: #ffffff !important;
+    opacity: 1 !important;
+}
+
+body.light_theme .hero_section_main input::-moz-placeholder,
+body.light_theme .hero_section_main textarea::-moz-placeholder {
+    color: #ffffff !important;
+    opacity: 1 !important;
+}
+
+body.light_theme .hero_section_main input:-ms-input-placeholder,
+body.light_theme .hero_section_main textarea:-ms-input-placeholder {
+    color: #ffffff !important;
+    opacity: 1 !important;
+}
+
+body.light_theme .hero_section_main input:-moz-placeholder,
+body.light_theme .hero_section_main textarea:-moz-placeholder {
+    color: #ffffff !important;
+    opacity: 1 !important;
 }
