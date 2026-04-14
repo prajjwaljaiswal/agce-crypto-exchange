@@ -2,6 +2,13 @@ import { Route, Routes, useLocation } from 'react-router-dom'
 import { AppProviders } from './providers/index.js'
 import { UserHeader } from './components/layout/UserHeader.js'
 import { Footer } from './components/layout/Footer.js'
+import { RequireAuth } from './components/auth/RequireAuth.js'
+import {
+  AssetManagementLayout,
+  DepositPage,
+  DepositFiatPage,
+  WithdrawPage,
+} from './features/asset-management/index.js'
 import { LandingPage } from './features/landing-page/index.js'
 import { Announcement } from './features/announcements/index.js'
 import { AnnouncementList } from './features/announcements/list.js'
@@ -40,6 +47,7 @@ const NO_FOOTER_ROUTE_PREFIXES = [
   '/account-verification',
   '/account-activate',
   '/user_profile',
+  '/asset_managemnet',
 ]
 
 function AppInner() {
@@ -87,6 +95,17 @@ function AppInner() {
             <Route path="notification" element={<Notifications />} />
             <Route path="activity_logs" element={<ActivityLogs />} />
           </Route>
+
+
+          <Route element={<RequireAuth />}>
+            <Route path="/asset_managemnet" element={<AssetManagementLayout />}>
+              <Route index element={<DepositPage />} />
+              <Route path="deposit" element={<DepositPage />} />
+              <Route path="deposit_fiat" element={<DepositFiatPage />} />
+              <Route path="withdraw" element={<WithdrawPage />} />
+            </Route>
+          </Route>
+
           <Route path="/earning" element={<Earning />} />
           <Route path="*" element={<div className="container py-5">Coming soon</div>} />
         </Routes>
