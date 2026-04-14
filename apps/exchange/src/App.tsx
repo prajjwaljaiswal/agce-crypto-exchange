@@ -12,19 +12,41 @@ import { LoginPage } from './features/auth/LoginPage.js'
 import { ForgotPassword } from './features/auth/ForgotPassword.js'
 import { RegistrationVerification } from './features/auth/RegistrationVerification.js'
 import { RegistrationResult } from './features/auth/RegistrationResult.js'
+import {
+  ActivityLogs,
+  AssetOverview,
+  Dashboard,
+  Earning,
+  EarningHistory,
+  KycVerification,
+  Notifications,
+  OpenOrders,
+  ProfileLayout,
+  Settings,
+  SpotOrders,
+  Support,
+  Swap,
+  SwapHistory,
+  TransactionHistory,
+  TwoFactor,
+  WalletTransferHistory,
+} from './features/user-profile/index.js'
 import './App.css'
 
-const AUTH_ROUTE_PREFIXES = [
+const NO_FOOTER_ROUTE_PREFIXES = [
   '/signup',
   '/login',
   '/forgot_password',
   '/account-verification',
   '/account-activate',
+  '/user_profile',
 ]
 
 function AppInner() {
   const { pathname } = useLocation()
-  const isAuthRoute = AUTH_ROUTE_PREFIXES.some((prefix) => pathname.startsWith(prefix))
+  const hideFooter = NO_FOOTER_ROUTE_PREFIXES.some((prefix) =>
+    pathname.startsWith(prefix),
+  )
 
   return (
     <>
@@ -47,10 +69,29 @@ function AppInner() {
           <Route path="/forgot_password" element={<ForgotPassword />} />
           <Route path="/account-verification/:authenticationToken" element={<RegistrationVerification />} />
           <Route path="/account-activate/:authenticationToken" element={<RegistrationResult />} />
+          <Route path="/user_profile" element={<ProfileLayout />}>
+            <Route index element={<Dashboard />} />
+            <Route path="dashboard" element={<Dashboard />} />
+            <Route path="asset_overview" element={<AssetOverview />} />
+            <Route path="spot_orders" element={<SpotOrders />} />
+            <Route path="open_orders" element={<OpenOrders />} />
+            <Route path="transaction_history" element={<TransactionHistory />} />
+            <Route path="swap_history" element={<SwapHistory />} />
+            <Route path="wallet_transfer_History" element={<WalletTransferHistory />} />
+            <Route path="earning_plan_history" element={<EarningHistory />} />
+            <Route path="profile_setting" element={<Settings />} />
+            <Route path="kyc" element={<KycVerification />} />
+            <Route path="support" element={<Support />} />
+            <Route path="two_factor_autentication" element={<TwoFactor />} />
+            <Route path="swap" element={<Swap />} />
+            <Route path="notification" element={<Notifications />} />
+            <Route path="activity_logs" element={<ActivityLogs />} />
+          </Route>
+          <Route path="/earning" element={<Earning />} />
           <Route path="*" element={<div className="container py-5">Coming soon</div>} />
         </Routes>
       </main>
-      {!isAuthRoute && <Footer />}
+      {!hideFooter && <Footer />}
     </>
   )
 }

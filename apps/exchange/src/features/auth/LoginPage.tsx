@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
+import { useAuth } from '../../providers/index.js'
 import './signup-wizard.css'
 import './login-wizard.css'
 
@@ -27,6 +28,7 @@ interface AuthMethod {
 
 export function LoginPage() {
   const navigate = useNavigate()
+  const { login } = useAuth()
 
   const [wizardStep, setWizardStep] = useState(1)
   const [accountTab, setAccountTab] = useState<AccountTab>('email_user')
@@ -122,6 +124,7 @@ export function LoginPage() {
     const code = getOtpDigitsStr()
     if (code.length < 6) { showError('Please enter a valid 6-digit code'); return }
     showSuccess('Login successful!')
+    login()
     navigate('/user_profile/dashboard')
   }
 

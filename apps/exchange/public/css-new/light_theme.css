@@ -1,11 +1,6 @@
 /* Light theme – all body.light_theme & .light_theme overrides */
 
 
-
-body.light_theme .top_header_dash {
-    padding: 10px 0px 15px;
-}
-
 body.light_theme .listing_left_outer.full_width .market_section {
     padding: 15px;
 }
@@ -92,11 +87,11 @@ body.light_theme .dashboard_right .dashboard_summary th {
 body.light_theme .dashboard_right .dashboard_summary td,
 
 body.light_theme .dashboard_right .dashboard_summary .price_heading {
-    color: #333;
+    color: #0f0f0f;
 }
 
 body.light_theme .dashboard_right .dashboard_summary td a {
-    color: #cc9102 !important;
+    color: #262933 !important;
 }
 
 body.light_theme .text-white {
@@ -165,6 +160,18 @@ body.light_theme .dashboard_right .recent_deposit_list table tr td span {
     color: #333;
 }
 
+body.light_theme .dashboard_right .deposit_history_section .deposit_history_title {
+    color: #101828;
+}
+
+body.light_theme .dashboard_right .deposit_history_section .deposit_history_viewall {
+    color: #667085;
+}
+
+body.light_theme .dashboard_right .deposit_history_section .deposit_history_viewall:hover {
+    color: #101828;
+}
+
 body.light_theme .dashboard_right .estimated_balance.dash_balance .div_tag,
 
 body.light_theme .dashboard_right .balance_chart_left {
@@ -177,14 +184,6 @@ body.light_theme .dashboard_right .balance_chart_left {
 body.light_theme .dashboard_right .estimated_balance.dash_balance h4,
 
 body.light_theme .dashboard_right .balance_chart_left h4 {
-    color: #333;
-}
-
-body.light_theme .dashboard_right .new_features_s .block_features,
-
-body.light_theme .dashboard_right .dashboard_right_side .block_features {
-    background-color: #e6e6e6;
-    border: none;
     color: #333;
 }
 
@@ -207,15 +206,15 @@ body.light_theme .dashboard_right .no_data-wrapper img {
 body.light_theme .dashboard_right .date_info,
 
 body.light_theme .dashboard_right .dashboard_summary .price_heading span {
-    color: #666;
+    color: #9CA3AF;
 }
 
 body.light_theme .dashboard_right .dashboard_summary ul.nav-tabs li button {
-    color: #666;
+    color: #9CA3AF;
 }
 
 body.light_theme .dashboard_right .dashboard_summary ul.nav-tabs li button.active {
-    color: #b8860b;
+    color: #303236; font-weight: 600;
 }
 
 body.light_theme .dashboard_right .market_section .dashboard_summary {
@@ -308,6 +307,9 @@ body.light_theme .dashboard_right .dashboard_listing_section {
 body.light_theme .dashboard_right .listing_left_outer {
     flex: 1;
     min-width: 0;
+    padding: 28px;
+    border-radius: 15px;
+    box-shadow: 0px 0px 20px #00000017;
 }
 
 body.light_theme .dashboard_right .crypto_deposit ul li {
@@ -603,7 +605,8 @@ body.light_theme .review_information .card-body.py-5.pb-0 {
 
 body.light_theme .search_form input.searchfield {
     color: #000 !important;
-    background-color: #ececec;
+    background-color: #ffffff;
+    box-shadow: 0px 3px 7px #00000017;
 }
 
 body.light_theme .search_form input {
@@ -771,10 +774,6 @@ body.light_theme .faq_cta_outer .card.active h2 button.accordion-button[aria-exp
     color: #fff;
 }
 
-body.light_theme .accordion-button::after {
-    background-color: #b9b9b9;
-}
-
 body.light_theme .faq_cta_outer .card h2 button.accordion-button[aria-expanded="true"]::after {
     background-color: #b9b9b9;
 }
@@ -805,23 +804,27 @@ body.light_theme .leftside_menu {
 }
 
 body.light_theme .navi_sidebar li.active a {
-    background-color: #E5E5E5;
+    background-color: #F2F3F7;
+    border: 1px solid #DBDBDD;
     /* color: #e7ad19; */
 }
 
 body.light_theme .navi_sidebar li.active a:hover {
-    background-color: #D8D8D8;
-    color: #e7ad19;
+    background-color: #F2F3F7;
+    color: #171717;
+    border: 1px solid #DBDBDD;
 }
 
 body.light_theme .navi_sidebar li.active button {
-    background-color: #E5E5E5;
-    color: #e7ad19;
+    background-color: #F2F3F7;
+    color: #171717;
+    border: 1px solid #DBDBDD;
 }
 
 body.light_theme .navi_sidebar li.active button:hover {
-    background-color: #D8D8D8;
-    color: #e7ad19;
+    background-color: #F2F3F7;
+    color: #171717;
+    border: 1px solid #DBDBDD;
 }
 
 body.light_theme .navi_sidebar li.active .navi_sidebar_icon,
@@ -988,7 +991,9 @@ body.light_theme .ticket-details span {
 }
 
 body.light_theme .search_form .modal-content {
-    background: #fafafa;
+    background: rgb(255 255 255 / 100%);
+    border: 1px solid #E1E1E1;
+    box-shadow: 0px 30px 60px #00000030;
 }
 
 body.light_theme .price_heading {
@@ -1877,28 +1882,24 @@ body.light_theme .modal.search_form .emailinput {
     background-color: #ececec;
 }
 
-body.light_theme .block_features img {
-    filter: brightness(0.5);
-}
-
 body.light_theme .deposit_crypto_left::before {
-    background-color: #0b0b0b2b;
+    background-color: #EEEEEE;
 }
 
 body.light_theme .deposit_crypto_left h2:before {
-    background-color: #b6b6b6;
+    background-color: #101828;
 }
 
 body.light_theme .coin_items_list {
-    background-color: #ececec;
+    background-color: #F5F6F7;
 }
 
 body.light_theme .deposit_crypto_right button.accordion-button {
-    color: #303030;
+    color: #303236;
 }
 
 body.light_theme .deposit_crypto_right .accordion-body {
-    color: #565656;
+    color: #303236;
 }
 
 body.light_theme .address_input input[type="text"] {
@@ -2154,7 +2155,9 @@ body.light_theme .table_pop_up.modal h2 {
 }
 
 body.light_theme .modal.search_form .hot_trading_t table tr {
-    background-color: transparent;
+    background-color: #FFFFFF;
+    box-shadow: 0px 0px 20px #0000000d;
+    border-radius: 12px;
 }
 
 body.light_theme .withdrawal_top_list .bn_step_content {

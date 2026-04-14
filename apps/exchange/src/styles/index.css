@@ -2,8 +2,8 @@
    The legacy /css-new/style.css ships with its own reset/typography; running
    Tailwind's preflight on top of it strips margin/padding from <ul>, <p>,
    <h3>, etc. and breaks the footer and other legacy sections. */
-@import 'tailwindcss/theme.css' layer(theme);
-@import 'tailwindcss/utilities.css' layer(utilities);
+/* @import 'tailwindcss/theme.css' layer(theme);
+@import 'tailwindcss/utilities.css' layer(utilities); */
 
 /* Tailwind v4 uses --default-font-family on html via preflight; override to
    match reference (Inter) so utilities and base both align. */

@@ -1247,7 +1247,6 @@ button.learnbtn:hover {
     background-repeat: no-repeat;
     background-size: 21px;
     background-position: center;
-    background-color: #181a20;
     padding: 10px;
     width: 36px !important;
     height: 36px !important;
@@ -2447,7 +2446,7 @@ body .slick-dots li.slick-active button:before {
 
 .navbar-expand-lg .navbar-nav .dropdown-menu .dropdown-item:hover,
 .navbar-expand-lg .navbar-nav .dropdown-menu a:hover {
-    background-color:#f1f1f1;
+    background-color: #f1f1f1;
     color: #fff;
 }
 
@@ -3162,7 +3161,7 @@ canvas.qr_img.img-fluid {
 
 .login_fullhieght {
 
-    padding:0px;
+    padding: 0px;
     background-color: #ffffff;
 }
 
@@ -3858,7 +3857,7 @@ section.faq_sec .section-title {
 }
 
 .listing_left_outer .market_section {
-    margin-top: 32px;
+    margin-top: 5px;
 }
 
 
@@ -3973,7 +3972,7 @@ button:disabled {
 }
 
 .sign_in_form_s .rewards_vector {
-    max-width: 410px;
+    max-width: 450px;
     width: 100%;
     margin: 20px auto;
     opacity: 1;
@@ -4304,7 +4303,9 @@ ul.earning_assets_list li span {
     margin: 0 auto;
 }
 
-.login_section .nav.nav-tabs li button.active:before{ opacity: 1; }
+.login_section .nav.nav-tabs li button.active:before {
+    opacity: 1;
+}
 
 
 input:-internal-autofill-selected {
@@ -4645,7 +4646,7 @@ p.center_b .no_data_s small {
 }
 
 .profile_form label {
-    color: #d7d7d7d6;
+    color: #737373d6;
     font-size: 16px;
 
 }
@@ -4829,7 +4830,7 @@ img.round_img {
 }
 
 .search_coin td.right_t.price_tb {
-    font-weight: 500;
+    font-weight: 400;
 }
 
 .table_pop_up.modal .modal-header {
@@ -4975,9 +4976,11 @@ body .red {
 
 .hot_trading_t table tbody {
     display: flex;
+    padding-bottom: 14px;
     flex-direction: column;
     justify-content: space-between;
     align-items: center;
+    gap: 10px;
 }
 
 .hot_trading_t table tbody tr {
@@ -5016,6 +5019,7 @@ body .red {
 }
 
 .more_btn {
+    font-size: 14px;
     /* margin-top: 18px; */
     cursor: pointer;
 }
@@ -5034,16 +5038,21 @@ body .red {
     cursor: pointer;
     font-size: 12px;
     background-color: #2e2e2e;
-    padding: 7px 10px;
-    border-radius: 7px;
+    padding: 7px 12px;
+    border-radius: 50px;
 }
 
 
 .deposit_crypto_right .accordion-button::after {
-    background-image: url("../images/faq_arrow.svg");
+    /* Override global plus icon */
+    background-image: url("../images/faq_arrow.svg") !important;
     background-position: center;
     background-repeat: no-repeat;
-    background-size: 14px;
+    background-size: 14px !important;
+    background-color: transparent !important;
+    /* force icon to dark/black */
+    filter: brightness(0) saturate(100%);
+    transform: rotate(0deg);
 }
 
 .hot_trading_s table tr td {
@@ -5160,7 +5169,9 @@ body .search_form.order_detail_pop.modelbg2 td.padding-0 i {
 }
 
 .deposit_crypto_right .accordion-button[aria-expanded="true"]::after {
-    background-image: url("../images/faq_arrow.svg");
+    background-image: url("../images/faq_arrow.svg") !important;
+    filter: brightness(0) saturate(100%);
+    transform: rotate(180deg);
 }
 
 .deposit_crypto_right .accordion-button:focus {
@@ -5394,10 +5405,10 @@ input[type="date"] {
 }
 
 .modal.search_form input {
-    min-height: 42px;
+    min-height: 46px;
     font-weight: 300;
     padding: 10px 18px;
-    font-size: 14px;
+    font-size: 15px;
     color: #fff;
     background-color: #2B313C;
 }
@@ -5507,11 +5518,15 @@ section.blog_list {
 .network_top_p {
     margin-top: -15px;
     display: flex;
+    /* font-size: 11px; */
     gap: 7px;
     margin-bottom: 10px;
-    background-color: #c5b7d6;
+    /* background-color: #c5b7d6; */
     padding: 12px;
-    border-radius: 5px;
+    border-radius: 10px;
+    background: linear-gradient(90deg, rgba(255, 243, 226, 1) 0%, rgba(255, 249, 242, 1) 100%);
+    border: 1px solid #ffd6a880;
+    box-shadow: 0px 4px 12px #ff8c0029;
 }
 
 .deposit_crypto_block_coin .modal h2 {
@@ -5525,14 +5540,15 @@ section.blog_list {
 }
 
 .modal.search_coin .modal-dialog {
-    min-width: 500px;
+    min-width: 480px;
+    width: 480px;
 }
 
 .network_top_p p {
-    color: #000;
+    color: #464646;
     margin: 0px;
     font-size: 13px;
-    font-weight: 500;
+    font-weight: 400;
 }
 
 .network_top_p svg {
@@ -5551,14 +5567,15 @@ td.right_t.price_tb {
 }
 
 td.right_t.price_tb span {
-    font-weight: 400;
+    font-weight: 300;
+    color: #8a8a8a;
     display: block;
     font-size: 12px;
 }
 
 .hot_trading_t .price_heading span {
-    font-size: 13px;
-    font-weight: 500;
+    font-size: 12px;
+    font-weight: 300;
 }
 
 .icon_notificaton_r ul li {
@@ -5959,14 +5976,15 @@ section.faq_sec {
 }
 
 .deposit_crypto_block_coin h2 {
-    font-size: 18px;
+    font-size: 19px;
     font-weight: 500;
 }
 
 .deposit_crypto_left {
-    width: 50%;
+    width: 100%;
     padding-left: 32px;
     position: relative;
+    color: #101828;
 }
 
 .deposit_crypto_left::before {
@@ -5987,8 +6005,15 @@ input.input_filed:focus {
     position: relative;
 }
 
+.deposit_crypto_right .faq_container{
+    width: 100%;
+    border: 1px solid #F2F3F4;
+    border-radius: 11px;
+    padding: 30px;
+}
 
-.select-option::before {
+
+/* .select-option::before {
     position: absolute;
     top: 5px;
     left: -32px;
@@ -5996,7 +6021,7 @@ input.input_filed:focus {
     width: 1px;
     height: 125%;
     background-color: #9ad954;
-}
+} */
 
 
 .deposit_crypto_left .select-option h2:before {
@@ -6038,14 +6063,15 @@ input.input_filed:focus {
 }
 
 .search_icon_s {
-    border: 1px solid #474d57;
-    margin-top: 15px;
-    padding: 15px;
-    border-radius: 30px;
+    border: 1px solid #E4E4E4;
+    margin-top: 10px;
+    font-size: 14px;
+    padding: 12px 15px;
+    border-radius: 10px;
     display: flex;
     align-items: center;
     gap: 7px;
-    color: #939393;
+    color: #3d3d3d;
     cursor: pointer;
 }
 
@@ -6077,6 +6103,349 @@ input.input_filed:focus {
     height: 16px;
     background-color: #fff;
     border-radius: 3px;
+}
+
+/* Deposit (Figma) step badges: scoped to legacy layout wrapper */
+.depositcrypto_lft .deposit_crypto_left h2:before,
+.depositcrypto_lft .deposit_crypto_left .select-option h2:before,
+.depositcrypto_lft .deposit_crypto_left .active_input:before {
+    display: none !important;
+    content: none !important;
+}
+
+.depositcrypto_lft .deposit_crypto_left {
+    position: relative;
+    padding-left: 36px;
+}
+
+.depositcrypto_lft .deposit_crypto_left::before {
+    display: none;
+}
+
+/* Step rail segments: no line above step-1, no line below step-3 */
+.depositcrypto_lft .deposit_step_section {
+    position: relative;
+}
+
+.depositcrypto_lft .deposit_step_section::before {
+    content: "";
+    position: absolute;
+    left: -24px;
+    width: 1px;
+    background: #eaecf0;
+    height: 140%;
+}
+
+/* default: line passes through the section (from top to bottom) */
+.depositcrypto_lft .deposit_step_section::before {
+    top: 0;
+    bottom: 0;
+}
+
+/* first step: start from badge center (no line above heading) */
+.depositcrypto_lft .deposit_step_section:first-child::before {
+    top: 20px;
+}
+
+/* last step: stop at badge center (no line below last content) */
+.depositcrypto_lft .deposit_step_section:last-child::before {
+    bottom: auto;
+    height: 20px;
+}
+
+.depositcrypto_lft .deposit_step_header {
+    display: grid;
+    grid-template-columns: 32px 1fr;
+    align-items: center;
+    column-gap: 10px;
+    margin-bottom: 10px;
+    position: relative;
+
+    margin-left: -34px; 
+}
+
+.depositcrypto_lft .select-option .deposit_step_badge {  border: 1.5px solid #101828; background: #fff; color: #101828; }
+
+.depositcrypto_lft .deposit_step_badge {
+    width: 20px;
+    height: 20px;
+    border-radius: 999px;
+    border: 1.5px solid #101828;
+    color: #ffffff;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    line-height: 1;
+    font-weight: 600;
+    background: #101828;
+
+    flex: 0 0 auto;/* centers over the rail at left:16px */
+}
+
+.depositcrypto_lft .deposit_step_badge.is-done {
+    border-color: #101828;
+    color: #101828;
+}
+
+.depositcrypto_lft .deposit_step_header h2 {
+    margin: 0;
+    font-size: 15px;
+    font-weight: 500;
+    color: #101828;
+}
+
+/* Deposit details (Figma) card */
+.depositcrypto_lft .deposit_details_card {
+    width: 100%;
+    border: 1px solid #eaecf0;
+    border-radius: 12px;
+    background: #fff;
+    padding: 16px 16px 18px;
+    margin-top: 10px;
+}
+
+.depositcrypto_lft .deposit_details_label {
+    font-size: 12px;
+    font-weight: 500;
+    color: #667085;
+    margin: 0;
+}
+
+.depositcrypto_lft .deposit_details_toggle {
+    width: 100%;
+    border: 0;
+    background: transparent;
+    padding: 0;
+    margin: 0 0 10px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    cursor: pointer;
+}
+
+.depositcrypto_lft .deposit_details_caret {
+    color: #667085;
+    display: inline-flex;
+    transition: transform 160ms ease;
+}
+
+.depositcrypto_lft .deposit_details_caret.is-open {
+    transform: rotate(180deg);
+}
+
+.depositcrypto_lft .deposit_details_grid {
+    display: grid;
+    grid-template-columns: 190px 1fr;
+    gap: 18px;
+    align-items: start;
+}
+
+.depositcrypto_lft .deposit_qr_box {
+    border: 1px solid #eaecf0;
+    border-radius: 12px;
+    padding: 14px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background: #fff;
+}
+
+.depositcrypto_lft .deposit_qr_img {
+    width: 140px;
+    height: 140px;
+    object-fit: contain;
+}
+
+.depositcrypto_lft .deposit_qr_hint {
+    margin-top: 7px;
+    font-size: 12px;
+    color: #667085;
+    text-align: center;
+}
+
+.depositcrypto_lft .deposit_details_fields {
+    width: 100%;
+}
+
+.depositcrypto_lft .deposit_field_row + .deposit_field_row {
+    margin-top: 14px;
+}
+
+.depositcrypto_lft .deposit_field_head {
+    font-size: 12px;
+    font-weight: 500;
+    color: #101828;
+    margin-bottom: 8px;
+}
+
+.depositcrypto_lft .deposit_field_input {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 10px;
+    align-items: center;
+}
+
+.depositcrypto_lft .deposit_field_input input {
+    width: 100%;
+    height: 42px;
+    border: 1px solid #eaecf0;
+    border-radius: 10px;
+    padding: 10px 12px;
+    font-size: 13px;
+    color: #101828;
+    background: #fff;
+}
+
+.depositcrypto_lft .deposit_copy_btn {
+    height: 42px;
+    border-radius: 10px;
+    border: 1px solid #eaecf0;
+    background: #fff;
+    padding: 0 14px;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 13px;
+    font-weight: 500;
+    color: #101828b0;
+}
+
+.depositcrypto_lft .deposit_copy_btn:hover {
+    background: #f9fafb;
+}
+
+.depositcrypto_lft .deposit_copy_ico {
+    color: #475467;
+    display: inline-flex;
+}
+
+.depositcrypto_lft .deposit_details_meta {
+    margin-top: 14px;
+    font-size: 12px;
+    color: #475467;
+}
+
+.depositcrypto_lft .deposit_meta_row {
+    display: flex;
+    gap: 6px;
+    margin-top: 6px;
+}
+
+.depositcrypto_lft .deposit_meta_row:first-child {
+    margin-top: 0;
+}
+
+.depositcrypto_lft .deposit_meta_label {
+    color: #667085;
+}
+
+.depositcrypto_lft .deposit_meta_value {
+    color: #101828;
+    font-weight: 500;
+}
+
+/* Deposit page: “Deposit History” + empty state (Figma) */
+.depositcrypto_lft .recent_deposit_list.deposit_history_section {
+    padding: 40px 0 48px;
+    width: 100%;
+}
+
+.depositcrypto_lft .deposit_history_top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 16px;
+}
+
+.depositcrypto_lft .deposit_history_title {
+    margin: 0;
+    font-size: 19px;
+    font-weight: 600;
+    color: #101828;
+    letter-spacing: -0.02em;
+}
+
+.depositcrypto_lft .deposit_history_viewall {
+    font-size: 14px;
+    font-weight: 500;
+    color: #667085;
+    text-decoration: none;
+}
+
+.depositcrypto_lft .deposit_history_viewall:hover {
+    color: #101828;
+}
+
+.depositcrypto_lft .deposit_history_card {
+    background: #fff;
+    overflow: hidden;
+}
+
+.depositcrypto_lft .deposit_history_head_wrap {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    background: #fff;
+}
+
+.depositcrypto_lft .deposit_history_head {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1.2fr 1fr 1.1fr 0.7fr;
+    gap: 12px;
+    padding: 10px 0px;
+    min-width: 720px;
+    background: #fff;
+}
+
+.depositcrypto_lft .deposit_history_head_cell {
+    font-size: 13px;
+    font-weight: 400;
+    color: #84888c;
+    line-height: 1.25;
+}
+
+.depositcrypto_lft .deposit_history_empty {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 72px 16px 88px;
+    text-align: center;
+}
+
+.depositcrypto_lft .deposit_history_empty_img {
+    width: 120px;
+    height: auto;
+    max-width: 100%;
+    opacity: 0.9;
+}
+
+.depositcrypto_lft .deposit_history_empty_text {
+    margin-top: 16px;
+    font-size: 18px;
+    font-weight: 400;
+    color: #070709;
+}
+
+@media (max-width: 991px) {
+    .depositcrypto_lft .deposit_history_empty {
+        padding: 48px 16px 56px;
+    }
+
+    .depositcrypto_lft .deposit_details_grid {
+        grid-template-columns: 1fr;
+    }
+
+    .depositcrypto_lft .deposit_qr_box {
+        flex-direction: row;
+        justify-content: flex-start;
+        gap: 14px;
+    }
+
+    .depositcrypto_lft .deposit_qr_hint {
+        margin-top: 0;
+    }
 }
 
 .active_input:before {
@@ -6364,7 +6733,7 @@ button.sc-gjLLEI.kuPCgf svg>path {
     background: transparent;
     border: none;
     padding: 10px 0px;
-    font-size: 16px;
+    font-size: 15px;
     font-weight: 400;
     color: #cfcfcf;
 }
@@ -6377,6 +6746,7 @@ button.sc-gjLLEI.kuPCgf svg>path {
 .deposit_crypto_right .accordion-item {
     background-color: transparent;
     border: none;
+    border-bottom: 1px solid #F2F3F4;
     color: #fff;
 }
 
@@ -6637,7 +7007,7 @@ footer address {
 
 .deposit_crypto_block_coin {
     display: flex;
-    gap: 150px;
+    gap: 70px;
 }
 
 .currency_preference_outer {
@@ -6752,7 +7122,7 @@ table .green {
 }
 
 .leftside_menu {
-    width: 210px;
+    width: 310px;
 }
 
 .crypto_section table {
@@ -6769,7 +7139,7 @@ table .green {
 } */
 
 td.green {
-    color: #5EBA89 !important;
+    color: #10B981 !important;
 }
 
 .yellow_font {
@@ -7676,9 +8046,280 @@ footer .menu {
 .dashboard_right {
     padding-top: 15px;
     width: 100%;
-    padding-right: 50px;
+    padding-right: 30px;
     padding-bottom: 40px;
-    padding-left: 330px;
+    padding-left: 340px;
+}
+
+.depositcrypto_lft {
+    padding-left: 40px;
+    margin-top: 40px;
+}
+
+.depositcrypto_lft h1{ font-size: 26px; font-weight: 500; color: #101828; margin: 0px; }
+
+.depositcrypto_lft .deposit_crypto_page_head {
+    width: 66%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 16px;
+    flex-wrap: wrap;
+    margin-bottom: 8px;
+}
+
+.modal.fade.search_form h4 {
+    font-size: 22px;
+}
+
+.depositcrypto_lft .deposit_fiat_head_btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    font-family: inherit;
+    font-size: 15px;
+    font-weight: 400;
+    line-height: 1.2;
+    color: #101828;
+    text-decoration: none;
+    cursor: pointer;
+    white-space: nowrap;
+}
+
+.depositcrypto_lft .deposit_fiat_head_btn:hover {
+    color: #101828;
+    text-decoration: underline;
+}
+
+.depositcrypto_lft .deposit_fiat_head_arrow {
+    font-size: 1em;
+    font-weight: 400;
+    line-height: 1;
+}
+
+.depositcrypto_lft .deposit_fiat_placeholder_note {
+    margin-top: 12px;
+    margin-bottom: 0;
+    font-size: 15px;
+    color: #667085;
+}
+
+/* Deposit — Select Network modal (matches provided screenshot) */
+.deposit_select_network_overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 1080;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 16px;
+    background: rgba(0, 0, 0, 0.5);
+    -webkit-tap-highlight-color: transparent;
+}
+
+.deposit_select_network_dialog {
+    position: relative;
+    width: 100%;
+    max-width: 560px;
+    max-height: min(720px, calc(100vh - 32px));
+    display: flex;
+    flex-direction: column;
+    background: #ffffff;
+    border-radius: 16px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.18);
+    padding: 22px 22px 16px;
+    overflow: hidden;
+}
+
+.deposit_select_network_head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    margin-bottom: 14px;
+    flex-shrink: 0;
+}
+
+.deposit_select_network_title {
+    margin: 0;
+    font-size: 22px;
+    font-weight: 500;
+    color: #101828;
+    line-height: 1.25;
+}
+
+.deposit_select_network_close {
+    flex-shrink: 0;
+    width: 36px;
+    height: 36px;
+    border: none;
+    border-radius: 50%;
+    background: transparent;
+    color: #101828;
+    font-size: 26px;
+    line-height: 1;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    opacity: 0.8;
+    transition: opacity 0.15s ease;
+}
+
+.deposit_select_network_close:hover {
+    opacity: 1;
+}
+
+.deposit_select_network_note {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 14px 14px;
+    border-radius: 12px;
+    background: #fff5ea;
+    border: 1px solid rgba(250, 167, 66, 0.22);
+    box-shadow: 0 6px 16px rgba(16, 24, 40, 0.06);
+    margin-bottom: 14px;
+    flex-shrink: 0;
+}
+
+.deposit_select_network_note_ico {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: rgba(250, 167, 66, 0.18);
+    color: #b54708;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    font-weight: 700;
+    flex-shrink: 0;
+    margin-top: 2px;
+}
+
+.deposit_select_network_note p {
+    margin: 0;
+    color: #344054;
+    font-size: 14px;
+    line-height: 1.45;
+}
+
+.deposit_select_network_search_wrap {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-shrink: 0;
+    background: #ffffff;
+    border-radius: 999px;
+    padding: 12px 16px;
+    margin-bottom: 10px;
+}
+
+.deposit_select_network_search_wrap .ri-search-line {
+    font-size: 18px;
+    color: #98a2b3;
+    flex-shrink: 0;
+}
+
+.deposit_select_network_search_input {
+    flex: 1;
+    min-width: 0;
+    border: none;
+    background: transparent;
+    font-size: 15px;
+    color: #101828;
+    outline: none;
+}
+
+.deposit_select_network_search_input::placeholder {
+    color: #98a2b3;
+}
+
+.deposit_select_network_list {
+    flex: 1;
+    min-height: 0;
+    overflow-y: auto;
+    padding: 2px 2px 6px;
+}
+
+.deposit_select_network_empty {
+    margin: 18px 8px;
+    text-align: center;
+    font-size: 14px;
+    color: #667085;
+}
+
+.deposit_select_network_card {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 18px;
+    text-align: left;
+    border: none;
+    background: #ffffff;
+    padding: 16px 16px;
+    border-radius: 12px;
+    box-shadow: 0 8px 18px rgba(16, 24, 40, 0.08);
+    cursor: pointer;
+    margin-bottom: 14px;
+    font: inherit;
+}
+
+.deposit_select_network_card:hover {
+    box-shadow: 0 10px 22px rgba(16, 24, 40, 0.12);
+}
+
+.deposit_select_network_card:focus-visible {
+    outline: 2px solid #2d6cdf;
+    outline-offset: 2px;
+}
+
+.deposit_select_network_card_lft {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    min-width: 0;
+}
+
+.deposit_select_network_code {
+    font-size: 14px;
+    font-weight: 400;
+    color: #101828;
+    line-height: 1.1;
+}
+
+.deposit_select_network_name {
+    font-size: 12px;
+    font-weight: 300;
+    color: #667085;
+    line-height: 1.25;
+}
+
+.deposit_select_network_card_rgt {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap:2px;
+    flex-shrink: 0;
+}
+
+.deposit_select_network_eta {
+    font-size: 14px;
+    color: #101828;
+    font-weight: 400;
+}
+
+.deposit_select_network_min {
+    font-size: 12px;
+    color: #667085;
+    font-weight: 300;
 }
 
 .user_profile {
@@ -7726,7 +8367,8 @@ img.round_img {
 }
 
 .user_profile_cnt h3 {
-    font-size: 16px;
+    font-size: 20px;
+    color: #1A1A1A;
     font-weight: 500;
     display: flex;
     margin-bottom: 2px;
@@ -7734,6 +8376,24 @@ img.round_img {
     justify-content: space-between;
     gap: 70px;
 
+}
+
+.top_header_dash .user_left_img {
+    position: relative;
+}
+
+.top_header_dash .user_edit {
+    position: absolute;
+    right: -6px;
+    bottom: -5px;
+}
+
+.top_header_dash .user_edit button {
+    background-color: #fff;
+    border: 1px solid #F3F4F6;
+    border-radius: 50px;
+    width: 26px;
+    height: 26px;
 }
 
 .modal.fade.search_form {
@@ -7754,11 +8414,52 @@ span.hide button {
 }
 
 span.subdel {
-    font-size: 10px;
+    font-size: 13px;
     font-weight: 300;
     color: #949AA4;
     /* margin-top: 0px; */
     display: block;
+}
+
+span.vip_level {
+    background-color: #F5F5F5;
+    border-radius: 4px;
+    font-size: 11px;
+    font-weight: 700;
+    display: flex;
+    padding: 4px 13px;
+    align-items: center;
+    gap: 2px;
+}
+
+span.vip_level i {
+    color: #E2B93B;
+    font-size: 9px;
+}
+
+.top_header_dash .d-flex.sublevels {
+    margin-top: 7px;
+}
+
+.d-flex.user_header_cnt_top {
+    gap: 32px;
+}
+
+span.low_level {
+    background-color: #FEF2F2;
+    border-radius: 4px;
+    color: #EF4444;
+    font-size: 11px;
+    font-weight: 700;
+    display: flex;
+    padding: 4px 13px;
+    align-items: center;
+    gap: 2px;
+}
+
+span.low_level i {
+    color: #EF4444;
+    font-size: 7px;
 }
 
 .user_profile_cnt ul {
@@ -7768,7 +8469,7 @@ span.subdel {
 
 .dashboard_right_side {
     width: 28%;
-    margin-top: 44px;
+    margin-top: 0px;
 }
 
 .position_order .desktop_view2 {
@@ -7780,8 +8481,64 @@ span.subdel {
     gap: 20px;
     flex-direction: column;
     position: relative;
+    padding: 30px;
+    border-radius: 15px;
+    box-shadow: 0px 0px 20px #00000017;
 }
 
+.vip_servies {
+    width: 100%;
+    border-radius: 18px;
+    background: linear-gradient(145deg, rgba(241, 231, 209, 1) 0%, rgba(255, 255, 254, 1) 80%, rgba(253, 249, 240, 1) 100%);
+    border: 1px solid #c9a14a59;
+    padding: 24px;
+    box-shadow: 0px 1px 10px #0000001f;
+}  
+.vip_servies h6{ font-size: 18px;
+    font-weight: 500;
+    color: #000;
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    gap: 8px; }
+
+.vip_servies ul.vip_services_list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-bottom: 16px;
+}
+
+.vip_servies ul.vip_services_list li {
+    font-size: 14px;
+    font-weight: 300;
+    color: #364153;
+    padding-left: 15px;
+    list-style: none;
+    position: relative;
+}
+
+.vip_servies button.vip_btn {
+    width: 100%;
+    display: block;
+    background: linear-gradient(90deg, rgba(205, 167, 84, 1) 0%, rgba(239, 220, 169, 1) 100%);
+    border: none;
+    color: #fff;
+    font-size: 18px;
+    padding: 12px;
+    border-radius: 50px;
+}
+
+.vip_servies ul.vip_services_list li::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 7px;
+    background-color: #C9A14A;
+    width: 6px;
+    height: 6px;
+    border-radius: 50px;
+}
 .profile_id.kycstatus a {
     color: #fff;
 }
@@ -7894,7 +8651,7 @@ ul.user_social li {
 }
 
 .profile_id {
-    font-size: 12px;
+    font-size: 14px;
     font-weight: 400;
 }
 
@@ -7939,19 +8696,6 @@ ul.user_social li {
     font-weight: 600;
 }
 
-.block_features {
-    display: flex;
-    flex-direction: row;
-    position: relative;
-    gap: 15px;
-    border: 1px solid #454C59;
-    border-radius: 10px;
-    padding: 15px;
-    background-color: #2B313C;
-    min-height: 134px;
-    cursor: pointer;
-}
-
 .block_features h5 {
     display: flex;
     justify-content: space-between;
@@ -7968,14 +8712,6 @@ ul.user_social li {
     color: #A3A8B3;
 }
 
-.block_features img {
-    width: 80px;
-    min-width: 80px;
-    position: absolute;
-    right: 10px;
-    bottom: 0px;
-}
-
 .homebonuspop .modal-dialog {
     justify-content: center;
 }
@@ -7985,6 +8721,13 @@ ul.user_social li {
     flex-direction: column;
     gap: 24px;
     margin: 0px 0px 20px;
+    position: relative;
+    width: 100%;
+    border-radius: 18px;
+    background: #ffffff;
+    border: 1px solid #e9edf3;
+    padding: 22px 22px 0px;
+    box-shadow: 0px 10px 25px #0000000f;
 }
 
 .recommendations_block ul {
@@ -8095,8 +8838,307 @@ ul.user_social li {
 
 .announcements_top a {
     font-size: 12px;
+    color: #6F798C;
+    font-weight: 500;
+}
+
+/* Dashboard right: announcements card (light UI like reference) */
+.announcements_right {
+    margin: 18px 0px;
+}
+
+.announcements_right .announcements_card {
+    width: 100%;
+    border-radius: 18px;
+    background: #ffffff;
+    border: 1px solid #e9edf3;
+    padding: 22px 22px;
+    box-shadow: 0px 10px 25px #0000000f;
+}
+
+.announcements_right .announcements_top {
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.announcements_right .announcements_title {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.announcements_right .announcements_title i {
+    font-size: 18px;
+    color: #2b313c;
+    opacity: 0.9;
+}
+
+.announcements_right .announcements_title h4 {
+    font-size: 18px;
+    font-weight: 600;
+    color: #2b313c;
+    margin: 0;
+}
+
+.announcements_right a.announcements_viewall {
+    font-size: 13px;
+    font-weight: 400;
+    color: #6A7282;
+    text-decoration: none;
+}
+
+.announcements_right a.announcements_viewall:hover {
+    text-decoration: underline;
+}
+
+.announcements_right .announcement_block {
+    gap: 0px;
+}
+
+.announcements_right a.announcement_item {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 16px 0px;
+    text-decoration: none;
+    color: inherit;
+}
+
+.announcements_right a.announcement_item:hover .announcement_item_title {
+    text-decoration: underline;
+}
+
+.announcements_right .announcement_item_left {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    min-width: 0;
+}
+
+.announcements_right .announcement_item_title {
+    font-size: 14px;
+    font-weight: 400;
+    color: #364153;
+    margin: 0;
+    line-height: 1.25;
+}
+
+.announcements_right .announcement_item_time {
+    font-size: 12px;
+    color: #6A7282;
+    margin: 0;
+}
+
+.announcements_right a.announcement_item i.ri-arrow-right-s-line {
+    font-size: 22px;
+    color: #97a0ad;
+    margin-top: 2px;
+    flex: 0 0 auto;
+}
+
+.announcements_right .announcement_divider {
+    width: 100%;
+    height: 1px;
+    background: #eef2f7;
+}
+
+@media screen and (max-width: 767px) {
+    .announcements_right .announcements_card {
+        padding: 16px;
+        border-radius: 16px;
+    }
+
+    .announcements_right .announcements_title h4 {
+        font-size: 20px;
+    }
+
+    .announcements_right a.announcements_viewall {
+        font-size: 14px;
+    }
+
+    .announcements_right .announcement_item_title {
+        font-size: 16px;
+    }
+
+    .announcements_right .announcement_item_time {
+        font-size: 12px;
+    }
+}
+
+/* Dashboard right: simple cards (Referral + Security) */
+.dashboard_right_cards {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+    margin: 18px 0px 0px;
+}
+
+.dashboard_right_cards .dashboard_simple_card {
+    width: 100%;
+    border-radius: 18px;
+    padding: 22px;
+    box-shadow: 0px 10px 25px #0000000f;
+    border: 1px solid #e9edf3;
+}
+
+.dashboard_right_cards .dashboard_simple_card.referral_program_card {
+    background: #ffffff;
+}
+
+.dashboard_right_cards .dashboard_simple_card.security_center_card {
+    background: #eefdf3;
+    border-color: #c7f1d4;
+}
+
+.dashboard_right_cards .dash_card_header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 10px;
+}
+
+.dashboard_right_cards .dash_card_header h4 {
+    font-size: 18px;
+    font-weight: 500;
+    color: #2b313c;
+    margin: 0;
+}
+
+.dashboard_right_cards .dash_card_icon {
+    /* width: 42px; */
+    /* height: 42px; */
+    /* border-radius: 12px; */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex: 0 0 auto;
+}
+
+.dashboard_right_cards .dash_card_icon i {
+    font-size: 20px;
+}
+
+/* .dashboard_right_cards .dash_card_icon--muted {
+    background: #f3f5f7;
+    color: #4b5563;
+} */
+
+.dashboard_right_cards .dash_card_icon--green {
+    background: #00c853;
     color: #fff;
-    font-weight: 700;
+    width: 32px;
+    height: 32px;
+    border-radius: 10px;
+}
+
+.dashboard_right_cards .dash_card_desc {
+    font-size: 14px;
+    line-height: 1.35;
+    color: #4A5565;
+    margin: 0 0 16px;
+    font-weight: 300;
+}
+
+.dashboard_right_cards .dash_code_pill {
+    width: 100%;
+    border-radius: 18px;
+    background: #F5F6F7;
+    padding: 12px 16px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 14px;
+}
+
+.dashboard_right_cards .dash_code_text {
+    font-size: 15px;
+    font-weight: 600;
+    color: #2b313c;
+    letter-spacing: 0.02em;
+}
+
+.dashboard_right_cards .dash_code_copy {
+     /* width: 42px; */
+    /* height: 42px; */
+    /* border-radius: 12px; */
+    border: none;
+    background: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    color: #4b5563;
+}
+
+.dashboard_right_cards .dash_code_copy i {
+    font-size: 20px;
+}
+
+.dashboard_right_cards .dash_outline_btn {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 10px 18px;
+    border-radius: 999px;
+    border: 1px solid #e2e5ea;
+    background: transparent;
+    color: #2b313c;
+    font-size: 16px;
+    font-weight: 400;
+    text-decoration: none;
+}
+
+.dashboard_right_cards .dash_primary_btn {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 11px 18px;
+    border-radius: 999px;
+    border: none;
+    text-decoration: none;
+    font-size: 16px;
+    font-weight: 400;
+}
+
+.dashboard_right_cards .dash_primary_btn--green {
+    background: linear-gradient(90deg, #00c853 0%, #00a844 100%);
+    color: #fff;
+    box-shadow: 0px 14px 28px rgba(0, 200, 83, 0.22);
+}
+
+@media screen and (max-width: 767px) {
+    .dashboard_right_cards .dashboard_simple_card {
+        padding: 16px;
+        border-radius: 16px;
+    }
+
+    .dashboard_right_cards .dash_card_header h4 {
+        font-size: 20px;
+    }
+
+    .dashboard_right_cards .dash_card_desc {
+        font-size: 14px;
+        margin-bottom: 12px;
+    }
+
+    .dashboard_right_cards .dash_code_pill {
+        padding: 14px;
+        border-radius: 16px;
+    }
+
+    .dashboard_right_cards .dash_code_text {
+        font-size: 18px;
+    }
+
+    .dashboard_right_cards .dash_outline_btn,
+    .dashboard_right_cards .dash_primary_btn {
+        font-size: 16px;
+        padding: 14px 14px;
+    }
 }
 
 .dashboard_slider {
@@ -8226,7 +9268,206 @@ body .recommendations_block ul li a:hover {
 
 .profile_id span {
     display: block;
+    font-weight: 200;
+    font-size: 13px;
     color: #848E9C;
+}
+
+.wallet_snapshot_bl {
+    border-radius: 15px;
+    box-shadow: 0px 0px 20px #00000017;
+    width: 100%;
+    margin-top: 18px;
+}
+
+.wallet_snapshot_bl {
+    border-radius: 15px;
+    box-shadow: 0px 0px 20px #00000017;
+    width: 100%;
+    margin-top: 18px;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    align-items: center;
+    justify-content: space-between;
+}
+
+.wallet_snapshot_bl_left {
+    padding: 42px;
+    border-right: 1px solid #f0f0f0;
+}
+
+.wallet_snapshot_bl_left span {
+    font-size: 14px;
+    color: #D1AA67;
+    margin-bottom: 12px;
+    display: block;
+}
+
+.wallet_snapshot_bl p.copycode {
+    font-size: 20px;
+    margin: 0px;
+    color: #000;
+    font-weight: 400;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.wallet_snapshot_bl_right {
+    justify-content: center;
+    padding: 0px 40px;
+}
+
+.wallet_snapshot_bl_right button {
+    font-size: 16px;
+    font-weight: 500;
+    color: #000000;
+    background-color: #ffffff;
+    border-radius: 50px;
+    border: none;
+    display: flex;
+    padding: 8px 26px 8px 10px;
+    box-shadow: 0px 0px 20px #00000017;
+    align-items: center;
+    gap: 9px;
+}
+
+.wallet_snapshot_bl_right button.withdraw_btn i {
+    background-color: #F74B60;
+}
+
+.new_steps_crypto {
+    padding: 28px;
+    border-radius: 15px;
+    box-shadow: 0px 0px 20px #00000017;
+    margin: 40px 0px;
+}
+
+.new_steps_crypto h3 {
+    font-size: 24px;
+    font-weight: 500;
+    color: #303236;
+    margin-bottom: 18px;
+}
+
+.steps_block_dash {
+    width: 100%;
+    background-color: #F8F9FB;
+    border: 1px solid #F8F9FB;
+    box-shadow: 0px 0px 6px #0000001c;
+    border-radius: 13px;
+    color: #9CA3AF;
+    padding: 24px;
+    position: relative;
+    min-height: 200px;
+}
+
+.steps_block_dash.active {
+    border: 1px solid #D1AA67;
+    background-color: #fff;
+    color: #000;
+}
+
+.steps_block_dash.active span.step_number {
+    color: #D1AA67;
+}
+
+.steps_block_dash.active .steps_cnt button {
+    color: #ffffff;
+    opacity: 1;
+}
+
+.steps_block_dash.active .steps_block_dash_img {
+    opacity: 1;
+}
+
+.steps_block_dash_outer {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 18px;
+    width: 100%;
+}
+
+.new_steps_crypto .steps_cnt {
+    width: 60%;
+}
+
+.steps_block_dash_img {
+    position: absolute;
+    top: 30px;
+    width: 130px;
+    right: 4px;
+    opacity: 0.5; }
+
+.new_steps_crypto span.step_number {
+    display: block;
+}
+
+.new_steps_crypto .steps_cnt span {
+    font-size: 12px;
+    font-weight: 300;
+    margin-bottom: 7px;
+}
+
+.new_steps_crypto .steps_cnt h5 {
+    font-size: 17px;
+    font-weight: 600;
+    margin-bottom: 6px;
+}
+
+.new_steps_crypto .steps_cnt h5 span {
+    color: #D1AA67;
+    font-weight: 600;
+    font-size: 18px;
+}
+
+.new_steps_crypto .steps_cnt ul.verifylist {
+    display: flex;
+    justify-content: start;
+    gap: 16px;
+}
+
+.new_steps_crypto .steps_cnt ul li {
+    font-size: 12px;
+    font-weight: 600;
+    background-color: #F3F4F6;
+    border-radius: 4px;
+    padding: 8px 8px;
+    border: none;
+    color: #000;
+}
+
+.new_steps_crypto .steps_cnt button {
+    font-size: 12px;
+    font-weight: 600;
+    color: #101010;
+    background-color: #D1AA67;
+    border-radius: 50px;
+    padding: 8px 24px;
+    border: none;
+    opacity: 0.5;
+    position: absolute;
+    margin-top: 15px;
+    bottom: 16px;
+}
+
+.new_steps_crypto .steps_cnt p {
+    font-size: 12px;
+    margin: 0px;
+}
+
+
+.wallet_snapshot_bl_right button i {
+    background-color: #00BC7D;
+    color: #fff;
+    padding: 4px;
+    font-size: 22px;
+    border-radius: 50px;
+    width: 38px;
+    height: 38px;
+    align-items: center;
+    display: flex;
+    justify-content: center;
 }
 
 .estimated_balance {
@@ -8266,17 +9507,17 @@ body .recommendations_block ul li a:hover {
 .dashboard_listing_section {
     width: 100%;
     display: flex;
-    margin-top: 32px;
+    margin-top: 5px;
     gap: 20px;
 }
 
 .listing_left_outer {
-    width: 86%;
+    width: 100%;
 }
 
 .listing_left_outer h4 {
-    font-size: 18px;
-    font-weight: 400;
+    font-size: 24px;
+    font-weight: 500;
     margin: 0px;
 }
 
@@ -8394,7 +9635,7 @@ body .recommendations_block ul li a:hover {
     border: 1px solid #ffffff26;
     padding: 12px 20px;
     width: 100%;
-    border-radius: 50px;
+    border-radius: 12px;
 }
 
 .modal.search_form .error_text {
@@ -8507,12 +9748,6 @@ body .recommendations_block ul li a:hover {
     padding-top: 7px;
 }
 
-.new_features_s {
-    padding: 0px 10px 0px;
-    /* border: 1px solid #454C59;
-    border-radius: 12px; */
-}
-
 
 .listing_left_outer .dashboard_summary ul li {
     padding: 0px;
@@ -8521,17 +9756,19 @@ body .recommendations_block ul li a:hover {
 
 .listing_left_outer .dashboard_summary ul li button {
     border: none !important;
-    padding: 0px;
-    font-size: 12px;
+    padding: 0px 0px 12px;
+    font-size: 15px;
     font-weight: 400;
     color: #6F798C;
     box-shadow: none !important;
+    border-bottom: 2px solid #f3f4f600 !important;
 }
 
 .listing_left_outer .dashboard_summary ul li button.active {
     background-color: transparent;
     color: #EAECEF;
     font-weight: 400;
+    border-bottom: 2px solid #000 !important;
 }
 
 .bitcoin_cate_list ul li.active {
@@ -8567,6 +9804,8 @@ body .recommendations_block ul li a:hover {
 
 .listing_left_outer ul.nav-tabs {
     border: none;
+    border-bottom: 1px solid #F3F4F6;
+    padding-bottom: 0px;
 }
 
 .faq_cta_outer.how_workblock h2 {
@@ -8605,14 +9844,15 @@ body {
 }
 
 .navi_sidebar li a {
-    font-size: 16px;
+    font-size: 14px;
     font-weight: 400;
     color: #7d8697;
     display: flex;
+    border: 1px solid #fff;
     gap: 8px;
-    border-radius: 0px 10px 10px 0px;
+    border-radius: 12px;
     align-items: center;
-    padding: 8px 18px;
+    padding: 13px 18px;
 
 }
 
@@ -8630,11 +9870,13 @@ body {
 .navi_sidebar li.active a {
     background-color: #2B313C;
     color: #fff;
+    border: 1px solid #DBDBDD;
 }
 
 .navi_sidebar li.active button {
     background-color: #2B313C;
     color: #fff;
+    border: 1px solid #DBDBDD;
 }
 
 .navi_sidebar li button {
@@ -8672,9 +9914,11 @@ body {
 ul.navi_sidebar {
     display: flex;
     flex-direction: column;
-    gap: 18px;
+    gap: 7px;
     height: 100%;
     padding-bottom: 150px;
+    width: 240px;
+    padding: 0px 0px 50px 20px !important;
 }
 
 .enable img {
@@ -8691,9 +9935,8 @@ ul.navi_sidebar {
 }
 
 .navi_sidebar li a:hover {
-    background-color: none;
     color: #fff;
-    border: none;
+    border: 1px solid #DBDBDD;
 }
 
 .navi_sidebar li button:hover {
@@ -8761,7 +10004,7 @@ ul.navi_sidebar {
 }
 
 .dashboard_summary td {
-    font-size: 12px;
+    font-size: 14px;
     font-weight: 300;
     color: #EAECEF;
     padding: 10px 5px;
@@ -8820,7 +10063,7 @@ ul.navi_sidebar {
 }
 
 .price_heading {
-    font-size: 13px;
+    font-size: 14px;
     font-weight: 300;
     color: #fff;
 }
@@ -9316,7 +10559,8 @@ body .trade_summary_table_lft_position_order.position_order .table-responsive {
 
     .navbar-expand-lg .navbar-nav .dropdown-menu {
         border-radius: 0px;
-        box-shadow: none; }
+        box-shadow: none;
+    }
 
     .navbar-collapse {
         background-color: #111114 !important;
@@ -9600,7 +10844,7 @@ p.user_info a {
 
 .profile_id_s {
     display: flex;
-    gap: 70px;
+    gap: 20px;
     justify-content: normal;
     width: 100%;
     align-items: center;
@@ -10384,7 +11628,7 @@ button.transfer_btn:hover {
 }
 
 .maindashboard .table-responsive {
-    max-height: 440px;
+    max-height: 510px;
 }
 
 .searchBar button {
@@ -10766,7 +12010,9 @@ span.arrow {
 
 .modal {
     z-index: 9999999;
-    background-color: #0a0a0a96;
+    background-color: rgb(255 255 255 / 40%);
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
 }
 
 .form_select select option {
@@ -10783,10 +12029,12 @@ span.arrow {
 
 .leftside_menu {
     position: fixed;
-    top: 80px;
+    top: 60px;
     z-index: 666;
     height: 100%;
+    border-right: 1px solid #EDEFF2;
     overflow: auto;
+    padding-top: 24px;
 }
 
 .bankdetail_tabs .row {
@@ -11152,10 +12400,9 @@ ul.daylist li span {
     right: 24px;
     background-color: #ffffff00;
     opacity: 1;
-    border-radius: 100px;
-    font-size: 10px;
-    padding: 6px;
-    top: 24px;
+    border: none;
+    /* border-radius: 100px; */
+    font-size: 12px;
 }
 
 .modal.search_form .hot_trading_t {
@@ -14434,6 +15681,7 @@ body .themecolor_icon .ri-sun-fill {
 }
 
 span.fontWeight {
+    font-size: 12px;
     font-weight: 300;
     color: #848E9C;
 }
@@ -14930,7 +16178,8 @@ td.tb_background {
 }
 
 .deposit_crypto_block_coin {
-    margin-top: 15px;
+    margin-top: 40px;
+    padding-left: 80px;
 }
 
 .tpsl_reduce .form-check {
@@ -15965,10 +17214,7 @@ ul.kyclist li img {
 .modal .btn-close {
     filter: invert(1);
     opacity: 1;
-    border: 1px solid #000000;
-    border-radius: 50px;
-    padding: 8px;
-    font-size: 9px;
+    font-size: 12px;
 }
 
 .upload_grid {
@@ -16852,13 +18098,22 @@ button.copy_code {
     transition: transform 0.3s ease-in-out;
 }
 
-a:hover {
-    color: #fff;
-}
-
 .learnbtn:hover {
     color: #D1AA67;
 }
+
+.d-flex.agcf_block_midle {
+    align-items: center;
+    gap: 12px;
+    color: #000;
+}
+
+.agcf h6 {
+    font-size: 15px;
+    margin: 0px;
+}
+
+.agcf span{ font-size: 11px; color: #9CA3AF; font-weight: 300; }
 
 .referral_event_item {
     flex: 0 0 calc((100% - 24px) / 2);
@@ -17027,7 +18282,7 @@ footer .container {
     #root:has(header.sticky-top) {
         padding-top: 40px;
     }
-    
+
     html:has(header.sticky-top) {
         scroll-padding-top: 40px;
     }
@@ -17430,8 +18685,10 @@ footer .container {
         font-size: 16px;
     }
 
-    .navigation .navbar-nav .dropdown-menu .dropdown-item .dropdown-item-text, .navbar-expand-lg .navbar-nav .dropdown-menu .dropdown-item .dropdown-item-text {
-        font-size: 12px; }
+    .navigation .navbar-nav .dropdown-menu .dropdown-item .dropdown-item-text,
+    .navbar-expand-lg .navbar-nav .dropdown-menu .dropdown-item .dropdown-item-text {
+        font-size: 12px;
+    }
 
     section.crypto_exchange_section .scan_vector {
         max-width: 150px;
@@ -20406,7 +21663,7 @@ footer .container {
     #root:has(header.sticky-top) {
         padding-top: 35px;
     }
-    
+
     html:has(header.sticky-top) {
         scroll-padding-top: 35px;
     }
@@ -23323,8 +24580,9 @@ footer .container {
     }
 
     .login_section .login_btn {
-        margin-top: 15px;
+        margin-top: 0px;
     }
+
 
     .meme_coin_top p {
         font-size: 14px;
