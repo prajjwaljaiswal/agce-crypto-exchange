@@ -1,8 +1,16 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
+import { useMutation } from '@tanstack/react-query'
+import type { LoginResponse, LoginSuccess } from '@agce/types'
 import { useAuth } from '../../providers/index.js'
+import { authApi } from '../../lib/auth-api.js'
+import { formatApiError } from '../../lib/errors.js'
 import './signup-wizard.css'
 import './login-wizard.css'
+
+function isLoginSuccess(response: LoginResponse): response is LoginSuccess {
+  return 'accessToken' in response
+}
 
 type AccountTab = 'email_user' | 'phone' | 'qr'
 
@@ -38,6 +46,10 @@ export function LoginPage() {
   const [showPassword, setShowPassword] = useState(false)
   const [bindIp, setBindIp] = useState(false)
 
+  // The identifier in backend-ready form (email as-is, phone as E.164).
+  // Captured on step-1 submit so step 2 can re-use it without re-parsing.
+  const [pendingIdentifier, setPendingIdentifier] = useState('')
+
   // Step 2 — 2FA verification
   const [loginPendingVerification, setLoginPendingVerification] = useState(false)
   const [selectedAuthMethod, setSelectedAuthMethod] = useState(1)
@@ -46,6 +58,7 @@ export function LoginPage() {
   const [otpSingle, setOtpSingle] = useState('')
   const [showMethodModal, setShowMethodModal] = useState(false)
   const otpInputRefs = useRef<(HTMLInputElement | null)[]>([])
+  const signIdInputRef = useRef<HTMLInputElement>(null)
 
   useEffect(() => {
     document.title = 'Arab Global Crypto Exchange – Log In'
@@ -55,6 +68,13 @@ export function LoginPage() {
 
   useEffect(() => {
     window.scrollTo(0, 0)
+  }, [wizardStep, accountTab])
+
+  // Auto-focus identifier input on step 1 (also fires on tab switch)
+  useEffect(() => {
+    if (wizardStep !== 1 || accountTab === 'qr') return
+    const id = window.setTimeout(() => signIdInputRef.current?.focus(), 120)
+    return () => window.clearTimeout(id)
   }, [wizardStep, accountTab])
 
   // Auto-focus first OTP cell on step 2
@@ -79,6 +99,70 @@ export function LoginPage() {
   const showError = (msg: string) => alert(msg)
   const showSuccess = (msg: string) => alert(msg)
 
+  const handleLoginSuccess = useCallback(
+    (response: LoginSuccess) => {
+      login(
+        { accessToken: response.accessToken, refreshToken: response.refreshToken },
+        { id: response.userId, userId: response.userId, identifier: pendingIdentifier },
+      )
+      navigate('/user_profile/dashboard')
+    },
+    [login, navigate, pendingIdentifier],
+  )
+
+  const loginMutation = useMutation({
+    mutationFn: (payload: { identifier: string; password: string }) =>
+      authApi.login(payload),
+    onSuccess: (response) => {
+      if (isLoginSuccess(response)) {
+        showSuccess('Login successful!')
+        handleLoginSuccess(response)
+        return
+      }
+      // Backend sends the LOGIN OTP as part of /login when 2FA is enabled.
+      const stubMethods: AuthMethod[] = [
+        {
+          type: 1,
+          label: 'Email',
+          icon: 'ri-mail-line',
+          description: 'Receive verification codes via email',
+          maskedValue: pendingIdentifier,
+        },
+      ]
+      setAvailableMethods(stubMethods)
+      setSelectedAuthMethod(1)
+      setResendTimer(60)
+      setOtpSingle('')
+      setLoginPendingVerification(true)
+      setWizardStep(2)
+      showSuccess('Verification code sent.')
+    },
+    onError: (error) => showError(formatApiError(error, 'Login failed.')),
+  })
+
+  const verifyOtpMutation = useMutation({
+    mutationFn: (payload: { identifier: string; otp: string }) =>
+      authApi.verifyOtp({ ...payload, purpose: 'LOGIN' }),
+    onSuccess: (response) => {
+      if (response && typeof response === 'object' && 'accessToken' in response) {
+        showSuccess('Login successful!')
+        handleLoginSuccess(response as LoginSuccess)
+      } else {
+        showError('Verification succeeded but no session was returned.')
+      }
+    },
+    onError: (error) => showError(formatApiError(error, 'Invalid verification code.')),
+  })
+
+  const resendLoginOtpMutation = useMutation({
+    mutationFn: (identifier: string) => authApi.sendOtp({ identifier, type: 'LOGIN' }),
+    onSuccess: () => {
+      setResendTimer(60)
+      showSuccess('Verification code resent.')
+    },
+    onError: (error) => showError(formatApiError(error, 'Could not resend code.')),
+  })
+
   const switchLoginTab = (tab: AccountTab) => {
     if (wizardStep === 2) return
     setAccountTab(tab)
@@ -97,41 +181,40 @@ export function LoginPage() {
   const submitLoginStep1 = () => {
     if (accountTab === 'qr') { showError('QR code login is coming soon.'); return }
     if (!password) { showError('Please enter your password'); return }
+
+    let identifier: string
     if (accountTab === 'email_user') {
       const raw = signId.trim()
       if (!raw) { showError('Please enter your email or username'); return }
+      identifier = raw
     } else {
       const digits = signId.replace(/\D/g, '').replace(/^0+/, '')
       if (!digits || digits.length < 6) { showError('Please enter a valid phone number'); return }
+      identifier = `${countryCode}${digits}`
     }
 
-    // Stub: simulate 2FA required
-    const stubMethods: AuthMethod[] = [
-      { type: 1, label: 'Email', icon: 'ri-mail-line', description: 'Receive verification codes via email', maskedValue: 'u***@example.com' },
-      { type: 2, label: 'Google Authenticator', icon: 'ri-shield-keyhole-line', description: 'Use Google Authenticator app' },
-    ]
-    setAvailableMethods(stubMethods)
-    setSelectedAuthMethod(1)
-    setResendTimer(60)
-    setOtpSingle('')
-    setLoginPendingVerification(true)
-    setWizardStep(2)
-    showSuccess('Verification code sent to your email.')
+    setPendingIdentifier(identifier)
+    loginMutation.mutate({ identifier, password })
   }
 
-  /* ── Step 2: OTP verify stub ── */
+  /* ── Step 2: OTP verify ── */
   const handleAuthVerify = () => {
+    // Passkey + authenticator paths are intentionally not wired — backend only supports email OTP
+    // for 2FA today. See Phase 3 plan, question #6.
+    if (selectedAuthMethod !== 1) {
+      showError('Only email-based verification is supported right now.')
+      return
+    }
     const code = getOtpDigitsStr()
     if (code.length < 6) { showError('Please enter a valid 6-digit code'); return }
-    showSuccess('Login successful!')
-    login()
-    navigate('/user_profile/dashboard')
+    if (!pendingIdentifier) { showError('Session expired — please log in again.'); return }
+    verifyOtpMutation.mutate({ identifier: pendingIdentifier, otp: code })
   }
 
   const sendLoginOtp = (method: number) => {
     if (method === 2 || method === 4) return
-    showSuccess('OTP sent successfully')
-    setResendTimer(60)
+    if (!pendingIdentifier) return
+    resendLoginOtpMutation.mutate(pendingIdentifier)
   }
 
   const goBackFromVerificationStep = () => {
@@ -255,6 +338,7 @@ export function LoginPage() {
                         <div className="col-sm-12 input_block">
                           <div className="email_code">
                             <input
+                              ref={signIdInputRef}
                               className="input_filed"
                               type="text"
                               placeholder="Email/Username"
@@ -284,6 +368,7 @@ export function LoginPage() {
                           <div className="col-sm-12 input_block">
                             <div className="phone-input-wrapper">
                               <input
+                                ref={signIdInputRef}
                                 className="input_filed"
                                 type="text"
                                 inputMode="numeric"
@@ -365,11 +450,11 @@ export function LoginPage() {
                         <>
                           <div className="col-sm-12 login_btn">
                             <button
-                              type="button"
+                              type="submit"
                               className="login-wizard-next-btn"
-                              onClick={submitLoginStep1}
+                              disabled={loginMutation.isPending}
                             >
-                              Next
+                              {loginMutation.isPending ? 'Signing in…' : 'Next'}
                             </button>
                           </div>
 
@@ -409,7 +494,7 @@ export function LoginPage() {
 
               {/* ── Step 2: 2FA verification ── */}
               {wizardStep === 2 && (
-                <form onSubmit={(e) => e.preventDefault()} noValidate>
+                <form onSubmit={(e) => { e.preventDefault(); handleAuthVerify() }} noValidate>
                   <div className="row">
                     <div className="col-sm-12 input_block">
                       <h1 className="login-wizard-title" style={{ fontSize: '1.35rem' }}>
@@ -494,12 +579,11 @@ export function LoginPage() {
 
                         <div className="col-sm-12 login_btn">
                           <button
-                            type="button"
+                            type="submit"
                             className="login-wizard-next-btn"
-                            onClick={handleAuthVerify}
-                            disabled={otpSingle.replace(/\D/g, '').length < 6}
+                            disabled={otpSingle.replace(/\D/g, '').length < 6 || verifyOtpMutation.isPending}
                           >
-                            Next
+                            {verifyOtpMutation.isPending ? 'Verifying…' : 'Next'}
                           </button>
                         </div>
 

@@ -3,6 +3,7 @@ import { AppProviders } from './providers/index.js'
 import { UserHeader } from './components/layout/UserHeader.js'
 import { Footer } from './components/layout/Footer.js'
 import { RequireAuth } from './components/auth/RequireAuth.js'
+import { RequireGuest } from './components/auth/RequireGuest.js'
 import {
   AssetManagementLayout,
   DepositPage,
@@ -72,32 +73,33 @@ function AppInner() {
             element={<AnnouncementDetails />}
           />
           <Route path="/usd_futures/:pairs" element={<UsdMFutures />} />
-          <Route path="/signup" element={<SignupPage />} />
-          <Route path="/login" element={<LoginPage />} />
-          <Route path="/forgot_password" element={<ForgotPassword />} />
+          <Route element={<RequireGuest />}>
+            <Route path="/signup" element={<SignupPage />} />
+            <Route path="/login" element={<LoginPage />} />
+            <Route path="/forgot_password" element={<ForgotPassword />} />
+          </Route>
           <Route path="/account-verification/:authenticationToken" element={<RegistrationVerification />} />
           <Route path="/account-activate/:authenticationToken" element={<RegistrationResult />} />
-          <Route path="/user_profile" element={<ProfileLayout />}>
-            <Route index element={<Dashboard />} />
-            <Route path="dashboard" element={<Dashboard />} />
-            <Route path="asset_overview" element={<AssetOverview />} />
-            <Route path="spot_orders" element={<SpotOrders />} />
-            <Route path="open_orders" element={<OpenOrders />} />
-            <Route path="transaction_history" element={<TransactionHistory />} />
-            <Route path="swap_history" element={<SwapHistory />} />
-            <Route path="wallet_transfer_history" element={<WalletTransferHistory />} />
-            <Route path="earning_plan_history" element={<EarningHistory />} />
-            <Route path="profile_setting" element={<Settings />} />
-            <Route path="kyc" element={<KycVerification />} />
-            <Route path="support" element={<Support />} />
-            <Route path="two_factor_authentication" element={<TwoFactor />} />
-            <Route path="swap" element={<Swap />} />
-            <Route path="notification" element={<Notifications />} />
-            <Route path="activity_logs" element={<ActivityLogs />} />
-          </Route>
-
-
           <Route element={<RequireAuth />}>
+            <Route path="/user_profile" element={<ProfileLayout />}>
+              <Route index element={<Dashboard />} />
+              <Route path="dashboard" element={<Dashboard />} />
+              <Route path="asset_overview" element={<AssetOverview />} />
+              <Route path="spot_orders" element={<SpotOrders />} />
+              <Route path="open_orders" element={<OpenOrders />} />
+              <Route path="transaction_history" element={<TransactionHistory />} />
+              <Route path="swap_history" element={<SwapHistory />} />
+              <Route path="wallet_transfer_history" element={<WalletTransferHistory />} />
+              <Route path="earning_plan_history" element={<EarningHistory />} />
+              <Route path="profile_setting" element={<Settings />} />
+              <Route path="kyc" element={<KycVerification />} />
+              <Route path="support" element={<Support />} />
+              <Route path="two_factor_authentication" element={<TwoFactor />} />
+              <Route path="swap" element={<Swap />} />
+              <Route path="notification" element={<Notifications />} />
+              <Route path="activity_logs" element={<ActivityLogs />} />
+            </Route>
+
             <Route path="/asset_management" element={<AssetManagementLayout />}>
               <Route index element={<DepositPage />} />
               <Route path="deposit" element={<DepositPage />} />

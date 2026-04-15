@@ -3,4 +3,6 @@ export { abudhabiConfig } from './instances/abudhabi.js'
 export { dubaiConfig } from './instances/dubai.js'
 export { globalConfig } from './instances/global.js'
 
+export { mapInstanceToJurisdiction } from './jurisdiction.js'
+
 export type { InstanceId } from '@agce/types'

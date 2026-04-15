@@ -1,5 +1,11 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { Link, useNavigate, useSearchParams } from 'react-router-dom'
+import { useMutation } from '@tanstack/react-query'
+import { useInstanceConfig } from '@agce/hooks'
+import { mapInstanceToJurisdiction } from '@agce/config'
+import { useAuth } from '../../providers/index.js'
+import { authApi } from '../../lib/auth-api.js'
+import { formatApiError, isApiErrorWithStatus } from '../../lib/errors.js'
 import './signup-wizard.css'
 
 const API_PASSWORD_REGEX = /^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{8,}$/
@@ -20,7 +26,9 @@ const COUNTRY_OPTIONS = [
 
 export function SignupPage() {
   const navigate = useNavigate()
+  const { login } = useAuth()
   const [params] = useSearchParams()
+  const instance = useInstanceConfig()
 
   const invitationFromUrl = params.get('reffcode') ?? params.get('referral') ?? ''
   const emailFromUrl = params.get('emailId') ?? ''
@@ -40,6 +48,11 @@ export function SignupPage() {
   const [attemptLeft, setAttemptLeft] = useState<string | number>('')
   const [otpSingle, setOtpSingle] = useState('')
   const otpInputRefs = useRef<(HTMLInputElement | null)[]>([])
+  const step1InputRef = useRef<HTMLInputElement>(null)
+  const passwordInputRef = useRef<HTMLInputElement>(null)
+
+  // Identifier in backend format (email as-is, phone as E.164). Stable across steps 2–3.
+  const [pendingIdentifier, setPendingIdentifier] = useState('')
 
   const referralLocked = Boolean(invitationFromUrl)
   const passwordInputType = showPassword ? 'text' : 'password'
@@ -88,6 +101,20 @@ export function SignupPage() {
     return () => clearInterval(t)
   }, [otpTimer])
 
+  // Auto-focus identifier input on step 1 (also fires on tab switch)
+  useEffect(() => {
+    if (wizardStep !== 1) return
+    const id = window.setTimeout(() => step1InputRef.current?.focus(), 120)
+    return () => window.clearTimeout(id)
+  }, [wizardStep, accountTab])
+
+  // Auto-focus password input on step 2
+  useEffect(() => {
+    if (wizardStep !== 2) return
+    const id = window.setTimeout(() => passwordInputRef.current?.focus(), 120)
+    return () => window.clearTimeout(id)
+  }, [wizardStep])
+
   // Auto-focus first OTP cell on step 3
   useEffect(() => {
     if (wizardStep !== 3) return
@@ -112,8 +139,74 @@ export function SignupPage() {
   const showError = (msg: string) => alert(msg)
   const showSuccess = (msg: string) => alert(msg)
 
-  /* ── Step 1: validate email / phone → go to step 2 ── */
+  // Step 1: check the identifier is available before advancing.
+  const checkIdentifierMutation = useMutation({
+    mutationFn: (identifier: string) =>
+      authApi.checkIdentifier({ identifier, purpose: 'SIGNUP' }),
+    onSuccess: () => setWizardStep(2),
+    onError: (error) => {
+      if (isApiErrorWithStatus(error, 409)) {
+        showError('This email/phone is already registered. Please log in instead.')
+      } else {
+        showError(formatApiError(error, 'Could not verify identifier. Please try again.'))
+      }
+    },
+  })
+
+  // Signup flow: sendOtp → verifyOtp → register.
+  // Step 2 (password confirm) sends the OTP and advances to step 3.
+  // Step 3 (OTP entry) verifies the code and *then* calls register.
+  const sendSignupOtpMutation = useMutation({
+    mutationFn: (identifier: string) =>
+      authApi.sendOtp({ identifier, type: 'SIGNUP' }),
+    onSuccess: () => {
+      showSuccess('Verification code sent. Please check your inbox.')
+      setRegisteredBy(accountTab === 'email' ? 'Email' : 'Mobile')
+      setOtpSingle('')
+      setOtpTimer(60)
+      setWizardStep(3)
+    },
+    onError: (error) => showError(formatApiError(error, 'Could not send verification code.')),
+  })
+
+  const verifyAndRegisterMutation = useMutation({
+    mutationFn: async (otp: string) => {
+      await authApi.verifyOtp({
+        identifier: pendingIdentifier,
+        otp,
+        purpose: 'SIGNUP',
+      })
+      return authApi.register({
+        identifier: pendingIdentifier,
+        password,
+        jurisdiction: mapInstanceToJurisdiction(instance.id),
+      })
+    },
+    onSuccess: (response) => {
+      login(
+        { accessToken: response.accessToken, refreshToken: response.refreshToken },
+        { id: response.userId, userId: response.user.userId, identifier: pendingIdentifier },
+      )
+      setRegistrationToken(response.userId)
+      setWizardStep(4)
+    },
+    onError: (error) => showError(formatApiError(error, 'Could not complete signup.')),
+  })
+
+  const resendSignupOtpMutation = useMutation({
+    mutationFn: () => authApi.sendOtp({ identifier: pendingIdentifier, type: 'SIGNUP' }),
+    onSuccess: () => {
+      showSuccess('Code resent!')
+      setOtpTimer(60)
+      setOtpSingle('')
+      setAttemptLeft('')
+    },
+    onError: (error) => showError(formatApiError(error, 'Could not resend code.')),
+  })
+
+  /* ── Step 1: validate email / phone → checkIdentifier → go to step 2 ── */
   const step1Next = () => {
+    let identifier: string
     if (accountTab === 'email') {
       const email = signId.trim()
       if (!email) { showError('Please enter your email'); return }
@@ -122,6 +215,7 @@ export function SignupPage() {
         return
       }
       if (email !== signId) setSignId(email)
+      identifier = email
     } else {
       const digits = signId.replace(/\D/g, '').replace(/^0+/, '')
       if (!digits || digits.length < 6) {
@@ -129,8 +223,9 @@ export function SignupPage() {
         return
       }
       if (digits !== signId) setSignId(digits)
+      identifier = `${countryCode}${digits}`
     }
-    setWizardStep(2)
+    checkIdentifierMutation.mutate(identifier)
   }
 
   /* ── Step 2: validate password → stub register → go to step 3 ── */
@@ -154,12 +249,10 @@ export function SignupPage() {
 
   const submitPasswordAndRegister = () => {
     if (!validatePasswordStep()) return
-    // Stub: skip real API, go to step 3 (OTP verification)
-    showSuccess('Registration initiated! Please verify your account.')
-    setRegistrationToken('demo-token')
-    setRegisteredBy(accountTab === 'email' ? 'Email' : 'Mobile')
-    setOtpSingle('')
-    setWizardStep(3)
+    const identifier =
+      accountTab === 'email' ? signId.trim() : `${countryCode}${signId.replace(/\D/g, '')}`
+    setPendingIdentifier(identifier)
+    sendSignupOtpMutation.mutate(identifier)
   }
 
   /* ── Step 3: OTP ── */
@@ -168,21 +261,16 @@ export function SignupPage() {
   const handleOtpSubmit = () => {
     const code = getOtpDigitsStr()
     if (code.length < 6) { showError('Please enter the 6-digit code'); return }
-    // Stub: accept any 6-digit code
-    showSuccess('Verification successful!')
-    setWizardStep(4)
+    if (!pendingIdentifier) { showError('Session expired — please restart signup.'); return }
+    verifyAndRegisterMutation.mutate(code)
   }
 
   const handleResendOtp = () => {
-    if (otpTimer > 0 || otpResendBusy) return
+    if (otpTimer > 0 || otpResendBusy || !pendingIdentifier) return
     setOtpResendBusy(true)
-    // Stub: simulate resend
-    setTimeout(() => {
-      showSuccess('Code resent!')
-      setOtpTimer(60)
-      setAttemptLeft('')
-      setOtpResendBusy(false)
-    }, 300)
+    resendSignupOtpMutation.mutate(undefined, {
+      onSettled: () => setOtpResendBusy(false),
+    })
   }
 
   const focusOtpIndex = (idx: number) => {
@@ -339,6 +427,7 @@ export function SignupPage() {
                             <div className="col-sm-12 input_block">
                               <div className="email_code">
                                 <input
+                                  ref={step1InputRef}
                                   className="input_filed"
                                   type="email"
                                   placeholder="Enter email address"
@@ -366,6 +455,7 @@ export function SignupPage() {
                               <div className="col-sm-12 input_block">
                                 <div className="phone-input-wrapper">
                                   <input
+                                    ref={step1InputRef}
                                     className="input_filed"
                                     type="text"
                                     inputMode="numeric"
@@ -404,8 +494,12 @@ export function SignupPage() {
                           </div>
 
                           <div className="col-sm-12 login_btn">
-                            <button className="next_btn" type="button" onClick={step1Next}>
-                              Next
+                            <button
+                              className="next_btn"
+                              type="submit"
+                              disabled={checkIdentifierMutation.isPending}
+                            >
+                              {checkIdentifierMutation.isPending ? 'Checking…' : 'Next'}
                             </button>
                           </div>
 
@@ -456,6 +550,7 @@ export function SignupPage() {
                             <label htmlFor="signup-password-field">Password</label>
                             <div className="email_code">
                               <input
+                                ref={passwordInputRef}
                                 id="signup-password-field"
                                 className="input_filed"
                                 type={passwordInputType}
@@ -500,9 +595,9 @@ export function SignupPage() {
 
                           <div className="col-sm-12 login_btn">
                             <input
-                              type="button"
-                              value="Confirm"
-                              onClick={submitPasswordAndRegister}
+                              type="submit"
+                              value={sendSignupOtpMutation.isPending ? 'Sending code…' : 'Confirm'}
+                              disabled={sendSignupOtpMutation.isPending}
                             />
                           </div>
                           <div className="col-sm-12">
@@ -595,10 +690,10 @@ export function SignupPage() {
                           <div className="col-sm-12 login_btn">
                             <button
                               className="next_btn"
-                              type="button"
-                              onClick={handleOtpSubmit}
+                              type="submit"
+                              disabled={verifyAndRegisterMutation.isPending}
                             >
-                              Next
+                              {verifyAndRegisterMutation.isPending ? 'Creating account…' : 'Next'}
                             </button>
                           </div>
                           <div

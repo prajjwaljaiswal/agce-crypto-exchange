@@ -1,5 +1,8 @@
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
+import { useMutation } from '@tanstack/react-query'
+import { authApi } from '../../lib/auth-api.js'
+import { formatApiError } from '../../lib/errors.js'
 
 type Tab = 'email' | 'phone'
 
@@ -24,23 +27,64 @@ export function ForgotPassword() {
   const [signId, setSignId] = useState('')
   const [otp, setOtp] = useState('')
   const [newPassword, setNewPassword] = useState('')
+  const signIdInputRef = useRef<HTMLInputElement>(null)
+
+  // Auto-focus identifier input on tab switch
+  useEffect(() => {
+    const id = window.setTimeout(() => signIdInputRef.current?.focus(), 120)
+    return () => window.clearTimeout(id)
+  }, [tab])
 
   const showError = (msg: string) => alert(msg)
   const showSuccess = (msg: string) => alert(msg)
 
-  const handleGetOtp = () => {
+  const buildIdentifier = (): string | null => {
     if (tab === 'email') {
-      if (!signId || !EMAIL_RE.test(signId)) {
-        showError('Please enter a valid email address')
-        return
-      }
-    } else {
-      if (!signId || signId.replace(/\D/g, '').length < 6) {
-        showError('Please enter a valid phone number for the selected country')
-        return
-      }
+      if (!signId || !EMAIL_RE.test(signId)) return null
+      return signId.trim()
     }
-    showSuccess('OTP sent successfully!')
+    const digits = signId.replace(/\D/g, '')
+    if (digits.length < 6) return null
+    return `${countryCode}${digits}`
+  }
+
+  // Get-OTP flow: check-identifier(PASSWORD_RESET) → send-otp(RESET_PASSWORD).
+  // Note the backend uses different casing for the two endpoints (PASSWORD_RESET vs RESET_PASSWORD).
+  const sendOtpMutation = useMutation({
+    mutationFn: async (identifier: string) => {
+      await authApi.checkIdentifier({ identifier, purpose: 'PASSWORD_RESET' })
+      await authApi.sendOtp({ identifier, type: 'RESET_PASSWORD' })
+    },
+    onSuccess: () => showSuccess('OTP sent successfully!'),
+    onError: (error) => showError(formatApiError(error, 'Could not send reset code.')),
+  })
+
+  const verifyOtpMutation = useMutation({
+    mutationFn: (identifier: string) =>
+      authApi.verifyOtp({ identifier, otp, purpose: 'RESET_PASSWORD' }),
+    onSuccess: () => {
+      // TODO(phase-3): the backend has no /reset-password commit endpoint yet
+      // (see Phase 3 plan, question #2). The OTP is verified but the new password
+      // is not actually persisted. Flag to user.
+      showSuccess(
+        'Code verified. Note: backend reset endpoint is not yet available — your new password was NOT saved. Please contact support.',
+      )
+      navigate('/login')
+    },
+    onError: (error) => showError(formatApiError(error, 'Invalid verification code.')),
+  })
+
+  const handleGetOtp = () => {
+    const identifier = buildIdentifier()
+    if (!identifier) {
+      showError(
+        tab === 'email'
+          ? 'Please enter a valid email address'
+          : 'Please enter a valid phone number for the selected country',
+      )
+      return
+    }
+    sendOtpMutation.mutate(identifier)
   }
 
   const handleForgetPass = () => {
@@ -49,8 +93,12 @@ export function ForgotPassword() {
       showError('Password must be at least 8 characters')
       return
     }
-    showSuccess('Password reset successful!')
-    navigate('/login')
+    const identifier = buildIdentifier()
+    if (!identifier) {
+      showError('Please re-enter your email or phone.')
+      return
+    }
+    verifyOtpMutation.mutate(identifier)
   }
 
   const switchTab = (t: Tab) => {
@@ -65,6 +113,22 @@ export function ForgotPassword() {
       <div className="login_form_right">
         <div className="form_block_login">
           <h2>Forgot Password</h2>
+
+          <div
+            style={{
+              background: 'rgba(255, 200, 0, 0.12)',
+              border: '1px solid rgba(255, 200, 0, 0.35)',
+              borderRadius: 8,
+              padding: '10px 12px',
+              marginBottom: 14,
+              fontSize: '0.85rem',
+              lineHeight: 1.4,
+            }}
+          >
+            <strong>Heads up:</strong> the password reset commit endpoint is not yet
+            available on the backend. You can receive and verify an OTP, but the new
+            password will not be saved until the backend ships the reset endpoint.
+          </div>
 
           <ul className="nav nav-tabs login-pills" id="myTab" role="tablist">
             <li className="nav-item" role="presentation">
@@ -91,11 +155,12 @@ export function ForgotPassword() {
             {/* Email tab */}
             {tab === 'email' && (
               <div className="tab-pane show active" role="tabpanel">
-                <form onSubmit={(e) => e.preventDefault()}>
+                <form onSubmit={(e) => { e.preventDefault(); handleForgetPass() }}>
                   <div className="row">
                     <div className="col-sm-12 input_block">
                       <label>Email*</label>
                       <input
+                        ref={signIdInputRef}
                         className="input_filed"
                         type="email"
                         placeholder="Email"
@@ -114,8 +179,14 @@ export function ForgotPassword() {
                           onChange={(e) => setOtp(e.target.value.replace(/\D/g, '').slice(0, 6))}
                           maxLength={6}
                         />
-                        <div className="get_otp" role="button" tabIndex={0} onClick={handleGetOtp}>
-                          <span>GET OTP</span>
+                        <div
+                          className="get_otp"
+                          role="button"
+                          tabIndex={0}
+                          onClick={() => sendOtpMutation.isPending || handleGetOtp()}
+                          aria-disabled={sendOtpMutation.isPending}
+                        >
+                          <span>{sendOtpMutation.isPending ? 'SENDING…' : 'GET OTP'}</span>
                         </div>
                       </div>
                     </div>
@@ -132,11 +203,11 @@ export function ForgotPassword() {
                   </div>
                   <div className="col-lg-12 col-md-10 col-12 mx-auto mt-4">
                     <button
-                      type="button"
+                      type="submit"
                       className="btn custom-btn w-100 btn-block btn-xl"
-                      onClick={handleForgetPass}
+                      disabled={verifyOtpMutation.isPending}
                     >
-                      Forgot Password
+                      {verifyOtpMutation.isPending ? 'Verifying…' : 'Reset Password'}
                     </button>
                   </div>
                   <div className="col-sm-12 registration__info mt-4">
@@ -149,7 +220,7 @@ export function ForgotPassword() {
             {/* Phone tab */}
             {tab === 'phone' && (
               <div className="tab-pane show active" role="tabpanel">
-                <form onSubmit={(e) => e.preventDefault()}>
+                <form onSubmit={(e) => { e.preventDefault(); handleForgetPass() }}>
                   <div className="row">
                     <div className="col-sm-12 input_block">
                       <label>Mobile Number*</label>
@@ -164,6 +235,7 @@ export function ForgotPassword() {
                         ))}
                       </select>
                       <input
+                        ref={signIdInputRef}
                         className="input_filed"
                         type="text"
                         inputMode="numeric"
@@ -183,8 +255,14 @@ export function ForgotPassword() {
                           onChange={(e) => setOtp(e.target.value.replace(/\D/g, '').slice(0, 6))}
                           maxLength={6}
                         />
-                        <div className="get_otp" role="button" tabIndex={0} onClick={handleGetOtp}>
-                          <span>GET OTP</span>
+                        <div
+                          className="get_otp"
+                          role="button"
+                          tabIndex={0}
+                          onClick={() => sendOtpMutation.isPending || handleGetOtp()}
+                          aria-disabled={sendOtpMutation.isPending}
+                        >
+                          <span>{sendOtpMutation.isPending ? 'SENDING…' : 'GET OTP'}</span>
                         </div>
                       </div>
                     </div>
@@ -201,11 +279,11 @@ export function ForgotPassword() {
                   </div>
                   <div className="col-lg-12 col-md-10 col-12 mx-auto mt-4">
                     <button
-                      type="button"
+                      type="submit"
                       className="btn custom-btn w-100 btn-block btn-xl"
-                      onClick={handleForgetPass}
+                      disabled={verifyOtpMutation.isPending}
                     >
-                      Forgot Password
+                      {verifyOtpMutation.isPending ? 'Verifying…' : 'Reset Password'}
                     </button>
                   </div>
                   <div className="col-sm-12 registration__info mt-4">

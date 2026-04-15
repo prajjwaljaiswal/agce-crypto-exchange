@@ -116,14 +116,25 @@ export interface CategoryFilter {
 
 export type {
   Jurisdiction,
+  OtpType,
   OtpPurpose,
+  IdentifierCheckPurpose,
   AuthUser,
   AuthTokens,
   AuthSession,
-  OtpRequestPayload,
-  SignupPayload,
+  CheckIdentifierPayload,
+  RegisterPayload,
+  RegisterResponse,
+  RegisteredUser,
   PasswordLoginPayload,
-  AuthResponse,
+  TwoFactorChallenge,
+  LoginSuccess,
+  LoginResponse,
+  SendOtpPayload,
+  VerifyOtpPayload,
+  RefreshTokenPayload,
+  MeResponse,
+  SignupPayload,
 } from './auth.js'
 
 export type {

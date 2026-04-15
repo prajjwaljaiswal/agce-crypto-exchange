@@ -1,4 +1,5 @@
 import { useMemo, useState } from 'react'
+import { useMutation } from '@tanstack/react-query'
 import { SAMPLE_WITHDRAW_ADDRESS } from '../constants.js'
 import { WithdrawCoinSelect } from '../components/WithdrawCoinSelect.js'
 import { WithdrawNetworkSelect } from '../components/WithdrawNetworkSelect.js'
@@ -12,8 +13,12 @@ import {
   MOCK_WITHDRAWAL_FEE,
   MOCK_MAX_WITHDRAWAL,
 } from '../__mocks__/withdraw.js'
+import { useAuth } from '../../../providers/index.js'
+import { authApi } from '../../../lib/auth-api.js'
+import { formatApiError } from '../../../lib/errors.js'
 
 export function WithdrawPage() {
+  const { user } = useAuth()
   const [selectedCoin] = useState('USDT')
   const [selectedNetwork] = useState('ERC20')
   const [address, setAddress] = useState(SAMPLE_WITHDRAW_ADDRESS)
@@ -31,12 +36,51 @@ export function WithdrawPage() {
     setAmount(String(Math.min(MOCK_AVAILABLE_BALANCE, MOCK_MAX_WITHDRAWAL)))
   }
 
+  const showError = (msg: string) => alert(msg)
+  const showSuccess = (msg: string) => alert(msg)
+
+  const identifier = user?.identifier ?? null
+
+  const sendOtpMutation = useMutation({
+    mutationFn: (id: string) => authApi.sendOtp({ identifier: id, type: 'WITHDRAWAL' }),
+    onSuccess: () => showSuccess('Verification code sent.'),
+    onError: (error) => showError(formatApiError(error, 'Could not send code.')),
+  })
+
+  const verifyOtpMutation = useMutation({
+    mutationFn: (id: string) =>
+      authApi.verifyOtp({ identifier: id, otp, purpose: 'WITHDRAWAL' }),
+    onSuccess: () => {
+      // TODO(phase-4): the auth-service only verifies the OTP. The actual
+      // withdrawal-execution endpoint lives in a separate wallet/withdrawal
+      // service that isn't in the AGCE Auth Service Postman collection. Wire
+      // that call here once the backend ships it.
+      showSuccess(
+        'Code verified. (Withdrawal execution endpoint is not yet available — no funds were moved.)',
+      )
+      setOtp('')
+    },
+    onError: (error) => showError(formatApiError(error, 'Invalid verification code.')),
+  })
+
   const handleRequestOtp = () => {
-    // TODO: wire to backend OTP endpoint
+    if (!identifier) {
+      showError('You need to be signed in to request a withdrawal code.')
+      return
+    }
+    sendOtpMutation.mutate(identifier)
   }
 
   const handleSubmit = () => {
-    // TODO: wire to backend withdrawal endpoint
+    if (!identifier) {
+      showError('You need to be signed in to withdraw.')
+      return
+    }
+    if (otp.replace(/\D/g, '').length < 6) {
+      showError('Please enter the 6-digit verification code.')
+      return
+    }
+    verifyOtpMutation.mutate(identifier)
   }
 
   return (
@@ -71,6 +115,7 @@ export function WithdrawPage() {
             receiveAmount={receiveAmount}
             networkFee={MOCK_WITHDRAWAL_FEE.toString()}
             coin={selectedCoin}
+            disabled={verifyOtpMutation.isPending}
             onSubmit={handleSubmit}
           />
         </div>
