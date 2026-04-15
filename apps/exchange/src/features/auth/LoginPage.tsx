@@ -5,6 +5,7 @@ import type { LoginResponse, LoginSuccess } from '@agce/types'
 import { useAuth } from '../../providers/index.js'
 import { authApi } from '../../lib/auth-api.js'
 import { formatApiError } from '../../lib/errors.js'
+import { SocialLoginButtons } from './SocialLoginButtons.js'
 import './signup-wizard.css'
 import './login-wizard.css'
 
@@ -458,26 +459,12 @@ export function LoginPage() {
                             </button>
                           </div>
 
-                          <div className="col-sm-12">
-                            <div className="signup-wizard-divider">Or log in with</div>
-                            <div className="signup-wizard-social-row" style={{ marginTop: 14 }}>
-                              <button
-                                type="button"
-                                className="signup-wizard-social-btn"
-                                onClick={() => showError('Google sign-in coming soon.')}
-                                aria-label="Google"
-                              >
-                                <img src="/images/google_icon.svg" alt="" />
-                              </button>
-                              <button
-                                type="button"
-                                className="signup-wizard-social-btn"
-                                onClick={() => showError('Apple sign-in coming soon.')}
-                                aria-label="Apple"
-                              >
-                                <img src="/images/appleicon2.svg" alt="" />
-                              </button>
-                            </div>
+                          <div className="col-sm-12" style={{ marginTop: 14 }}>
+                            <SocialLoginButtons
+                              dividerLabel="Or log in with"
+                              mode="login"
+                              onSuccess={() => navigate('/user_profile/dashboard')}
+                            />
                           </div>
 
                           <div className="col-sm-12">

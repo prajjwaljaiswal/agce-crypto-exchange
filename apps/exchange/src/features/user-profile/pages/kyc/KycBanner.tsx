@@ -2,9 +2,10 @@ import { useInstanceConfig } from '@agce/hooks'
 
 interface KycBannerProps {
   onVerify: () => void
+  isPending?: boolean
 }
 
-export function KycBanner({ onVerify }: KycBannerProps) {
+export function KycBanner({ onVerify, isPending }: KycBannerProps) {
   const instance = useInstanceConfig()
   const { requireVKYC } = instance.kyc
 
@@ -38,8 +39,8 @@ export function KycBanner({ onVerify }: KycBannerProps) {
           )}
         </ul>
 
-        <button type="button" className="kyc btn" onClick={onVerify}>
-          Verify
+        <button type="button" className="kyc btn" onClick={onVerify} disabled={isPending}>
+          {isPending ? 'Starting…' : 'Verify'}
         </button>
       </div>
       <div className="kycvector">

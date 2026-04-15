@@ -5,7 +5,10 @@ import { useInstanceConfig } from '@agce/hooks'
 import { mapInstanceToJurisdiction } from '@agce/config'
 import { useAuth } from '../../providers/index.js'
 import { authApi } from '../../lib/auth-api.js'
+import { kycApi } from '../../lib/kyc-api.js'
 import { formatApiError, isApiErrorWithStatus } from '../../lib/errors.js'
+import { KycVerifyWarningModal } from '../user-profile/pages/kyc/modals/KycVerifyWarningModal.js'
+import { SocialLoginButtons } from './SocialLoginButtons.js'
 import './signup-wizard.css'
 
 const API_PASSWORD_REGEX = /^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{8,}$/
@@ -35,13 +38,13 @@ export function SignupPage() {
 
   const [accountTab, setAccountTab] = useState<AccountTab>('email')
   const [wizardStep, setWizardStep] = useState(1)
+  const [pendingVerifyUrl, setPendingVerifyUrl] = useState('')
   const [referralOpen, setReferralOpen] = useState(!!invitationFromUrl)
   const [signId, setSignId] = useState(emailFromUrl)
   const [password, setPassword] = useState('')
   const [countryCode, setCountryCode] = useState('+91')
   const [invitation, setInvitation] = useState(invitationFromUrl)
   const [showPassword, setShowPassword] = useState(false)
-  const [registrationToken, setRegistrationToken] = useState('')
   const [registeredBy, setRegisteredBy] = useState('')
   const [otpTimer, setOtpTimer] = useState(0)
   const [otpResendBusy, setOtpResendBusy] = useState(false)
@@ -127,7 +130,6 @@ export function SignupPage() {
     setWizardStep(1)
     setSignId(tab === 'email' ? emailFromUrl : '')
     setPassword('')
-    setRegistrationToken('')
     setRegisteredBy('')
     setShowPassword(false)
     setAttemptLeft('')
@@ -187,7 +189,6 @@ export function SignupPage() {
         { accessToken: response.accessToken, refreshToken: response.refreshToken },
         { id: response.userId, userId: response.user.userId, identifier: pendingIdentifier },
       )
-      setRegistrationToken(response.userId)
       setWizardStep(4)
     },
     onError: (error) => showError(formatApiError(error, 'Could not complete signup.')),
@@ -202,6 +203,24 @@ export function SignupPage() {
       setAttemptLeft('')
     },
     onError: (error) => showError(formatApiError(error, 'Could not resend code.')),
+  })
+
+  const startKycMutation = useMutation({
+    mutationFn: () => {
+      const isEmail = pendingIdentifier.includes('@')
+      return kycApi.startSession({
+        jurisdiction: mapInstanceToJurisdiction(instance.id),
+        ...(isEmail
+          ? { email: pendingIdentifier }
+          : pendingIdentifier.startsWith('+')
+            ? { phone: pendingIdentifier }
+            : {}),
+      })
+    },
+    onSuccess: (session) => {
+      setPendingVerifyUrl(session.diditUrl)
+    },
+    onError: (error) => showError(formatApiError(error, 'Could not start verification. Please try again.')),
   })
 
   /* ── Step 1: validate email / phone → checkIdentifier → go to step 2 ── */
@@ -328,7 +347,6 @@ export function SignupPage() {
 
   const goBackFromVerificationStep = () => {
     setWizardStep(2)
-    setRegistrationToken('')
     setRegisteredBy('')
     setOtpSingle('')
     setOtpTimer(0)
@@ -504,25 +522,11 @@ export function SignupPage() {
                           </div>
 
                           <div className="col-sm-12">
-                            <div className="signup-wizard-divider">Or log in with</div>
-                            <div className="signup-wizard-social-row">
-                              <button
-                                type="button"
-                                className="signup-wizard-social-btn"
-                                onClick={() => showError('Google sign-up coming soon.')}
-                                aria-label="Google"
-                              >
-                                <img src="/images/google_icon.svg" alt="" />
-                              </button>
-                              <button
-                                type="button"
-                                className="signup-wizard-social-btn"
-                                onClick={() => showError('Apple sign-up coming soon.')}
-                                aria-label="Apple"
-                              >
-                                <img src="/images/appleicon2.svg" alt="" />
-                              </button>
-                            </div>
+                            <SocialLoginButtons
+                              dividerLabel="Or sign up with"
+                              mode="signup"
+                              onSuccess={() => navigate('/user_profile/dashboard')}
+                            />
                           </div>
 
                           <div className="col-sm-12 registration__info agreetext">
@@ -723,6 +727,12 @@ export function SignupPage() {
                     )}
 
                     {/* ── Step 4: welcome / verify identity ── */}
+                    <KycVerifyWarningModal
+                      isOpen={!!pendingVerifyUrl}
+                      onContinue={() => { window.location.href = pendingVerifyUrl }}
+                      onLater={() => setPendingVerifyUrl('')}
+                    />
+
                     {wizardStep === 4 && (
                       <div className="row">
                         <div className="col-sm-12 input_block text-center">
@@ -789,9 +799,10 @@ export function SignupPage() {
                           <button
                             type="button"
                             className="next_btn"
-                            onClick={() => navigate(`/account-activate/${registrationToken}`)}
+                            onClick={() => startKycMutation.mutate()}
+                            disabled={startKycMutation.isPending}
                           >
-                            Verify Now
+                            {startKycMutation.isPending ? 'Starting…' : 'Verify Now'}
                           </button>
                         </div>
                         <div className="col-sm-12">

@@ -135,6 +135,8 @@ export type {
   RefreshTokenPayload,
   MeResponse,
   SignupPayload,
+  GoogleLoginPayload,
+  GoogleRegisterPayload,
 } from './auth.js'
 
 export type {

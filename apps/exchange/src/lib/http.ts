@@ -76,9 +76,12 @@ async function parseEnvelope<T>(response: Response): Promise<T> {
     throw new ApiError('Empty response body', response.status)
   }
 
-  // Backend wraps singletons in data[0]. Return the first element; callers
-  // requesting arrays should type T as the array itself.
-  return body.data[0] as T
+  // Auth service wraps singletons in data[0] (array envelope).
+  // KYC service returns data as a plain object. Handle both.
+  if (Array.isArray(body.data)) {
+    return body.data[0] as T
+  }
+  return body.data as unknown as T
 }
 
 function emitAuthExpired(): void {

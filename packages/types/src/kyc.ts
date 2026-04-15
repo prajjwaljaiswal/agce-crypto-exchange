@@ -1,16 +1,16 @@
 import type { Jurisdiction } from './auth.js'
 
 export type DiditStatus =
-  | 'Not Started'
-  | 'In Progress'
-  | 'In Review'
-  | 'Approved'
-  | 'Declined'
-  | 'Resubmitted'
-  | 'Expired'
-  | 'Abandoned'
+  | 'NOT_STARTED'
+  | 'IN_PROGRESS'
+  | 'IN_REVIEW'
+  | 'APPROVED'
+  | 'DECLINED'
+  | 'RESUBMITTED'
+  | 'EXPIRED'
+  | 'ABANDONED'
 
-export type KycLevel = 'none' | 'standard' | 'advanced'
+export type KycLevel = 'L0' | 'L1' | 'L2'
 
 export interface KycDecision {
   id_verified?: boolean

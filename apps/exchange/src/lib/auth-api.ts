@@ -1,6 +1,8 @@
 import type {
   AuthTokens,
   CheckIdentifierPayload,
+  GoogleLoginPayload,
+  GoogleRegisterPayload,
   LoginResponse,
   MeResponse,
   PasswordLoginPayload,
@@ -48,6 +50,16 @@ export const authApi = {
 
   me(): Promise<MeResponse> {
     return http(`${BASE}/me`)
+  },
+
+  // Google OAuth — calls the same /login and /register endpoints as password auth,
+  // but with provider:'GOOGLE' + the one-time auth code from the popup flow.
+  googleLogin(payload: GoogleLoginPayload): Promise<LoginResponse> {
+    return http(`${BASE}/login`, { method: 'POST', body: payload, auth: false })
+  },
+
+  googleRegister(payload: GoogleRegisterPayload): Promise<RegisterResponse> {
+    return http(`${BASE}/register`, { method: 'POST', body: payload, auth: false })
   },
 }
 

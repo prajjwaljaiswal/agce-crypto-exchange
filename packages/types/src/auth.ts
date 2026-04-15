@@ -92,3 +92,20 @@ export interface AuthSession extends AuthTokens {
   userId: string
   user?: AuthUser
 }
+
+// Google OAuth — authorization code flow.
+// `code`        : one-time auth code returned by Google (popup flow → redirectUri is 'postmessage').
+// `redirectUri` : must match the value used when the code was obtained; 'postmessage' for popup.
+
+export interface GoogleLoginPayload {
+  provider: 'GOOGLE'
+  code: string
+  redirectUri: string
+}
+
+export interface GoogleRegisterPayload {
+  provider: 'GOOGLE'
+  code: string
+  redirectUri: string
+  jurisdiction: Jurisdiction
+}
