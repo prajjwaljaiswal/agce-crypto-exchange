@@ -1,30 +1,4 @@
-import AuthService from "../../../api/services/AuthService";
-import { DISABLE_ALL_NETWORK } from "../../../api/apiConfig/apiConfig";
-
-export async function makeApiRequest(fromSym, toSym, to,url) {
-	if (DISABLE_ALL_NETWORK) return null;
-	if (fromSym == "undefined") {
-		return
-	}
-	try {
-		const response = await AuthService?.cryptoCompareApi(fromSym, toSym, to,url);
-		return response;
-	} catch (error) {
-		throw new Error(error.status);
-	}
-}
-export async function makeApiRequest2(fromSymbol, toSymbol, from, to,chartResolution) {
-	if (DISABLE_ALL_NETWORK) return null;
-	if (fromSymbol == "undefined") {
-		return
-	}
-	try {
-		const response = await AuthService?.getHistoricalData(fromSymbol, toSymbol, from, to,chartResolution);
-		return response;
-	} catch (error) {
-		throw new Error(error.status);
-	}
-}
+import { marketApi, pairsApi } from '../../../../lib/matching-api.js';
 
 export function generateSymbol(exchange, fromSymbol, toSymbol) {
 	const short = `${fromSymbol}/${toSymbol}`;
@@ -36,107 +10,128 @@ export function generateSymbol(exchange, fromSymbol, toSymbol) {
 
 export function parseFullSymbol(fullSymbol) {
 	const match = fullSymbol?.split('/');
-	if (!match) {
-		return null;
-	}
+	if (!match || match.length < 2) return null;
 	return {
 		fromSymbol: match[0],
 		toSymbol: match[1],
 	};
 }
 
-let _spotExchangeInfoCache = null;
-const CACHE_TTL_MS = 5 * 60 * 1000;
-
-/**
- * Prefetch Binance exchangeInfo when website loads. Call from App.js on mount.
- * Non-blocking; populates cache so first chart load is instant.
- */
-export function prefetchSpotExchangeInfo() {
-	if (DISABLE_ALL_NETWORK) return;
-	if (_spotExchangeInfoCache && Date.now() - _spotExchangeInfoCache.time < CACHE_TTL_MS) return;
-	fetch('https://api.binance.com/api/v3/exchangeInfo')
-		.then((r) => r.json())
-		.then((json) => {
-			_spotExchangeInfoCache = { json, time: Date.now() };
-		})
-		.catch(() => {});
-}
-
-/**
- * Fetch symbol info from Binance Spot exchangeInfo (fast public API, no auth).
- * Returns { priceScale, isLocal }. isLocal=true if symbol not on Binance.
- * Caches exchangeInfo for 5min to avoid repeated fetches when switching symbols.
- */
-export async function fetchSpotExchangeInfo(fromSymbol, toSymbol) {
-	if (DISABLE_ALL_NETWORK) {
-		return { priceScale: 100000000, isLocal: true };
-	}
-	const symbol = `${fromSymbol}${toSymbol}`.toUpperCase();
-	try {
-		if (!_spotExchangeInfoCache || Date.now() - _spotExchangeInfoCache.time > CACHE_TTL_MS) {
-			const resp = await fetch('https://api.binance.com/api/v3/exchangeInfo');
-			const json = await resp.json();
-			_spotExchangeInfoCache = { json, time: Date.now() };
-		}
-		const s = _spotExchangeInfoCache.json.symbols?.find(x => x.symbol === symbol);
-		if (!s) return { priceScale: 100000000, isLocal: true };
-		const priceFilter = (s.filters || []).find(f => f.filterType === 'PRICE_FILTER');
-		const tickSize = priceFilter?.tickSize || '0.01';
-		const dot = tickSize.indexOf('.');
-		const decimals = dot === -1 ? 0 : tickSize.slice(dot + 1).replace(/0+$/, '').length;
-		const priceScale = Math.min(Math.pow(10, decimals || 2), 100000000);
-		return { priceScale, isLocal: false };
-	} catch {
-		return { priceScale: 100000000, isLocal: true };
-	}
-}
-
-/** Map spot chart resolution to Binance klines interval */
-export function resolutionToBinanceSpot(resolution) {
+/** TV resolution → matching-service OHLCV interval string. */
+export function resolutionToMatchingInterval(resolution) {
 	const r = String(resolution || '').toUpperCase();
 	if (r === '1D' || r === 'D') return '1d';
-	if (r === '1W' || r === 'W') return '1w';
-	if (r === '1M' || r === 'M') return '1M';
+	if (r === '1W' || r === 'W') return '1d'; // matching-service max is 1d
+	if (r === '1M' || r === 'M') return '1d';
+	if (r === '240') return '4h';
 	if (r === '60') return '1h';
-	if (r === '30') return '30m';
+	if (r === '30') return '1h'; // fall back to 1h
 	if (r === '15') return '15m';
 	if (r === '5') return '5m';
-	if (r === '3') return '3m';
-	if (r === '1') return '1m';
 	return '1m';
 }
 
-/**
- * Fetch historical klines from Binance Spot API.
- * Returns bars or null if empty/error (caller can fallback to CryptoCompare).
- */
-export async function fetchBinanceSpotKlines(fromSymbol, toSymbol, from, to, resolution) {
-	if (DISABLE_ALL_NETWORK) return null;
-	const symbol = `${fromSymbol}${toSymbol}`.toUpperCase();
-	const interval = resolutionToBinanceSpot(resolution);
-	try {
-		const url = new URL('https://api.binance.com/api/v3/klines');
-		url.searchParams.set('symbol', symbol);
-		url.searchParams.set('interval', interval);
-		url.searchParams.set('startTime', String(from * 1000));
-		url.searchParams.set('endTime', String(to * 1000));
-		url.searchParams.set('limit', '1000');
-
-		const resp = await fetch(url.toString());
-		const json = await resp.json();
-		if (!Array.isArray(json) || json.length === 0) return null;
-
-		return json.map(k => ({
-			time: k[0],
-			open: parseFloat(k[1]),
-			high: parseFloat(k[2]),
-			low: parseFloat(k[3]),
-			close: parseFloat(k[4]),
-			volume: parseFloat(k[5]),
-		}));
-	} catch {
-		return null;
-	}
+/** Normalize a raw timestamp to milliseconds. Server may return seconds or ms. */
+function toMs(raw) {
+	const n = Number(raw);
+	// Values below 1e12 are seconds (year ~2001 = 1e12 ms). Multiply to get ms.
+	return n < 1e12 ? n * 1000 : n;
 }
 
+/** Map a raw candle (tuple or object) to a TradingView bar. Returns null on invalid data. */
+function mapCandle(c) {
+	let bar;
+	if (Array.isArray(c)) {
+		bar = {
+			time: toMs(c[0]),
+			open: parseFloat(c[1]),
+			high: parseFloat(c[2]),
+			low: parseFloat(c[3]),
+			close: parseFloat(c[4]),
+			volume: parseFloat(c[5]),
+		};
+	} else {
+		bar = {
+			time: toMs(c.openTime ?? c.t ?? c.time),
+			open: parseFloat(c.open ?? c.o),
+			high: parseFloat(c.high ?? c.h),
+			low: parseFloat(c.low ?? c.l),
+			close: parseFloat(c.close ?? c.c),
+			volume: parseFloat(c.volume ?? c.v ?? 0),
+		};
+	}
+	if (!Number.isFinite(bar.time) || bar.time <= 0) return null;
+	if (!Number.isFinite(bar.close) || bar.close <= 0) return null;
+	return bar;
+}
+
+/** Interval string → milliseconds per candle. */
+const INTERVAL_MS = {
+	'1m': 60_000,
+	'5m': 300_000,
+	'15m': 900_000,
+	'1h': 3_600_000,
+	'4h': 14_400_000,
+	'1d': 86_400_000,
+};
+
+/**
+ * When the local tape has no trades, draw a flat horizontal line at the pair's
+ * reference price so the chart isn't blank. We synthesize `count` zero-volume
+ * candles with open=high=low=close=refPrice, spaced by the interval and aligned
+ * to the interval boundary so TradingView accepts them.
+ */
+function synthesizeFlatCandles(refPrice, interval, count = 200) {
+	const ms = INTERVAL_MS[interval] ?? 60_000;
+	const nowAligned = Math.floor(Date.now() / ms) * ms;
+	const bars = [];
+	for (let i = count - 1; i >= 0; i--) {
+		bars.push({
+			time: nowAligned - i * ms,
+			open: refPrice,
+			high: refPrice,
+			low: refPrice,
+			close: refPrice,
+			volume: 0,
+		});
+	}
+	return bars;
+}
+
+/**
+ * Fetch historical klines from matching-service. Local AGCE data only —
+ * per the trade-page implementation doc, Binance data is not used on the
+ * trade chart. If the local tape is empty we fall back to a flat line drawn
+ * at the pair's referencePrice from /pairs so the chart isn't blank.
+ */
+export async function fetchMatchingOhlcv(fromSymbol, toSymbol, resolution) {
+	const symbol = `${fromSymbol}-${toSymbol}`;
+	const interval = resolutionToMatchingInterval(resolution);
+
+	try {
+		const candles = await marketApi.ohlcv(symbol, interval, 500);
+		if (Array.isArray(candles) && candles.length > 0) {
+			const bars = candles.map(mapCandle).filter(Boolean);
+			bars.sort((a, b) => a.time - b.time);
+			if (bars.length > 0) {
+				console.log('[Chart] ohlcv', symbol, interval, ':', bars.length, 'bars');
+				return bars;
+			}
+		}
+	} catch (err) {
+		console.warn('[Chart] ohlcv fetch failed:', err);
+	}
+
+	// Tape empty — draw flat line at pair.referencePrice.
+	try {
+		const pair = await pairsApi.get(symbol);
+		const refPrice = parseFloat(pair?.referencePrice ?? '0');
+		if (Number.isFinite(refPrice) && refPrice > 0) {
+			console.log('[Chart] local tape empty — flat line at refPrice', refPrice, 'for', symbol);
+			return synthesizeFlatCandles(refPrice, interval);
+		}
+	} catch (err) {
+		console.warn('[Chart] pairs fetch for refPrice failed:', err);
+	}
+	return [];
+}

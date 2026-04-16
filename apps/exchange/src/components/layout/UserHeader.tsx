@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { useAuth } from '../../providers/index.js'
+import { useTheme } from '../../providers/ThemeProvider.js'
 import {
   BUY_CRYPTO_SUBMENU_ITEMS,
   TRADE_SUBMENU_ITEMS,
@@ -20,10 +21,12 @@ export function UserHeader() {
   const dropdownCloseTimerRef = useRef<number | null>(null)
   const downloadTimerRef = useRef<number | null>(null)
 
+  const { theme, toggleTheme } = useTheme()
+  const isLightTheme = theme === 'light'
+
   const [isOpen, setIsOpen] = useState(false)
   const [openDropdown, setOpenDropdown] = useState<DropdownKey>(null)
   const [downloadActive, setDownloadActive] = useState(false)
-  const [isLightTheme, setIsLightTheme] = useState(false)
   const [showBalance, setShowBalance] = useState(true)
   const [showNotification, setShowNotification] = useState(false)
 
@@ -65,15 +68,6 @@ export function UserHeader() {
   }, [])
 
   useEffect(() => {
-    try {
-      if (localStorage.getItem('theme') === 'light') {
-        document.body.classList.add('light_theme')
-        setIsLightTheme(true)
-      }
-    } catch { /* noop */ }
-  }, [])
-
-  useEffect(() => {
     return () => {
       if (dropdownCloseTimerRef.current) window.clearTimeout(dropdownCloseTimerRef.current)
       if (downloadTimerRef.current) window.clearTimeout(downloadTimerRef.current)
@@ -94,19 +88,6 @@ export function UserHeader() {
   const closeDropdownHover = () => {
     if (window.innerWidth < 992) return
     dropdownCloseTimerRef.current = window.setTimeout(() => setOpenDropdown(null), 200)
-  }
-
-  const toggleTheme = () => {
-    const light = document.body.classList.contains('light_theme')
-    if (light) {
-      document.body.classList.remove('light_theme')
-      setIsLightTheme(false)
-      try { localStorage.setItem('theme', 'dark') } catch { /* noop */ }
-    } else {
-      document.body.classList.add('light_theme')
-      setIsLightTheme(true)
-      try { localStorage.setItem('theme', 'light') } catch { /* noop */ }
-    }
   }
 
   const openDownload = () => {

@@ -22,11 +22,11 @@ function alertErrorMessage(message) {
   toast.error(
     (t) => createElement(Fragment, null,
       createElement('span', null, toTitleCase(message) || 'Network Error...Please Try Again Later'),
-      createElement('span', { style: closeCss, onClick: () => toast.dismiss(t.id) },
-        createElement('i', { className: 'ri-close-circle-line' })
-      )
+      // createElement('span', { style: closeCss, onClick: () => toast.dismiss(t.id) },
+      //   createElement('i', { className: 'ri-close-circle-line' })
+      // )
     ),
-    { position: 'top-center', style: toastStyle }
+    { position: 'bottom-center', style: toastStyle }
   );
 }
 
@@ -34,11 +34,11 @@ function alertSuccessMessage(message) {
   toast.success(
     (t) => createElement(Fragment, null,
       createElement('span', null, toTitleCase(message) || 'Success'),
-      createElement('span', { style: closeCss, onClick: () => toast.dismiss(t.id) },
-        createElement('i', { className: 'ri-close-circle-line' })
-      )
+      // createElement('span', { style: closeCss, onClick: () => toast.dismiss(t.id) },
+      //   createElement('i', { className: 'ri-close-circle-line' })
+      // )
     ),
-    { position: 'top-center', style: toastStyle }
+    { position: 'bottom-center', style: toastStyle }
   );
 }
 
@@ -46,11 +46,11 @@ function alertWarningMessage(message) {
   toast(
     (t) => createElement(Fragment, null,
       createElement('span', null, toTitleCase(message) || 'Oops...Something Went Wrong'),
-      createElement('span', { style: closeCss, onClick: () => toast.dismiss(t.id) },
-        createElement('i', { className: 'ri-close-circle-line' })
-      )
+      // createElement('span', { style: closeCss, onClick: () => toast.dismiss(t.id) },
+      //   createElement('i', { className: 'ri-close-circle-line' })
+      // )
     ),
-    { position: 'top-center', icon: '⚠️', style: toastStyle }
+    { position: 'bottom-center', icon: '⚠️', style: toastStyle }
   );
 }
 

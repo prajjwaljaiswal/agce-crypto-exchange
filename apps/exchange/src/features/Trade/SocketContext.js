@@ -32,23 +32,33 @@ export function SocketProvider({ children }) {
   const { isAuthenticated, status } = useAuth();
 
   useEffect(() => {
-    // Wait until auth status resolves before opening the socket — otherwise a
-    // guest connection opens on page load and gets torn down a beat later when
-    // /me succeeds. For authenticated users we need the access token at
-    // handshake time.
+    // Wait until auth status resolves before opening the socket.
     if (status === 'loading') return undefined;
 
-    const token = isAuthenticated ? tokenStore.getAccess() : null;
+    // market-data-service REFUSES unauthenticated Socket.IO connections
+    // (server-side middleware). Guests get nothing live — REST seed still
+    // works, but we don't even open the socket to avoid noisy 401 loops.
+    if (!isAuthenticated) {
+      console.log('[SocketProvider] Guest — skipping socket connection (server requires auth).');
+      return undefined;
+    }
+
+    const token = tokenStore.getAccess();
+    if (!token) {
+      console.warn('[SocketProvider] Authenticated but no access token in storage — cannot open socket.');
+      return undefined;
+    }
+
     const opts = {
       path: MARKET_DATA_PATH,
       transports: ['websocket', 'polling'],
       reconnection: true,
       reconnectionAttempts: 10,
       reconnectionDelay: 2000,
+      auth: { token },
     };
-    if (token) opts.auth = { token };
 
-    console.log('[SocketProvider] Connecting to', MARKET_DATA_URL, 'path:', MARKET_DATA_PATH, 'authed:', Boolean(token));
+    console.log('[SocketProvider] Connecting to', MARKET_DATA_URL, 'path:', MARKET_DATA_PATH);
 
     const socket = io(MARKET_DATA_URL, opts);
 
@@ -63,7 +73,8 @@ export function SocketProvider({ children }) {
     });
 
     socket.on('connect_error', (err) => {
-      console.warn('[SocketProvider] connect_error:', err.message);
+      // Most common: UNAUTHORIZED (invalid/expired token) or gateway/path misconfig.
+      console.warn('[SocketProvider] connect_error:', err.message, err.data || '');
     });
 
     socketRef.current = socket;

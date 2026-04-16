@@ -15,10 +15,14 @@ const TV_CHART_CONTAINER = '#TVChartContainer';
 
 export default function TVChartContainer({ symbol }) {
   const { getSocket, isConnected } = useContext(SocketContext);
-  const [tvWidget, setTvWidget] = useState();
+  const [tvWidget, setTvWidget] = useState(null);
+  const [isReady, setIsReady] = useState(false);
   const [bodyChartTheme, setBodyChartTheme] = useState(getChartThemeFromBody);
-  const functCheckRef = useRef(true);
+  // Tracks the widget instance created in the current effect cycle so cleanup
+  // uses the closed-over reference, not the potentially-stale state value.
+  const widgetInstanceRef = useRef(null);
 
+  // Sync body class → chart theme.
   useEffect(() => {
     const observer = new MutationObserver(() => {
       setBodyChartTheme(getChartThemeFromBody());
@@ -27,37 +31,33 @@ export default function TVChartContainer({ symbol }) {
     return () => observer.disconnect();
   }, []);
 
-  // Set shared socket for chart to use the same connection as TradePage
+  // Share the page-level socket with the chart streaming module.
   useEffect(() => {
     if (isConnected) {
       const socket = getSocket();
-      if (socket) {
-        setSharedSocket(socket);
-      }
+      if (socket) setSharedSocket(socket);
     }
   }, [isConnected, getSocket]);
 
-  const getChart = (symbol) => {
-    const chartContainer = document.getElementById("TVChartContainer");
+  // Create / recreate the TradingView widget whenever the symbol changes.
+  // The cleanup tears down the previous instance so StrictMode double-invoke
+  // and pair switches both work correctly.
+  useEffect(() => {
+    if (!symbol || symbol.includes('undefined')) return;
 
-    if (!chartContainer) {
-      console.error("Chart container not found! Retrying...");
-      setTimeout(() => getChart(symbol), 500);
-      return;
-    }
-    const Theme = getChartThemeFromBody();
     const isMobile = window.innerWidth <= 480;
+    const Theme = getChartThemeFromBody();
     const isLight = Theme === 'light';
     const bgColor = isLight ? CHART_BG_LIGHT : CHART_BG_DARK;
     const textColor = isLight ? '#1a1a1a' : '#ffffff';
 
     const widgetOptions = {
-      symbol: `${symbol}`,
+      symbol,
       load_last_chart: true,
       interval: '1',
       fullscreen: false,
       timezone: 'Asia/Kolkata',
-      container: "TVChartContainer",
+      container: 'TVChartContainer',
       datafeed: Datafeed,
       has_intraday: true,
       library_path: '/charting_library/',
@@ -71,52 +71,48 @@ export default function TVChartContainer({ symbol }) {
         { text: '1W', resolution: 'W', description: '1 Week' },
         { text: '1M', resolution: 'M', description: '1 Month' },
       ],
-      time_scale: {
-        min_bar_spacing: 1
-      },
-      theme: Theme === 'light' ? "light" : "dark",
+      time_scale: { min_bar_spacing: 1 },
+      theme: isLight ? 'light' : 'dark',
       overrides: {
-        "scalesProperties.fontSize": 14,
-        "scalesProperties.fontFamily": "HarmonyOS Sans Regular, sans-serif",
-        "scalesProperties.textColor": textColor,
-        "paneProperties.legendProperties.showLegend": true,
-        "paneProperties.legendProperties.showStudyValues": true,
-        "paneProperties.legendProperties.fontSize": 14,
-        "paneProperties.legendProperties.fontFamily": "HarmonyOS Sans Regular, sans-serif",
+        'scalesProperties.fontSize': 14,
+        'scalesProperties.fontFamily': 'HarmonyOS Sans Regular, sans-serif',
+        'scalesProperties.textColor': textColor,
+        'paneProperties.legendProperties.showLegend': true,
+        'paneProperties.legendProperties.showStudyValues': true,
+        'paneProperties.legendProperties.fontSize': 14,
+        'paneProperties.legendProperties.fontFamily': 'HarmonyOS Sans Regular, sans-serif',
       },
       styleOverrides: {
-        "paneProperties.background": bgColor,
-        "paneProperties.backgroundType": "solid",
+        'paneProperties.background': bgColor,
+        'paneProperties.backgroundType': 'solid',
       },
-      loading_screen: {
-        backgroundColor: bgColor,
-      },
+      loading_screen: { backgroundColor: bgColor },
       disabled_features: [
-        "use_sessionStorage_for_settings", "adaptive_logo",
-        "border_around_the_chart", 'header_symbol_search',
+        'use_sessionStorage_for_settings', 'adaptive_logo',
+        'border_around_the_chart', 'header_symbol_search',
         'header_interval_dialog_button', 'header_compare',
         'header_undo_redo', 'header_resolutions',
-        'left_toolbar'
+        'left_toolbar',
       ],
     };
 
-    const tvWidgetInstance = new widget(widgetOptions);
+    const instance = new widget(widgetOptions);
+    widgetInstanceRef.current = instance;
+    setTvWidget(instance);
+    setIsReady(false);
 
-    tvWidgetInstance.onChartReady(() => {
-      const chart = tvWidgetInstance.chart();
+    instance.onChartReady(() => {
+      const chart = instance.chart();
       if (!chart) return;
 
-      applyChartThemeToWidget(tvWidgetInstance, TV_CHART_CONTAINER);
+      applyChartThemeToWidget(instance, TV_CHART_CONTAINER);
 
-      const studies = chart.getAllStudies();
-      studies.forEach(study => {
-        if (study.name.toLowerCase().includes('volume')) {
-          chart.removeEntity(study.id);
-        }
+      chart.getAllStudies().forEach((study) => {
+        if (study.name.toLowerCase().includes('volume')) chart.removeEntity(study.id);
       });
       chart.createStudy('Volume', false, true);
 
-      tvWidgetInstance.headerReady?.().then(() => {
+      instance.headerReady?.().then(() => {
         const intervals = [
           { value: '1', label: '1 Min' },
           { value: '5', label: '5 Min' },
@@ -125,114 +121,83 @@ export default function TVChartContainer({ symbol }) {
           { value: '60', label: '1 Hour' },
           { value: 'D', label: '1 Day' },
           { value: 'W', label: '1 Week' },
-          { value: 'M', label: '1 Month' }
+          { value: 'M', label: '1 Month' },
         ];
-        intervals.forEach(interval => {
-          const button = tvWidgetInstance.createButton();
+        intervals.forEach((interval) => {
+          const button = instance.createButton();
           button.classList.add('custom-interval-button');
           button.title = `Switch to ${interval.label}`;
-          button.addEventListener('click', function () {
-            tvWidgetInstance.chart().setResolution(interval.value);
-          });
           button.textContent = interval.label;
+          button.addEventListener('click', () => instance.chart().setResolution(interval.value));
         });
       });
+
+      setIsReady(true);
     });
 
-    setTvWidget(tvWidgetInstance);
-  };
-
-  // Initialize chart when symbol is valid
-  useEffect(() => {
-    if (symbol.split('/')[0] !== 'undefined') {
-      if (functCheckRef.current) {
-        getChart(symbol);
-      }
-      functCheckRef.current = false;
-    };
-  }, [symbol]);
-
-  // Cleanup on unmount
-  useEffect(() => {
     return () => {
       disconnectChartSocket();
-      if (tvWidget) {
-        try {
-          tvWidget.remove();
-        } catch (e) {
-          // Widget removal error - safe to ignore
-        }
+      if (widgetInstanceRef.current) {
+        try { widgetInstanceRef.current.remove(); } catch { /* safe to ignore */ }
+        widgetInstanceRef.current = null;
       }
+      setTvWidget(null);
+      setIsReady(false);
     };
-  }, [tvWidget]);
-
-  useEffect(() => {
-    if (tvWidget) {
-      tvWidget.onChartReady(() => {
-        const chart = tvWidget.chart();
-        if (chart) {
-          chart.setSymbol(symbol, () => null);
-        }
-      });
-    }
   }, [symbol]);
 
-  // Live theme: body class + localStorage-independent (matches shell toggle)
+  // Apply live theme changes to the mounted widget.
   useEffect(() => {
     if (!tvWidget) return;
     const apply = async () => {
       try {
         await tvWidget._innerWindowLoaded;
         applyChartThemeToWidget(tvWidget, TV_CHART_CONTAINER);
-      } catch (error) {
-        console.error('Error applying spot chart theme from body class:', error);
+      } catch {
+        // ignore
       }
     };
     apply();
   }, [bodyChartTheme, tvWidget]);
-
-  const [isReady, setIsReady] = useState(false);
-
-  useEffect(() => {
-    if (tvWidget) {
-      tvWidget.onChartReady(() => {
-        setIsReady(true);
-      });
-    }
-  }, [tvWidget]);
 
   const isMobile = window.innerWidth <= 480;
   const chartHeight = isMobile ? '400px' : '625px';
   const bgColor = bodyChartTheme === 'light' ? CHART_BG_LIGHT : CHART_BG_DARK;
 
   return (
-    <div style={{ position: "relative", minHeight: chartHeight, height: chartHeight, backgroundColor: bgColor }}>
+    <div style={{ position: 'relative', minHeight: chartHeight, height: chartHeight, backgroundColor: bgColor }}>
       <div
         id="TVChartContainer"
         style={{
           opacity: isReady ? 1 : 0,
-          transition: "opacity 0.1s ease",
+          transition: 'opacity 0.1s ease',
           backgroundColor: bgColor,
-          height: "100%",
+          height: '100%',
         }}
       />
 
       {!isReady && (
         <div
           style={{
-            position: "absolute",
-            top: 0,
-            left: 0,
-            width: "100%",
-            height: "100%",
-            display: "flex",
-            justifyContent: "center",
-            alignItems: "center",
+            position: 'absolute',
+            top: 0, left: 0,
+            width: '100%', height: '100%',
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
             background: bgColor,
             zIndex: 10,
           }}
         >
-          <div className="spinner-border text-primary" role="status" style={{ width: '1.5rem', height: '1.5rem', borderColor: bodyChartTheme === 'light' ? 'rgba(0, 0, 0, 0.3)' : 'rgba(255, 255, 255, 0.3)', borderRightColor: 'transparent' }}  />
+          <div
+            className="spinner-border text-primary"
+            role="status"
+            style={{
+              width: '1.5rem', height: '1.5rem',
+              borderColor: bodyChartTheme === 'light' ? 'rgba(0,0,0,0.3)' : 'rgba(255,255,255,0.3)',
+              borderRightColor: 'transparent',
+            }}
+          />
         </div>
       )}
     </div>

@@ -1,211 +1,220 @@
-import { parseFullSymbol } from "./helpers";
+import { parseFullSymbol } from './helpers.js';
 
+// One subscription per TradingView channel ("BTC/USDT" → subscription state).
 const channelToSubscription = new Map();
 
 let socket = null;
 let pendingStreamParams = null;
-let dataHandler = null;
-let listenerAttached = false;
 
 /**
- * Set the shared socket from SocketContext.
- * The market-data-service emits `data` events of shape
- *   { channel: 'ticker' | 'trade' | ..., symbol: 'BTCUSDT', payload: {...} }
- * We build 1-minute bars from the ticker channel and dispatch to whichever
- * TradingView subscription matches the symbol.
+ * Set the shared socket from SocketContext. The chart builds bars from the
+ * matching-service `local:trade:<SYMBOL>` Socket.IO events — no Binance.
+ * Event payload shape (from market-data-service):
+ *   { side: 'BUY'|'SELL', price: string|number, quantity: string|number, timestamp: number }
  */
 export function setSharedSocket(socketInstance) {
-  if (!socketInstance) return;
-  if (socket && socket !== socketInstance && dataHandler) {
-    socket.off('data', dataHandler);
-    listenerAttached = false;
-    dataHandler = null;
-  }
-  socket = socketInstance;
-  if (pendingStreamParams) {
-    setupStreamWithSocket(pendingStreamParams);
-    pendingStreamParams = null;
-  } else if (channelToSubscription.size > 0) {
-    ensureDataListener();
-  }
+	if (!socketInstance) return;
+	if (socket && socket !== socketInstance) {
+		// Previous socket is being replaced (auth state change etc.) — detach
+		// all per-symbol listeners we own on it.
+		for (const [, sub] of channelToSubscription) {
+			if (sub.handlerRef && sub.eventName) {
+				socket.off(sub.eventName, sub.handlerRef);
+				sub.handlerRef = null;
+			}
+		}
+	}
+	socket = socketInstance;
+	if (pendingStreamParams) {
+		setupStreamWithSocket(pendingStreamParams);
+		pendingStreamParams = null;
+	} else {
+		// Re-attach listeners + re-subscribe for any existing subscriptions.
+		for (const [channelString, sub] of channelToSubscription) {
+			attachListener(channelString, sub);
+		}
+	}
 }
 
 export function clearSharedSocket() {
-  if (socket && dataHandler) {
-    socket.off('data', dataHandler);
-    dataHandler = null;
-    listenerAttached = false;
-  }
+	if (socket) {
+		for (const [, sub] of channelToSubscription) {
+			if (sub.handlerRef && sub.eventName) {
+				socket.off(sub.eventName, sub.handlerRef);
+				sub.handlerRef = null;
+			}
+		}
+	}
 }
 
 /** Full teardown — call when leaving the trade page. */
 export function disconnectChartSocket() {
-  if (socket && dataHandler) {
-    socket.off('data', dataHandler);
-  }
-  dataHandler = null;
-  listenerAttached = false;
-  pendingStreamParams = null;
-  channelToSubscription.clear();
+	clearSharedSocket();
+	channelToSubscription.clear();
+	pendingStreamParams = null;
 }
 
 export function isSocketReady() {
-  return socket !== null && socket.connected;
+	return socket !== null && socket.connected;
 }
 
-/**
- * Attach a single persistent `data` listener. Dispatches ticker updates to
- * any TradingView subscription whose symbol matches the payload symbol.
- */
-function ensureDataListener() {
-  if (!socket || listenerAttached || dataHandler) return;
-  if (channelToSubscription.size === 0) return;
+function attachListener(channelString, subscriptionItem) {
+	if (!socket) return;
+	const parsed = parseFullSymbol(channelString);
+	if (!parsed?.fromSymbol || !parsed?.toSymbol) return;
 
-  dataHandler = (event) => {
-    try {
-      if (event?.channel !== 'ticker') return;
-      const p = event.payload;
-      if (!p) return;
+	const localSymbol = `${parsed.fromSymbol}-${parsed.toSymbol}`;
+	const eventName = `local:trade:${localSymbol}`;
 
-      // Binance ticker fields: c = last price, v = base volume, E = event time ms
-      const tradePrice = parseFloat(p.c);
-      if (!Number.isFinite(tradePrice)) return;
-      const volume = parseFloat(p.v);
-      const tradeTime = Number(p.E) || Date.now();
-      const eventSymbol = String(event.symbol || '').toUpperCase();
+	// Ask gateway for the local trade stream (idempotent server-side).
+	socket.emit('subscribe', { channel: 'local_trade', symbol: localSymbol });
 
-      for (const [channelString, subscriptionItem] of channelToSubscription) {
-        const parsed = parseFullSymbol(channelString);
-        if (!parsed?.fromSymbol || !parsed?.toSymbol) continue;
-        const subSymbol = `${parsed.fromSymbol}${parsed.toSymbol}`.toUpperCase();
-        if (subSymbol !== eventSymbol) continue;
+	if (subscriptionItem.handlerRef && subscriptionItem.eventName) {
+		socket.off(subscriptionItem.eventName, subscriptionItem.handlerRef);
+	}
 
-        if (!subscriptionItem.lastDailyBar) {
-          subscriptionItem.lastDailyBar = {
-            time: tradeTime,
-            open: tradePrice,
-            high: tradePrice,
-            low: tradePrice,
-            close: tradePrice,
-            volume: Number.isFinite(volume) ? volume : 0,
-          };
-          subscriptionItem.handlers?.forEach(h => h.callback(subscriptionItem.lastDailyBar));
-          continue;
-        }
+	const handler = (event) => {
+		try {
+			// Server may wrap the payload: { payload: { price, ... } } or send it flat.
+			const e = event?.payload ?? event;
+			const tradePrice = parseFloat(e?.price ?? e?.p);
+			if (!Number.isFinite(tradePrice)) return;
+			const volume = parseFloat(e?.quantity ?? e?.qty ?? e?.q);
+			// Normalize trade time to ms (server may send seconds).
+			const rawTs = Number(e?.timestamp ?? e?.time ?? e?.T);
+			const tradeTime = rawTs > 0 ? (rawTs < 1e12 ? rawTs * 1000 : rawTs) : Date.now();
+			// TradingView bar time must be aligned to the start of the interval.
+			const barTime = getBarStart(tradeTime, subscriptionItem.resolution);
 
-        const lastBarTime = getStartOfMinute(subscriptionItem.lastDailyBar.time);
-        const currentTradeMinute = getStartOfMinute(tradeTime);
-        let bar;
+			if (!subscriptionItem.lastDailyBar) {
+				subscriptionItem.lastDailyBar = {
+					time: barTime,
+					open: tradePrice,
+					high: tradePrice,
+					low: tradePrice,
+					close: tradePrice,
+					volume: Number.isFinite(volume) ? volume : 0,
+				};
+				subscriptionItem.handlers?.forEach((h) => h.callback(subscriptionItem.lastDailyBar));
+				return;
+			}
 
-        if (currentTradeMinute > lastBarTime) {
-          bar = {
-            time: tradeTime,
-            open: subscriptionItem.lastDailyBar.close,
-            high: tradePrice,
-            low: tradePrice,
-            close: tradePrice,
-            volume: Number.isFinite(volume) ? volume : subscriptionItem.lastDailyBar.volume,
-          };
-        } else {
-          bar = {
-            ...subscriptionItem.lastDailyBar,
-            high: Math.max(subscriptionItem.lastDailyBar.high ?? 0, tradePrice),
-            low: Math.min(subscriptionItem.lastDailyBar.low ?? Infinity, tradePrice),
-            close: tradePrice,
-            volume: Number.isFinite(volume) ? volume : (subscriptionItem.lastDailyBar.volume ?? 0),
-          };
-        }
-        subscriptionItem.lastDailyBar = bar;
-        subscriptionItem.handlers?.forEach(h => h.callback(bar));
-      }
-    } catch {
-      // Never crash the chart on malformed frames
-    }
-  };
+			const lastBarTime = getBarStart(subscriptionItem.lastDailyBar.time, subscriptionItem.resolution);
+			let bar;
+			if (barTime > lastBarTime) {
+				// New candle — open at previous close.
+				bar = {
+					time: barTime,
+					open: subscriptionItem.lastDailyBar.close,
+					high: tradePrice,
+					low: tradePrice,
+					close: tradePrice,
+					volume: Number.isFinite(volume) ? volume : 0,
+				};
+			} else {
+				// Update current candle.
+				bar = {
+					...subscriptionItem.lastDailyBar,
+					high: Math.max(subscriptionItem.lastDailyBar.high ?? 0, tradePrice),
+					low: Math.min(subscriptionItem.lastDailyBar.low ?? Infinity, tradePrice),
+					close: tradePrice,
+					volume: (subscriptionItem.lastDailyBar.volume ?? 0) + (Number.isFinite(volume) ? volume : 0),
+				};
+			}
+			subscriptionItem.lastDailyBar = bar;
+			subscriptionItem.handlers?.forEach((h) => h.callback(bar));
+		} catch {
+			// Never crash the chart on malformed frames.
+		}
+	};
 
-  socket.on('data', dataHandler);
-  listenerAttached = true;
+	socket.on(eventName, handler);
+	subscriptionItem.handlerRef = handler;
+	subscriptionItem.eventName = eventName;
+	subscriptionItem.localSymbol = localSymbol;
 }
 
-/**
- * Register a TradingView subscription and ensure the shared `data` listener
- * is attached. Also asks the server to start streaming ticker for this symbol
- * (the Trade page already subscribes to ticker for the selected pair, but
- * subscribing again is idempotent on the gateway).
- */
 function setupStreamWithSocket(params) {
-  const { symbolInfo, resolution, onRealtimeCallback, subscriberUID, lastDailyBar } = params;
-  const channelString = symbolInfo.name;
-  const handler = { id: subscriberUID, callback: onRealtimeCallback };
+	const { symbolInfo, resolution, onRealtimeCallback, subscriberUID, lastDailyBar } = params;
+	const channelString = symbolInfo.name;
+	const handler = { id: subscriberUID, callback: onRealtimeCallback };
 
-  let subscriptionItem = channelToSubscription.get(channelString);
-  if (subscriptionItem) {
-    subscriptionItem.handlers.push(handler);
-    ensureDataListener();
-    return;
-  }
+	let subscriptionItem = channelToSubscription.get(channelString);
+	if (subscriptionItem) {
+		subscriptionItem.handlers.push(handler);
+		return;
+	}
 
-  subscriptionItem = {
-    subscriberUID,
-    resolution,
-    lastDailyBar,
-    handlers: [handler],
-  };
-  channelToSubscription.set(channelString, subscriptionItem);
-
-  // Ask gateway for ticker stream for this symbol (idempotent on the server)
-  const parsed = parseFullSymbol(channelString);
-  if (socket && parsed?.fromSymbol && parsed?.toSymbol) {
-    const binanceSymbol = `${parsed.fromSymbol}${parsed.toSymbol}`.toUpperCase();
-    socket.emit('subscribe', { channel: 'ticker', symbol: binanceSymbol });
-  }
-
-  ensureDataListener();
+	subscriptionItem = {
+		subscriberUID,
+		resolution,
+		lastDailyBar,
+		handlers: [handler],
+	};
+	channelToSubscription.set(channelString, subscriptionItem);
+	attachListener(channelString, subscriptionItem);
 }
 
-/**
- * Subscribe to real-time stream for chart updates.
- * Called by the TradingView datafeed.
- */
 export async function subscribeOnStream(
-  symbolInfo,
-  resolution,
-  onRealtimeCallback,
-  subscriberUID,
-  _onResetCacheNeededCallback,
-  lastDailyBar
+	symbolInfo,
+	resolution,
+	onRealtimeCallback,
+	subscriberUID,
+	_onResetCacheNeededCallback,
+	lastDailyBar,
 ) {
-  const params = { symbolInfo, resolution, onRealtimeCallback, subscriberUID, lastDailyBar };
-  if (socket) {
-    setupStreamWithSocket(params);
-  } else {
-    pendingStreamParams = params;
-  }
+	const params = { symbolInfo, resolution, onRealtimeCallback, subscriberUID, lastDailyBar };
+	if (socket) {
+		setupStreamWithSocket(params);
+	} else {
+		pendingStreamParams = params;
+	}
+}
+
+export function unsubscribeFromStream(subscriberUID) {
+	for (const [channelString, subscriptionItem] of channelToSubscription) {
+		const handlerIndex = subscriptionItem.handlers.findIndex((h) => h.id === subscriberUID);
+		if (handlerIndex === -1) continue;
+		subscriptionItem.handlers.splice(handlerIndex, 1);
+		if (subscriptionItem.handlers.length > 0) return;
+
+		if (socket) {
+			if (subscriptionItem.handlerRef && subscriptionItem.eventName) {
+				socket.off(subscriptionItem.eventName, subscriptionItem.handlerRef);
+			}
+			if (subscriptionItem.localSymbol) {
+				socket.emit('unsubscribe', { channel: 'local_trade', symbol: subscriptionItem.localSymbol });
+			}
+		}
+		channelToSubscription.delete(channelString);
+		return;
+	}
 }
 
 /**
- * Unsubscribe a single TradingView handler. Called by the TradingView datafeed.
+ * Returns the start-of-bar timestamp (ms) for a given resolution.
+ * TradingView requires bar.time to be aligned to the interval boundary —
+ * e.g. a 5m bar at 14:07 must have time=14:05:00.000, not 14:07:xx.xxx.
  */
-export function unsubscribeFromStream(subscriberUID) {
-  for (const [channelString, subscriptionItem] of channelToSubscription) {
-    const handlerIndex = subscriptionItem.handlers.findIndex(h => h.id === subscriberUID);
-    if (handlerIndex !== -1) {
-      subscriptionItem.handlers.splice(handlerIndex, 1);
-      if (subscriptionItem.handlers.length === 0) {
-        channelToSubscription.delete(channelString);
-        const parsed = parseFullSymbol(channelString);
-        if (socket && parsed?.fromSymbol && parsed?.toSymbol) {
-          const binanceSymbol = `${parsed.fromSymbol}${parsed.toSymbol}`.toUpperCase();
-          socket.emit('unsubscribe', { channel: 'ticker', symbol: binanceSymbol });
-        }
-      }
-      break;
-    }
-  }
-}
+function getBarStart(timestamp, resolution) {
+	const ms = Number(timestamp);
+	const r = String(resolution || '1').toUpperCase();
 
-function getStartOfMinute(timestamp) {
-  const date = new Date(timestamp);
-  date.setSeconds(0, 0);
-  return date.getTime();
+	if (r === 'D' || r === '1D') {
+		const d = new Date(ms);
+		d.setUTCHours(0, 0, 0, 0);
+		return d.getTime();
+	}
+	if (r === 'W' || r === '1W') {
+		const d = new Date(ms);
+		const day = d.getUTCDay(); // 0 = Sunday
+		d.setUTCDate(d.getUTCDate() - day);
+		d.setUTCHours(0, 0, 0, 0);
+		return d.getTime();
+	}
+
+	// Intraday: floor to the nearest N-minute boundary
+	const minutes = parseInt(r, 10) || 1;
+	const periodMs = minutes * 60 * 1000;
+	return Math.floor(ms / periodMs) * periodMs;
 }

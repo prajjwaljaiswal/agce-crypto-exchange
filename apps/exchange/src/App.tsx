@@ -1,4 +1,5 @@
 import { Route, Routes, useLocation } from 'react-router-dom'
+import { Toaster } from 'react-hot-toast'
 import { AppProviders } from './providers/index.js'
 import { UserHeader } from './components/layout/UserHeader.js'
 import { Footer } from './components/layout/Footer.js'
@@ -127,6 +128,12 @@ export default function App() {
   return (
     <AppProviders>
       <AppInner />
+      <Toaster
+        position="top-center"
+        reverseOrder={false}
+        containerStyle={{ zIndex: 2147483647 }}
+        toastOptions={{ style: { zIndex: 2147483647 } }}
+      />
     </AppProviders>
   )
 }

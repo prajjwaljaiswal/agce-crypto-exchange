@@ -2919,11 +2919,11 @@ body.light_theme.price_card_head {
 .headline_leftItem__7BFYq {
     margin-inline-start: 15px;
     font-size: 12px;
-    color: #4d4d4d;
+    color: black;
     line-height: 20px;
     white-space: nowrap;
     font-weight: normal;
-    font-weight: 300;
+    /* font-weight: 300; */
 }
 
 
@@ -4951,7 +4951,7 @@ body.light_theme.bs_tab_row {
     flex-shrink: 0;
 }
 
-.spot_orders_side_select {
+/* .spot_orders_side_select {
     border: 1px solid #d1d5db;
     border-radius: 8px;
     background: #fff;
@@ -4960,7 +4960,7 @@ body.light_theme.bs_tab_row {
     padding: 6px 28px 6px 10px;
     font-family: "Inter", sans-serif;
     cursor: pointer;
-}
+} */
 
 .spot_orders_reset {
     display: inline-flex;
@@ -5031,6 +5031,10 @@ body.light_theme.bs_tab_row {
     justify-content: center;
 }
 
+html[data-theme="dark"] .headline_leftItem__7BFYq, html[data-theme="dark"] .headline_title__x1csO  {
+    color: #fff;
+}
+
 html[data-theme="dark"] .spot_orders_table_wrap,
 html[data-theme="dark"] .spot_orders_placeholder_shell {
     background: #181a20;
@@ -5078,11 +5082,11 @@ html[data-theme="dark"] .spot_orders_chip.is-active {
     color: #eaecef;
 }
 
-html[data-theme="dark"] .spot_orders_side_select {
+/* html[data-theme="dark"] .spot_orders_side_select {
     background: #181a20;
     border-color: #2b3138;
     color: #eaecef;
-}
+} */
 
 html[data-theme="dark"] .spot_orders_reset {
     color: #9ca3af;
@@ -5104,6 +5108,7 @@ html[data-theme="dark"] .position_order .spot_orders_primary_tabs li button {
 html[data-theme="dark"] .position_order .spot_orders_primary_tabs li.active button {
     color: #eaecef;
     border-bottom-color: #eaecef;
+    background-color: #000000;
 }
 
 body.light_theme .trade_summary_table_lft_position_order.position_order {
