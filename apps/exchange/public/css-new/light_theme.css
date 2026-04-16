@@ -107,7 +107,7 @@ body.light_theme .checkbox {
 }
 
 body.light_theme .searchBar.custom-tabs {
-    background-color: #e4e4e4;
+    background-color: #fff;
 }
 
 body.light_theme .searchBar.custom-tabs i {
@@ -381,7 +381,7 @@ body.light_theme .login_section .login-pills li .nav-link.active {
 }
 
 body.light_theme .login_section .login-pills li .nav-link {
-    color: #878787d7 !important;
+    color: #84888C !important;
 }
 
 body.light_theme .modal.search_form input:focus {
@@ -965,7 +965,7 @@ body.light_theme .supportinquery .profile_form .emailinput label {
 }
 
 body.light_theme .table>:not(caption)>*>* {
-    color: #272727;
+    color: #84888C;
 }
 
 body.light_theme .bg-secondary {
@@ -991,9 +991,11 @@ body.light_theme .ticket-details span {
 }
 
 body.light_theme .search_form .modal-content {
-    background: rgb(255 255 255 / 100%);
+    background: rgb(255 255 255 / 40%);
     border: 1px solid #E1E1E1;
     box-shadow: 0px 30px 60px #00000030;
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
 }
 
 body.light_theme .price_heading {
@@ -1031,11 +1033,11 @@ body.light_theme .earning_section_cate .nav-tabs .nav-link.active {
 }
 
 body.light_theme .mobile-favourites-popup {
-    background-color: #ececec;
+    background-color: #fff;
 }
 
 body.light_theme .mobile-favourites-popup .orderbook-table th {
-    background-color: #ececec;
+    background-color: #fff;
 }
 
 body.light_theme .mobile-favourites-popup-header h4 {
@@ -1373,12 +1375,12 @@ body.light_theme .login_bg.login_sec.market_page {
 }
 
 body.light_theme .trade_marketvalue .price {
-    color: #3e3e3e;
+    color: #0D0D0D;
 }
 
 body.light_theme .market_tabs .nav-link.active,
 body.light_theme .market_tabs .nav-pills .show>.nav-link {
-    color: #3a3a3a !important;
+    color: #070808 !important;
 }
 
 body.light_theme ul.tbltabs li select {
@@ -1386,7 +1388,8 @@ body.light_theme ul.tbltabs li select {
 }
 
 body.light_theme ul.tbltabs li.active button {
-    background-color: #ececec;
+    background-color: #F5F6F7;
+    color: #000;
 }
 
 body.light_theme .trade-wrapper .orderbook-table th {
@@ -1399,12 +1402,12 @@ body.light_theme .trade_card table tr:hover {
 }
 
 body.light_theme .trade-wrapper .orderbook-table thead {
-    background-color: #ffffff00 !important;
-    background: #ececec !important;
+    background-color: #fff !important;
+    background: #fff !important;
 }
 
 body.light_theme .freerate {
-    background-color: #e2e2e2;
+    background-color: #F6F6F7;
     color: #000;
 }
 
@@ -1413,12 +1416,73 @@ body.light_theme .trade_account_summary_assets {
 }
 
 body.light_theme .trade_summary_table_lft {
-    background: #ececec;
+    background: #ffffff;
 }
 
 body.light_theme .assets_right {
-    background-color: #ececec;
+    background-color: #fff;
     color: #000;
+}
+
+body.light_theme .assets_right.assets_panel_desktop {
+    background-color: #ffffff;
+    /* border: 1px solid #e5e7eb; */
+    color: #111827;
+}
+
+body.light_theme .assets_panel_title {
+    color: #111827;
+}
+
+body.light_theme .assets_panel_refresh {
+    color: #6b7280;
+}
+
+body.light_theme .assets_panel_refresh:hover {
+    color: #111827;
+}
+
+body.light_theme .assets_balance_label {
+    color: #9ca3af;
+}
+
+body.light_theme .assets_balance_val {
+    color: #111827;
+}
+
+body.light_theme .assets_panel_pill {
+    background: #f0f0f0 !important;
+    color: #111827 !important;
+}
+
+body.light_theme .assets_panel_pill:hover {
+    background: #e5e7eb !important;
+    color: #111827 !important;
+}
+
+body.light_theme .assets_panel_list_card {
+    border-top-color: #ececec;
+}
+
+body.light_theme .assets_panel_list_head {
+    color: #9ca3af;
+}
+
+body.light_theme .assets_panel_sym,
+body.light_theme .assets_panel_bal {
+    color: #111827;
+}
+
+body.light_theme .assets_panel_full {
+    color: #9ca3af;
+}
+
+body.light_theme .assets_panel_asset_row {
+    border-bottom-color: #f0f0f000;
+}
+
+body.light_theme .assets_panel_login_text {
+    color: #6b7280;
 }
 
 body.light_theme .trade-wrapper .assets_list h4 {
@@ -1512,13 +1576,211 @@ body.light_theme .dashboard_mid_s .dashboard_summary_lft {
 }
 
 body.light_theme .buysellform .form-group label {
-    color: #3c3c3c;
+    color: #84888C;
+}
+
+body.light_theme .spot_limit_tabs_row .spot_limit>button {
+    color: #6b7280;
+}
+
+body.light_theme .spot_limit_tabs_row .spot_limit>button.active {
+    color: #111827;
+    border-bottom-color: #111827;
+}
+
+body.light_theme .buy_spot_form .trade_price_field,
+body.light_theme .sell_spot_form .trade_price_field,
+body.light_theme .buy_spot_form .buysellform .input-group,
+body.light_theme .sell_spot_form .buysellform .input-group {
+    background: #f5f5f5 !important;
+    border-color: #e5e7eb !important;
+}
+
+/* Buy / Sell spot form footer — Available/Max, FOK/IOC, CTA, fees, staking (light / mobile screenshot) */
+body.light_theme .buy_spot_form,
+body.light_theme .sell_spot_form {
+    font-family: "Inter", sans-serif;
+}
+
+body.light_theme .buy_spot_form .limit_buy_avail,
+body.light_theme .sell_spot_form .limit_buy_avail {
+    margin-top: 16px;
+    margin-bottom: 14px;
+}
+
+body.light_theme .buy_spot_form .limit_buy_avail .stop_avail_row,
+body.light_theme .sell_spot_form .limit_buy_avail .stop_avail_row {
+    padding: 10px 0 0px;
+    align-items: center;
+}
+
+body.light_theme .buy_spot_form .limit_buy_avail .stop_avail_rgt,
+body.light_theme .sell_spot_form .limit_buy_avail .stop_avail_rgt {
+    display: inline-flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 10px;
+    flex: 1;
+    min-width: 0;
+    margin-left: 12px;
+}
+
+body.light_theme .buy_spot_form .limit_buy_avail .stop_avail_label,
+body.light_theme .sell_spot_form .limit_buy_avail .stop_avail_label {
+    color: #84888C;
+    font-size: 12px;
+    font-weight: 300;
+}
+
+body.light_theme .buy_spot_form .limit_buy_avail .stop_avail_val,
+body.light_theme .sell_spot_form .limit_buy_avail .stop_avail_val {
+    color: #070808;
+    font-weight: 500;
+    font-size: 11px;
+}
+
+body.light_theme .buy_spot_form .limit_buy_plus,
+body.light_theme .sell_spot_form .limit_buy_plus {
+    padding: 0;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+}
+
+body.light_theme .buy_spot_form .limit_buy_checks,
+body.light_theme .sell_spot_form .limit_buy_checks {
+    margin-top: 4px;
+    margin-bottom: 18px;
+    gap: 14px;
+}
+
+body.light_theme .buy_spot_form .limit_buy_checks .stop_check,
+body.light_theme .sell_spot_form .limit_buy_checks .stop_check {
+    color: #111827;
+    font-weight: 400;
+    font-size: 12px;
+}
+
+body.light_theme .buy_spot_form .limit_buy_checks .stop_check input[type="checkbox"],
+body.light_theme .sell_spot_form .limit_buy_checks .stop_check input[type="checkbox"] {
+    width: 14px;
+    height: 14px;
+    min-width: 14px;
+    border-radius: 4px;
+    border: 1px solid #d1d5db;
+    accent-color: #dadada;
+}
+
+body.light_theme .buy_spot_form .limit_buy_checks .stop_check span,
+body.light_theme .sell_spot_form .limit_buy_checks .stop_check span {
+    text-decoration: underline dotted;
+    text-decoration-color: #9ca3af;
+    text-underline-offset: 4px;
+    color: #374151;
+}
+
+body.light_theme .buy_spot_form .custom-btn.btn-success.btn-mini {
+    background: #2BC287 !important;
+    border: none !important;
+    color: #ffffff !important;
+    font-weight: 500;
+    font-size: 15px;
+    font-family: "Inter", sans-serif;
+    border-radius: 50px !important;
+    padding: 11px 22px !important;
+    margin-top: 6px !important;
+    margin-bottom: 14px !important;
+    box-shadow: none !important;
+}
+
+body.light_theme .buy_spot_form .custom-btn.btn-success.btn-mini:hover,
+body.light_theme .buy_spot_form .custom-btn.btn-success.btn-mini:focus {
+    background: #22b680 !important;
+    color: #ffffff !important;
+}
+
+body.light_theme .sell_spot_form .custom-btn.btn-danger.btn-mini {
+    background: #e5394b !important;
+    border: none !important;
+    color: #ffffff !important;
+    font-weight: 500;
+    font-size: 15px;
+    font-family: "Inter", sans-serif;
+    border-radius: 50px !important;
+    padding: 11px 22px !important;
+    margin-top: 6px !important;
+    margin-bottom: 14px !important;
+    box-shadow: none !important;
+}
+
+body.light_theme .sell_spot_form .custom-btn.btn-danger.btn-mini:hover,
+body.light_theme .sell_spot_form .custom-btn.btn-danger.btn-mini:focus {
+    background: #d32f3f !important;
+    color: #ffffff !important;
+}
+
+body.light_theme .inf_row {
+    color: #7e7e7e;
+}
+
+body.light_theme .infor_row li span {
+    color: #000000;
+}
+
+.midgraph_col .treade_card_header.tch_main_tab {
+    justify-content: start;
+    gap: 0px;
+}
+
+body.light_theme .buy_spot_form .trade_maker_taker_fees.trade_maker_fees_split,
+body.light_theme .sell_spot_form .trade_maker_taker_fees.trade_maker_fees_split {
+    display: flex;
+    justify-content: start;
+    align-items: center;
+    width: 100%;
+    gap: 14px;
+    margin: 0px 0 18px;
+    padding: 0 2px;
+    text-align: left;
+    color: #070808;
+    font-size: 11px;
+    font-weight: 500;
+    font-family: "Inter", sans-serif;
+}
+
+body.light_theme .buy_spot_form .trade_maker_fee_item,
+body.light_theme .sell_spot_form .trade_maker_fee_item {
+    flex: 0 0 auto;
+}
+
+body.light_theme .buy_spot_form .stop_apr_card,
+body.light_theme .sell_spot_form .stop_apr_card {
+    margin-top: 4px;
+    padding: 10px 16px;
+    border-radius: 8px;
+    border: 1px solid #F2F3F4;
+    background: #FAFAFA;
+    box-shadow: none;
+}
+
+body.light_theme .buy_spot_form .stop_apr_text,
+body.light_theme .sell_spot_form .stop_apr_text {
+    color: #FF9447;
+    font-weight: 500;
+    font-size: 12px;
+    font-family: "Inter", sans-serif;
+}
+
+body.light_theme .buy_spot_form .stop_apr_card i,
+body.light_theme .sell_spot_form .stop_apr_card i {
+    color: #84888C;
+    font-size: 18px;
 }
 
 
 body.light_theme .process_step label.btn:before {
-    background-color: #c3c4c7;
-    border: 1px solid #c3c4c7;
+    background-color: #DEDFE1;
+    border: 1px solid #DEDFE1;
 }
 
 body.light_theme .buysell_heder .custom-tabs li button {
@@ -1527,7 +1789,7 @@ body.light_theme .buysell_heder .custom-tabs li button {
 }
 
 body.light_theme .assets_btn button {
-    background-color: #c2c2c2;
+    background-color: #F5F6F7;
 }
 
 body.light_theme .assets_btn button a {
@@ -1543,14 +1805,29 @@ body.light_theme p.mt-2 {
     color: #252525;
 }
 
-body.light_theme .buy_sell_row.buy_sell_cards ul.nav.custom-tabs li a.active {
-    background: #dedede !important;
+/* Trade — Spot tabs Conditional dropdown (light theme) */
+body.light_theme .spot_limit .spot_limit_dd_btn {
+    color: #84888C;
+}
+
+body.light_theme .spot_limit .spot_limit_dd_btn.active {
+    color: #181818;
+}
+
+body.light_theme .spot_limit_dd_menu {
+    background: #ffffff;
+    border: 1px solid rgba(0, 0, 0, 0.08);
+    box-shadow: 0px 0px 4px #00000017;
+}
+
+body.light_theme .spot_limit_dd_item {
+    color: #84888C;
 }
 
 body.light_theme .trade_summary_table_lft .nav-item.active button {
-    background-color: #dcdcdc;
-    color: #484848;
-    border-bottom: 1px solid #484848;
+    background-color: transparent;
+    color: #2a2a2a;
+    border-bottom: none;
 }
 
 body.light_theme .num-div .num-select {
@@ -1577,7 +1854,7 @@ body.light_theme .modal.currency_popup_s .search_form {
 }
 
 body.light_theme .modal.currency_popup_s .currency_data_list table tr th {
-    color: #737373;
+    color: #909397;
 }
 
 body.light_theme .modal.currency_popup_s .currency_data_list table tr td {
@@ -2158,6 +2435,9 @@ body.light_theme .modal.search_form .hot_trading_t table tr {
     background-color: #FFFFFF;
     box-shadow: 0px 0px 20px #0000000d;
     border-radius: 12px;
+    background-color: rgb(255 255 255 / 40%);
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
 }
 
 body.light_theme .withdrawal_top_list .bn_step_content {

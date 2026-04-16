@@ -26,7 +26,7 @@ import {
   Dashboard,
   Earning,
   EarningHistory,
-  KycVerification,
+  KycVerificationNew,
   Notifications,
   OpenOrders,
   ProfileLayout,
@@ -40,6 +40,8 @@ import {
   WalletTransferHistory,
 } from './features/user-profile/index.js'
 import './App.css'
+import Trade from './features/Trade/index.js'
+import { SocketProvider } from './features/Trade/SocketContext.js'
 
 const NO_FOOTER_ROUTE_PREFIXES = [
   '/signup',
@@ -69,6 +71,10 @@ function AppInner() {
             element={<AnnouncementList />}
           />
           <Route
+            path="/trade/:trade"
+            element={<SocketProvider><Trade /></SocketProvider>}
+          />
+          <Route
             path="/announcement_details/:title/:announce_title_id"
             element={<AnnouncementDetails />}
           />
@@ -92,7 +98,7 @@ function AppInner() {
               <Route path="wallet_transfer_history" element={<WalletTransferHistory />} />
               <Route path="earning_plan_history" element={<EarningHistory />} />
               <Route path="profile_setting" element={<Settings />} />
-              <Route path="kyc" element={<KycVerification />} />
+              <Route path="kyc" element={<KycVerificationNew />} />
               <Route path="support" element={<Support />} />
               <Route path="two_factor_authentication" element={<TwoFactor />} />
               <Route path="swap" element={<Swap />} />

@@ -1,0 +1,447 @@
+{
+  "info": {
+    "_postman_id": "a1b2c3d4-market-data-service-collection",
+    "name": "AGCE — market-data-service",
+    "description": "REST API for the AGCE market-data-service — the unified market-data gateway.\n\nThe REST endpoints in this collection proxy Binance public snapshots (exchangeInfo, depth, trades, klines, tickers) used to bootstrap the trading UI. Live streaming (which is the main feature of this service) is Socket.IO and is not Postman-testable — see the Socket.IO section below.\n\n**Setup**\n1. Import this collection AND the environment (`market-data-service.postman_environment.json`).\n2. Select the `market-data-service (local)` environment in Postman.\n3. Make sure `market-data-service` is running locally (`npm run dev` or `skaffold dev`).\n4. The `baseUrl` is `http://localhost:3002` direct, or `http://localhost:8080` through the gateway (recommended — that's the same origin the frontend uses).\n\n**Authentication**\nPublic market data endpoints currently do not require a token. If you wrap the routes in `requireAuth`, set `accessToken` from auth_service's `/auth/login` response and the Bearer header is applied automatically.\n\n**Socket.IO — live streams (NOT Postman-testable)**\n\nThe frontend opens ONE Socket.IO connection to this service and receives TWO upstream sources:\n\n1. **Binance reference data** — `emit(\"subscribe\", { channel: \"depth\"|\"trade\"|\"kline\"|\"ticker\"|..., symbol })`. Events arrive on `\"data\"`.\n\n2. **AGCE local matching events** — `emit(\"subscribe\", { channel: \"local_trade\"|\"local_depth\", symbol: \"BTC-USDT\" })`. Events arrive on `local:trade:<SYMBOL>` / `local:depth:<SYMBOL>`. Forwarded from matching_service via the `matching.trades` / `matching.depth-updates` Kafka topics.\n\nEvery payload carries a `source: \"binance\" | \"local\"` flag. **Binance rows are display-only — §23 hard constraint.** User orders never match against them; they go to matching_service and match against local liquidity only.\n\nSee `../architecture.md` for the full subscribe protocol, room naming, disconnect handling, and frontend example.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "auth": {
+    "type": "bearer",
+    "bearer": [
+      {
+        "key": "token",
+        "value": "{{accessToken}}",
+        "type": "string"
+      }
+    ]
+  },
+  "item": [
+    {
+      "name": "Health",
+      "item": [
+        {
+          "name": "Healthz",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/healthz",
+              "host": ["{{baseUrl}}"],
+              "path": ["healthz"]
+            },
+            "description": "Kubernetes liveness probe. Always 200 once the HTTP server is up."
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Connectivity",
+      "item": [
+        {
+          "name": "Ping Binance",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/binance/ping",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "binance", "ping"]
+            },
+            "description": "Proxies Binance /api/v3/ping. 200 = Binance is reachable."
+          },
+          "response": []
+        },
+        {
+          "name": "Server Time",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/binance/time",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "binance", "time"]
+            },
+            "description": "Returns Binance server time in ms. Useful for clock-skew detection."
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Exchange",
+      "item": [
+        {
+          "name": "Exchange Info — all symbols",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/binance/exchangeInfo",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "binance", "exchangeInfo"]
+            },
+            "description": "Metadata for ALL Binance spot symbols. Cache for ≥1h on the frontend.\n\nResponse is large (~2MB). Use this once at app boot."
+          },
+          "response": []
+        },
+        {
+          "name": "Exchange Info — single symbol",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/binance/exchangeInfo?symbol={{symbol}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "binance", "exchangeInfo"],
+              "query": [
+                {
+                  "key": "symbol",
+                  "value": "{{symbol}}",
+                  "description": "Trading pair, e.g. BTCUSDT"
+                }
+              ]
+            },
+            "description": "Same as above but limited to one symbol. Use to validate order form filters (LOT_SIZE, PRICE_FILTER, MIN_NOTIONAL)."
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Market Data",
+      "item": [
+        {
+          "name": "Order Book — depth",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/binance/depth?symbol={{symbol}}&limit=100",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "binance", "depth"],
+              "query": [
+                {
+                  "key": "symbol",
+                  "value": "{{symbol}}",
+                  "description": "Trading pair"
+                },
+                {
+                  "key": "limit",
+                  "value": "100",
+                  "description": "5, 10, 20, 50, 100, 500, 1000, 5000"
+                }
+              ]
+            },
+            "description": "Order book snapshot. Use to seed the order book widget before subscribing to the live `depth` channel over Socket.IO."
+          },
+          "response": []
+        },
+        {
+          "name": "Recent Trades",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/binance/trades?symbol={{symbol}}&limit=50",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "binance", "trades"],
+              "query": [
+                {
+                  "key": "symbol",
+                  "value": "{{symbol}}",
+                  "description": "Trading pair"
+                },
+                {
+                  "key": "limit",
+                  "value": "50",
+                  "description": "Default 500, max 1000"
+                }
+              ]
+            },
+            "description": "Most recent public trades. Use to seed the Recent Trades widget before subscribing to the live `trade` channel."
+          },
+          "response": []
+        },
+        {
+          "name": "Aggregated Trades",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/binance/aggTrades?symbol={{symbol}}&limit=100",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "binance", "aggTrades"],
+              "query": [
+                {
+                  "key": "symbol",
+                  "value": "{{symbol}}"
+                },
+                {
+                  "key": "limit",
+                  "value": "100"
+                }
+              ]
+            },
+            "description": "Compressed trade feed (same-price/same-taker trades merged). Lower bandwidth than /trades."
+          },
+          "response": []
+        },
+        {
+          "name": "Klines — candlesticks",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/binance/klines?symbol={{symbol}}&interval=1m&limit=500",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "binance", "klines"],
+              "query": [
+                {
+                  "key": "symbol",
+                  "value": "{{symbol}}"
+                },
+                {
+                  "key": "interval",
+                  "value": "1m",
+                  "description": "1s, 1m, 3m, 5m, 15m, 30m, 1h, 2h, 4h, 6h, 8h, 12h, 1d, 3d, 1w, 1M"
+                },
+                {
+                  "key": "limit",
+                  "value": "500",
+                  "description": "Default 500, max 1000"
+                }
+              ]
+            },
+            "description": "Historical OHLCV. Use to render the price chart, then subscribe to the live `kline` channel with the same interval."
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Tickers",
+      "item": [
+        {
+          "name": "24h Ticker — single symbol",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/binance/ticker/24hr?symbol={{symbol}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "binance", "ticker", "24hr"],
+              "query": [
+                {
+                  "key": "symbol",
+                  "value": "{{symbol}}"
+                }
+              ]
+            },
+            "description": "24h rolling stats (price, change %, high, low, volume). Used for the symbol detail page header."
+          },
+          "response": []
+        },
+        {
+          "name": "24h Ticker — all symbols",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/binance/ticker/24hr",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "binance", "ticker", "24hr"]
+            },
+            "description": "Stats for every symbol on Binance in one round-trip. Used for the markets / watchlist table.\n\n⚠ Response is ~2000+ rows. Cache and update incrementally from the WS feed."
+          },
+          "response": []
+        },
+        {
+          "name": "Last Price — single symbol",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/binance/ticker/price?symbol={{symbol}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "binance", "ticker", "price"],
+              "query": [
+                {
+                  "key": "symbol",
+                  "value": "{{symbol}}"
+                }
+              ]
+            },
+            "description": "Just the last price. Lighter than /ticker/24hr."
+          },
+          "response": []
+        },
+        {
+          "name": "Last Price — all symbols",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/binance/ticker/price",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "binance", "ticker", "price"]
+            },
+            "description": "Last price for every symbol. Useful for portfolio valuation pages."
+          },
+          "response": []
+        },
+        {
+          "name": "Book Ticker — single symbol",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/binance/ticker/bookTicker?symbol={{symbol}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "binance", "ticker", "bookTicker"],
+              "query": [
+                {
+                  "key": "symbol",
+                  "value": "{{symbol}}"
+                }
+              ]
+            },
+            "description": "Best bid and best ask. Used by the buy/sell order form."
+          },
+          "response": []
+        },
+        {
+          "name": "Book Ticker — all symbols",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/binance/ticker/bookTicker",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "binance", "ticker", "bookTicker"]
+            },
+            "description": "Best bid/ask for every symbol."
+          },
+          "response": []
+        },
+        {
+          "name": "Average Price",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/binance/avgPrice?symbol={{symbol}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "binance", "avgPrice"],
+              "query": [
+                {
+                  "key": "symbol",
+                  "value": "{{symbol}}"
+                }
+              ]
+            },
+            "description": "5-minute weighted average price. Less manipulable than spot. Used for mark prices, TWAP calcs, PnL."
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Validation Errors (sanity tests)",
+      "item": [
+        {
+          "name": "Bad symbol → 422",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/binance/depth?symbol=BTC USDT&limit=10",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "binance", "depth"],
+              "query": [
+                {
+                  "key": "symbol",
+                  "value": "BTC USDT",
+                  "description": "Space → fails alphanumeric regex"
+                },
+                {
+                  "key": "limit",
+                  "value": "10"
+                }
+              ]
+            },
+            "description": "Should return 422 with `VALIDATION_ERROR` because the symbol contains a space."
+          },
+          "response": []
+        },
+        {
+          "name": "Bad interval → 422",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/binance/klines?symbol=BTCUSDT&interval=2m",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "binance", "klines"],
+              "query": [
+                {
+                  "key": "symbol",
+                  "value": "BTCUSDT"
+                },
+                {
+                  "key": "interval",
+                  "value": "2m",
+                  "description": "Not a valid Binance interval"
+                }
+              ]
+            },
+            "description": "Should return 422 — `2m` is not in the allowed enum."
+          },
+          "response": []
+        },
+        {
+          "name": "Missing required symbol → 422",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/binance/depth",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "binance", "depth"]
+            },
+            "description": "Should return 422 — `/depth` requires a symbol."
+          },
+          "response": []
+        }
+      ]
+    }
+  ],
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "type": "text/javascript",
+        "exec": [""]
+      }
+    },
+    {
+      "listen": "test",
+      "script": {
+        "type": "text/javascript",
+        "exec": [""]
+      }
+    }
+  ],
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:3002",
+      "type": "string"
+    },
+    {
+      "key": "symbol",
+      "value": "BTCUSDT",
+      "type": "string"
+    }
+  ]
+}

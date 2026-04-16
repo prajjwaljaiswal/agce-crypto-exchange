@@ -114,22 +114,6 @@ export function ForgotPassword() {
         <div className="form_block_login">
           <h2>Forgot Password</h2>
 
-          <div
-            style={{
-              background: 'rgba(255, 200, 0, 0.12)',
-              border: '1px solid rgba(255, 200, 0, 0.35)',
-              borderRadius: 8,
-              padding: '10px 12px',
-              marginBottom: 14,
-              fontSize: '0.85rem',
-              lineHeight: 1.4,
-            }}
-          >
-            <strong>Heads up:</strong> the password reset commit endpoint is not yet
-            available on the backend. You can receive and verify an OTP, but the new
-            password will not be saved until the backend ships the reset endpoint.
-          </div>
-
           <ul className="nav nav-tabs login-pills" id="myTab" role="tablist">
             <li className="nav-item" role="presentation">
               <button
