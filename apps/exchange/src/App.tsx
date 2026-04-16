@@ -43,6 +43,7 @@ import {
 import './App.css'
 import Trade from './features/Trade/index.js'
 import { SocketProvider } from './features/Trade/SocketContext.js'
+import Market from './features/Market/index.jsx'
 
 const NO_FOOTER_ROUTE_PREFIXES = [
   '/signup',
@@ -66,6 +67,10 @@ function AppInner() {
       <main>
         <Routes>
           <Route path="/" element={<LandingPage />} />
+          <Route
+            path="/market"
+            element={<SocketProvider><Market /></SocketProvider>}
+          />
           <Route path="/announcement" element={<Announcement />} />
           <Route
             path="/announcement_list/:title/:announce_title_id"

@@ -9737,6 +9737,24 @@ ul.user_social li {
     gap: 0px;
 }
 
+.afterloginheader .header_right .button_outer .login_btn.deposit-btn {
+    background: #fff;
+    color: #000000; }
+
+    .afterloginheader .header_right .button_outer .login_btn.deposit-btn:hover{ color: #000; }    
+
+    .afterloginheader .user_login.dashbtn a {
+        color: #0f0f0f;
+        background-color: transparent;
+        padding: 0px;
+        border: none; }
+
+.afterloginheader button.orderhder_btn{ border: none; background-color: transparent;  color: #fff; font-size: 12px; font-weight: 500;  }  
+.afterloginheader button.orderhder_btn i{    color: #84888C;
+    font-size: 15px;
+    position: relative;
+    left: -2px; }      
+
 .announcements_right a.announcement_item {
     display: flex;
     align-items: flex-start;
@@ -12478,8 +12496,17 @@ button.transfer_btn:hover {
 }
 
 .maindashboard .table-responsive {
-    max-height: 510px;
+    max-height: 370px;
 }
+
+.market_update_sec.market_update_table tr th span.select_change {
+    border: 1px solid #E9EBF0;
+    border-radius: 6px;
+    padding: 4px 8px;
+    margin-right: 4px;
+}
+
+.market_update_sec.market_update_table tr th span.select_change i{ color: #484B51; font-size: 14px; font-weight: 500; }
 
 .searchBar button {
     width: 18px;
@@ -14614,6 +14641,24 @@ table td.action_td {
     font-weight: 400;
     border: none;
     line-height: 2;
+}
+
+/* Market table headers: dotted line under label text only (#84888C) */
+.market_update_sec .table thead th .market_th_dotted_wrap {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    flex-wrap: nowrap;
+    vertical-align: middle;
+}
+
+.market_update_sec .table thead th span.dottedline {
+    display: inline-block;
+    color: #84888C;
+    border-bottom: 1px dotted #84888C;
+    padding-bottom: 2px;
+    line-height: 1.25;
+    text-decoration: none;
 }
 
 
