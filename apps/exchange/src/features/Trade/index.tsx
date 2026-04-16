@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useMemo, useRef, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import moment from "moment";
 import { alertErrorMessage, alertSuccessMessage } from "./CustomAlertMessage";
 import TVChartContainer from "./Libraries/TVChartContainer/index.jsx";
@@ -8,328 +8,28 @@ import { ProfileContext } from "../../context/ProfileProvider.js";
 import { usePlatformStatus } from "../../context/PlatformStatusProvider.js";
 import { SocketContext } from "./SocketContext.js";
 import { Helmet } from "react-helmet-async";
-
-const STATIC_PAIR = {
-    _id: "pair-btc-usdt",
-    base_currency_id: "btc-id",
-    quote_currency_id: "usdt-id",
-    base_currency: "BTC",
-    quote_currency: "USDT",
-    base_currency_fullname: "Bitcoin",
-    icon_path: "/images/icon/btc.png",
-    buy_price: 71959.5,
-    sell_price: 71960.0,
-    change_percentage: 1.82,
-    change: 1225.1,
-    high: 72500.0,
-    low: 71200.0,
-    volume: 1523.45,
-    volumeQuote: 104235000.2,
-    tick_size: 0.01,
-    step_size: 0.00001,
-    min_notional: 5,
-    min_order_qty: 0.00001,
-    max_order_qty: 9000,
-    maker_fee: 0.1,
-    taker_fee: 0.1,
-};
-
-const STATIC_PAIRS = [
-    STATIC_PAIR,
-    { ...STATIC_PAIR, _id: "pair-eth-usdt", base_currency: "ETH", base_currency_fullname: "Ethereum", buy_price: 3521.75, sell_price: 3522.2, change_percentage: -0.65, change: -22.8 },
-    { ...STATIC_PAIR, _id: "pair-bnb-usdt", base_currency: "BNB", base_currency_fullname: "Binance Coin", buy_price: 602.1, sell_price: 602.4, change_percentage: 0.42, change: 2.5 },
-    { ...STATIC_PAIR, _id: "pair-sol-usdt", base_currency: "SOL", base_currency_fullname: "Solana", buy_price: 162.22, sell_price: 162.33, change_percentage: 3.14, change: 4.94 },
-    { ...STATIC_PAIR, _id: "pair-xrp-usdt", base_currency: "XRP", base_currency_fullname: "Ripple", buy_price: 0.624, sell_price: 0.625, change_percentage: -1.2, change: -0.008 },
-    { ...STATIC_PAIR, _id: "pair-ada-usdt", base_currency: "ADA", base_currency_fullname: "Cardano", buy_price: 0.445, sell_price: 0.446, change_percentage: 0.86, change: 0.004 },
-    { ...STATIC_PAIR, _id: "pair-doge-usdt", base_currency: "DOGE", base_currency_fullname: "Dogecoin", buy_price: 0.153, sell_price: 0.154, change_percentage: 2.01, change: 0.003 },
-    { ...STATIC_PAIR, _id: "pair-dot-usdt", base_currency: "DOT", base_currency_fullname: "Polkadot", buy_price: 8.24, sell_price: 8.26, change_percentage: -0.44, change: -0.04 },
-    { ...STATIC_PAIR, _id: "pair-link-usdt", base_currency: "LINK", base_currency_fullname: "Chainlink", buy_price: 17.83, sell_price: 17.85, change_percentage: 1.1, change: 0.19 },
-    { ...STATIC_PAIR, _id: "pair-matic-usdt", base_currency: "MATIC", base_currency_fullname: "Polygon", buy_price: 0.982, sell_price: 0.984, change_percentage: -0.33, change: -0.003 },
-    { ...STATIC_PAIR, _id: "pair-ltc-usdt", base_currency: "LTC", base_currency_fullname: "Litecoin", buy_price: 92.18, sell_price: 92.26, change_percentage: 0.73, change: 0.67 },
-    { ...STATIC_PAIR, _id: "pair-avax-usdt", base_currency: "AVAX", base_currency_fullname: "Avalanche", buy_price: 35.72, sell_price: 35.8, change_percentage: 1.55, change: 0.54 },
-    { ...STATIC_PAIR, _id: "pair-trx-usdt", base_currency: "TRX", base_currency_fullname: "TRON", buy_price: 0.124, sell_price: 0.125, change_percentage: 0.92, change: 0.001 },
-    { ...STATIC_PAIR, _id: "pair-uni-usdt", base_currency: "UNI", base_currency_fullname: "Uniswap", buy_price: 10.14, sell_price: 10.16, change_percentage: -0.58, change: -0.06 },
-    { ...STATIC_PAIR, _id: "pair-atom-usdt", base_currency: "ATOM", base_currency_fullname: "Cosmos", buy_price: 12.87, sell_price: 12.9, change_percentage: 1.24, change: 0.16 },
-    { ...STATIC_PAIR, _id: "pair-near-usdt", base_currency: "NEAR", base_currency_fullname: "NEAR Protocol", buy_price: 6.73, sell_price: 6.75, change_percentage: -0.71, change: -0.05 },
-];
-
-const STATIC_BUY_ORDERS = [
-    { price: 71959.5, quantity: 12.140643, remaining: 12.140643 },
-    { price: 71959.4, quantity: 2.31, remaining: 2.31 },
-    { price: 71959.3, quantity: 0.88, remaining: 0.88 },
-    { price: 71959.2, quantity: 4.12, remaining: 4.12 },
-    { price: 71959.1, quantity: 0.45, remaining: 0.45 },
-    { price: 71959.0, quantity: 1.9, remaining: 1.9 },
-    { price: 71958.8, quantity: 0.33, remaining: 0.33 },
-    { price: 71958.5, quantity: 3.2, remaining: 3.2 },
-    { price: 71958.0, quantity: 0.62, remaining: 0.62 },
-    { price: 71957.5, quantity: 1.05, remaining: 1.05 },
-    { price: 71957.0, quantity: 0.71, remaining: 0.71 },
-    { price: 71956.5, quantity: 2.44, remaining: 2.44 },
-    { price: 71956.0, quantity: 0.29, remaining: 0.29 },
-    { price: 71955.5, quantity: 1.12, remaining: 1.12 },
-    { price: 71955.0, quantity: 0.5, remaining: 0.5 },
-    { price: 71954.0, quantity: 3.8, remaining: 3.8 },
-    { price: 71953.0, quantity: 0.17, remaining: 0.17 },
-    { price: 71952.0, quantity: 0.94, remaining: 0.94 },
-    { price: 71951.0, quantity: 2.6, remaining: 2.6 },
-    { price: 71950.0, quantity: 1.33, remaining: 1.33 },
-];
-
-const STATIC_SELL_ORDERS = [
-    { price: 71965.0, quantity: 0.63642, remaining: 0.63642 },
-    { price: 71964.5, quantity: 0.22, remaining: 0.22 },
-    { price: 71964.0, quantity: 1.05, remaining: 1.05 },
-    { price: 71963.5, quantity: 0.41, remaining: 0.41 },
-    { price: 71963.0, quantity: 2.18, remaining: 2.18 },
-    { price: 71962.5, quantity: 0.09, remaining: 0.09 },
-    { price: 71962.0, quantity: 0.77, remaining: 0.77 },
-    { price: 71961.5, quantity: 1.44, remaining: 1.44 },
-    { price: 71961.0, quantity: 0.33, remaining: 0.33 },
-    { price: 71960.5, quantity: 0.58, remaining: 0.58 },
-    { price: 71960.0, quantity: 3.1, remaining: 3.1 },
-    { price: 71959.9, quantity: 0.12, remaining: 0.12 },
-    { price: 71959.8, quantity: 0.95, remaining: 0.95 },
-    { price: 71959.7, quantity: 1.66, remaining: 1.66 },
-    { price: 71959.6, quantity: 0.51, remaining: 0.51 },
-];
-
-const ORDER_BOOK_AGG_OPTIONS = [0.1, 0.5, 1, 10, 100];
-function formatOrderBookNotionalShort(notional: unknown) {
-    const n = Number(notional);
-    if (!Number.isFinite(n)) return "0";
-    const abs = Math.abs(n);
-    if (abs >= 1e9) return `${(n / 1e9).toFixed(2)}B`;
-    if (abs >= 1e6) return `${(n / 1e6).toFixed(2)}M`;
-    if (abs >= 1e3) return `${(n / 1e3).toFixed(2)}K`;
-    if (abs >= 1) return n.toFixed(2);
-    return n.toFixed(4);
-}
-
-function roundPriceToAgg(price: unknown, agg: number) {
-    const n = Number(price);
-    if (!Number.isFinite(n) || !agg) return n;
-    return Math.round(n / agg) * agg;
-}
-
-function aggregateOrderBookRows(orders: { price: number; quantity: number; remaining: number }[] | undefined, agg: number) {
-    if (!orders?.length) return [];
-    const map = new Map();
-    for (const o of orders) {
-        const bucket = roundPriceToAgg(o.price, agg);
-        const prev = map.get(bucket);
-        if (prev) {
-            prev.quantity = (Number(prev.quantity) || 0) + (Number(o.quantity) || 0);
-            prev.remaining = (Number(prev.remaining) || 0) + (Number(o.remaining) || 0);
-        } else {
-            map.set(bucket, { ...o, price: bucket });
-        }
-    }
-    return Array.from(map.values());
-}
-
-/** Binance-style order book header: Price | Amount | Total + swap (columns can swap). */
-function OrderBookHeaderRow({ quoteCurrency, baseCurrency, swap, onSwap }: { quoteCurrency?: string; baseCurrency?: string; swap: boolean; onSwap: () => void }) {
-    const q = quoteCurrency || "USDT";
-    const b = baseCurrency || "BTC";
-    return (
-        <tr>
-            <th className="orderbook-th-sticky orderbook-th-price">Price ({q})</th>
-            {!swap ? (
-                <>
-                    <th className="orderbook-th-sticky text-center orderbook-th-amount">Amount ({b})</th>
-                    <th className="orderbook-th-sticky text-end orderbook-th-total">
-                        <span className="orderbook-th-total-inner">
-                            <span>Total ({q})</span>
-                            <button type="button" className="orderbook-col-swap-btn" onClick={onSwap} aria-label="Swap amount and total">
-                                <i className="ri-arrow-left-right-line" aria-hidden />
-                            </button>
-                        </span>
-                    </th>
-                </>
-            ) : (
-                <>
-                    <th className="orderbook-th-sticky text-end orderbook-th-total">
-                        <span className="orderbook-th-total-inner">
-                            <span>Total ({q})</span>
-                            <button type="button" className="orderbook-col-swap-btn" onClick={onSwap} aria-label="Swap amount and total">
-                                <i className="ri-arrow-left-right-line" aria-hidden />
-                            </button>
-                        </span>
-                    </th>
-                    <th className="orderbook-th-sticky text-center orderbook-th-amount">Amount ({b})</th>
-                </>
-            )}
-        </tr>
-    );
-}
-
-function OrderBookBidRow({ data, fill, rowTotal, swap, onRowClick, formatOrderBookAggPrice, formatQuantity, formatOrderBookNotionalShort }: { data: { price: number; remaining: number }; fill: number; rowTotal: number; swap: boolean; onRowClick: () => void; formatOrderBookAggPrice: (p: number) => string; formatQuantity: (q: number) => string | number; formatOrderBookNotionalShort: (n: unknown) => string }) {
-    const price = formatOrderBookAggPrice(data.price);
-    const amt = formatQuantity(data.remaining);
-    const depth = (
-        <>
-            <span className="orderbook-depth-fill orderbook-depth-fill--bid" style={{ width: `${fill}%` }} />
-            <span className="orderbook-depth-text">{formatOrderBookNotionalShort(rowTotal)}</span>
-        </>
-    );
-    const amountCell = <td className="text-center orderbook-col-num">{amt}</td>;
-    const totalCell = <td className="text-end orderbook-depth-cell orderbook-depth-cell--bid">{depth}</td>;
-    return (
-        <tr style={{ cursor: "pointer" }} onClick={onRowClick}>
-            <td className="orderbook-col-price orderbook-col-price--bid">{price}</td>
-            {!swap ? (
-                <>
-                    {amountCell}
-                    {totalCell}
-                </>
-            ) : (
-                <>
-                    {totalCell}
-                    {amountCell}
-                </>
-            )}
-        </tr>
-    );
-}
-
-function OrderBookAskRow({ data, fill, rowTotal, swap, onRowClick, formatOrderBookAggPrice, formatQuantity, formatOrderBookNotionalShort }: { data: { price: number; remaining: number }; fill: number; rowTotal: number; swap: boolean; onRowClick: () => void; formatOrderBookAggPrice: (p: number) => string; formatQuantity: (q: number) => string | number; formatOrderBookNotionalShort: (n: unknown) => string }) {
-    const price = formatOrderBookAggPrice(data.price);
-    const amt = formatQuantity(data.remaining);
-    const depth = (
-        <>
-            <span className="orderbook-depth-fill orderbook-depth-fill--ask" style={{ width: `${fill}%` }} />
-            <span className="orderbook-depth-text">{formatOrderBookNotionalShort(rowTotal)}</span>
-        </>
-    );
-    const amountCell = <td className="text-center orderbook-col-num">{amt}</td>;
-    const totalCell = <td className="text-end orderbook-depth-cell orderbook-depth-cell--ask">{depth}</td>;
-    return (
-        <tr style={{ cursor: "pointer" }} onClick={onRowClick}>
-            <td className="orderbook-col-price orderbook-col-price--ask">{price}</td>
-            {!swap ? (
-                <>
-                    {amountCell}
-                    {totalCell}
-                </>
-            ) : (
-                <>
-                    {totalCell}
-                    {amountCell}
-                </>
-            )}
-        </tr>
-    );
-}
-
-/** accent: "market" = green/red from last move; "bid"/"ask" = buy/sell tab colors (Binance-style) */
-function OrderBookMidPriceRow({
-    buyprice,
-    isPricePositive,
-    priceChange,
-    formatPriceThousands,
-    showChangePct = true,
-    afterList = false,
-    accent = "market",
-}: {
-    buyprice: number | string;
-    isPricePositive: boolean;
-    priceChange: number | string;
-    formatPriceThousands: (v: number | string) => string;
-    showChangePct?: boolean;
-    afterList?: boolean;
-    accent?: string;
-}) {
-    const useGreenAccent = accent === "bid" ? true : accent === "ask" ? false : isPricePositive;
-    return (
-        <div
-            className={`mrkt_trde_tab justify-content-between orderbook-mid-price orderbook-mid-price--ss ${afterList ? "orderbook-mid-price--after-list" : ""}`}
-        >
-            <div className="d-flex align-items-center gap-2 flex-wrap db_bl">
-                <b className={useGreenAccent ? "text-green orderbook-mid-main" : "text-danger orderbook-mid-main"}>{formatPriceThousands(buyprice)}</b>
-                <i className={`ri-arrow-${isPricePositive ? "up" : "down"}-line orderbook-mid-arrow ${useGreenAccent ? "text-green" : "text-danger"}`} />
-                <span className="text-muted orderbook-mid-usd">${formatPriceThousands(buyprice)}</span>
-                {showChangePct ? <span className="text-muted small orderbook-mid-pct">{Number(priceChange ?? 0).toFixed(2)}%</span> : null}
-            </div>
-            <div className="arrowright_icon">
-                <i className="ri-arrow-right-s-line" />
-            </div>
-        </div>
-    );
-}
-
-function OrderBookBidAskFooter({ bidPct, askPct }: { bidPct: number; askPct: number }) {
-    return (
-        <div className="orderbook_bid_ask_footer">
-            <div className="orderbook_bid_ask_labels">
-                <span className="text-green">B {bidPct.toFixed(2)}%</span>
-                <span className="text-danger">{askPct.toFixed(2)}% S</span>
-            </div>
-            <div className="orderbook_bid_ask_bar" aria-hidden>
-                <span style={{ flex: bidPct }} className="orderbook_bid_ask_seg orderbook_bid_ask_seg--bid" />
-                <span style={{ flex: askPct }} className="orderbook_bid_ask_seg orderbook_bid_ask_seg--ask" />
-            </div>
-        </div>
-    );
-}
-
-const STATIC_RECENT_TRADES = [
-    { side: "BUY", price: 71959.4, quantity: 0.032, time: "12:31:10" },
-    { side: "SELL", price: 71959.6, quantity: 0.018, time: "12:31:07" },
-    { side: "BUY", price: 71959.2, quantity: 0.141, time: "12:31:03" },
-    { side: "SELL", price: 71959.7, quantity: 0.222, time: "12:31:00" },
-    { side: "BUY", price: 71959.1, quantity: 0.054, time: "12:30:56" },
-    { side: "SELL", price: 71959.8, quantity: 0.009, time: "12:30:51" },
-    { side: "BUY", price: 71959.3, quantity: 0.087, time: "12:30:47" },
-    { side: "SELL", price: 71960.0, quantity: 0.14, time: "12:30:42" },
-    { side: "BUY", price: 71958.9, quantity: 0.31, time: "12:30:38" },
-    { side: "SELL", price: 71960.1, quantity: 0.026, time: "12:30:33" },
-    { side: "BUY", price: 71958.7, quantity: 0.19, time: "12:30:28" },
-    { side: "SELL", price: 71960.2, quantity: 0.073, time: "12:30:21" },
-    { side: "BUY", price: 71958.8, quantity: 0.064, time: "12:30:16" },
-    { side: "SELL", price: 71960.3, quantity: 0.011, time: "12:30:10" },
-    { side: "BUY", price: 71958.5, quantity: 0.233, time: "12:30:05" },
-    { side: "SELL", price: 71960.4, quantity: 0.059, time: "12:29:58" },
-    { side: "BUY", price: 71958.4, quantity: 0.44, time: "12:29:52" },
-    { side: "SELL", price: 71960.5, quantity: 0.017, time: "12:29:47" },
-    { side: "BUY", price: 71958.2, quantity: 0.128, time: "12:29:41" },
-    { side: "SELL", price: 71960.6, quantity: 0.035, time: "12:29:36" },
-    { side: "BUY", price: 71958.0, quantity: 0.29, time: "12:29:31" },
-    { side: "SELL", price: 71960.8, quantity: 0.022, time: "12:29:24" },
-];
-
-const STATIC_OPEN_ORDERS = [
-    { _id: "o1", side: "BUY", order_type: "LIMIT", price: 68150, quantity: 0.25, remaining: 0.25, filled: 0, updatedAt: "2026-04-14T10:15:00Z" },
-    { _id: "o2", side: "SELL", order_type: "LIMIT", price: 69300, quantity: 0.1, remaining: 0.06, filled: 0.04, updatedAt: "2026-04-14T10:10:00Z" },
-];
-
-const STATIC_ORDER_HISTORY = [
-    { _id: "h1", side: "BUY", status: "FILLED", order_type: "LIMIT", pay_currency: "USDT", ask_currency: "BTC", price: 67600, avg_execution_price: 67605, quantity: 0.35, remaining: 0, total_fee: 2.1, updatedAt: "2026-04-13T09:11:00Z", executed_prices: [{ price: 67605, quantity: 0.35, fee: 2.1 }] },
-    { _id: "h2", side: "SELL", status: "FILLED", order_type: "LIMIT", pay_currency: "BTC", ask_currency: "USDT", price: 68850, avg_execution_price: 68840, quantity: 0.2, remaining: 0, total_fee: 1.8, updatedAt: "2026-04-12T14:50:00Z", executed_prices: [{ price: 68840, quantity: 0.2, fee: 1.8 }] },
-];
-
-const STATIC_SPOT_WALLETS = [
-    { _id: "w-btc", short_name: "BTC", full_name: "Bitcoin", icon_path: "/images/icon/btc.png", balance: 12345676 },
-    { _id: "w-eth", short_name: "ETH", full_name: "Ethereum", icon_path: "/images/icon/eth.png", balance: 8842.12 },
-    { _id: "w-sol", short_name: "SOL", full_name: "Solana", icon_path: "/images/icon/sol.png", balance: 190.5 },
-];
-
-const SPOT_OPEN_ORDER_KINDS = [
-    { id: "limit_market", label: "Limit / Market" },
-    { id: "conditional", label: "Conditional" },
-    { id: "tpsl", label: "TP/SL" },
-    { id: "twap", label: "TWAP" },
-    { id: "iceberg", label: "Iceberg Pro" },
-    { id: "loop", label: "Loop Order" },
-    { id: "trailing", label: "Trailing Stop" },
-];
+import {
+    SPOT_OPEN_ORDER_KINDS,
+    ORDER_BOOK_AGG_OPTIONS,
+} from "./constants/uiOptions.js";
+import {
+    formatOrderBookNotionalShort,
+    aggregateOrderBookRows,
+} from "./utils/orderBook.js";
+import {
+    OrderBookHeaderRow,
+    OrderBookBidRow,
+    OrderBookAskRow,
+    OrderBookMidPriceRow,
+    OrderBookBidAskFooter,
+} from "./components/OrderBook/OrderBookRows.js";
 
 const Trade = () => {
     const { getStatus } = usePlatformStatus();
     const isSpotDisabled = !getStatus('spot_trading').enabled;
     const token = localStorage.getItem('token');
     const [search, setsearch] = useState('');
-    const [AllData, setAllData] = useState<any>({});
+    const [AllData, _setAllData] = useState<any>({});
     const [BuyOrders, setBuyOrders] = useState<any[]>([]);
     const [CoinPairDetails, setCoinPairDetails] = useState<any[]>([]);
     const [RecentTrade, setRecentTrade] = useState<any[]>([]);
@@ -340,13 +40,13 @@ const Trade = () => {
     const [buySlippageInput, setBuySlippageInput] = useState("");
     const [infoPlaceOrder, setinfoPlaceOrder] = useState('LIMIT');
     const [coinFilter, setcoinFilter] = useState('ALL');
-    const [BuyCoinBal, setBuyCoinBal] = useState<number | undefined>();
-    const [SellCoinBal, setSellCoinBal] = useState<number | undefined>();
+    const [BuyCoinBal, _setBuyCoinBal] = useState<number | undefined>();
+    const [SellCoinBal, _setSellCoinBal] = useState<number | undefined>();
     const [openOrders, setopenOrders] = useState<any[]>([]);
     const [orderType, setorderType] = useState('All');
     const [pastOrderType, setpastOrderType] = useState('All');
     const [pastOrders, setpastOrders] = useState<any[]>([]);
-    const [pastOrder2, setpastOrder2] = useState<any[]>([]);
+    const [pastOrder2, _setpastOrder2] = useState<any[]>([]);
     const [favCoins, setfavCoins] = useState<string[]>([]);
     const [sellOrderPrice, setsellOrderPrice] = useState('');
     const [buyOrderPrice, setbuyOrderPrice] = useState('');
@@ -378,7 +78,7 @@ const Trade = () => {
     const [positionOrderTab, setPositionOrderTab] = useState("positions");
     const [openOrderKindTab, setOpenOrderKindTab] = useState("limit_market");
     const [showExecutedTrades, setShowExecutedTrades] = useState<Record<string, boolean>>({});
-    const [Coins, setCoins] = useState<any[]>([]);
+    const [Coins, _setCoins] = useState<any[]>([]);
     const [expandedRowIndex, setExpandedRowIndex] = useState<number | null>(null);
     const [showMobileFavouritesPopup, setShowMobileFavouritesPopup] = useState(false);
     const [isFavouritesOpen, setIsFavouritesOpen] = useState(false);
@@ -392,13 +92,28 @@ const Trade = () => {
     /** Swap Amount ↔ Total column order (Binance-style). */
     const [orderBookSwapAmountTotal, setOrderBookSwapAmountTotal] = useState(false);
     const [priceFieldFocus, setPriceFieldFocus] = useState<string | null>(null);
-    const [spotWallets, setSpotWallets] = useState<any[]>([]);
+    const [spotWallets, _setSpotWallets] = useState<any[]>([]);
     const [walletsLoading, setWalletsLoading] = useState(false);
     const navigate = useNavigate()
+    const { trade: tradeParam } = useParams<{ trade?: string }>();
     const { getSocket, isConnected } = useContext(SocketContext);
     // Keep a stable ref to buyprice so the socket handler can compare without re-subscribing
     const buypriceRef = useRef(buyprice);
     useEffect(() => { buypriceRef.current = buyprice; }, [buyprice]);
+
+    // Derive SelectedCoin from the URL param (e.g. /trade/BTC_USDT). Preserves
+    // a richer object when the current selection already matches the URL so
+    // pair-list clicks (which set tick_size, fees, icon, etc.) aren't clobbered
+    // by a minimal replacement when navigate() fires.
+    useEffect(() => {
+        const raw = tradeParam || 'BTC_USDT';
+        const [base, quote] = raw.split('_');
+        if (!base || !quote) return;
+        setSelectedCoin((prev: any) => {
+            if (prev?.base_currency === base && prev?.quote_currency === quote) return prev;
+            return { base_currency: base, quote_currency: quote };
+        });
+    }, [tradeParam]);
 
     // ********* Real-time market data via Socket.IO ********** //
     useEffect(() => {
@@ -546,31 +261,6 @@ const Trade = () => {
     }, [orderBookAggOpen]);
 
     useEffect(() => {
-        setCoinPairDetails(STATIC_PAIRS);
-        setAllData({ pairs: STATIC_PAIRS });
-        setCoins([
-            { short_name: "BTC", description: "Bitcoin showcase data", links: [] },
-            { short_name: "ETH", description: "Ethereum showcase data", links: [] },
-            { short_name: "BNB", description: "BNB showcase data", links: [] },
-        ]);
-        setSelectedCoin(STATIC_PAIR);
-        setbuyprice(STATIC_PAIR.buy_price);
-        setsellPrice(STATIC_PAIR.sell_price);
-        setpriceChange(STATIC_PAIR.change_percentage);
-        setChangesHour(STATIC_PAIR.change);
-        setpriceHigh(STATIC_PAIR.high);
-        setpriceLow(STATIC_PAIR.low);
-        setvolume(STATIC_PAIR.volume);
-        setBuyOrders(STATIC_BUY_ORDERS);
-        setSellOrders(STATIC_SELL_ORDERS);
-        setRecentTrade(STATIC_RECENT_TRADES);
-        setopenOrders(STATIC_OPEN_ORDERS);
-        setpastOrders(STATIC_ORDER_HISTORY);
-        setpastOrder2(STATIC_ORDER_HISTORY);
-        setBuyCoinBal(12500.45);
-        setSellCoinBal(0.67234589);
-        setfavCoins([STATIC_PAIR._id]);
-        setSpotWallets(STATIC_SPOT_WALLETS);
         setloader(false);
     }, []);
 
@@ -647,16 +337,8 @@ const Trade = () => {
 
 
 
-    const fetchSpotWallets = async () => {
-        setWalletsLoading(true);
-        setSpotWallets(STATIC_SPOT_WALLETS);
-        setWalletsLoading(false);
-    };
-
     useEffect(() => {
         window.scrollTo({ top: 0, behavior: 'smooth' });
-        fetchSpotWallets();
-        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
 
@@ -677,6 +359,12 @@ const Trade = () => {
 
     const handleAddFav = async (pairId: string) => {
         setfavCoins((prev) => (prev.includes(pairId) ? prev.filter((id) => id !== pairId) : [...prev, pairId]));
+    };
+
+    const fetchSpotWallets = async () => {
+        setWalletsLoading(true);
+        // TODO: wire real wallet fetch
+        setWalletsLoading(false);
     };
 
 
@@ -709,11 +397,6 @@ const Trade = () => {
         setbuyamount(1);
         setsellAmount(1);
         setExpandedRowIndex(null);
-        // Show static placeholder data immediately — socket subscription useEffect
-        // will push live data as soon as it arrives and clear the loader.
-        setBuyOrders(STATIC_BUY_ORDERS);
-        setSellOrders(STATIC_SELL_ORDERS);
-        setRecentTrade(STATIC_RECENT_TRADES);
         let filteredData = Coins?.filter((item) => item?.short_name === data?.base_currency)[0]
         setDesAndLinks({ ...filteredData })
     };

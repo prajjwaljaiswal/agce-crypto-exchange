@@ -1,5 +1,7 @@
 import { createElement, createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
 import { io } from 'socket.io-client';
+import { useAuth } from '../../providers/AuthProvider.js';
+import { tokenStore } from '../../lib/tokenStore.js';
 
 /**
  * Extract origin from a URL string, stripping any pathname.
@@ -27,17 +29,28 @@ export const SocketContext = createContext({
 export function SocketProvider({ children }) {
   const socketRef = useRef(null);
   const [isConnected, setIsConnected] = useState(false);
+  const { isAuthenticated, status } = useAuth();
 
   useEffect(() => {
-    console.log('[SocketProvider] Connecting to', MARKET_DATA_URL, 'path:', MARKET_DATA_PATH);
+    // Wait until auth status resolves before opening the socket — otherwise a
+    // guest connection opens on page load and gets torn down a beat later when
+    // /me succeeds. For authenticated users we need the access token at
+    // handshake time.
+    if (status === 'loading') return undefined;
 
-    const socket = io(MARKET_DATA_URL, {
+    const token = isAuthenticated ? tokenStore.getAccess() : null;
+    const opts = {
       path: MARKET_DATA_PATH,
       transports: ['websocket', 'polling'],
       reconnection: true,
       reconnectionAttempts: 10,
       reconnectionDelay: 2000,
-    });
+    };
+    if (token) opts.auth = { token };
+
+    console.log('[SocketProvider] Connecting to', MARKET_DATA_URL, 'path:', MARKET_DATA_PATH, 'authed:', Boolean(token));
+
+    const socket = io(MARKET_DATA_URL, opts);
 
     socket.on('connect', () => {
       console.log('[SocketProvider] Connected. id:', socket.id);
@@ -59,8 +72,9 @@ export function SocketProvider({ children }) {
       console.log('[SocketProvider] Cleaning up socket');
       socket.disconnect();
       socketRef.current = null;
+      setIsConnected(false);
     };
-  }, []);
+  }, [isAuthenticated, status]);
 
   // Stable reference — never changes, always returns current socket
   const getSocket = useCallback(() => socketRef.current, []);
