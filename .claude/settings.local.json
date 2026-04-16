@@ -10,7 +10,8 @@
       "Read(//c/projects/agce-ui/arab_global_exchange/src/customComponents/**)",
       "Bash(npx tsc:*)",
       "Bash(pnpm --filter @agce/exchange dev)",
-      "Bash(pnpm typecheck *)"
+      "Bash(pnpm --filter @agce/exchange lint)",
+      "Bash(pnpm lint *)"
     ]
   }
 }
