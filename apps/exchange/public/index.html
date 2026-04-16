@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" data-theme="dark">
+<html lang="en" data-theme="light">
 
 <head>
   <meta charset="utf-8" />
@@ -346,17 +346,9 @@
 
 <script>
   $(document).ready(function () {
-    if (localStorage.getItem("theme") === "light") {
-      $("body").addClass("light_theme");
-    }
-    $(".themecolor_icon").click(function () {
-      $("body").toggleClass("light_theme");
-      if ($("body").hasClass("light_theme")) {
-        localStorage.setItem("theme", "light");
-      } else {
-        localStorage.removeItem("theme");
-      }
-    });
+    $("body").addClass("light_theme");
+    localStorage.setItem("theme", "light");
+    $(".themecolor_icon").css({ "pointer-events": "none", opacity: 0.55 }).attr("aria-disabled", "true");
   });
 </script>
 
