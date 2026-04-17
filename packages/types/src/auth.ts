@@ -54,6 +54,7 @@ export interface RegisterResponse {
 export interface PasswordLoginPayload {
   identifier: string
   password: string
+  bindIp?: boolean
 }
 
 export interface TwoFactorChallenge {
@@ -75,6 +76,7 @@ export interface VerifyOtpPayload {
   identifier: string
   otp: string
   purpose: OtpPurpose
+  bindIp?: boolean
 }
 
 export interface RefreshTokenPayload {
@@ -85,8 +87,21 @@ export interface RefreshTokenPayload {
 // TODO(phase-3): remove once signup UI is wired directly to RegisterPayload + VerifyOtpPayload.
 export interface SignupPayload extends RegisterPayload {}
 
-// Shape returned by GET /api/v1/auth/me. Full fields TBD with backend.
-export type MeResponse = AuthUser
+// Shape returned by GET /api/v1/auth/me (unwrapped from data[0]).
+export interface MeResponse extends AuthUser {
+  email?: string
+  isRegistered?: boolean
+  isEmailVerified?: boolean
+  isPhoneVerified?: boolean
+  kycStatus?: string
+  kycLevel?: string
+  jurisdiction?: Jurisdiction | string
+  // Session metadata — populated by backend on /me. ISO-8601 timestamp
+  // (e.g. "2026-04-17T09:32:04.512Z") and IPv4/IPv6 string.
+  lastLoginAt?: string
+  lastLoginIp?: string
+  createdAt?: string
+}
 
 export interface AuthSession extends AuthTokens {
   userId: string

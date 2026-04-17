@@ -389,7 +389,10 @@ export function UserHeader() {
                       <i className="ri-download-2-line" />
                       Deposit
                     </button>
-                    <div className="user_login dashbtn">
+                    <div className="dashbtn">
+                      <button
+                        type="button"
+                        className="login_btn">  
                       <Link
                         to="/user_profile/dashboard"
                         className={isDashboardActive ? 'active' : ''}
@@ -397,6 +400,7 @@ export function UserHeader() {
                       >
                         Dashboard
                       </Link>
+                      </button>
                     </div>
                   </>
                 ) : (

@@ -49,7 +49,7 @@ export function ProfileLayout() {
 
   return (
     <>
-      <div className="mobile_view" id="toggleBtn" onClick={toggleActive}>
+      {/* <div className="mobile_view" id="toggleBtn" onClick={toggleActive}>
         <img
           src={pageIcon}
           alt={currentPage}
@@ -63,7 +63,7 @@ export function ProfileLayout() {
             <i className="ri-arrow-down-s-line" />
           </span>
         </div>
-      </div>
+      </div> */}
 
       <div className="dashboard">
         <div

@@ -97,7 +97,7 @@ header {
 }
 
 header .logo {
-    min-width: 268px;
+    min-width: 200px;
 }
 
 header .logo a {
@@ -9394,18 +9394,17 @@ ul.user_social li {
     margin: 2px !important;
 }
 
-.top_header_dash::before {
+/* .top_header_dash::before {
     position: absolute;
     right: 0px;
     bottom: 0px;
-    /* background-image: url(../images/top_header_dash_bular.svg); */
     background-size: contain;
     content: "";
     background-position: right;
     background-repeat: no-repeat;
     width: 219px;
     height: 100%;
-}
+} */
 
 .balance_chart_left h4 {
     font-size: 14px;
@@ -19307,7 +19306,7 @@ footer .container {
     }
 
     .listing_left_outer {
-        width: 76%;
+        width: 100%;
     }
 
 }
@@ -24358,8 +24357,8 @@ footer .container {
     }
 
     .themecolor_icon {
-        width: 23px;
-        height: 23px;
+        width: 30px;
+        height: 30px;
     }
 
     .profit_costs_cta_outer.costouterbg button.learnbtn {
@@ -27565,7 +27564,7 @@ footer .container {
     }
 
     .afterloginheader .header_right {
-        right: 34px;
+        /* right: 34px; */
         top: 9px;
         gap: 3px;
     }
@@ -27580,7 +27579,7 @@ footer .container {
     }
 
     .header_right {
-        right: 38px;
+        /* right: 38px; */
         top: 9px;
     }
 
@@ -29391,7 +29390,7 @@ footer .container {
     }
 
     .afterloginheader .navbar-toggler {
-        top: 3px;
+        /* top: 3px; */
     }
 
     header .logo {
@@ -29906,4 +29905,710 @@ body.light_theme .hero_section_main input:-moz-placeholder,
 body.light_theme .hero_section_main textarea:-moz-placeholder {
     color: #ffffff !important;
     opacity: 1 !important;
+}
+
+/* ──────────────────────────────────────────────────────────────
+   Dashboard — dark-mode overrides.
+   The baseline dashboard card styles were authored against a light
+   body: white card surfaces, dark text. In dark mode (default body
+   #181A20), containers without an explicit background (top header,
+   wallet snapshot, newcomer perks) left dark text sitting on a dark
+   body. These rules give each card a dark surface and lift the text
+   colour so every field in the dashboard is legible in dark mode
+   without touching light-mode output.
+   ────────────────────────────────────────────────────────────── */
+body:not(.light_theme) .top_header_dash {
+    background-color: #1F2227;
+    border: 1px solid #2A2E35;
+}
+body:not(.light_theme) .user_profile_cnt h3 {
+    color: #EAECEF;
+}
+
+body:not(.light_theme) .agcf h6 {
+    color: #FFF;
+}
+body:not(.light_theme) .top_header_dash .user_edit button {
+    background-color: #2B313C;
+    border-color: #363b45;
+    color: #EAECEF;
+}
+body:not(.light_theme) span.vip_level {
+    background-color: #2B313C;
+    color: #EAECEF;
+}
+body:not(.light_theme) span.low_level {
+    background-color: rgba(239, 68, 68, 0.15);
+    color: #FCA5A5;
+}
+body:not(.light_theme) span.subdel {
+    color: #A3A8B3;
+}
+body:not(.light_theme) .profile_id {
+    color: #EAECEF;
+}
+body:not(.light_theme) .profile_id .textprofile {
+    color: #EAECEF;
+}
+body:not(.light_theme) .profile_id span {
+    color: #848E9C;
+}
+body:not(.light_theme) .profile_id.kycstatus a {
+    color: #EAECEF;
+}
+
+/* Wallet snapshot card */
+body:not(.light_theme) .wallet_snapshot_bl {
+    background-color: #1F2227;
+    border: 1px solid #2A2E35;
+}
+body:not(.light_theme) .wallet_snapshot_bl_left {
+    border-right-color: #2A2E35;
+}
+body:not(.light_theme) .wallet_snapshot_bl p.copycode {
+    color: #EAECEF;
+}
+body:not(.light_theme) .wallet_snapshot_bl_right button {
+    background-color: #2B313C;
+    color: #EAECEF;
+    box-shadow: 0px 0px 20px #00000040;
+}
+
+/* Newcomer perks */
+body:not(.light_theme) .new_steps_crypto h3 {
+    color: #EAECEF;
+}
+body:not(.light_theme) .steps_block_dash {
+    background-color: #1F2227;
+    border-color: #2A2E35;
+    color: #A3A8B3;
+}
+body:not(.light_theme) .steps_block_dash.active {
+    background-color: #24272D;
+    color: #EAECEF;
+}
+body:not(.light_theme) .new_steps_crypto .steps_cnt ul li {
+    background-color: #2B313C;
+    color: #EAECEF;
+}
+
+/* Spot markets card (dashboard variant) */
+body:not(.light_theme) .market_section.maindashboard .top_heading h4 {
+    color: #EAECEF;
+}
+body:not(.light_theme) .market_section.maindashboard .dashboard_summary {
+    color: #EAECEF;
+}
+body:not(.light_theme) .market_section.maindashboard .dashboard_summary th {
+    color: #848E9C;
+}
+body:not(.light_theme) .market_section.maindashboard .dashboard_summary td,
+body:not(.light_theme) .market_section.maindashboard .dashboard_summary .price_heading {
+    color: #EAECEF;
+}
+body:not(.light_theme) .market_section.maindashboard .dashboard_summary .price_heading span {
+    color: #848E9C;
+}
+body:not(.light_theme) .market_section.maindashboard .dashboard_summary ul.nav-tabs li button {
+    color: #A3A8B3;
+}
+body:not(.light_theme) .market_section.maindashboard .dashboard_summary ul.nav-tabs li button.active {
+    color: #EAECEF;
+}
+body:not(.light_theme) .market_section.maindashboard .dashboard_summary td a {
+    color: #EAECEF;
+}
+
+/* Right-column cards: Referral + Security */
+body:not(.light_theme) .dashboard_right_cards .dashboard_simple_card {
+    border-color: #2A2E35;
+    box-shadow: 0px 10px 25px #00000040;
+}
+body:not(.light_theme) .dashboard_right_cards .dashboard_simple_card.referral_program_card {
+    background: #1F2227;
+}
+body:not(.light_theme) .dashboard_right_cards .dashboard_simple_card.security_center_card {
+    background: #15261c;
+    border-color: #1f4432;
+}
+body:not(.light_theme) .dashboard_right_cards .dash_card_header h4 {
+    color: #EAECEF;
+}
+body:not(.light_theme) .dashboard_right_cards .dash_card_desc {
+    color: #A3A8B3;
+}
+body:not(.light_theme) .dashboard_right_cards .dash_code_pill {
+    background: #2B313C;
+}
+body:not(.light_theme) .dashboard_right_cards .dash_code_text {
+    color: #EAECEF;
+}
+body:not(.light_theme) .dashboard_right_cards .dash_code_copy {
+    color: #A3A8B3;
+}
+body:not(.light_theme) .dashboard_right_cards .dash_outline_btn {
+    border-color: #363b45;
+    color: #EAECEF;
+}
+
+/* Announcements + Download app cards */
+body:not(.light_theme) .announcements_right .announcements_card {
+    background: #1F2227;
+    border-color: #2A2E35;
+    box-shadow: 0px 10px 25px #00000040;
+}
+body:not(.light_theme) .announcements_right .announcements_title i,
+body:not(.light_theme) .announcements_right .announcements_title h4 {
+    color: #EAECEF;
+}
+body:not(.light_theme) .announcements_right a.announcements_viewall {
+    color: #A3A8B3;
+}
+body:not(.light_theme) .announcements_right .announcement_item_title {
+    color: #EAECEF;
+}
+body:not(.light_theme) .announcements_right .announcement_item_time {
+    color: #848E9C;
+}
+body:not(.light_theme) .announcements_right a.announcement_item i.ri-arrow-right-s-line {
+    color: #A3A8B3;
+}
+body:not(.light_theme) .announcements_right .announcement_divider {
+    background: #2A2E35;
+}
+body:not(.light_theme) .features_block {
+    background: #1F2227;
+    border-color: #2A2E35;
+    box-shadow: 0px 10px 25px #00000040;
+}
+body:not(.light_theme) .block_features h5 {
+    color: #EAECEF;
+}
+body:not(.light_theme) .block_features p {
+    color: #A3A8B3;
+}
+
+/* Sidebar — inactive links ship with border:1px solid #fff, which renders
+   as a bright outline on dark. Drop the border in the idle state and only
+   show it on hover/active so the active item still gets its highlight. */
+body:not(.light_theme) .navi_sidebar li a {
+    border-color: transparent;
+}
+body:not(.light_theme) .navi_sidebar li a:hover {
+    border-color: #363b45;
+    background-color: #1F2227;
+}
+body:not(.light_theme) .navi_sidebar li button:hover {
+    background-color: #1F2227;
+    border-radius: 12px;
+}
+body:not(.light_theme) .navi_sidebar li.active a,
+body:not(.light_theme) .navi_sidebar li.active button {
+    background-color: #2B313C;
+    border-color: #363b45;
+    color: #ffffff;
+}
+
+/* Logout pill — baseline is a white button with black text. */
+body:not(.light_theme) .leftside_menu .logout_btn a {
+    background-color: #1F2227;
+    color: #EAECEF;
+    border: 1px solid #2A2E35;
+    border-radius: 8px;
+}
+
+/* VIP Services — cream/gold gradient turned into a dark gold-tinted card. */
+body:not(.light_theme) .vip_servies {
+    background: linear-gradient(145deg, #1F1C14 0%, #2A2317 60%, #1A1810 100%);
+    border: 1px solid #3a3019;
+    box-shadow: 0px 1px 10px #00000040;
+}
+body:not(.light_theme) .vip_servies h6 {
+    color: #EAECEF;
+}
+body:not(.light_theme) .vip_servies ul.vip_services_list li {
+    color: #C6CAD2;
+}
+body:not(.light_theme) .vip_servies ul.vip_services_list li::before {
+    background-color: #D1AA67;
+}
+body:not(.light_theme) .vip_servies button.vip_btn {
+    color: #1a1205;
+}
+
+/* ──────────────────────────────────────────────────────────────
+   Dashboard — responsive tweaks.
+   The baseline lays out the header-card as a two-column flex
+   (avatar + profile fields). At mid widths the 5-field strip
+   is too cramped to read. These rules progressively simplify
+   the layout, stack cards, and strip awkward flex rules so the
+   Dashboard stays usable on any viewport.
+   ────────────────────────────────────────────────────────────── */
+
+/* Baseline: the h3 (email) shouldn't be a flex container with
+   a 70px gap — it's a single text node. Drop the flex. */
+.user_profile_cnt h3 {
+    display: block;
+    gap: 0;
+}
+
+.d-flex.user_header_cnt_top {
+    flex-wrap: wrap;
+}
+
+.profile_id_s .profile_id {
+    flex: 0 0 auto;
+    white-space: nowrap;
+}
+
+.profile_id span {
+    white-space: nowrap;
+}
+
+/* ≤1440px — sidebar claims less padding; header card stacks so the
+   5-field strip can scroll horizontally with room to breathe. */
+@media screen and (max-width: 1440px) {
+    .dashboard_right {
+        padding-left: 280px;
+        padding-right: 24px;
+    }
+    .d-flex.user_header_cnt_top {
+        flex-direction: column;
+        align-items: stretch !important;
+        gap: 18px;
+    }
+    .profile_id_s {
+        width: 100%;
+    }
+    .dashboard_right_side {
+        width: 32%;
+    }
+}
+
+/* ≤1200px — tighter sidebar padding; wallet snapshot + perks shrink. */
+@media screen and (max-width: 1200px) {
+    .dashboard_right {
+        padding-left: 250px;
+        padding-right: 20px;
+    }
+    .wallet_snapshot_bl_left {
+        padding: 28px;
+    }
+    .wallet_snapshot_bl_right {
+        padding: 0 24px;
+    }
+    .wallet_snapshot_bl p.copycode {
+        font-size: 16px;
+        flex-wrap: wrap;
+        gap: 8px;
+    }
+    .steps_block_dash_outer {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    .top_header_dash {
+        padding: 22px;
+    }
+}
+
+/* ≤991px — sidebar collapses; content goes full width. Left + right
+   columns stack (already handled in the existing 991px block), but
+   align the header card and side widgets to the new single column. */
+@media screen and (max-width: 991px) {
+    .dashboard_right {
+        padding: 15px 20px 40px;
+    }
+    .dashboard_listing_section {
+        padding-right: 0;
+    }
+    .top_header_dash {
+        padding: 20px;
+    }
+    .wallet_snapshot_bl {
+        grid-template-columns: 1fr;
+    }
+    .wallet_snapshot_bl_left {
+        border-right: none;
+        border-bottom: 1px solid #2A2E35;
+        padding: 24px;
+    }
+    .wallet_snapshot_bl_right {
+        padding: 18px 24px 24px;
+        justify-content: flex-start;
+        gap: 14px;
+    }
+    body.light_theme .wallet_snapshot_bl_left {
+        border-bottom-color: #f0f0f0;
+    }
+    .dashboard_right_side {
+        width:100%;
+        margin-top: 20px;
+    }
+    .dashboard_right_cards {
+        flex-direction: row;
+        flex-wrap: wrap;
+    }
+    .dashboard_right_cards .dashboard_simple_card {
+        flex: 1 1 260px;
+    }
+}
+
+/* ≤767px — phones. Single-column everywhere; comfortable padding. */
+@media screen and (max-width: 767px) {
+    .dashboard_right {
+        padding: 12px 14px 40px;
+    }
+    .top_header_dash {
+        padding: 16px;
+        gap: 16px;
+    }
+    .d-flex.user_header_cnt_top {
+        gap: 14px;
+    }
+    .user_profile {
+        gap: 14px;
+    }
+    .user_profile_cnt h3 {
+        font-size: 17px;
+    }
+    .top_header_dash .d-flex.sublevels {
+        flex-wrap: wrap;
+        gap: 6px !important;
+    }
+    .profile_id_s {
+        gap: 18px;
+    }
+    .wallet_snapshot_bl_left {
+        padding: 20px;
+    }
+    .wallet_snapshot_bl_left span {
+        font-size: 13px;
+    }
+    .wallet_snapshot_bl p.copycode {
+        font-size: 15px;
+        gap: 6px;
+    }
+    .wallet_snapshot_bl_right {
+        padding: 14px 20px 20px;
+        flex-wrap: wrap;
+        gap: 10px !important;
+    }
+    .wallet_snapshot_bl_right button {
+        font-size: 14px;
+        padding: 6px 18px 6px 8px;
+    }
+    .wallet_snapshot_bl_right button i {
+        width: 32px;
+        height: 32px;
+        font-size: 18px;
+    }
+    .steps_block_dash_outer {
+        grid-template-columns: 1fr;
+    }
+    .new_steps_crypto {
+        padding: 20px;
+    }
+    .new_steps_crypto h3 {
+        font-size: 20px;
+    }
+    .new_steps_crypto .steps_cnt {
+        width: 100%;
+    }
+    .steps_block_dash {
+        min-height: auto;
+        padding-bottom: 64px;
+    }
+    .dashboard_right_cards {
+        flex-direction: column;
+    }
+    .dashboard_right_cards .dashboard_simple_card {
+        flex: 1 1 auto;
+    }
+    .announcements_right,
+    .new_features_s,
+    .vip_servies {
+        margin-top: 16px;
+    }
+    .market_section.maindashboard .top_heading h4 {
+        font-size: 18px;
+    }
+}
+
+/* ≤480px — very small phones. Horizontal action row for wallet and
+   slightly more compact text. */
+@media screen and (max-width: 480px) {
+    .user_profile_cnt h3 {
+        font-size: 15px;
+    }
+    .wallet_snapshot_bl_right {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    .wallet_snapshot_bl_right button {
+        justify-content: flex-start;
+        width: 100%;
+    }
+}
+
+/* ──────────────────────────────────────────────────────────────
+   Final overrides — the baseline dashboard grids
+   (repeat(3,1fr) for perks, repeat(2,1fr) for wallet) sit in
+   the cascade ahead of their overrides in some deployments, so
+   we force the breakpoint values with !important here. Important
+   is deliberate: without it, a hot-reload or ordered merge can
+   leave perks in 3-col at phone widths.
+   ────────────────────────────────────────────────────────────── */
+@media screen and (max-width: 1200px) {
+    .steps_block_dash_outer {
+        grid-template-columns: repeat(2, 1fr) !important;
+    }
+}
+@media screen and (max-width: 991px) {
+    .wallet_snapshot_bl {
+        grid-template-columns: 1fr !important;
+    }
+}
+@media screen and (max-width: 767px) {
+    .steps_block_dash_outer {
+        grid-template-columns: 1fr !important;
+    }
+}
+
+/* ──────────────────────────────────────────────────────────────
+   Header — mobile/tablet action row. Baseline icon boxes are
+   ~26px, which is below the iOS/Android recommended 44px touch
+   target. Enlarge the icon, expand the hit area, and restore the
+   Dashboard + Deposit pills which get stripped to transparent/dark
+   text by an existing @767px rule.
+   ────────────────────────────────────────────────────────────── */
+@media screen and (max-width: 991px) {
+    .icon_notificaton_r ul {
+        gap: 10px;
+        align-items: center;
+    }
+    .icon_notificaton_r ul li {
+        padding: 0 4px;
+        min-width: 42px;
+        min-height: 42px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    .icon_notificaton_r ul li > svg {
+        width: 28px !important;
+        height: 28px !important;
+    }
+    .icon_notificaton_r ul li.downloadtabs > img {
+        width: 26px;
+        height: 26px;
+    }
+    .icon_notificaton_r ul li.themetbs {
+        width: 42px;
+        min-width: 42px;
+        height: 42px;
+        border-radius: 50%;
+    }
+    .icon_notificaton_r ul li.themetbs i {
+        font-size: 22px;
+    }
+    a.search_icon {
+        min-width: 42px;
+        min-height: 42px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+    }
+    a.search_icon i {
+        font-size: 22px;
+    }
+    .navbar-toggler {
+        padding: 8px;
+        min-width: 44px;
+        min-height: 44px;
+    }
+    .navbar-toggler .navbar-toggler-icon {
+        width: auto;
+        height: auto;
+    }
+    .navbar-toggler .navbar-toggler-icon img {
+        width: 32px;
+        height: 32px;
+    }
+
+    /* Header right: keep Deposit + Dashboard pills legible (baseline
+       mobile rule makes them transparent + near-black text, invisible
+       in dark mode). */
+    .afterloginheader .header_right .button_outer .login_btn.deposit-btn {
+        background: #ffffff;
+        color: #000000;
+        padding: 6px 14px;
+        border-radius: 999px;
+        font-size: 13px;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+    }
+    .afterloginheader .user_login.dashbtn a {
+        background-color: #2B313C;
+        color: #EAECEF;
+        padding: 6px 14px;
+        border: 1px solid #363b45;
+        border-radius: 999px;
+        font-size: 13px;
+        display: inline-flex;
+        align-items: center;
+    }
+    body.light_theme .afterloginheader .user_login.dashbtn a {
+        background-color: #ffffff;
+        color: #0f0f0f;
+        border-color: #e2e5ea;
+    }
+
+    .header_right .button_outer {
+        gap: 10px;
+        flex-wrap: wrap;
+    }
+}
+
+/* ≤576px — compact phone: hide the Download app icon (it's already
+   inside the mobile menu) and tighten gaps so the notification, wallet,
+   theme, hamburger row fits without overflow. */
+@media screen and (max-width: 576px) {
+    .icon_notificaton_r ul li.downloadtabs {
+        display: none;
+    }
+    .icon_notificaton_r ul {
+        gap: 6px;
+    }
+    .icon_notificaton_r ul li {
+        min-width: 40px;
+        min-height: 40px;
+    }
+    .icon_notificaton_r ul li > svg {
+        width: 24px !important;
+        height: 24px !important;
+    }
+    .afterloginheader .user_login.dashbtn a,
+    .afterloginheader .header_right .button_outer .login_btn.deposit-btn {
+        padding: 5px 12px;
+        font-size: 12px;
+    }
+    .header_right .button_outer {
+        gap: 6px;
+    }
+}
+
+/* ──────────────────────────────────────────────────────────────
+   Mobile header — stop overflow/crowding.
+   Existing mobile CSS positions .header_right as position:absolute
+   with a right offset that overlays the logo row (navbar-toggler is
+   also absolute top-right). That pattern is preserved here; we just
+   cap the logo width, shrink the icons/pills so they fit inside the
+   available slot between the logo and the hamburger, and hide the
+   search icon (duplicated in the sidebar).
+
+   Below 480px the Deposit pill is hidden — it remains reachable via
+   the Wallet dropdown and the sidebar.
+   ────────────────────────────────────────────────────────────── */
+@media screen and (max-width: 767px) {
+    header {
+        height: auto !important;
+        min-height: 56px;
+        padding: 8px 0 !important;
+    }
+    header .col-lg-2.logo_s {
+        max-width: 140px !important;
+        padding-left: 12px !important;
+    }
+    header .logo {
+        width: 100% !important;
+    }
+    header .logo .lightlogo,
+    header .logo .darklogo,
+    header .logo img:not(.eaglelogo) {
+        width: 85% !important;
+        /* max-width: 120px !important; */
+        height: auto !important;
+    }
+    header .logo img.eaglelogo {
+        width: 22px !important;
+    }
+    /* Keep absolute-positioning but tuck header_right inside viewport:
+       navbar-toggler already sits at right:6; give it 44px of clearance. */
+    .afterloginheader .header_right {
+        /* right: 48px !important;
+        top: 8px !important;
+        gap: 6px !important; */
+    }
+    .header_right .button_outer {
+        flex-wrap: nowrap !important;
+        gap: 6px !important;
+    }
+    /* Search icon duplicates Market-page search + mobile menu — hide
+       it on phones to free horizontal space. */
+    .header_right .button_outer .search_icon,
+    a.search_icon {
+        display: none !important;
+    }
+    .icon_notificaton_r ul {
+        gap: 4px !important;
+        align-items: center;
+    }
+    .icon_notificaton_r ul li {
+        width: auto !important;
+        min-width: 34px !important;
+        min-height: 34px !important;
+        padding: 0 2px !important;
+    }
+    .icon_notificaton_r ul li > svg {
+        width: 22px !important;
+        height: 22px !important;
+    }
+    .icon_notificaton_r ul li.themetbs {
+        width: 34px !important;
+        min-width: 34px !important;
+        height: 34px !important;
+    }
+    .icon_notificaton_r ul li.themetbs i {
+        font-size: 18px;
+    }
+    .navigation .navbar-toggler,
+    .afterloginheader .navbar-toggler {
+        /* padding: 4px !important; */
+        /* right: 8px !important; */
+        top: -2px !important;
+    }
+    .navigation .navbar-toggler img {
+        width: 22px !important;
+        height: 22px !important;
+    }
+    .afterloginheader .user_login.dashbtn a,
+    .afterloginheader .header_right .button_outer .login_btn.deposit-btn {
+        font-size: 11px !important;
+        padding: 4px 10px !important;
+        white-space: nowrap;
+        min-height: auto !important;
+    }
+}
+
+/* ≤480 — very narrow phones. Drop the Deposit pill. */
+@media screen and (max-width: 480px) {
+    .afterloginheader .header_right .button_outer .login_btn.deposit-btn {
+        display: none !important;
+    }
+    header .col-lg-2.logo_s {
+        max-width: 120px !important;
+    }
+    header .logo .lightlogo,
+    header .logo .darklogo,
+    header .logo img:not(.eaglelogo) {
+        width: 200px !important;
+        /* max-width: 100px !important; */
+    }
+    .afterloginheader .user_login.dashbtn a {
+        font-size: 11px !important;
+        padding: 4px 10px !important;
+    }
+    .afterloginheader .header_right {
+        right: 44px !important;
+    }
 }
