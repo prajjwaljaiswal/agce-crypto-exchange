@@ -122,3 +122,105 @@ body.light_theme .anti-phishing-header-close {
 body.light_theme .anti-phishing-header-close:hover {
   background: rgba(0, 0, 0, 0.14) !important;
 }
+
+/* ───────── Notifications page ───────── */
+.notifications-shell {
+  background: #1C1F27;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 12px;
+  padding: 20px 22px;
+  margin-top: 24px;
+}
+.notifications-title {
+  color: #fff;
+  font-size: 20px;
+  font-weight: 700;
+  margin: 0;
+}
+.notifications-subtitle {
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 13px;
+  margin: 2px 0 0;
+}
+.notifications-group-label {
+  color: rgba(255, 255, 255, 0.55);
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  margin: 18px 0 10px;
+}
+.notifications-empty {
+  color: rgba(255, 255, 255, 0.55);
+  text-align: center;
+  padding: 40px 0;
+  font-size: 13px;
+}
+.notif-card {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  color: #fff;
+  transition: background-color 0.15s ease, border-color 0.15s ease;
+}
+.notif-card:hover {
+  background: rgba(255, 255, 255, 0.05);
+  border-color: rgba(255, 255, 255, 0.1);
+}
+.notif-card-unread {
+  background: color-mix(in srgb, var(--color-primary, #D1AA67) 6%, transparent);
+  border-color: color-mix(in srgb, var(--color-primary, #D1AA67) 22%, transparent);
+}
+.notif-card-unread:hover {
+  background: color-mix(in srgb, var(--color-primary, #D1AA67) 9%, transparent);
+}
+.notif-title {
+  color: #fff;
+}
+.notif-desc {
+  color: rgba(255, 255, 255, 0.7);
+}
+.notif-time {
+  color: rgba(255, 255, 255, 0.45);
+}
+.notif-link-btn {
+  color: var(--color-primary, #D1AA67);
+}
+.notif-link-btn:hover {
+  filter: brightness(1.15);
+}
+
+/* Light theme */
+body.light_theme .notifications-shell {
+  background: #FFFFFF;
+  border-color: rgba(0, 0, 0, 0.08);
+}
+body.light_theme .notifications-title {
+  color: #0b0b0b;
+}
+body.light_theme .notifications-subtitle {
+  color: rgba(0, 0, 0, 0.6);
+}
+body.light_theme .notifications-group-label {
+  color: rgba(0, 0, 0, 0.55);
+}
+body.light_theme .notifications-empty {
+  color: rgba(0, 0, 0, 0.55);
+}
+body.light_theme .notif-card {
+  background: #FAFAFA;
+  border-color: rgba(0, 0, 0, 0.08);
+  color: #0b0b0b;
+}
+body.light_theme .notif-card:hover {
+  background: #F5F5F5;
+  border-color: rgba(0, 0, 0, 0.14);
+}
+body.light_theme .notif-title {
+  color: #0b0b0b;
+}
+body.light_theme .notif-desc {
+  color: rgba(0, 0, 0, 0.68);
+}
+body.light_theme .notif-time {
+  color: rgba(0, 0, 0, 0.5);
+}
