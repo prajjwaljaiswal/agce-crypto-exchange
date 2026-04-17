@@ -82,7 +82,7 @@ export function AntiPhishingSetCodeModal({
   })
 
   const removeCodeMutation = useMutation({
-    mutationFn: () => authApi.removeAntiPhishingCode({ otp }),
+    mutationFn: () => authApi.removeAntiPhishingCode({ code: existingCode, otp }),
     onSuccess: () => {
       toast.success('Anti-phishing code removed')
       queryClient.invalidateQueries({ queryKey: ['auth', 'me'] })
@@ -97,7 +97,8 @@ export function AntiPhishingSetCodeModal({
   const anyPending =
     setCodeMutation.isPending || removeCodeMutation.isPending
   const canSubmit = codeValid && otpValid && !anyPending
-  const canRemove = hasCode && otpValid && !anyPending
+  const canRemove =
+    hasCode && otpValid && existingCode.length > 0 && !anyPending
 
   const handleFormSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault()
@@ -526,7 +527,13 @@ export function AntiPhishingSetCodeModal({
               removeCodeMutation.mutate()
             }}
             disabled={!canRemove}
-            title={!otpValid ? 'Enter the 6-digit verification code to remove' : undefined}
+            title={
+              !existingCode
+                ? 'Your current anti-phishing code is unavailable — refresh and try again'
+                : !otpValid
+                  ? 'Enter the 6-digit verification code to remove'
+                  : undefined
+            }
             style={{
               width: '100%',
               backgroundColor: canRemove

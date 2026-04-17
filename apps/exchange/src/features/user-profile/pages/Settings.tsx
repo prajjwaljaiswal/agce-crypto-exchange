@@ -62,7 +62,7 @@ export function Settings() {
   return (
     <div className="dashboard_right">
       <ProfileSection onEditProfile={editProfile.open} />
-      <CurrencyPreferenceSection />
+      <CurrencyPreferenceSection initialCurrency={user?.preferredCurrency ?? 'USDT'} />
       <SecuritySection
         onChangePassword={passwordChange.open}
         onSetAntiPhishing={antiPhishingInfo.open}

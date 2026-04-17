@@ -1,5 +1,5 @@
-import { useState } from 'react'
-import { useMutation } from '@tanstack/react-query'
+import { useEffect, useState } from 'react'
+import { useMutation, useQueryClient } from '@tanstack/react-query'
 import toast from 'react-hot-toast'
 import { authApi } from '../../../../lib/auth-api.js'
 import { formatApiError } from '../../../../lib/errors.js'
@@ -32,12 +32,20 @@ interface Props {
 }
 
 export function CurrencyPreferenceSection({ initialCurrency = 'USDT', onSaved }: Props) {
+  const queryClient = useQueryClient()
   const [selected, setSelected] = useState(initialCurrency)
+
+  // /me loads async — when AuthProvider populates user.preferredCurrency,
+  // initialCurrency will change and we need to resync the local state.
+  useEffect(() => {
+    setSelected(initialCurrency)
+  }, [initialCurrency])
 
   const mutation = useMutation({
     mutationFn: (currency: string) => authApi.updatePreferredCurrency({ currency }),
     onSuccess: (_, currency) => {
       toast.success('Currency preference saved')
+      queryClient.invalidateQueries({ queryKey: ['auth', 'me'] })
       onSaved?.(currency)
     },
     onError: (error) => toast.error(formatApiError(error, 'Could not save currency preference.')),

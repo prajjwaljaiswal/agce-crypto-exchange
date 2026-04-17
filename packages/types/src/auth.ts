@@ -141,8 +141,9 @@ export interface SetAntiPhishingCodePayload {
 }
 
 // DELETE /api/v1/auth/anti-phishing-code — remove the user's anti-phishing code.
-// Also requires an OTP (ANTI_PHISHING type).
+// Requires an OTP (ANTI_PHISHING type) plus the current code as confirmation.
 export interface RemoveAntiPhishingCodePayload {
+  code: string
   otp: string
 }
 
