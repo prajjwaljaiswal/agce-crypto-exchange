@@ -3,10 +3,8 @@ import { Link, Outlet, useNavigate } from 'react-router-dom'
 import { useSidebarState } from '@agce/hooks'
 import { useAuth } from '../../providers/index.js'
 import { usePageTitle } from './hooks/usePageTitle.js'
-import {
-  isWalletPageTitle,
-  pageIconFromTitle,
-} from './hooks/pageTitleFromPath.js'
+import { isWalletPageTitle } from './hooks/pageTitleFromPath.js'
+import { LogoutConfirmModal } from './components/LogoutConfirmModal.js'
 
 type SectionKey = 'assets' | 'orders' | 'account'
 
@@ -21,18 +19,21 @@ export function ProfileLayout() {
 
   // TODO: replace with wallet types fetched from backend (ProfileContext)
   const [walletTypes] = useState<string[]>([])
+  const [logoutConfirmOpen, setLogoutConfirmOpen] = useState(false)
 
   const currentPage = usePageTitle()
   const isWalletPage = isWalletPageTitle(currentPage)
-  const pageIcon = pageIconFromTitle(currentPage)
 
   const { isActive, toggleActive, openSection, toggleSection } =
     useSidebarState<SectionKey>()
 
-  const handleLogout = () => {
+  const requestLogout = () => setLogoutConfirmOpen(true)
+  const confirmLogout = () => {
+    setLogoutConfirmOpen(false)
     logout()
     navigate('/', { replace: true })
   }
+  const cancelLogout = () => setLogoutConfirmOpen(false)
 
   const assetsActiveUl = currentPage === 'Overview' || isWalletPage
   const ordersActiveUl =
@@ -345,8 +346,19 @@ export function ProfileLayout() {
             </li>
           </ul>
 
-          <div className="logout_btn" onClick={handleLogout}>
-            <Link to="#/">
+          <div
+            className="logout_btn"
+            onClick={requestLogout}
+            role="button"
+            tabIndex={0}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault()
+                requestLogout()
+              }
+            }}
+          >
+            <Link to="#/" onClick={(e) => e.preventDefault()}>
               Logout
               <i className="ri-logout-circle-r-line" />
             </Link>
@@ -354,6 +366,12 @@ export function ProfileLayout() {
         </div>
         <Outlet />
       </div>
+
+      <LogoutConfirmModal
+        open={logoutConfirmOpen}
+        onConfirm={confirmLogout}
+        onCancel={cancelLogout}
+      />
     </>
   )
 }

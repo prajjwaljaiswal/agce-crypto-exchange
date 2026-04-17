@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
+import toast from 'react-hot-toast'
 
 export function RegistrationVerification() {
   const { authenticationToken } = useParams<{ authenticationToken: string }>()
@@ -28,15 +29,15 @@ export function RegistrationVerification() {
   }, [timer])
 
   const handleGetOtp = () => {
-    alert('OTP sent!')
+    toast.success('OTP sent!')
     setDisableBtn(true)
     setTimer(60)
     setAttemptLeft('3')
   }
 
   const handleVerify = () => {
-    if (otp.length < 5) { alert('Invalid OTP'); return }
-    alert('Account verified!')
+    if (otp.length < 5) { toast.error('Invalid OTP'); return }
+    toast.success('Account verified!')
     navigate(`/account-activate/${authenticationToken ?? 'demo'}`)
   }
 

@@ -1,5 +1,6 @@
 import { useGoogleLogin } from '@react-oauth/google'
 import { useMutation } from '@tanstack/react-query'
+import toast from 'react-hot-toast'
 import { mapInstanceToJurisdiction } from '@agce/config'
 import { useInstanceConfig } from '@agce/hooks'
 import type { LoginSuccess, RegisterResponse } from '@agce/types'
@@ -44,10 +45,10 @@ export function SocialLoginButtons({ dividerLabel, mode, onSuccess }: SocialLogi
       if (isLoginSuccess(response)) {
         handleTokens(response)
       } else {
-        alert('Google sign-in requires a verification step. Please use email/password login.')
+        toast.error('Google sign-in requires a verification step. Please use email/password login.')
       }
     },
-    onError: (error) => alert(formatApiError(error, 'Google sign-in failed.')),
+    onError: (error) => toast.error(formatApiError(error, 'Google sign-in failed.')),
   })
 
   const registerMutation = useMutation({
@@ -56,7 +57,7 @@ export function SocialLoginButtons({ dividerLabel, mode, onSuccess }: SocialLogi
     onSuccess: (response: RegisterResponse) => {
       handleTokens({ userId: response.userId, accessToken: response.accessToken, refreshToken: response.refreshToken })
     },
-    onError: (error) => alert(formatApiError(error, 'Google sign-up failed.')),
+    onError: (error) => toast.error(formatApiError(error, 'Google sign-up failed.')),
   })
 
   const isPending = loginMutation.isPending || registerMutation.isPending
@@ -70,7 +71,7 @@ export function SocialLoginButtons({ dividerLabel, mode, onSuccess }: SocialLogi
         loginMutation.mutate(code)
       }
     },
-    onError: () => alert('Google sign-in was cancelled or failed.'),
+    onError: () => toast.error('Google sign-in was cancelled or failed.'),
   })
 
   return (
@@ -89,7 +90,7 @@ export function SocialLoginButtons({ dividerLabel, mode, onSuccess }: SocialLogi
         <button
           type="button"
           className="signup-wizard-social-btn"
-          onClick={() => alert('Apple sign-in coming soon.')}
+          onClick={() => toast('Apple sign-in coming soon.')}
           aria-label="Apple"
         >
           <img src="/images/appleicon2.svg" alt="" />

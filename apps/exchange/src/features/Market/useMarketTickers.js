@@ -76,11 +76,15 @@ export function useMarketTickers() {
 
   useEffect(() => {
     const socket = getSocket()
+
+    console.log('[useMarketTickers] socket:', socket, 'isConnected:', isConnected)
+    
     if (!socket || !isConnected) return undefined
 
     socket.emit('subscribe', { channel: 'all_tickers' })
 
     const handleData = (event) => {
+      console.log('[useMarketTickers] received data:', event)
       if (!event || (event.channel !== 'all_tickers' && event.channel !== 'ticker')) return
       const payload = event.payload
       if (!payload) return

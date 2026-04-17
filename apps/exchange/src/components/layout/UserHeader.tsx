@@ -2,6 +2,7 @@ import { useCallback, useEffect, useRef, useState } from 'react'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { useAuth } from '../../providers/index.js'
 import { useTheme } from '../../providers/ThemeProvider.js'
+import { LogoutConfirmModal } from '../../features/user-profile/components/LogoutConfirmModal.js'
 import {
   BUY_CRYPTO_SUBMENU_ITEMS,
   TRADE_SUBMENU_ITEMS,
@@ -16,10 +17,11 @@ type DropdownKey = 'buy_crypto' | 'trade' | 'futures' | 'earning' | 'more' | 'do
 export function UserHeader() {
   const navigate = useNavigate()
   const location = useLocation()
-  const { isAuthenticated } = useAuth()
+  const { isAuthenticated, logout } = useAuth()
   const dropdownRef = useRef<HTMLDivElement>(null)
   const dropdownCloseTimerRef = useRef<number | null>(null)
   const downloadTimerRef = useRef<number | null>(null)
+  const [logoutConfirmOpen, setLogoutConfirmOpen] = useState(false)
 
   const { theme, toggleTheme } = useTheme()
   const isLightTheme = theme === 'light'
@@ -361,6 +363,28 @@ export function UserHeader() {
                         </span>
                       </Link>
                     </li>
+
+                    {/* Logout (mobile only — authenticated users) */}
+                    {isAuthenticated && (
+                      <li className="nav-item mbl nav-item--logout">
+                        <Link
+                          className="nav-link"
+                          to="/"
+                          onClick={(e) => {
+                            e.preventDefault()
+                            closeNavbar()
+                            setLogoutConfirmOpen(true)
+                          }}
+                          role="button"
+                          aria-label="Log out"
+                        >
+                          Logout{' '}
+                          <span>
+                            <i className="ri-logout-circle-r-line" />
+                          </span>
+                        </Link>
+                      </li>
+                    )}
                   </ul>
                 </div>
               </nav>
@@ -642,6 +666,16 @@ export function UserHeader() {
           </div>
         </div>
       </div>
+
+      <LogoutConfirmModal
+        open={logoutConfirmOpen}
+        onConfirm={() => {
+          setLogoutConfirmOpen(false)
+          logout()
+          navigate('/', { replace: true })
+        }}
+        onCancel={() => setLogoutConfirmOpen(false)}
+      />
     </header>
   )
 }

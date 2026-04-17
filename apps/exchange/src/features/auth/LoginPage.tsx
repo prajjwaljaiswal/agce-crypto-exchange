@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useMutation } from '@tanstack/react-query'
+import toast from 'react-hot-toast'
 import type { LoginResponse, LoginSuccess } from '@agce/types'
 import { useAuth } from '../../providers/index.js'
 import { authApi } from '../../lib/auth-api.js'
@@ -97,8 +98,8 @@ export function LoginPage() {
     return () => clearTimeout(t)
   }, [resendTimer])
 
-  const showError = (msg: string) => alert(msg)
-  const showSuccess = (msg: string) => alert(msg)
+  const showError = (msg: string) => toast.error(msg)
+  const showSuccess = (msg: string) => toast.success(msg)
 
   const handleLoginSuccess = useCallback(
     (response: LoginSuccess) => {
