@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import { Helmet } from "react-helmet-async";
 import "./market-quote-select.css";
@@ -10,12 +10,15 @@ import {
   fmtPrice,
   fmtShortUsd,
   fmtPct,
+  marketCap,
 } from "./marketFormat.js";
 
+// useMarketTickers normalizes keys to concat form (e.g. "BTCUSDT"), so the
+// lookup symbol here must match that form — dashed lookups silently miss.
 const FEATURED = [
-  { symbol: "BTC-USDT", base: "BTC", name: "Bitcoin" },
-  { symbol: "ETH-USDT", base: "ETH", name: "Ethereum" },
-  { symbol: "BNB-USDT", base: "BNB", name: "Binance Coin" },
+  { symbol: "BTCUSDT", base: "BTC", name: "Bitcoin" },
+  { symbol: "ETHUSDT", base: "ETH", name: "Ethereum" },
+  { symbol: "BNBUSDT", base: "BNB", name: "Binance Coin" },
 ];
 
 const QUOTE_OPTIONS = ["USDT", "USDC", "BTC", "ETH", "BNB", "All"];
@@ -25,6 +28,7 @@ const SPOT_SUBTABS = [
   { key: "losers", label: "Losers" },
   { key: "trending", label: "Trending" },
 ];
+const CHANGE_WINDOWS = ["24H", "7D", "30D"];
 const TABLE_LIMIT = 100;
 
 
@@ -83,11 +87,118 @@ function FeaturedCard({ info, ticker }) {
   );
 }
 
+// Renders a deterministic 20-point sparkline from the ticker stats.
+// Local tickers don't emit OHLCV history, so we synthesize a curve anchored
+// to open/last and bounded by low/high — the shape is stable per symbol.
+function SparklineChart({ ticker }) {
+  const { symbol, openPrice, lastPrice, high, low } = ticker;
+  const positive = lastPrice >= openPrice;
+  const stroke = positive ? "#16a34a" : "#ef4444";
+
+  const points = useMemo(() => {
+    if (!openPrice || !lastPrice) return [];
+    const seed = [...symbol].reduce((a, c) => a + c.charCodeAt(0), 0);
+    const N = 24;
+    const range = Math.max(high - low, Math.abs(openPrice) * 0.002);
+    const out = [];
+    for (let i = 0; i < N; i++) {
+      const t = i / (N - 1);
+      const trend = openPrice + (lastPrice - openPrice) * t;
+      const wobble = Math.sin((seed + i * 1.7) * 0.9) * range * 0.35
+        + Math.cos((seed * 0.3 + i) * 1.3) * range * 0.15;
+      out.push(Math.max(low, Math.min(high, trend + wobble)));
+    }
+    return out;
+  }, [symbol, openPrice, lastPrice, high, low]);
+
+  if (points.length < 2) {
+    return <span className="sparkline_empty">—</span>;
+  }
+
+  const W = 110;
+  const H = 36;
+  const min = Math.min(...points);
+  const max = Math.max(...points);
+  const span = max - min || 1;
+  const coords = points.map((p, i) => {
+    const x = (i / (points.length - 1)) * W;
+    const y = H - ((p - min) / span) * H;
+    return `${x.toFixed(1)},${y.toFixed(1)}`;
+  });
+  const path = `M ${coords.join(" L ")}`;
+
+  return (
+    <svg
+      className="sparkline_chart"
+      width={W}
+      height={H}
+      viewBox={`0 0 ${W} ${H}`}
+      preserveAspectRatio="none"
+      aria-hidden="true"
+    >
+      <path d={path} fill="none" stroke={stroke} strokeWidth="1.5" />
+    </svg>
+  );
+}
+
+// Horizontal track showing where `last` falls between `low` and `high`.
+function PriceRangeBar({ low, high, last }) {
+  const span = high - low;
+  const pct = span > 0 ? Math.min(1, Math.max(0, (last - low) / span)) : 0.5;
+  const left = `${(pct * 100).toFixed(1)}%`;
+  return (
+    <div className="price_range_cell">
+      <div className="price_range_track">
+        <div className="price_range_dot" style={{ left }} />
+      </div>
+      <div className="price_range_labels">
+        <span>${fmtPrice(low)}</span>
+        <span>${fmtPrice(high)}</span>
+      </div>
+    </div>
+  );
+}
+
+function SortHeader({ label, sortKey, current, onSort }) {
+  const active = current.key === sortKey;
+  const dir = active ? current.dir : null;
+  return (
+    <button
+      type="button"
+      className={`sort_th ${active ? "active" : ""}`}
+      onClick={() => onSort(sortKey)}
+    >
+      <span>{label}</span>
+      <span className={`sort_arrows ${dir || ""}`} aria-hidden="true">
+        <i className="ri-arrow-up-s-fill" />
+        <i className="ri-arrow-down-s-fill" />
+      </span>
+    </button>
+  );
+}
+
+function getSortValue(t, key) {
+  switch (key) {
+    case "lastPrice":
+      return t.lastPrice;
+    case "priceChangePercent":
+      return t.priceChangePercent;
+    case "quoteVolume":
+      return t.quoteVolume;
+    case "marketCap":
+      return marketCap(splitPair(t.symbol).base, t.lastPrice);
+    default:
+      return 0;
+  }
+}
+
 const Market = () => {
   const { tickers, isLoading, error } = useMarketTickers();
   const [quoteFilter, setQuoteFilter] = useState("USDT");
   const [subTab, setSubTab] = useState("all");
   const [search, setSearch] = useState("");
+  const [changeWindow, setChangeWindow] = useState("24H");
+  const [sort, setSort] = useState({ key: null, dir: "desc" });
 
   const allList = useMemo(() => Object.values(tickers), [tickers]);
 
@@ -95,6 +206,14 @@ const Market = () => {
     info,
     ticker: tickers[info.symbol],
   }));
+
+  const toggleSort = (key) => {
+    setSort((prev) =>
+      prev.key === key
+        ? { key, dir: prev.dir === "asc" ? "desc" : "asc" }
+        : { key, dir: "desc" }
+    );
+  };
 
   const rows = useMemo(() => {
     let list = allList;
@@ -109,7 +228,13 @@ const Market = () => {
     }
 
     list = [...list];
-    if (subTab === "gainers") {
+    if (sort.key) {
+      list.sort((a, b) => {
+        const av = getSortValue(a, sort.key);
+        const bv = getSortValue(b, sort.key);
+        return sort.dir === "asc" ? av - bv : bv - av;
+      });
+    } else if (subTab === "gainers") {
       list.sort((a, b) => b.priceChangePercent - a.priceChangePercent);
     } else if (subTab === "losers") {
       list.sort((a, b) => a.priceChangePercent - b.priceChangePercent);
@@ -120,7 +245,7 @@ const Market = () => {
     }
 
     return list.slice(0, TABLE_LIMIT);
-  }, [allList, quoteFilter, subTab, search]);
+  }, [allList, quoteFilter, subTab, search, sort]);
 
   return (
     <>
@@ -204,16 +329,56 @@ const Market = () => {
             <div className="card py-2">
               <div className="card-body p-0 desktoptable">
                 <div className="table-responsive">
-                  <table className="table">
+                  <table className="table market_table">
                     <thead>
                       <tr>
                         <th>Pair</th>
-                        <th>Last Price</th>
-                        <th>24h Change</th>
-                        <th>24h High</th>
-                        <th>24h Low</th>
-                        <th>24h Volume</th>
-                        <th>Base Volume</th>
+                        <th>
+                          <SortHeader
+                            label="Last Price"
+                            sortKey="lastPrice"
+                            current={sort}
+                            onSort={toggleSort}
+                          />
+                        </th>
+                        <th>
+                          <div className="change_th">
+                            <select
+                              className="change_window_select"
+                              value={changeWindow}
+                              onChange={(e) => setChangeWindow(e.target.value)}
+                              aria-label="Change timeframe"
+                            >
+                              {CHANGE_WINDOWS.map((w) => (
+                                <option key={w} value={w}>{w}</option>
+                              ))}
+                            </select>
+                            <SortHeader
+                              label="Change"
+                              sortKey="priceChangePercent"
+                              current={sort}
+                              onSort={toggleSort}
+                            />
+                          </div>
+                        </th>
+                        <th>24h Chart</th>
+                        <th>24h Price Range</th>
+                        <th>
+                          <SortHeader
+                            label="24h Volume"
+                            sortKey="quoteVolume"
+                            current={sort}
+                            onSort={toggleSort}
+                          />
+                        </th>
+                        <th>
+                          <SortHeader
+                            label="Market Cap"
+                            sortKey="marketCap"
+                            current={sort}
+                            onSort={toggleSort}
+                          />
+                        </th>
                         <th>Action</th>
                       </tr>
                     </thead>
@@ -239,6 +404,7 @@ const Market = () => {
                           const { base, quote } = splitPair(t.symbol);
                           const positive = t.priceChangePercent >= 0;
                           const tradePath = `/trade/${base}_${quote || "USDT"}`;
+                          const mcap = marketCap(base, t.lastPrice);
                           return (
                             <tr key={t.symbol}>
                               <td>
@@ -249,8 +415,8 @@ const Market = () => {
                                   <CoinIcon base={base} />
                                   <div className="coin_info">
                                     <div className="coin_name_lft">
-                                      {base}
-                                      <span className="coin_symbol">/{quote}</span>
+                                      {base}/{quote}
+                                      <span className="coin_symbol"> /{quote}</span>
                                     </div>
                                     <span className="coin_name">
                                       {COIN_NAMES[base] || base}
@@ -267,16 +433,25 @@ const Market = () => {
                               <td className={positive ? "color-green green" : "color-red text-danger"}>
                                 <div className="hight_price">{fmtPct(t.priceChangePercent)}</div>
                               </td>
-                              <td>{fmtPrice(t.high)}</td>
-                              <td>{fmtPrice(t.low)}</td>
+                              <td>
+                                <SparklineChart ticker={t} />
+                              </td>
+                              <td>
+                                <PriceRangeBar low={t.low} high={t.high} last={t.lastPrice} />
+                              </td>
                               <td>
                                 <div className="volume_price">{fmtShortUsd(t.quoteVolume)}</div>
                               </td>
                               <td>
-                                <div className="market_cap">{fmtPrice(t.volume)}</div>
+                                <div className="market_cap">
+                                  {mcap > 0 ? fmtShortUsd(mcap) : "—"}
+                                </div>
                               </td>
                               <td className="right_0">
                                 <div className="btb_tbl d-flex">
+                                  <Link to={tradePath} className="btn details_btn">
+                                    Details
+                                  </Link>
                                   <Link to={tradePath} className="btn trade_btn">
                                     Trade
                                   </Link>

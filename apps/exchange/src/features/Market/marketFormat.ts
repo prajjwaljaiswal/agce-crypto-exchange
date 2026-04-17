@@ -50,6 +50,26 @@ export function fmtShortUsd(n: number): string {
   return `$${n.toFixed(2)}`
 }
 
+// Approximate circulating supply for display-only market cap. Values drift over
+// time; refresh if a real supply feed becomes available.
+export const CIRCULATING_SUPPLY: Record<string, number> = {
+  BTC: 19_700_000, ETH: 120_000_000, BNB: 153_000_000, SOL: 450_000_000,
+  XRP: 54_000_000_000, ADA: 35_000_000_000, DOGE: 144_000_000_000,
+  DOT: 1_400_000_000, LINK: 588_000_000, MATIC: 10_000_000_000,
+  POL: 10_000_000_000, LTC: 74_000_000, AVAX: 408_000_000,
+  TRX: 88_000_000_000, UNI: 598_000_000, ATOM: 390_000_000,
+  NEAR: 1_080_000_000, SHIB: 589_000_000_000_000, PEPE: 420_000_000_000_000,
+  APT: 516_000_000, ARB: 4_250_000_000, OP: 1_500_000_000,
+  SUI: 3_000_000_000, TON: 2_500_000_000, XLM: 29_000_000_000,
+  HBAR: 36_000_000_000, FIL: 594_000_000, ICP: 473_000_000,
+  USDC: 32_000_000_000, BCH: 19_700_000, ETC: 148_000_000,
+}
+
+export function marketCap(base: string, lastPrice: number): number {
+  const supply = CIRCULATING_SUPPLY[base]
+  return supply && lastPrice ? supply * lastPrice : 0
+}
+
 export function fmtPct(n: number): string {
   if (!Number.isFinite(n)) return '—'
   const sign = n > 0 ? '+' : ''

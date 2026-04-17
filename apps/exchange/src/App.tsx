@@ -53,6 +53,7 @@ const NO_FOOTER_ROUTE_PREFIXES = [
   '/account-activate',
   '/user_profile',
   '/asset_management',
+  '/trade',
 ]
 
 function AppInner() {

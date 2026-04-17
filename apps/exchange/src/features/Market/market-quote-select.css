@@ -5,6 +5,210 @@
   flex-direction: row-reverse;
 }
 
+/* Action column: Trade + Details buttons */
+.market_update_table .btb_tbl {
+  gap: 8px;
+  align-items: center;
+  justify-content: flex-end;
+}
+
+/* Dark theme (default) */
+.market_update_table .btb_tbl .details_btn {
+  font-size: 12px;
+  background: rgba(255, 255, 255, 0.04);
+  color: #f0f0f0;
+  font-weight: 500;
+  padding: 7px 18px;
+  text-decoration: none;
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  border-radius: 999px;
+  display: inline-block;
+  text-align: center;
+  line-height: 1.2;
+}
+
+.market_update_table .btb_tbl .details_btn:hover {
+  background: rgba(245, 179, 1, 0.14);
+  border-color: #f5b301;
+  color: #f5b301;
+}
+
+.market_update_table .btb_tbl .trade_btn {
+  font-size: 12px;
+  font-weight: 500;
+  padding: 7px 22px;
+  border-radius: 999px;
+  background: #f5b301;
+  color: #000;
+  border: 1px solid #f5b301;
+  text-decoration: none;
+  display: inline-block;
+  text-align: center;
+  line-height: 1.2;
+}
+
+.market_update_table .btb_tbl .trade_btn:hover {
+  background: #ffc727;
+  border-color: #ffc727;
+  color: #000;
+}
+
+/* Light theme overrides — matches the light mockup */
+body.light_theme .market_update_table .btb_tbl .details_btn {
+  background: #fff;
+  color: #111;
+  border-color: rgba(0, 0, 0, 0.16);
+}
+
+body.light_theme .market_update_table .btb_tbl .details_btn:hover {
+  background: rgba(245, 179, 1, 0.1);
+  border-color: #f5b301;
+  color: #111;
+}
+
+body.light_theme .market_update_table .btb_tbl .trade_btn {
+  background: #111;
+  color: #fff;
+  border-color: #111;
+}
+
+body.light_theme .market_update_table .btb_tbl .trade_btn:hover {
+  background: #000;
+  border-color: #000;
+  color: #fff;
+}
+
+/* Sortable column header — inherits th color so it themes automatically */
+.market_update_table .sort_th {
+  background: transparent;
+  border: 0;
+  padding: 0;
+  color: inherit;
+  font: inherit;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.market_update_table .sort_th .sort_arrows {
+  display: inline-flex;
+  flex-direction: column;
+  line-height: 0.6;
+  font-size: 12px;
+  color: rgba(148, 148, 148, 0.7);
+}
+
+.market_update_table .sort_th .sort_arrows i {
+  line-height: 0.6;
+}
+
+.market_update_table .sort_th.active .sort_arrows.asc i:first-child,
+.market_update_table .sort_th.active .sort_arrows.desc i:last-child {
+  color: #f5b301;
+}
+
+/* 24H timeframe dropdown in Change header — dark theme (default) */
+.market_update_table .change_th {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.market_update_table .change_window_select {
+  background-color: rgba(255, 255, 255, 0.04);
+  color: #f0f0f0;
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  border-radius: 999px;
+  padding: 2px 22px 2px 10px;
+  font-size: 12px;
+  line-height: 1.4;
+  cursor: pointer;
+  appearance: none;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'><path fill='%23b8b8b8' d='M0 0h10L5 6z'/></svg>");
+  background-repeat: no-repeat;
+  background-position: right 8px center;
+}
+
+.market_update_table .change_window_select option {
+  background-color: #1a1a1a;
+  color: #f0f0f0;
+}
+
+body.light_theme .market_update_table .change_window_select {
+  background-color: #fff;
+  color: #111;
+  border-color: rgba(0, 0, 0, 0.16);
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'><path fill='%23666' d='M0 0h10L5 6z'/></svg>");
+}
+
+body.light_theme .market_update_table .change_window_select option {
+  background-color: #fff;
+  color: #111;
+}
+
+/* Sparkline column */
+.market_update_table .sparkline_chart {
+  display: block;
+}
+
+.market_update_table .sparkline_empty {
+  color: rgba(148, 148, 148, 0.7);
+}
+
+/* 24h Price Range column — dark theme (default) */
+.market_update_table .price_range_cell {
+  min-width: 160px;
+}
+
+.market_update_table .price_range_track {
+  position: relative;
+  height: 2px;
+  background: repeating-linear-gradient(
+    to right,
+    rgba(255, 255, 255, 0.45) 0 4px,
+    transparent 4px 8px
+  );
+  border-radius: 2px;
+}
+
+.market_update_table .price_range_dot {
+  position: absolute;
+  top: 50%;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: #f5b301;
+  border: 2px solid rgba(255, 255, 255, 0.9);
+  transform: translate(-50%, -50%);
+}
+
+.market_update_table .price_range_labels {
+  margin-top: 6px;
+  display: flex;
+  justify-content: space-between;
+  font-size: 12px;
+  color: rgba(230, 230, 230, 0.8);
+}
+
+body.light_theme .market_update_table .price_range_track {
+  background: repeating-linear-gradient(
+    to right,
+    rgba(0, 0, 0, 0.35) 0 4px,
+    transparent 4px 8px
+  );
+}
+
+body.light_theme .market_update_table .price_range_dot {
+  background: #fff;
+  border-color: rgba(0, 0, 0, 0.35);
+}
+
+body.light_theme .market_update_table .price_range_labels {
+  color: rgba(60, 60, 60, 0.85);
+}
+
 .market-tbltabs-row ul.tbltabs.market-tbltabs-list {
   margin: 0;
   flex: 1 1 auto;
