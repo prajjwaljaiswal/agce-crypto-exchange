@@ -1,5 +1,6 @@
 import { useContext, useEffect, useState } from 'react'
 import { SocketContext } from '../Trade/SocketContext.js'
+import { marketApi } from '../../lib/matching-api.js'
 
 /**
  * Market-page data source — LOCAL AGCE pairs only, via the

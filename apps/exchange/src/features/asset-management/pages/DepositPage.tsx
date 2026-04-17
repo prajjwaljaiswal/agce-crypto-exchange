@@ -1,5 +1,4 @@
 import { useState } from 'react'
-import { Link } from 'react-router-dom'
 import { SAMPLE_DEPOSIT_ADDRESS } from '../constants.js'
 import { SelectCoinStep } from '../components/SelectCoinStep.js'
 import { SelectNetworkStep } from '../components/SelectNetworkStep.js'
@@ -32,12 +31,6 @@ export function DepositPage() {
       <div className="depositcrypto_lft">
         <div className="deposit_crypto_page_head">
           <h1>Deposit Crypto</h1>
-          <Link to="/asset_management/deposit_fiat" className="deposit_fiat_head_btn">
-            Deposit Fiat
-            <span className="deposit_fiat_head_arrow" aria-hidden="true">
-              →
-            </span>
-          </Link>
         </div>
 
         <div className="deposit_crypto_block_coin">

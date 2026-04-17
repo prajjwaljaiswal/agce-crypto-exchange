@@ -51,21 +51,37 @@ const LOGS: Log[] = [
   },
 ]
 
+const SEVERITY_LABEL: Record<Log['severity'], string> = {
+  success: 'Success',
+  warning: 'Notice',
+  danger: 'Failed',
+}
+
+function SeverityBadge({ severity }: { severity: Log['severity'] }) {
+  return (
+    <span className={`activity-log-badge activity-log-badge--${severity}`}>
+      <i className="ri-circle-fill" aria-hidden />
+      {SEVERITY_LABEL[severity]}
+    </span>
+  )
+}
+
 export function ActivityLogs() {
   return (
     <div className="dashboard_right">
-      <div className="kyc_approval_s activity_logs">
-        <div className="top_heading">
-          <h4>Activity Logs</h4>
-          <p>Review logins, password changes, and key account events.</p>
-        </div>
+      <section className="activity-logs-page">
+        <div className="activity-logs-card">
+          <header className="activity-logs-header">
+            <h1>Activity Logs</h1>
+            <p>Review logins, password changes, and key account events.</p>
+          </header>
 
-        <div className="dashboard_summary desktop_view2">
-          <div className="table-responsive">
-            <table>
+          <div className="activity-logs-table-wrap">
+            <table className="activity-logs-table">
               <thead>
                 <tr>
                   <th>Activity</th>
+                  <th>Status</th>
                   <th>IP Address</th>
                   <th className="right_t">Date &amp; Time</th>
                 </tr>
@@ -73,32 +89,36 @@ export function ActivityLogs() {
               <tbody>
                 {LOGS.map((log) => (
                   <tr key={log.id}>
-                    <td className={`text-${log.severity}`}>{log.activity}</td>
-                    <td>{log.ip}</td>
-                    <td className="right_t">{log.date}</td>
+                    <td className="activity-log-activity">{log.activity}</td>
+                    <td><SeverityBadge severity={log.severity} /></td>
+                    <td className="activity-log-ip">{log.ip}</td>
+                    <td className="activity-log-date right_t">{log.date}</td>
                   </tr>
                 ))}
               </tbody>
             </table>
           </div>
-        </div>
 
-        <div className="mobile_view">
-          <ul className="order_datalist_2">
+          <ul className="activity-logs-mobile">
             {LOGS.map((log) => (
-              <li key={log.id}>
-                <div className="d-flex justify-content-between">
-                  <strong className={`text-${log.severity}`}>
-                    {log.activity}
-                  </strong>
-                  <span>{log.date}</span>
+              <li key={log.id} className="activity-log-card">
+                <div className="activity-log-card-top">
+                  <span className="activity-log-activity">{log.activity}</span>
+                  <SeverityBadge severity={log.severity} />
                 </div>
-                <p>IP: {log.ip}</p>
+                <div className="activity-log-card-meta">
+                  <span>
+                    <i className="ri-global-line" aria-hidden /> {log.ip}
+                  </span>
+                  <span>
+                    <i className="ri-time-line" aria-hidden /> {log.date}
+                  </span>
+                </div>
               </li>
             ))}
           </ul>
         </div>
-      </div>
+      </section>
     </div>
   )
 }

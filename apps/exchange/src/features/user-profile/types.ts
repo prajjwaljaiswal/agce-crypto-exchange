@@ -34,6 +34,7 @@ export interface ProfileSnapshot {
   referralCode: string
   kycStatus: 'pending' | 'approved' | 'rejected'
   signupAt: string
+  lastLoginAt: string
   lastLoginIp: string
   vipLevel: string
   riskLevel: string

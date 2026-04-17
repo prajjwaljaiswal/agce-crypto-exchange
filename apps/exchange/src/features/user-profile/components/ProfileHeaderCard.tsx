@@ -1,4 +1,3 @@
-import { Link } from 'react-router-dom'
 import type { ProfileSnapshot } from '../types.js'
 
 interface Props {
@@ -48,7 +47,7 @@ export function ProfileHeaderCard({ profile }: Props) {
             style={{ cursor: 'pointer' }}
           />
         </div>
-        <div className="profile_id">
+        {/* <div className="profile_id">
           <span>Referral Code :</span>
           {profile.referralCode}
           <img
@@ -57,17 +56,21 @@ export function ProfileHeaderCard({ profile }: Props) {
             alt="Copy referral code"
             style={{ cursor: 'pointer' }}
           />
-        </div>
-        <div className="profile_id kycstatus">
+        </div> */}
+        {/* <div className="profile_id kycstatus">
           <span>KYC Status</span>
           <Link className="text" to="/user_profile/kyc">
             <img src="/images/check_icon.svg" alt="Verify KYC" />
             KYC {profile.kycStatus === 'approved' ? 'Verified' : 'Pending'}
           </Link>
-        </div>
-        <div className="profile_id">
+        </div> */}
+        {/* <div className="profile_id">
           <span>Sign-up Time</span>
           <span className="textprofile">{profile.signupAt}</span>
+        </div> */}
+        <div className="profile_id">
+          <span>Last Login Time</span>
+          <span className="textprofile">{profile.lastLoginAt}</span>
         </div>
         <div className="profile_id">
           <span>Last Login IP</span>

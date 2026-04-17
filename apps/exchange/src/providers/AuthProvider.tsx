@@ -26,7 +26,7 @@ export type AuthStatus = 'loading' | 'authenticated' | 'guest'
 interface AuthContextValue {
   status: AuthStatus
   isAuthenticated: boolean
-  user: AuthUser | null
+  user: MeResponse | null
   login: (tokens: AuthTokens, user?: AuthUser) => void
   logout: () => void
 }
@@ -126,9 +126,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setHasSession(true)
       if (user) {
         queryClient.setQueryData<MeResponse>(ME_QUERY_KEY, user)
-      } else {
-        queryClient.invalidateQueries({ queryKey: ME_QUERY_KEY })
       }
+      // Always refetch /me so the provider holds the full backend shape
+      // (email, kycStatus, jurisdiction, …), not just the partial optimistic
+      // user stamped from the /login response.
+      queryClient.invalidateQueries({ queryKey: ME_QUERY_KEY })
     },
     [queryClient],
   )

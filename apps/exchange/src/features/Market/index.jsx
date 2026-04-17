@@ -4,11 +4,18 @@ import { Helmet } from "react-helmet-async";
 import "./market-quote-select.css";
 import MarketQuoteSelect from "./MarketQuoteSelect";
 import { useMarketTickers } from "./useMarketTickers.js";
+import {
+  COIN_NAMES,
+  splitPair,
+  fmtPrice,
+  fmtShortUsd,
+  fmtPct,
+} from "./marketFormat.js";
 
 const FEATURED = [
-  { symbol: "BTCUSDT", base: "BTC", name: "Bitcoin" },
-  { symbol: "ETHUSDT", base: "ETH", name: "Ethereum" },
-  { symbol: "BNBUSDT", base: "BNB", name: "Binance Coin" },
+  { symbol: "BTC-USDT", base: "BTC", name: "Bitcoin" },
+  { symbol: "ETH-USDT", base: "ETH", name: "Ethereum" },
+  { symbol: "BNB-USDT", base: "BNB", name: "Binance Coin" },
 ];
 
 const QUOTE_OPTIONS = ["USDT", "USDC", "BTC", "ETH", "BNB", "All"];
@@ -20,53 +27,6 @@ const SPOT_SUBTABS = [
 ];
 const TABLE_LIMIT = 100;
 
-const COIN_NAMES = {
-  BTC: "Bitcoin", ETH: "Ethereum", BNB: "Binance Coin", SOL: "Solana",
-  XRP: "Ripple", ADA: "Cardano", DOGE: "Dogecoin", DOT: "Polkadot",
-  LINK: "Chainlink", MATIC: "Polygon", LTC: "Litecoin", AVAX: "Avalanche",
-  TRX: "TRON", UNI: "Uniswap", ATOM: "Cosmos", NEAR: "NEAR Protocol",
-  SHIB: "Shiba Inu", PEPE: "Pepe", APT: "Aptos", ARB: "Arbitrum",
-  OP: "Optimism", SUI: "Sui", TON: "Toncoin", XLM: "Stellar",
-  HBAR: "Hedera", FIL: "Filecoin", ICP: "Internet Computer",
-  USDC: "USD Coin", BCH: "Bitcoin Cash", ETC: "Ethereum Classic",
-};
-
-const QUOTES = ["USDT", "USDC", "BTC", "ETH", "BNB", "BUSD", "DAI", "TUSD", "FDUSD", "TRY", "EUR"];
-
-function splitPair(symbol) {
-  for (const q of QUOTES) {
-    if (symbol.endsWith(q) && symbol.length > q.length) {
-      return { base: symbol.slice(0, symbol.length - q.length), quote: q };
-    }
-  }
-  return { base: symbol, quote: "" };
-}
-
-function fmtPrice(n) {
-  if (!Number.isFinite(n)) return "—";
-  const abs = Math.abs(n);
-  if (abs >= 1000) return n.toLocaleString("en-US", { maximumFractionDigits: 2 });
-  if (abs >= 1) return n.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 4 });
-  if (abs >= 0.01) return n.toFixed(4);
-  if (abs > 0) return n.toFixed(8);
-  return "0";
-}
-
-function fmtShortUsd(n) {
-  if (!Number.isFinite(n)) return "—";
-  const abs = Math.abs(n);
-  if (abs >= 1e12) return `$${(n / 1e12).toFixed(2)}T`;
-  if (abs >= 1e9) return `$${(n / 1e9).toFixed(2)}B`;
-  if (abs >= 1e6) return `$${(n / 1e6).toFixed(2)}M`;
-  if (abs >= 1e3) return `$${(n / 1e3).toFixed(2)}K`;
-  return `$${n.toFixed(2)}`;
-}
-
-function fmtPct(n) {
-  if (!Number.isFinite(n)) return "—";
-  const sign = n > 0 ? "+" : "";
-  return `${sign}${n.toFixed(2)}%`;
-}
 
 function CoinIcon({ base }) {
   const src = `/images/market-img/icons/${base.toLowerCase()}.svg`;
@@ -140,7 +100,7 @@ const Market = () => {
     let list = allList;
 
     if (quoteFilter !== "All") {
-      list = list.filter((t) => t.symbol.endsWith(quoteFilter));
+      list = list.filter((t) => splitPair(t.symbol).quote === quoteFilter);
     }
 
     if (search.trim()) {

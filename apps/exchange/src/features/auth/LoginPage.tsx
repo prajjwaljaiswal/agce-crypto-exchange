@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useMutation } from '@tanstack/react-query'
+import toast from 'react-hot-toast'
 import type { LoginResponse, LoginSuccess } from '@agce/types'
 import { useAuth } from '../../providers/index.js'
 import { authApi } from '../../lib/auth-api.js'
@@ -97,8 +98,8 @@ export function LoginPage() {
     return () => clearTimeout(t)
   }, [resendTimer])
 
-  const showError = (msg: string) => alert(msg)
-  const showSuccess = (msg: string) => alert(msg)
+  const showError = (msg: string) => toast.error(msg)
+  const showSuccess = (msg: string) => toast.success(msg)
 
   const handleLoginSuccess = useCallback(
     (response: LoginSuccess) => {
@@ -112,7 +113,7 @@ export function LoginPage() {
   )
 
   const loginMutation = useMutation({
-    mutationFn: (payload: { identifier: string; password: string }) =>
+    mutationFn: (payload: { identifier: string; password: string; bindIp: boolean }) =>
       authApi.login(payload),
     onSuccess: (response) => {
       if (isLoginSuccess(response)) {
@@ -142,7 +143,7 @@ export function LoginPage() {
   })
 
   const verifyOtpMutation = useMutation({
-    mutationFn: (payload: { identifier: string; otp: string }) =>
+    mutationFn: (payload: { identifier: string; otp: string; bindIp: boolean }) =>
       authApi.verifyOtp({ ...payload, purpose: 'LOGIN' }),
     onSuccess: (response) => {
       if (response && typeof response === 'object' && 'accessToken' in response) {
@@ -195,7 +196,7 @@ export function LoginPage() {
     }
 
     setPendingIdentifier(identifier)
-    loginMutation.mutate({ identifier, password })
+    loginMutation.mutate({ identifier, password, bindIp })
   }
 
   /* ── Step 2: OTP verify ── */
@@ -209,7 +210,7 @@ export function LoginPage() {
     const code = getOtpDigitsStr()
     if (code.length < 6) { showError('Please enter a valid 6-digit code'); return }
     if (!pendingIdentifier) { showError('Session expired — please log in again.'); return }
-    verifyOtpMutation.mutate({ identifier: pendingIdentifier, otp: code })
+    verifyOtpMutation.mutate({ identifier: pendingIdentifier, otp: code, bindIp })
   }
 
   const sendLoginOtp = (method: number) => {

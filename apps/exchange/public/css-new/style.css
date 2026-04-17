@@ -97,7 +97,7 @@ header {
 }
 
 header .logo {
-    min-width: 268px;
+    min-width: 200px;
 }
 
 header .logo a {
@@ -9394,18 +9394,17 @@ ul.user_social li {
     margin: 2px !important;
 }
 
-.top_header_dash::before {
+/* .top_header_dash::before {
     position: absolute;
     right: 0px;
     bottom: 0px;
-    /* background-image: url(../images/top_header_dash_bular.svg); */
     background-size: contain;
     content: "";
     background-position: right;
     background-repeat: no-repeat;
     width: 219px;
     height: 100%;
-}
+} */
 
 .balance_chart_left h4 {
     font-size: 14px;
@@ -13712,6 +13711,44 @@ td.text-danger {
 .market_page .custom-tab-content table.table td .btb_tbl button{ font-size: 14px; background-color: #F5F6F7; padding: 8px 15px; border-radius: 50px; }
 
 .market_page .custom-tab-content table.table td .btb_tbl button.btn.trade_btn{ background-color: #303236; color: #fff; margin: 0px; }
+
+.market_page table.table td .btb_tbl .trade_btn,
+.market_page table.table td .btb_tbl a.trade_btn,
+.market_page table.table td .btb_tbl .btn.trade_btn {
+    background-color: var(--color-primary, #e5b64a);
+    color: #0b0b0b;
+    font-size: 14px;
+    padding: 8px 18px;
+    border-radius: 50px;
+    margin: 0;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 600;
+    transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.market_page table.table td .btb_tbl .trade_btn:hover,
+.market_page table.table td .btb_tbl a.trade_btn:hover,
+.market_page table.table td .btb_tbl .btn.trade_btn:hover {
+    background-color: var(--color-primary-hover, #d4a43e);
+    color: #0b0b0b;
+}
+
+body.light_theme .market_page table.table td .btb_tbl .trade_btn,
+body.light_theme .market_page table.table td .btb_tbl a.trade_btn,
+body.light_theme .market_page table.table td .btb_tbl .btn.trade_btn {
+    background-color: #303236;
+    color: #fff;
+}
+
+body.light_theme .market_page table.table td .btb_tbl .trade_btn:hover,
+body.light_theme .market_page table.table td .btb_tbl a.trade_btn:hover,
+body.light_theme .market_page table.table td .btb_tbl .btn.trade_btn:hover {
+    background-color: #1a1b1d;
+    color: #fff;
+}
 
 .market_page .custom-tab-content table.table td.right_0{ padding-right: 0px; }
 
@@ -19307,7 +19344,7 @@ footer .container {
     }
 
     .listing_left_outer {
-        width: 76%;
+        width: 100%;
     }
 
 }
@@ -24358,8 +24395,8 @@ footer .container {
     }
 
     .themecolor_icon {
-        width: 23px;
-        height: 23px;
+        width: 30px;
+        height: 30px;
     }
 
     .profit_costs_cta_outer.costouterbg button.learnbtn {
@@ -27565,7 +27602,7 @@ footer .container {
     }
 
     .afterloginheader .header_right {
-        right: 34px;
+        /* right: 34px; */
         top: 9px;
         gap: 3px;
     }
@@ -27580,7 +27617,7 @@ footer .container {
     }
 
     .header_right {
-        right: 38px;
+        /* right: 38px; */
         top: 9px;
     }
 
@@ -29391,7 +29428,7 @@ footer .container {
     }
 
     .afterloginheader .navbar-toggler {
-        top: 3px;
+        /* top: 3px; */
     }
 
     header .logo {
@@ -29906,4 +29943,1705 @@ body.light_theme .hero_section_main input:-moz-placeholder,
 body.light_theme .hero_section_main textarea:-moz-placeholder {
     color: #ffffff !important;
     opacity: 1 !important;
+}
+
+/* ──────────────────────────────────────────────────────────────
+   Dashboard — dark-mode overrides.
+   The baseline dashboard card styles were authored against a light
+   body: white card surfaces, dark text. In dark mode (default body
+   #181A20), containers without an explicit background (top header,
+   wallet snapshot, newcomer perks) left dark text sitting on a dark
+   body. These rules give each card a dark surface and lift the text
+   colour so every field in the dashboard is legible in dark mode
+   without touching light-mode output.
+   ────────────────────────────────────────────────────────────── */
+body:not(.light_theme) .top_header_dash {
+    background-color: #1F2227;
+    border: 1px solid #2A2E35;
+}
+body:not(.light_theme) .user_profile_cnt h3 {
+    color: #EAECEF;
+}
+
+body:not(.light_theme) .agcf h6 {
+    color: #FFF;
+}
+body:not(.light_theme) .top_header_dash .user_edit button {
+    background-color: #2B313C;
+    border-color: #363b45;
+    color: #EAECEF;
+}
+body:not(.light_theme) span.vip_level {
+    background-color: #2B313C;
+    color: #EAECEF;
+}
+body:not(.light_theme) span.low_level {
+    background-color: rgba(239, 68, 68, 0.15);
+    color: #FCA5A5;
+}
+body:not(.light_theme) span.subdel {
+    color: #A3A8B3;
+}
+body:not(.light_theme) .profile_id {
+    color: #EAECEF;
+}
+body:not(.light_theme) .profile_id .textprofile {
+    color: #EAECEF;
+}
+body:not(.light_theme) .profile_id span {
+    color: #848E9C;
+}
+body:not(.light_theme) .profile_id.kycstatus a {
+    color: #EAECEF;
+}
+
+/* Wallet snapshot card */
+body:not(.light_theme) .wallet_snapshot_bl {
+    background-color: #1F2227;
+    border: 1px solid #2A2E35;
+}
+body:not(.light_theme) .wallet_snapshot_bl_left {
+    border-right-color: #2A2E35;
+}
+body:not(.light_theme) .wallet_snapshot_bl p.copycode {
+    color: #EAECEF;
+}
+body:not(.light_theme) .wallet_snapshot_bl_right button {
+    background-color: #2B313C;
+    color: #EAECEF;
+    box-shadow: 0px 0px 20px #00000040;
+}
+
+/* Newcomer perks */
+body:not(.light_theme) .new_steps_crypto h3 {
+    color: #EAECEF;
+}
+body:not(.light_theme) .steps_block_dash {
+    background-color: #1F2227;
+    border-color: #2A2E35;
+    color: #A3A8B3;
+}
+body:not(.light_theme) .steps_block_dash.active {
+    background-color: #24272D;
+    color: #EAECEF;
+}
+body:not(.light_theme) .new_steps_crypto .steps_cnt ul li {
+    background-color: #2B313C;
+    color: #EAECEF;
+}
+
+/* Spot markets card (dashboard variant) */
+body:not(.light_theme) .market_section.maindashboard .top_heading h4 {
+    color: #EAECEF;
+}
+body:not(.light_theme) .market_section.maindashboard .dashboard_summary {
+    color: #EAECEF;
+}
+body:not(.light_theme) .market_section.maindashboard .dashboard_summary th {
+    color: #848E9C;
+}
+body:not(.light_theme) .market_section.maindashboard .dashboard_summary td,
+body:not(.light_theme) .market_section.maindashboard .dashboard_summary .price_heading {
+    color: #EAECEF;
+}
+body:not(.light_theme) .market_section.maindashboard .dashboard_summary .price_heading span {
+    color: #848E9C;
+}
+body:not(.light_theme) .market_section.maindashboard .dashboard_summary ul.nav-tabs li button {
+    color: #A3A8B3;
+}
+body:not(.light_theme) .market_section.maindashboard .dashboard_summary ul.nav-tabs li button.active {
+    color: #EAECEF;
+}
+body:not(.light_theme) .market_section.maindashboard .dashboard_summary td a {
+    color: #EAECEF;
+}
+
+/* Right-column cards: Referral + Security */
+body:not(.light_theme) .dashboard_right_cards .dashboard_simple_card {
+    border-color: #2A2E35;
+    box-shadow: 0px 10px 25px #00000040;
+}
+body:not(.light_theme) .dashboard_right_cards .dashboard_simple_card.referral_program_card {
+    background: #1F2227;
+}
+body:not(.light_theme) .dashboard_right_cards .dashboard_simple_card.security_center_card {
+    background: #15261c;
+    border-color: #1f4432;
+}
+body:not(.light_theme) .dashboard_right_cards .dash_card_header h4 {
+    color: #EAECEF;
+}
+body:not(.light_theme) .dashboard_right_cards .dash_card_desc {
+    color: #A3A8B3;
+}
+body:not(.light_theme) .dashboard_right_cards .dash_code_pill {
+    background: #2B313C;
+}
+body:not(.light_theme) .dashboard_right_cards .dash_code_text {
+    color: #EAECEF;
+}
+body:not(.light_theme) .dashboard_right_cards .dash_code_copy {
+    color: #A3A8B3;
+}
+body:not(.light_theme) .dashboard_right_cards .dash_outline_btn {
+    border-color: #363b45;
+    color: #EAECEF;
+}
+
+/* Announcements + Download app cards */
+body:not(.light_theme) .announcements_right .announcements_card {
+    background: #1F2227;
+    border-color: #2A2E35;
+    box-shadow: 0px 10px 25px #00000040;
+}
+body:not(.light_theme) .announcements_right .announcements_title i,
+body:not(.light_theme) .announcements_right .announcements_title h4 {
+    color: #EAECEF;
+}
+body:not(.light_theme) .announcements_right a.announcements_viewall {
+    color: #A3A8B3;
+}
+body:not(.light_theme) .announcements_right .announcement_item_title {
+    color: #EAECEF;
+}
+body:not(.light_theme) .announcements_right .announcement_item_time {
+    color: #848E9C;
+}
+body:not(.light_theme) .announcements_right a.announcement_item i.ri-arrow-right-s-line {
+    color: #A3A8B3;
+}
+body:not(.light_theme) .announcements_right .announcement_divider {
+    background: #2A2E35;
+}
+body:not(.light_theme) .features_block {
+    background: #1F2227;
+    border-color: #2A2E35;
+    box-shadow: 0px 10px 25px #00000040;
+}
+body:not(.light_theme) .block_features h5 {
+    color: #EAECEF;
+}
+body:not(.light_theme) .block_features p {
+    color: #A3A8B3;
+}
+
+/* Sidebar — inactive links ship with border:1px solid #fff, which renders
+   as a bright outline on dark. Drop the border in the idle state and only
+   show it on hover/active so the active item still gets its highlight. */
+body:not(.light_theme) .navi_sidebar li a {
+    border-color: transparent;
+}
+body:not(.light_theme) .navi_sidebar li a:hover {
+    border-color: #363b45;
+    background-color: #1F2227;
+}
+body:not(.light_theme) .navi_sidebar li button:hover {
+    background-color: #1F2227;
+    border-radius: 12px;
+}
+body:not(.light_theme) .navi_sidebar li.active a,
+body:not(.light_theme) .navi_sidebar li.active button {
+    background-color: #2B313C;
+    border-color: #363b45;
+    color: #ffffff;
+}
+
+/* Logout pill — baseline is a white button with black text. */
+body:not(.light_theme) .leftside_menu .logout_btn a {
+    background-color: #1F2227;
+    color: #EAECEF;
+    border: 1px solid #2A2E35;
+    border-radius: 8px;
+}
+
+/* VIP Services — cream/gold gradient turned into a dark gold-tinted card. */
+body:not(.light_theme) .vip_servies {
+    background: linear-gradient(145deg, #1F1C14 0%, #2A2317 60%, #1A1810 100%);
+    border: 1px solid #3a3019;
+    box-shadow: 0px 1px 10px #00000040;
+}
+body:not(.light_theme) .vip_servies h6 {
+    color: #EAECEF;
+}
+body:not(.light_theme) .vip_servies ul.vip_services_list li {
+    color: #C6CAD2;
+}
+body:not(.light_theme) .vip_servies ul.vip_services_list li::before {
+    background-color: #D1AA67;
+}
+body:not(.light_theme) .vip_servies button.vip_btn {
+    color: #1a1205;
+}
+
+/* ──────────────────────────────────────────────────────────────
+   Dashboard — responsive tweaks.
+   The baseline lays out the header-card as a two-column flex
+   (avatar + profile fields). At mid widths the 5-field strip
+   is too cramped to read. These rules progressively simplify
+   the layout, stack cards, and strip awkward flex rules so the
+   Dashboard stays usable on any viewport.
+   ────────────────────────────────────────────────────────────── */
+
+/* Baseline: the h3 (email) shouldn't be a flex container with
+   a 70px gap — it's a single text node. Drop the flex. */
+.user_profile_cnt h3 {
+    display: block;
+    gap: 0;
+}
+
+.d-flex.user_header_cnt_top {
+    flex-wrap: wrap;
+}
+
+.profile_id_s .profile_id {
+    flex: 0 0 auto;
+    white-space: nowrap;
+}
+
+.profile_id span {
+    white-space: nowrap;
+}
+
+/* ≤1440px — sidebar claims less padding; header card stacks so the
+   5-field strip can scroll horizontally with room to breathe. */
+@media screen and (max-width: 1440px) {
+    .dashboard_right {
+        padding-left: 280px;
+        padding-right: 24px;
+    }
+    .d-flex.user_header_cnt_top {
+        flex-direction: column;
+        align-items: stretch !important;
+        gap: 18px;
+    }
+    .profile_id_s {
+        width: 100%;
+    }
+    .dashboard_right_side {
+        width: 32%;
+    }
+}
+
+/* ≤1200px — tighter sidebar padding; wallet snapshot + perks shrink. */
+@media screen and (max-width: 1200px) {
+    .dashboard_right {
+        padding-left: 250px;
+        padding-right: 20px;
+    }
+    .wallet_snapshot_bl_left {
+        padding: 28px;
+    }
+    .wallet_snapshot_bl_right {
+        padding: 0 24px;
+    }
+    .wallet_snapshot_bl p.copycode {
+        font-size: 16px;
+        flex-wrap: wrap;
+        gap: 8px;
+    }
+    .steps_block_dash_outer {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    .top_header_dash {
+        padding: 22px;
+    }
+}
+
+/* ≤991px — sidebar collapses; content goes full width. Left + right
+   columns stack (already handled in the existing 991px block), but
+   align the header card and side widgets to the new single column. */
+@media screen and (max-width: 991px) {
+    .dashboard_right {
+        padding: 15px 20px 40px;
+    }
+    .dashboard_listing_section {
+        padding-right: 0;
+    }
+    .top_header_dash {
+        padding: 20px;
+    }
+    .wallet_snapshot_bl {
+        grid-template-columns: 1fr;
+    }
+    .wallet_snapshot_bl_left {
+        border-right: none;
+        border-bottom: 1px solid #2A2E35;
+        padding: 24px;
+    }
+    .wallet_snapshot_bl_right {
+        padding: 18px 24px 24px;
+        justify-content: flex-start;
+        gap: 14px;
+    }
+    body.light_theme .wallet_snapshot_bl_left {
+        border-bottom-color: #f0f0f0;
+    }
+    .dashboard_right_side {
+        width:100%;
+        margin-top: 20px;
+    }
+    .dashboard_right_cards {
+        flex-direction: row;
+        flex-wrap: wrap;
+    }
+    .dashboard_right_cards .dashboard_simple_card {
+        flex: 1 1 260px;
+    }
+}
+
+/* ≤767px — phones. Single-column everywhere; comfortable padding. */
+@media screen and (max-width: 767px) {
+    .dashboard_right {
+        padding: 12px 14px 40px;
+    }
+    .top_header_dash {
+        padding: 16px;
+        gap: 16px;
+    }
+    .d-flex.user_header_cnt_top {
+        gap: 14px;
+    }
+    .user_profile {
+        gap: 14px;
+    }
+    .user_profile_cnt h3 {
+        font-size: 17px;
+    }
+    .top_header_dash .d-flex.sublevels {
+        flex-wrap: wrap;
+        gap: 6px !important;
+    }
+    .profile_id_s {
+        gap: 18px;
+    }
+    .wallet_snapshot_bl_left {
+        padding: 20px;
+    }
+    .wallet_snapshot_bl_left span {
+        font-size: 13px;
+    }
+    .wallet_snapshot_bl p.copycode {
+        font-size: 15px;
+        gap: 6px;
+    }
+    .wallet_snapshot_bl_right {
+        padding: 14px 20px 20px;
+        flex-wrap: wrap;
+        gap: 10px !important;
+    }
+    .wallet_snapshot_bl_right button {
+        font-size: 14px;
+        padding: 6px 18px 6px 8px;
+    }
+    .wallet_snapshot_bl_right button i {
+        width: 32px;
+        height: 32px;
+        font-size: 18px;
+    }
+    .steps_block_dash_outer {
+        grid-template-columns: 1fr;
+    }
+    .new_steps_crypto {
+        padding: 20px;
+    }
+    .new_steps_crypto h3 {
+        font-size: 20px;
+    }
+    .new_steps_crypto .steps_cnt {
+        width: 100%;
+    }
+    .steps_block_dash {
+        min-height: auto;
+        padding-bottom: 64px;
+    }
+    .dashboard_right_cards {
+        flex-direction: column;
+    }
+    .dashboard_right_cards .dashboard_simple_card {
+        flex: 1 1 auto;
+    }
+    .announcements_right,
+    .new_features_s,
+    .vip_servies {
+        margin-top: 16px;
+    }
+    .market_section.maindashboard .top_heading h4 {
+        font-size: 18px;
+    }
+}
+
+/* ≤480px — very small phones. Horizontal action row for wallet and
+   slightly more compact text. */
+@media screen and (max-width: 480px) {
+    .user_profile_cnt h3 {
+        font-size: 15px;
+    }
+    .wallet_snapshot_bl_right {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    .wallet_snapshot_bl_right button {
+        justify-content: flex-start;
+        width: 100%;
+    }
+}
+
+/* ──────────────────────────────────────────────────────────────
+   Final overrides — the baseline dashboard grids
+   (repeat(3,1fr) for perks, repeat(2,1fr) for wallet) sit in
+   the cascade ahead of their overrides in some deployments, so
+   we force the breakpoint values with !important here. Important
+   is deliberate: without it, a hot-reload or ordered merge can
+   leave perks in 3-col at phone widths.
+   ────────────────────────────────────────────────────────────── */
+@media screen and (max-width: 1200px) {
+    .steps_block_dash_outer {
+        grid-template-columns: repeat(2, 1fr) !important;
+    }
+}
+@media screen and (max-width: 991px) {
+    .wallet_snapshot_bl {
+        grid-template-columns: 1fr !important;
+    }
+}
+@media screen and (max-width: 767px) {
+    .steps_block_dash_outer {
+        grid-template-columns: 1fr !important;
+    }
+}
+
+/* ──────────────────────────────────────────────────────────────
+   Header — mobile/tablet action row. Baseline icon boxes are
+   ~26px, which is below the iOS/Android recommended 44px touch
+   target. Enlarge the icon, expand the hit area, and restore the
+   Dashboard + Deposit pills which get stripped to transparent/dark
+   text by an existing @767px rule.
+   ────────────────────────────────────────────────────────────── */
+@media screen and (max-width: 991px) {
+    .icon_notificaton_r ul {
+        gap: 10px;
+        align-items: center;
+    }
+    .icon_notificaton_r ul li {
+        padding: 0 4px;
+        min-width: 42px;
+        min-height: 42px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    .icon_notificaton_r ul li > svg {
+        width: 28px !important;
+        height: 28px !important;
+    }
+    .icon_notificaton_r ul li.downloadtabs > img {
+        width: 26px;
+        height: 26px;
+    }
+    .icon_notificaton_r ul li.themetbs {
+        width: 42px;
+        min-width: 42px;
+        height: 42px;
+        border-radius: 50%;
+    }
+    .icon_notificaton_r ul li.themetbs i {
+        font-size: 22px;
+    }
+    a.search_icon {
+        min-width: 42px;
+        min-height: 42px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+    }
+    a.search_icon i {
+        font-size: 22px;
+    }
+    .navbar-toggler {
+        padding: 8px;
+        min-width: 44px;
+        min-height: 44px;
+    }
+    .navbar-toggler .navbar-toggler-icon {
+        width: auto;
+        height: auto;
+    }
+    .navbar-toggler .navbar-toggler-icon img {
+        width: 32px;
+        height: 32px;
+    }
+
+    /* Header right: keep Deposit + Dashboard pills legible (baseline
+       mobile rule makes them transparent + near-black text, invisible
+       in dark mode). */
+    .afterloginheader .header_right .button_outer .login_btn.deposit-btn {
+        background: #ffffff;
+        color: #000000;
+        padding: 6px 14px;
+        border-radius: 999px;
+        font-size: 13px;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+    }
+    .afterloginheader .user_login.dashbtn a {
+        background-color: #2B313C;
+        color: #EAECEF;
+        padding: 6px 14px;
+        border: 1px solid #363b45;
+        border-radius: 999px;
+        font-size: 13px;
+        display: inline-flex;
+        align-items: center;
+    }
+    body.light_theme .afterloginheader .user_login.dashbtn a {
+        background-color: #ffffff;
+        color: #0f0f0f;
+        border-color: #e2e5ea;
+    }
+
+    .header_right .button_outer {
+        gap: 10px;
+        flex-wrap: wrap;
+    }
+}
+
+/* ≤576px — compact phone: hide the Download app icon (it's already
+   inside the mobile menu) and tighten gaps so the notification, wallet,
+   theme, hamburger row fits without overflow. */
+@media screen and (max-width: 576px) {
+    .icon_notificaton_r ul li.downloadtabs {
+        display: none;
+    }
+    .icon_notificaton_r ul {
+        gap: 6px;
+    }
+    .icon_notificaton_r ul li {
+        min-width: 40px;
+        min-height: 40px;
+    }
+    .icon_notificaton_r ul li > svg {
+        width: 24px !important;
+        height: 24px !important;
+    }
+    .afterloginheader .user_login.dashbtn a,
+    .afterloginheader .header_right .button_outer .login_btn.deposit-btn {
+        padding: 5px 12px;
+        font-size: 12px;
+    }
+    .header_right .button_outer {
+        gap: 6px;
+    }
+}
+
+/* ──────────────────────────────────────────────────────────────
+   Mobile header — stop overflow/crowding.
+   Existing mobile CSS positions .header_right as position:absolute
+   with a right offset that overlays the logo row (navbar-toggler is
+   also absolute top-right). That pattern is preserved here; we just
+   cap the logo width, shrink the icons/pills so they fit inside the
+   available slot between the logo and the hamburger, and hide the
+   search icon (duplicated in the sidebar).
+
+   Below 480px the Deposit pill is hidden — it remains reachable via
+   the Wallet dropdown and the sidebar.
+   ────────────────────────────────────────────────────────────── */
+@media screen and (max-width: 767px) {
+    header {
+        height: auto !important;
+        min-height: 56px;
+        padding: 8px 0 !important;
+    }
+    header .col-lg-2.logo_s {
+        max-width: 140px !important;
+        padding-left: 12px !important;
+    }
+    header .logo {
+        width: 100% !important;
+    }
+    header .logo .lightlogo,
+    header .logo .darklogo,
+    header .logo img:not(.eaglelogo) {
+        width: 85% !important;
+        /* max-width: 120px !important; */
+        height: auto !important;
+    }
+    header .logo img.eaglelogo {
+        width: 22px !important;
+    }
+    /* Keep absolute-positioning but tuck header_right inside viewport:
+       navbar-toggler already sits at right:6; give it 44px of clearance. */
+    .afterloginheader .header_right {
+        /* right: 48px !important;
+        top: 8px !important;
+        gap: 6px !important; */
+    }
+    .header_right .button_outer {
+        flex-wrap: nowrap !important;
+        gap: 6px !important;
+    }
+    /* Search icon duplicates Market-page search + mobile menu — hide
+       it on phones to free horizontal space. */
+    .header_right .button_outer .search_icon,
+    a.search_icon {
+        display: none !important;
+    }
+    .icon_notificaton_r ul {
+        gap: 4px !important;
+        align-items: center;
+    }
+    .icon_notificaton_r ul li {
+        width: auto !important;
+        min-width: 34px !important;
+        min-height: 34px !important;
+        padding: 0 2px !important;
+    }
+    .icon_notificaton_r ul li > svg {
+        width: 22px !important;
+        height: 22px !important;
+    }
+    .icon_notificaton_r ul li.themetbs {
+        width: 34px !important;
+        min-width: 34px !important;
+        height: 34px !important;
+    }
+    .icon_notificaton_r ul li.themetbs i {
+        font-size: 18px;
+    }
+    .navigation .navbar-toggler,
+    .afterloginheader .navbar-toggler {
+        /* padding: 4px !important; */
+        /* right: 8px !important; */
+        top: -2px !important;
+    }
+    .navigation .navbar-toggler img {
+        width: 22px !important;
+        height: 22px !important;
+    }
+    .afterloginheader .user_login.dashbtn a,
+    .afterloginheader .header_right .button_outer .login_btn.deposit-btn {
+        font-size: 11px !important;
+        padding: 4px 10px !important;
+        white-space: nowrap;
+        min-height: auto !important;
+    }
+}
+
+/* ≤480 — very narrow phones. Drop the Deposit pill. */
+@media screen and (max-width: 480px) {
+    .afterloginheader .header_right .button_outer .login_btn.deposit-btn {
+        display: none !important;
+    }
+    header .col-lg-2.logo_s {
+        max-width: 120px !important;
+    }
+    header .logo .lightlogo,
+    header .logo .darklogo,
+    header .logo img:not(.eaglelogo) {
+        width: 200px !important;
+        /* max-width: 100px !important; */
+    }
+    .afterloginheader .user_login.dashbtn a {
+        font-size: 11px !important;
+        padding: 4px 10px !important;
+    }
+    .afterloginheader .header_right {
+        right: 44px !important;
+    }
+}
+
+/* ──────────────────────────────────────────────────────────────
+   Mobile sidebar logout — baseline positions .logout_btn as
+   position:fixed at bottom:0 with width:210px, which doesn't
+   render on mobile because .leftside_menu.active fills 100vh
+   and ul.navi_sidebar with height:100% pushes the sibling
+   logout_btn out of the visible flow.
+
+   Fix: turn the open sidebar into a flex column, let the menu
+   list grow + scroll, and pin the logout button as the bottom
+   flex item with padding clearance from the mobile safe area.
+   ────────────────────────────────────────────────────────────── */
+@media screen and (max-width: 991px) {
+    .leftside_menu.active {
+        display: flex !important;
+        flex-direction: column;
+        height: 100vh !important;
+    }
+    .leftside_menu.active ul.navi_sidebar {
+        flex: 1 1 auto;
+        height: auto !important;
+        min-height: 0;
+        overflow-y: auto;
+        padding-bottom: 16px !important;
+        width: 100% !important;
+    }
+    .leftside_menu.active .logout_btn {
+        position: relative !important;
+        bottom: auto !important;
+        width: 100% !important;
+        flex: 0 0 auto;
+        padding: 12px 16px calc(16px + env(safe-area-inset-bottom));
+        border-top: 1px solid #2A2E35;
+        background: #0f1113;
+    }
+    .leftside_menu.active .logout_btn a {
+        display: flex !important;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        font-size: 15px;
+        padding: 10px 18px;
+        border-radius: 10px;
+    }
+    body.light_theme .leftside_menu.active .logout_btn {
+        background: #ffffff;
+        border-top-color: #e5e7eb;
+    }
+}
+
+/* Header hamburger menu — Logout item. Sits below Theme on mobile;
+   coloured as a danger action so it's easy to spot. */
+.navbar-nav .nav-item--logout .nav-link {
+    color: #EF4444 !important;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+}
+.navbar-nav .nav-item--logout .nav-link:hover {
+    color: #DC2626 !important;
+}
+.navbar-nav .nav-item--logout .nav-link i {
+    font-size: 18px;
+}
+
+/* ──────────────────────────────────────────────────────────────
+   Logout confirmation modal — theme-aware.
+   Dark mode (default): dark card on a dim scrim.
+   Light mode (body.light_theme): light card on a translucent scrim.
+   ────────────────────────────────────────────────────────────── */
+.logout-modal-backdrop {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.55);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 2147483646;
+    padding: 20px;
+    animation: logout-modal-fade 140ms ease-out;
+}
+
+.logout-modal-card {
+    width: 100%;
+    max-width: 400px;
+    background: #1F2227;
+    border: 1px solid #2A2E35;
+    border-radius: 18px;
+    padding: 28px 24px 22px;
+    box-shadow: 0 24px 60px rgba(0, 0, 0, 0.55);
+    text-align: center;
+    color: #EAECEF;
+    animation: logout-modal-pop 160ms ease-out;
+}
+
+.logout-modal-icon {
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    background: rgba(239, 68, 68, 0.12);
+    color: #F87171;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 14px;
+    font-size: 26px;
+}
+
+.logout-modal-title {
+    font-size: 18px;
+    font-weight: 600;
+    margin: 0 0 6px;
+    color: inherit;
+}
+
+.logout-modal-desc {
+    font-size: 14px;
+    line-height: 1.45;
+    color: #A3A8B3;
+    margin: 0 0 20px;
+}
+
+.logout-modal-actions {
+    display: flex;
+    gap: 10px;
+    justify-content: stretch;
+}
+
+.logout-modal-btn {
+    flex: 1 1 0;
+    padding: 10px 16px;
+    border-radius: 999px;
+    border: 1px solid transparent;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background-color 120ms ease, border-color 120ms ease, color 120ms ease;
+}
+
+.logout-modal-btn--ghost {
+    background: transparent;
+    border-color: #363b45;
+    color: #EAECEF;
+}
+
+.logout-modal-btn--ghost:hover {
+    background: #2B313C;
+}
+
+.logout-modal-btn--danger {
+    background: #EF4444;
+    color: #ffffff;
+    border-color: #EF4444;
+}
+
+.logout-modal-btn--danger:hover {
+    background: #DC2626;
+    border-color: #DC2626;
+}
+
+.logout-modal-btn--danger:focus-visible {
+    outline: 2px solid #FCA5A5;
+    outline-offset: 2px;
+}
+
+/* Light theme override — pale card, dark text. */
+body.light_theme .logout-modal-backdrop {
+    background: rgba(17, 24, 39, 0.35);
+}
+
+body.light_theme .logout-modal-card {
+    background: #ffffff;
+    border-color: #e5e7eb;
+    color: #111827;
+    box-shadow: 0 24px 60px rgba(17, 24, 39, 0.18);
+}
+
+body.light_theme .logout-modal-desc {
+    color: #4b5563;
+}
+
+body.light_theme .logout-modal-icon {
+    background: rgba(239, 68, 68, 0.1);
+    color: #DC2626;
+}
+
+body.light_theme .logout-modal-btn--ghost {
+    border-color: #e5e7eb;
+    color: #111827;
+}
+
+body.light_theme .logout-modal-btn--ghost:hover {
+    background: #f3f4f6;
+}
+
+@keyframes logout-modal-fade {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+@keyframes logout-modal-pop {
+    from { opacity: 0; transform: translateY(6px) scale(0.98); }
+    to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .logout-modal-backdrop,
+    .logout-modal-card {
+        animation: none;
+    }
+}
+
+@media screen and (max-width: 480px) {
+    .logout-modal-card {
+        padding: 22px 18px 18px;
+        border-radius: 16px;
+    }
+    .logout-modal-actions {
+        flex-direction: column-reverse;
+    }
+}
+
+/* ──────────────────────────────────────────────────────────────
+   Deposit page (/asset_management/deposit) — dark-mode overrides.
+   Baseline CSS hardcodes light surfaces (#fff), light borders
+   (#eaecf0 / #F2F3F4), and near-black text (#101828 / #070709)
+   which all disappear on the default dark body. Every surface,
+   border, and text colour inside .depositcrypto_lft gets a dark
+   counterpart here; light-mode output is untouched.
+   ────────────────────────────────────────────────────────────── */
+body:not(.light_theme) .depositcrypto_lft h1 {
+    color: #EAECEF;
+}
+body:not(.light_theme) .depositcrypto_lft .deposit_fiat_head_btn,
+body:not(.light_theme) .depositcrypto_lft .deposit_fiat_head_btn:hover {
+    color: #EAECEF;
+}
+
+/* Left column: step rail, badges, headings. */
+body:not(.light_theme) .deposit_crypto_left {
+    color: #EAECEF;
+}
+body:not(.light_theme) .depositcrypto_lft .deposit_step_header h2 {
+    color: #EAECEF;
+}
+body:not(.light_theme) .depositcrypto_lft .deposit_step_section::before {
+    background: #2A2E35;
+}
+body:not(.light_theme) .depositcrypto_lft .deposit_step_badge {
+    background: #EAECEF;
+    border-color: #EAECEF;
+    color: #101828;
+}
+body:not(.light_theme) .depositcrypto_lft .select-option .deposit_step_badge {
+    background: #1F2227;
+    border-color: #363b45;
+    color: #EAECEF;
+}
+
+/* Deposit details card + QR box. */
+body:not(.light_theme) .depositcrypto_lft .deposit_details_card {
+    background: #1F2227;
+    border-color: #2A2E35;
+}
+body:not(.light_theme) .depositcrypto_lft .deposit_details_label {
+    color: #A3A8B3;
+}
+body:not(.light_theme) .depositcrypto_lft .deposit_details_caret {
+    color: #A3A8B3;
+}
+body:not(.light_theme) .depositcrypto_lft .deposit_qr_box {
+    background: #ffffff;
+    border-color: #2A2E35;
+}
+body:not(.light_theme) .depositcrypto_lft .deposit_qr_hint {
+    color: #A3A8B3;
+}
+body:not(.light_theme) .depositcrypto_lft .deposit_field_head {
+    color: #EAECEF;
+}
+body:not(.light_theme) .depositcrypto_lft .deposit_field_input input {
+    background: #16181D;
+    border-color: #2A2E35;
+    color: #EAECEF;
+}
+body:not(.light_theme) .depositcrypto_lft .deposit_field_input input::placeholder {
+    color: #6A7282;
+}
+body:not(.light_theme) .depositcrypto_lft .deposit_copy_btn {
+    background: #2B313C;
+    border-color: #363b45;
+    color: #EAECEF;
+}
+body:not(.light_theme) .depositcrypto_lft .deposit_copy_btn:hover {
+    background: #363b45;
+}
+body:not(.light_theme) .depositcrypto_lft .deposit_copy_ico {
+    color: #A3A8B3;
+}
+body:not(.light_theme) .depositcrypto_lft .deposit_details_meta {
+    color: #A3A8B3;
+}
+body:not(.light_theme) .depositcrypto_lft .deposit_meta_label {
+    color: #848E9C;
+}
+body:not(.light_theme) .depositcrypto_lft .deposit_meta_value {
+    color: #EAECEF;
+}
+
+/* Right column — FAQ card. */
+body:not(.light_theme) .deposit_crypto_right .faq_container {
+    border-color: #2A2E35;
+    background: #1F2227;
+    color: #EAECEF;
+}
+body:not(.light_theme) .deposit_crypto_right .faq_container h2 {
+    color: #EAECEF;
+}
+body:not(.light_theme) .deposit_crypto_right .accordion {
+    --bs-accordion-bg: transparent;
+    --bs-accordion-color: #EAECEF;
+    --bs-accordion-border-color: #2A2E35;
+    --bs-accordion-btn-color: #EAECEF;
+    --bs-accordion-btn-bg: transparent;
+    --bs-accordion-active-bg: transparent;
+    --bs-accordion-active-color: #ffffff;
+}
+body:not(.light_theme) .deposit_crypto_right .accordion-item {
+    background: transparent;
+    border-color: #2A2E35;
+    color: #EAECEF;
+}
+body:not(.light_theme) .deposit_crypto_right .accordion-button,
+body:not(.light_theme) .deposit_crypto_right .accordion-button:not(.collapsed) {
+    background: transparent !important;
+    color: #EAECEF !important;
+    box-shadow: none;
+}
+body:not(.light_theme) .deposit_crypto_right .accordion-body {
+    color: #A3A8B3;
+}
+body:not(.light_theme) .deposit_crypto_right .accordion-body strong {
+    color: #EAECEF;
+}
+/* FAQ caret image is filter:brightness(0) in baseline which is invisible
+   in dark. Invert it. */
+body:not(.light_theme) .deposit_crypto_right .accordion-button::after,
+body:not(.light_theme) .deposit_crypto_right .accordion-button[aria-expanded="true"]::after {
+    filter: brightness(0) invert(1) !important;
+}
+
+/* Deposit history. */
+body:not(.light_theme) .depositcrypto_lft .deposit_history_title {
+    color: #EAECEF;
+}
+body:not(.light_theme) .depositcrypto_lft .deposit_history_viewall {
+    color: #A3A8B3;
+}
+body:not(.light_theme) .depositcrypto_lft .deposit_history_viewall:hover {
+    color: #EAECEF;
+}
+body:not(.light_theme) .depositcrypto_lft .deposit_history_card,
+body:not(.light_theme) .depositcrypto_lft .deposit_history_head_wrap,
+body:not(.light_theme) .depositcrypto_lft .deposit_history_head {
+    background: transparent;
+}
+body:not(.light_theme) .depositcrypto_lft .deposit_history_head_cell {
+    color: #848E9C;
+}
+body:not(.light_theme) .depositcrypto_lft .deposit_history_empty_text {
+    color: #EAECEF;
+}
+
+/* Select coin / network rows — inputs + dropdowns read from these
+   classes elsewhere in the tree; harmless double-assignment in dark. */
+body:not(.light_theme) .depositcrypto_lft .search_icon_s {
+    background: #16181D;
+    border-color: #2A2E35;
+    color: #EAECEF;
+}
+
+/* Primary CTA button ("Generate Address" / "Transfer Completed"). */
+body:not(.light_theme) .depositcrypto_lft .coin_items_select .login_btn input[type="button"] {
+    background: #D1AA67;
+    color: #101010;
+    border: none;
+}
+
+/* ──────────────────────────────────────────────────────────────
+   Deposit page — responsive polish.
+   Baseline has a @991 rule that stacks the left/right columns,
+   but the page header is fixed at 66% width, side paddings are
+   desktop-sized, and the copy field / QR box overflow on phones.
+   ────────────────────────────────────────────────────────────── */
+@media screen and (max-width: 1200px) {
+    .depositcrypto_lft .deposit_crypto_page_head {
+        width: 100%;
+    }
+    .deposit_crypto_block_coin {
+        gap: 40px;
+    }
+}
+
+@media screen and (max-width: 991px) {
+    .depositcrypto_lft {
+        padding-left: 24px;
+        padding-right: 24px;
+        margin-top: 24px;
+    }
+    .depositcrypto_lft .deposit_crypto_left,
+    .depositcrypto_lft .deposit_crypto_right {
+        width: 100%;
+    }
+    .depositcrypto_lft .deposit_details_grid {
+        grid-template-columns: 1fr !important;
+    }
+    .depositcrypto_lft .deposit_history_head {
+        min-width: 560px;
+    }
+}
+
+@media screen and (max-width: 767px) {
+    .depositcrypto_lft {
+        padding: 16px 16px 28px;
+        margin-top: 16px;
+    }
+    .depositcrypto_lft h1 {
+        font-size: 22px;
+    }
+    .depositcrypto_lft .deposit_crypto_page_head {
+        gap: 10px;
+    }
+    .depositcrypto_lft .deposit_crypto_left {
+        padding-left: 28px;
+    }
+    .depositcrypto_lft .deposit_step_header h2 {
+        font-size: 14px;
+    }
+    .depositcrypto_lft .deposit_details_card {
+        padding: 14px;
+    }
+    .depositcrypto_lft .deposit_field_input {
+        grid-template-columns: 1fr;
+    }
+    .depositcrypto_lft .deposit_copy_btn {
+        justify-content: center;
+    }
+    .depositcrypto_lft .deposit_qr_box {
+        padding: 10px;
+    }
+    .depositcrypto_lft .deposit_qr_img {
+        width: 120px;
+        height: 120px;
+    }
+    .depositcrypto_lft .deposit_history_title {
+        font-size: 17px;
+    }
+    .depositcrypto_lft .deposit_history_empty {
+        padding: 36px 12px 44px;
+    }
+    .depositcrypto_lft .deposit_history_empty_text {
+        font-size: 15px;
+    }
+    .depositcrypto_lft .coin_items_select .col-sm-6 {
+        width: 100%;
+    }
+    .deposit_crypto_right .faq_container {
+        padding: 20px;
+    }
+}
+
+@media screen and (max-width: 480px) {
+    .depositcrypto_lft .deposit_crypto_page_head {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    .depositcrypto_lft .deposit_details_card {
+        padding: 12px;
+        border-radius: 10px;
+    }
+    .depositcrypto_lft .deposit_field_input input {
+        font-size: 12px;
+    }
+}
+
+/* ──────────────────────────────────────────────────────────────
+   Login / Signup / Forgot-password pages — dark-mode overrides.
+   Baseline hardcodes white surfaces (.login_fullhieght bg:#fff,
+   .form_block_login bg:#fff color:#000), dark text for headings
+   and labels, and light grey input fills (#F5F6F7). In dark mode
+   none of that reads. These rules scope under the body class each
+   page sets (loginbg/signupbg/forgot_password) so light mode is
+   untouched.
+   ────────────────────────────────────────────────────────────── */
+body:not(.light_theme).loginbg,
+body:not(.light_theme).signupbg {
+    background-color: #0f1113;
+}
+
+body:not(.light_theme).loginbg .login_fullhieght {
+    background-color: #0f1113 !important;
+}
+
+body:not(.light_theme).loginbg .login_section .form_block_login,
+body:not(.light_theme).signupbg .login_section .form_block_login,
+body:not(.light_theme).signupbg .login_section.bgsignup .form_block_login,
+body:not(.light_theme) .login_section.forgot_password .form_block_login {
+    background-color: transparent !important;
+    color: #EAECEF !important;
+}
+
+/* The signup wizard re-applies surfaces a few places — pin every one
+   that could carry a white fill to the dark page colour. */
+body:not(.light_theme).signupbg .login_section.bgsignup,
+body:not(.light_theme).signupbg .login_form_right,
+body:not(.light_theme).signupbg.signup-wizard-full-steps .login_form_right {
+    background-color: transparent !important;
+}
+
+/* Headings + labels */
+body:not(.light_theme) .form_block_login h2,
+body:not(.light_theme) .form_block_login h3,
+body:not(.light_theme) .form_block_login .login-wizard-title,
+body:not(.light_theme) .form_block_login .signup-wizard-step-meta {
+    color: #EAECEF;
+}
+
+body:not(.light_theme) .form_block_login label {
+    color: #C6CAD2;
+}
+
+body:not(.light_theme) .form_block_login p,
+body:not(.light_theme) .form_block_login .signup-wizard-subtitle {
+    color: #A3A8B3;
+}
+
+/* Inputs */
+body:not(.light_theme) .form_block_login .input_filed {
+    background-color: #16181D;
+    border-color: #2A2E35;
+    color: #EAECEF;
+}
+
+body:not(.light_theme) .form_block_login .input_filed:focus,
+body:not(.light_theme) .login_section .form_block_login .input_filed:focus,
+body:not(.light_theme) .login_section .form_block_login .input_filed:focus-visible {
+    border-color: #D1AA67 !important;
+    background-color: #16181D;
+}
+
+body:not(.light_theme) .form_block_login .input_filed::placeholder {
+    color: #6A7282;
+    opacity: 1;
+}
+
+/* Eye toggle + GET OTP button inside the password / OTP input */
+body:not(.light_theme) .form_block_login .get_otp,
+body:not(.light_theme) .form_block_login .get_otp.otp2 i {
+    color: #A3A8B3;
+}
+
+/* Select (country code, etc.) */
+body:not(.light_theme) .form_block_login select.input_filed {
+    background-color: #16181D;
+    color: #EAECEF;
+}
+
+body:not(.light_theme) .form_block_login select.input_filed option {
+    background-color: #16181D;
+    color: #EAECEF;
+}
+
+/* Login wizard tabs */
+body:not(.light_theme) .form_block_login.login-wizard-root .login-wizard-tabs button {
+    color: #A3A8B3;
+}
+body:not(.light_theme) .form_block_login.login-wizard-root .login-wizard-tabs button.is-active {
+    color: #EAECEF;
+}
+body:not(.light_theme) .form_block_login.login-wizard-root .login-wizard-tabs button.is-active::after {
+    background: #D1AA67;
+}
+
+/* Bind-IP checkbox row links */
+body:not(.light_theme) .form_block_login.login-wizard-root .login-wizard-bind-row a {
+    color: #D1AA67;
+}
+
+/* Primary CTA on login wizard (dark pill) — repaint for contrast */
+body:not(.light_theme) .form_block_login.login-wizard-root .login-wizard-next-btn {
+    background: #D1AA67;
+    color: #1a1205;
+}
+body:not(.light_theme) .form_block_login.login-wizard-root .login-wizard-next-btn:hover:not(:disabled) {
+    background: #E0B878;
+}
+
+/* Passkey + "Create account" links */
+body:not(.light_theme) .form_block_login.login-wizard-root .login-wizard-passkey-outline {
+    background: #1F2227;
+    border-color: #2A2E35;
+    color: #EAECEF;
+}
+body:not(.light_theme) .form_block_login.login-wizard-root .login-wizard-create-link {
+    color: #A3A8B3;
+}
+
+/* OTP cells — baseline forces background with !important, so match that. */
+body:not(.light_theme) .form_block_login .signup-wizard-otp-cell {
+    background: #1F2227 !important;
+    border-color: #2A2E35 !important;
+    color: #EAECEF;
+}
+body:not(.light_theme) .form_block_login .signup-wizard-otp-cell:focus {
+    border-color: #D1AA67 !important;
+}
+
+/* OTP resend / paste / back links */
+body:not(.light_theme) .form_block_login .signup-wizard-otp-link,
+body:not(.light_theme) .form_block_login .signup-wizard-back {
+    color: #EAECEF;
+}
+
+/* Divider + social buttons */
+body:not(.light_theme) .form_block_login .signup-wizard-divider {
+    color: #A3A8B3;
+}
+body:not(.light_theme) .form_block_login .signup-wizard-divider::before,
+body:not(.light_theme) .form_block_login .signup-wizard-divider::after {
+    background: #2A2E35;
+}
+body:not(.light_theme) .form_block_login .signup-wizard-social-btn {
+    background: #1F2227;
+    border-color: #2A2E35;
+}
+
+/* Signup password rules list */
+body:not(.light_theme) .form_block_login .signup-wizard-rule-row {
+    color: #A3A8B3;
+}
+body:not(.light_theme) .form_block_login .signup-wizard-rule-row.is-ok i {
+    color: #10B981;
+}
+body:not(.light_theme) .form_block_login .signup-wizard-rule-row.is-bad i {
+    color: #EF4444;
+}
+
+/* Signup privileges table */
+body:not(.light_theme) .form_block_login .signup-wizard-priv-table th,
+body:not(.light_theme) .form_block_login .signup-wizard-priv-table td {
+    border-bottom-color: #2A2E35;
+    color: #EAECEF;
+}
+body:not(.light_theme) .form_block_login .signup-wizard-priv-table th {
+    color: #848E9C;
+}
+
+/* Step dots (active uses gold already, faded dots need dark bg) */
+body:not(.light_theme) .form_block_login .signup-wizard-steps-bar li {
+    background: rgba(255, 255, 255, 0.15);
+}
+
+/* ── Signup split layout ── */
+body:not(.light_theme).signupbg {
+    background: linear-gradient(
+        90deg,
+        #000000 0%,
+        #000000 50%,
+        #0f1113 50%,
+        #0f1113 100%
+    ) !important;
+}
+
+body:not(.light_theme).signupbg .sign_rewards {
+    background-color: #000000 !important;
+}
+
+body:not(.light_theme).signupbg .login_section.bgsignup {
+    background-color: #0f1113 !important;
+}
+
+body:not(.light_theme).signupbg.signup-wizard-full-steps,
+body:not(.light_theme).signupbg.signup-wizard-full-steps .login_section.bgsignup {
+    background: #0f1113 !important;
+    background-color: #0f1113 !important;
+}
+
+/* Signup login-pills (tab switcher for Email/Phone).
+   Baseline uses `color: #0a0a0a !important` for active and `#84888C !important`
+   for idle tabs (see login-pills rules at ~3071 and nav-tabs rule at ~4327).
+   We match the `!important` to flip both states in dark mode. */
+body:not(.light_theme) .login-pills .nav-link,
+body:not(.light_theme) .login_section .nav.nav-tabs li button {
+    color: #A3A8B3 !important;
+}
+body:not(.light_theme) .login-pills .nav-link.active,
+body:not(.light_theme) body .login_section .login-pills li .nav-link.active,
+body:not(.light_theme) .login_section .nav.nav-tabs li button.active {
+    color: #EAECEF !important;
+}
+/* Active tab underline bar — baseline paints it `#000`, invisible on dark. */
+body:not(.light_theme) .login_section .nav.nav-tabs li button:before {
+    background-color: #D1AA67;
+}
+
+/* Verify-bonus title accent stays gold */
+body:not(.light_theme) h3.mb-2.verify_hd {
+    color: #EAECEF;
+}
+
+/* Collapse at ≤991px: signup single-column stays dark instead of white */
+@media screen and (max-width: 991px) {
+    body:not(.light_theme).signupbg,
+    body:not(.light_theme).signupbg.signup-wizard-full-steps {
+        background: #0f1113 !important;
+    }
+}
+
+/* Anti-phishing / registered-user hint pills (if rendered as .email_code) */
+body:not(.light_theme) .form_block_login .email_code {
+    color: #EAECEF;
+}
+body:not(.light_theme) .form_block_login .email_code .get_otp {
+    color: #A3A8B3;
+}
+
+/* ──────────────────────────────────────────────────────────────
+   Activity Logs page — card, table, and mobile stack.
+   Dark by default (matches the profile shell), light-theme
+   overrides below. The layout is desktop table + mobile card
+   list; both render side-by-side in the DOM and CSS toggles
+   which is visible per breakpoint.
+   ────────────────────────────────────────────────────────────── */
+.activity-logs-page {
+    padding: 24px 0 40px;
+    color: #EAECEF;
+}
+
+.activity-logs-card {
+    /* background: #1F2227; */
+    border: 1px solid #2A2E35;
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.35);
+}
+
+.activity-logs-header {
+    /* padding: 20px 24px 16px !important; */
+    height: 90px;
+    padding: 20px;
+    border-bottom: 1px solid #2A2E35;
+}
+.activity-logs-header h1 {
+    font-size: 22px !important;
+    font-weight: 600 !important;
+    margin: 0 0 4px !important;
+    color: inherit !important;
+    line-height: 1.2 !important;
+    padding: 0 !important;
+}
+.activity-logs-header p {
+    font-size: 13px;
+    color: #A3A8B3;
+    margin: 0 !important;
+    line-height: 1.4;
+    padding: 0;
+}
+
+.activity-logs-table-wrap {
+    overflow-x: auto;
+}
+.activity-logs-table {
+    width: 100%;
+    border-collapse: collapse;
+    min-width: 640px;
+}
+.activity-logs-table thead th {
+    font-size: 12px;
+    font-weight: 500;
+    letter-spacing: 0.02em;
+    text-transform: uppercase;
+    text-align: left;
+    color: #848E9C;
+    padding: 14px 24px;
+    background: rgba(255, 255, 255, 0.02);
+    border-bottom: 1px solid #2A2E35;
+    white-space: nowrap;
+}
+.activity-logs-table thead th.right_t {
+    text-align: right;
+}
+.activity-logs-table tbody tr {
+    border-bottom: 1px solid #242830;
+    transition: background-color 120ms ease;
+}
+.activity-logs-table tbody tr:last-child {
+    border-bottom: none;
+}
+.activity-logs-table tbody tr:hover {
+    background: rgba(255, 255, 255, 0.03);
+}
+.activity-logs-table tbody td {
+    padding: 14px 24px;
+    font-size: 14px;
+    vertical-align: middle;
+    color: #EAECEF;
+}
+.activity-logs-table td.activity-log-activity {
+    font-weight: 500;
+}
+.activity-logs-table td.activity-log-ip {
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    font-size: 13px;
+    color: #A3A8B3;
+}
+.activity-logs-table td.activity-log-date {
+    color: #A3A8B3;
+    white-space: nowrap;
+}
+.activity-logs-table td.right_t {
+    text-align: right;
+}
+
+/* Severity badge */
+.activity-log-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 10px;
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 500;
+    line-height: 1;
+    white-space: nowrap;
+}
+.activity-log-badge i {
+    font-size: 7px;
+}
+.activity-log-badge--success {
+    background: rgba(16, 185, 129, 0.12);
+    color: #10B981;
+}
+.activity-log-badge--warning {
+    background: rgba(234, 179, 8, 0.14);
+    color: #EAB308;
+}
+.activity-log-badge--danger {
+    background: rgba(239, 68, 68, 0.14);
+    color: #EF4444;
+}
+
+/* Mobile card list — hidden on desktop. */
+.activity-logs-mobile {
+    display: none;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+.activity-logs-mobile .activity-log-card {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding: 14px 16px;
+    border-bottom: 1px solid #242830;
+}
+.activity-logs-mobile .activity-log-card:last-child {
+    border-bottom: none;
+}
+.activity-log-card-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+}
+.activity-log-card-top .activity-log-activity {
+    font-size: 14px;
+    font-weight: 500;
+    color: #EAECEF;
+}
+.activity-log-card-meta {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    font-size: 13px;
+    color: #A3A8B3;
+}
+.activity-log-card-meta span {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+}
+.activity-log-card-meta i {
+    font-size: 14px;
+    color: #6A7282;
+}
+
+/* Responsive: desktop ≥768 uses table, ≤767 uses mobile cards. */
+@media screen and (max-width: 767px) {
+    .activity-logs-page {
+        padding: 16px 0 32px;
+    }
+    .activity-logs-header {
+        padding: 18px 16px 14px;
+    }
+    .activity-logs-header h1 {
+        font-size: 18px;
+    }
+    .activity-logs-header p {
+        font-size: 12px;
+    }
+    .activity-logs-table-wrap {
+        display: none;
+    }
+    .activity-logs-mobile {
+        display: block;
+    }
+    .activity-logs-card {
+        border-radius: 14px;
+    }
+}
+
+/* Light-theme overrides — forced with !important so they beat
+   anything else in the cascade (baseline table td rules, etc.). */
+body.light_theme .activity-logs-page {
+    color: #111827 !important;
+}
+body.light_theme .activity-logs-card {
+    background: #ffffff !important;
+    border-color: #e5e7eb !important;
+    box-shadow: 0 4px 16px rgba(17, 24, 39, 0.06) !important;
+}
+body.light_theme .activity-logs-header {
+    border-bottom-color: #e5e7eb !important;
+    height: 90px;
+    color: white;
+}
+/* not light theme */
+
+body.light_theme .activity-logs-header p {
+    color: #6A7282 !important;
+}
+body.light_theme .activity-logs-table thead th {
+    background: #f9fafb !important;
+    color: #6A7282 !important;
+    border-bottom-color: #e5e7eb !important;
+}
+body.light_theme .activity-logs-table tbody tr {
+    border-bottom-color: #f1f3f5 !important;
+}
+body.light_theme .activity-logs-table tbody tr:hover {
+    background: #f9fafb !important;
+}
+body.light_theme .activity-logs-table tbody td {
+    color: #111827 !important;
+}
+body.light_theme .activity-logs-table td.activity-log-ip,
+body.light_theme .activity-logs-table td.activity-log-date {
+    color: #4b5563 !important;
+}
+body.light_theme .activity-log-card-top .activity-log-activity {
+    color: #111827 !important;
+}
+body.light_theme .activity-log-card-meta {
+    color: #4b5563 !important;
+}
+body.light_theme .activity-log-card-meta i {
+    color: #9ca3af !important;
+}
+body.light_theme .activity-logs-mobile .activity-log-card {
+    border-bottom-color: #f1f3f5 !important;
+}
+
+/* ──────────────────────────────────────────────────────────────
+   Profile/Asset-Management sidebar — hide whenever the header
+   shows the mobile hamburger (Bootstrap `navbar-expand-lg`
+   breaks at ≤991px, so the `.navbar-toggler` appears there).
+   Between 768–991px the baseline kept the desktop sidebar
+   visible alongside the hamburger — two navigation surfaces
+   on screen at once. This rule hides the desktop rail as soon
+   as the hamburger surfaces, and lets the `.active` class
+   (set by ProfileLayout's mobile toggle) still open it when
+   the user taps through.
+   Dashboard main column also reclaims its 340px sidebar gutter. */
+@media screen and (max-width: 991px) {
+    .leftside_menu {
+        display: none !important;
+    }
+    .leftside_menu.active {
+        display: flex !important;
+    }
+    .dashboard_right {
+        padding-left: 20px !important;
+    }
 }

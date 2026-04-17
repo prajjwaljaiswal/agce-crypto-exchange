@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { Link, useNavigate, useSearchParams } from 'react-router-dom'
 import { useMutation } from '@tanstack/react-query'
+import toast from 'react-hot-toast'
 import { useInstanceConfig } from '@agce/hooks'
 import { mapInstanceToJurisdiction } from '@agce/config'
 import { useAuth } from '../../providers/index.js'
@@ -138,8 +139,8 @@ export function SignupPage() {
     setReferralOpen(!!invitationFromUrl)
   }
 
-  const showError = (msg: string) => alert(msg)
-  const showSuccess = (msg: string) => alert(msg)
+  const showError = (msg: string) => toast.error(msg)
+  const showSuccess = (msg: string) => toast.success(msg)
 
   // Step 1: check the identifier is available before advancing.
   const checkIdentifierMutation = useMutation({

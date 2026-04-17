@@ -3464,3 +3464,345 @@
   }
 }
 
+/* ──────────────────────────────────────────────────────────────
+   KYC page — dark-mode overrides.
+   The Figma export hardcodes white surfaces, light borders, and
+   near-black text across every card on the page. Scope everything
+   under body:not(.light_theme) + .dashboard_right.kyc-page so that
+   light mode is untouched and these rules cascade AFTER the Figma
+   declarations (kyc-figma.css is imported via TSX, so it ships
+   last in the bundle).
+   ────────────────────────────────────────────────────────────── */
+
+/* Page wrapper. kyc-failed / kyc-1 both fix a #fff background. */
+body:not(.light_theme) .dashboard_right.kyc-page,
+body:not(.light_theme) .dashboard_right.kyc-page.kyc-failed,
+body:not(.light_theme) .dashboard_right.kyc-page.kyc-1 {
+  background-color: transparent;
+}
+
+/* Top dark header bar stays dark — nothing to override there. */
+
+/* Generic surface/text remap.
+   These Figma class names (container1-100, paragraph1-10, etc.) are the
+   cards, panels, and text blocks inside the page. Blanket-remap every
+   white card surface, every light border, and lift dark body text. */
+body:not(.light_theme) .dashboard_right.kyc-page .container27,
+body:not(.light_theme) .dashboard_right.kyc-page .container28,
+body:not(.light_theme) .dashboard_right.kyc-page .container29,
+body:not(.light_theme) .dashboard_right.kyc-page .verification-details .container35,
+body:not(.light_theme) .dashboard_right.kyc-page .verification-details-wrapper .container-frame,
+body:not(.light_theme) .dashboard_right.kyc-page .background,
+body:not(.light_theme) .dashboard_right.kyc-page .background2 {
+  background-color: #1F2227;
+  border-color: #2A2E35;
+  color: #EAECEF;
+}
+
+body:not(.light_theme) .dashboard_right.kyc-page .background:hover,
+body:not(.light_theme) .dashboard_right.kyc-page .background2:hover {
+  background-color: #2B313C;
+}
+
+/* Buttons — KYC has a primary dark-pill button + a white outline.
+   Keep the gold CTA look for primary, flip white outlines to dark. */
+body:not(.light_theme) .dashboard_right.kyc-page .verification-details .button36 {
+  background: #D1AA67;
+  color: #101010;
+}
+body:not(.light_theme) .dashboard_right.kyc-page .verification-details .button36:hover {
+  background: #E0B878;
+}
+
+/* Heading + body copy colours (Figma uses #303236, #0f172b, #070808,
+   #101828, #1a1a1a, #343539 across dozens of classes). */
+body:not(.light_theme) .dashboard_right.kyc-page h1,
+body:not(.light_theme) .dashboard_right.kyc-page h2,
+body:not(.light_theme) .dashboard_right.kyc-page h3,
+body:not(.light_theme) .dashboard_right.kyc-page h4,
+body:not(.light_theme) .dashboard_right.kyc-page .frequently-asked-questions,
+body:not(.light_theme) .dashboard_right.kyc-page .frequently-asked-questions2,
+body:not(.light_theme) .dashboard_right.kyc-page .how-to-complete,
+body:not(.light_theme) .dashboard_right.kyc-page .how-to-complete2,
+body:not(.light_theme) .dashboard_right.kyc-page .how-to-complete3,
+body:not(.light_theme) .dashboard_right.kyc-page .how-to-complete4,
+body:not(.light_theme) .dashboard_right.kyc-page .verification-details h3,
+body:not(.light_theme) .dashboard_right.kyc-page .verification-complete-parent h1,
+body:not(.light_theme) .dashboard_right.kyc-page .your-identity-has {
+  color: #EAECEF;
+}
+
+/* Muted copy — keep as a mid-tone gray that reads on dark. */
+body:not(.light_theme) .dashboard_right.kyc-page .paragraph3,
+body:not(.light_theme) .dashboard_right.kyc-page .paragraph3 .to-protect-your2,
+body:not(.light_theme) .dashboard_right.kyc-page .verification-details .heading-3,
+body:not(.light_theme) .dashboard_right.kyc-page .verification-details .paragraph5,
+body:not(.light_theme) .dashboard_right.kyc-page .bank-level-encryption,
+body:not(.light_theme) .dashboard_right.kyc-page .trade-intro .access-all-markets {
+  color: #A3A8B3;
+}
+
+/* FAQ caret arrow (`ri-arrow-down-s-line`) — inherits color, ensure it
+   stays visible. */
+body:not(.light_theme) .dashboard_right.kyc-page .kyc-faq-caret {
+  color: #A3A8B3;
+}
+
+/* FAQ row dividers (baseline uses light borders). */
+body:not(.light_theme) .dashboard_right.kyc-page .container29,
+body:not(.light_theme) .dashboard_right.kyc-page .kyc-faq-row {
+  border-color: #2A2E35;
+}
+
+/* Verification-icon tiles (white squares with shadow in light mode). */
+body:not(.light_theme) .dashboard_right.kyc-page .verification-details .verification_icon2 {
+  background-color: #2B313C;
+  box-shadow: 0 10px 15px rgba(0, 0, 0, 0.35);
+}
+
+/* Banner at the bottom of the Complete view already uses a dark gradient,
+   so it's OK. Just make sure the inner button (`.button36`, white fill)
+   reads on dark — handled above. */
+
+/* Inputs / action chips that might appear inside the KYC view (Didit
+   redirect buttons etc.) — anything with .background / .background2
+   covered above. */
+
+/* Ensure the kyc-page sticky header bar stays readable. */
+body:not(.light_theme) .dashboard_right.kyc-page .empty-list,
+body:not(.light_theme) .dashboard_right.kyc-page .empty-list2 {
+  background-color: #070808;
+}
+
+/* ──────────────────────────────────────────────────────────────
+   KYC page — responsive polish.
+   The Figma export hardcodes 1034px widths on the card row
+   containers, 606-619px min-widths on the inner columns, and
+   a 610px fixed CTA button. On anything narrower than ~1100px
+   this causes horizontal overflow, truncated text, and side
+   scroll. Normalise every fixed width + min-width, then collapse
+   card layouts to column-flow on small screens.
+   ────────────────────────────────────────────────────────────── */
+
+/* Kill hardcoded 1034px widths on every Figma row container. */
+.dashboard_right.kyc-page .action-button,
+.dashboard_right.kyc-page .action-button2,
+.dashboard_right.kyc-page .container-container,
+.dashboard_right.kyc-page .container-container2,
+.dashboard_right.kyc-page .container8,
+.dashboard_right.kyc-page .container15,
+.dashboard_right.kyc-page .verification-center-parent,
+.dashboard_right.kyc-page .verification-center-group {
+  width: 100% !important;
+  max-width: 100% !important;
+  min-width: 0 !important;
+}
+
+/* Kill the 949px min-width on the FAQ outer row that causes horizontal
+   scroll on anything under ~1100px, and drop the 82.5px top-padding +
+   fixed 846.5px height on the FAQ sidebar — both prevent it from
+   sitting as a normal flex child on tablet/mobile. */
+.dashboard_right.kyc-page .frame-wrapper4 {
+  min-width: 0 !important;
+}
+
+.dashboard_right.kyc-page .container-wrapper {
+  height: auto !important;
+  padding-top: 0 !important;
+}
+
+/* Kill hardcoded min-widths (606–619px) on nested column wrappers —
+   they force horizontal overflow on anything under ~1200px. */
+.dashboard_right.kyc-page .control-area,
+.dashboard_right.kyc-page .control-area2,
+.dashboard_right.kyc-page .container-inner,
+.dashboard_right.kyc-page .container-inner2,
+.dashboard_right.kyc-page .p2p-parent,
+.dashboard_right.kyc-page .p2p-parent2,
+.dashboard_right.kyc-page .status-title,
+.dashboard_right.kyc-page .status-title2 {
+  min-width: 0 !important;
+  max-width: 100% !important;
+  flex: 1 1 auto;
+}
+
+/* FAQ sidebar → full width below main content on tablet + mobile.
+   Covers all three KYC views:
+   - kyc-1 (center)       → .container-wrapper (outer) + .container27 (card)
+   - kyc-failed (pending) → .container15 (outer) + .container27 (card)
+   - kyc-complete         → .verification-details-wrapper .container-frame
+   The existing @992px rule sets flex:1 1 100% but the baseline also
+   ships with max-width:360px / 400px + padding-top:82.5px that still
+   restricts width on phones. Force full width + zero extra padding. */
+@media screen and (max-width: 991px) {
+  .dashboard_right.kyc-page.kyc-1 .container-wrapper,
+  .dashboard_right.kyc-page.kyc-failed .inner-content-parent > .container15,
+  .dashboard_right.kyc-page:not(.kyc-failed):not(.kyc-1) .verification-details-wrapper .container-frame {
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+    flex: 1 1 100% !important;
+    padding-top: 0 !important;
+    margin-top: 0 !important;
+  }
+
+  .dashboard_right.kyc-page .container27,
+  .dashboard_right.kyc-page .container28 {
+    width: 100% !important;
+    max-width: 100% !important;
+  }
+}
+
+/* Locked Features cards + Verification-details cards become single
+   column on tablets; icon + text block stay side-by-side inside each. */
+@media screen and (max-width: 991px) {
+  .dashboard_right.kyc-page .container10,
+  .dashboard_right.kyc-page .container11,
+  .dashboard_right.kyc-page .container12,
+  .dashboard_right.kyc-page .container14,
+  .dashboard_right.kyc-page .container22,
+  .dashboard_right.kyc-page .container23,
+  .dashboard_right.kyc-page .container24,
+  .dashboard_right.kyc-page .container26 {
+    flex-wrap: wrap !important;
+    gap: 10px !important;
+    padding: 14px 14px 12px !important;
+  }
+
+  .dashboard_right.kyc-page .verification-details .container-parent6 {
+    grid-template-columns: 1fr !important;
+    gap: 16px !important;
+  }
+
+  .dashboard_right.kyc-page .verification-details .container35 {
+    padding: 16px !important;
+  }
+
+  /* Primary CTA in Complete view — 610px is wider than phone screens. */
+  .dashboard_right.kyc-page .verification-details .button36 {
+    width: 100% !important;
+    max-width: 100% !important;
+    padding: 14px 20px !important;
+  }
+}
+
+/* Phones: tighter padding, smaller icons, single-line stacking. */
+@media screen and (max-width: 767px) {
+  .dashboard_right.kyc-page .container10,
+  .dashboard_right.kyc-page .container11,
+  .dashboard_right.kyc-page .container12,
+  .dashboard_right.kyc-page .container14 {
+    gap: 8px !important;
+    padding: 12px !important;
+  }
+
+  .dashboard_right.kyc-page .container10 > img,
+  .dashboard_right.kyc-page .container11 > img,
+  .dashboard_right.kyc-page .container12 .container13 > img,
+  .dashboard_right.kyc-page .container14 > img {
+    width: 28px;
+    height: 28px;
+  }
+
+  .dashboard_right.kyc-page .icons-list {
+    padding-top: 0 !important;
+  }
+
+  .dashboard_right.kyc-page .verification-incomplete,
+  .dashboard_right.kyc-page .trading {
+    font-size: 14px !important;
+    line-height: 18px !important;
+  }
+
+  .dashboard_right.kyc-page .locked-to-prevent,
+  .dashboard_right.kyc-page .verification-ensures-safe {
+    font-size: 11px !important;
+    line-height: 16px !important;
+  }
+
+  /* FAQ questions + body — tighten padding, wrap long titles. */
+  .dashboard_right.kyc-page .kyc-faq-row {
+    gap: 8px !important;
+    padding: 10px 14px !important;
+  }
+
+  .dashboard_right.kyc-page .how-to-complete,
+  .dashboard_right.kyc-page .how-to-complete2,
+  .dashboard_right.kyc-page .how-to-complete3,
+  .dashboard_right.kyc-page .how-to-complete4 {
+    font-size: 14px !important;
+    line-height: 20px !important;
+    white-space: normal !important;
+  }
+
+  .dashboard_right.kyc-page .paragraph3 {
+    padding: 0 14px 12px !important;
+  }
+
+  .dashboard_right.kyc-page .paragraph3 .to-protect-your2 {
+    font-size: 13px !important;
+    line-height: 20px !important;
+  }
+
+  /* Verification-details (Complete view) 2-up grid → 1-up. */
+  .dashboard_right.kyc-page .verification-details .container-parent6 {
+    grid-template-columns: 1fr !important;
+  }
+
+  /* Banner at the bottom of Complete view. */
+  .dashboard_right.kyc-page .verification-details .container50 {
+    padding: 22px 14px !important;
+  }
+
+  .dashboard_right.kyc-page .reward-image {
+    min-height: 220px !important;
+  }
+}
+
+/* Narrow phones: kill remaining tight spacing + ensure icons stack. */
+@media screen and (max-width: 480px) {
+  .dashboard_right.kyc-page .container10,
+  .dashboard_right.kyc-page .container11,
+  .dashboard_right.kyc-page .container12,
+  .dashboard_right.kyc-page .container14 {
+    padding: 12px !important;
+  }
+
+  .dashboard_right.kyc-page .container12 .container-parent2 {
+    max-width: 100% !important;
+    flex: 1 1 auto;
+  }
+
+  .dashboard_right.kyc-page .container12 .transaction-process {
+    padding-left: 0 !important;
+  }
+
+  .dashboard_right.kyc-page .standard-identity-verification {
+    font-size: 18px !important;
+    line-height: 24px !important;
+  }
+
+  .dashboard_right.kyc-page .verification-center,
+  .dashboard_right.kyc-page .verification-center2 {
+    font-size: 22px !important;
+    line-height: 26px !important;
+  }
+
+  .dashboard_right.kyc-page .frequently-asked-questions,
+  .dashboard_right.kyc-page .frequently-asked-questions2 {
+    font-size: 16px !important;
+    line-height: 22px !important;
+  }
+
+  .dashboard_right.kyc-page .verification-complete {
+    font-size: 22px !important;
+    line-height: 28px !important;
+  }
+
+  .dashboard_right.kyc-page .your-identity-has {
+    font-size: 14px !important;
+    line-height: 20px !important;
+    padding: 0 8px !important;
+  }
+}
+

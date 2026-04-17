@@ -1,4 +1,4 @@
-import type { ReactNode } from 'react'
+import { useState, type ReactNode } from 'react'
 
 interface FaqEntry {
   id: string
@@ -76,33 +76,38 @@ const FAQ_ENTRIES: FaqEntry[] = [
 ]
 
 export function DepositFaq() {
+  const [openId, setOpenId] = useState<string | null>(FAQ_ENTRIES[0]?.id ?? null)
+
+  const toggle = (id: string) => setOpenId((cur) => (cur === id ? null : id))
+
   return (
     <div className="faq_container">
       <h2>FAQ</h2>
       <div className="accordion accordion-flush" id="accordionFlushExample">
-        {FAQ_ENTRIES.map((entry) => (
-          <div key={entry.id} className="accordion-item">
-            <h2 className="accordion-header">
-              <button
-                className="accordion-button collapsed"
-                type="button"
-                data-bs-toggle="collapse"
-                data-bs-target={`#${entry.id}`}
-                aria-expanded="false"
-                aria-controls={entry.id}
+        {FAQ_ENTRIES.map((entry) => {
+          const isOpen = openId === entry.id
+          return (
+            <div key={entry.id} className="accordion-item">
+              <h2 className="accordion-header">
+                <button
+                  className={`accordion-button${isOpen ? '' : ' collapsed'}`}
+                  type="button"
+                  aria-expanded={isOpen}
+                  aria-controls={entry.id}
+                  onClick={() => toggle(entry.id)}
+                >
+                  {entry.question}
+                </button>
+              </h2>
+              <div
+                id={entry.id}
+                className={`accordion-collapse collapse${isOpen ? ' show' : ''}`}
               >
-                {entry.question}
-              </button>
-            </h2>
-            <div
-              id={entry.id}
-              className="accordion-collapse collapse"
-              data-bs-parent="#accordionFlushExample"
-            >
-              <div className="accordion-body">{entry.body}</div>
+                <div className="accordion-body">{entry.body}</div>
+              </div>
             </div>
-          </div>
-        ))}
+          )
+        })}
       </div>
     </div>
   )
