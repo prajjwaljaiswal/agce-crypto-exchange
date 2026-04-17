@@ -30834,3 +30834,507 @@ body.light_theme .logout-modal-btn--ghost:hover {
         flex-direction: column-reverse;
     }
 }
+
+/* ──────────────────────────────────────────────────────────────
+   Deposit page (/asset_management/deposit) — dark-mode overrides.
+   Baseline CSS hardcodes light surfaces (#fff), light borders
+   (#eaecf0 / #F2F3F4), and near-black text (#101828 / #070709)
+   which all disappear on the default dark body. Every surface,
+   border, and text colour inside .depositcrypto_lft gets a dark
+   counterpart here; light-mode output is untouched.
+   ────────────────────────────────────────────────────────────── */
+body:not(.light_theme) .depositcrypto_lft h1 {
+    color: #EAECEF;
+}
+body:not(.light_theme) .depositcrypto_lft .deposit_fiat_head_btn,
+body:not(.light_theme) .depositcrypto_lft .deposit_fiat_head_btn:hover {
+    color: #EAECEF;
+}
+
+/* Left column: step rail, badges, headings. */
+body:not(.light_theme) .deposit_crypto_left {
+    color: #EAECEF;
+}
+body:not(.light_theme) .depositcrypto_lft .deposit_step_header h2 {
+    color: #EAECEF;
+}
+body:not(.light_theme) .depositcrypto_lft .deposit_step_section::before {
+    background: #2A2E35;
+}
+body:not(.light_theme) .depositcrypto_lft .deposit_step_badge {
+    background: #EAECEF;
+    border-color: #EAECEF;
+    color: #101828;
+}
+body:not(.light_theme) .depositcrypto_lft .select-option .deposit_step_badge {
+    background: #1F2227;
+    border-color: #363b45;
+    color: #EAECEF;
+}
+
+/* Deposit details card + QR box. */
+body:not(.light_theme) .depositcrypto_lft .deposit_details_card {
+    background: #1F2227;
+    border-color: #2A2E35;
+}
+body:not(.light_theme) .depositcrypto_lft .deposit_details_label {
+    color: #A3A8B3;
+}
+body:not(.light_theme) .depositcrypto_lft .deposit_details_caret {
+    color: #A3A8B3;
+}
+body:not(.light_theme) .depositcrypto_lft .deposit_qr_box {
+    background: #ffffff;
+    border-color: #2A2E35;
+}
+body:not(.light_theme) .depositcrypto_lft .deposit_qr_hint {
+    color: #A3A8B3;
+}
+body:not(.light_theme) .depositcrypto_lft .deposit_field_head {
+    color: #EAECEF;
+}
+body:not(.light_theme) .depositcrypto_lft .deposit_field_input input {
+    background: #16181D;
+    border-color: #2A2E35;
+    color: #EAECEF;
+}
+body:not(.light_theme) .depositcrypto_lft .deposit_field_input input::placeholder {
+    color: #6A7282;
+}
+body:not(.light_theme) .depositcrypto_lft .deposit_copy_btn {
+    background: #2B313C;
+    border-color: #363b45;
+    color: #EAECEF;
+}
+body:not(.light_theme) .depositcrypto_lft .deposit_copy_btn:hover {
+    background: #363b45;
+}
+body:not(.light_theme) .depositcrypto_lft .deposit_copy_ico {
+    color: #A3A8B3;
+}
+body:not(.light_theme) .depositcrypto_lft .deposit_details_meta {
+    color: #A3A8B3;
+}
+body:not(.light_theme) .depositcrypto_lft .deposit_meta_label {
+    color: #848E9C;
+}
+body:not(.light_theme) .depositcrypto_lft .deposit_meta_value {
+    color: #EAECEF;
+}
+
+/* Right column — FAQ card. */
+body:not(.light_theme) .deposit_crypto_right .faq_container {
+    border-color: #2A2E35;
+    background: #1F2227;
+    color: #EAECEF;
+}
+body:not(.light_theme) .deposit_crypto_right .faq_container h2 {
+    color: #EAECEF;
+}
+body:not(.light_theme) .deposit_crypto_right .accordion {
+    --bs-accordion-bg: transparent;
+    --bs-accordion-color: #EAECEF;
+    --bs-accordion-border-color: #2A2E35;
+    --bs-accordion-btn-color: #EAECEF;
+    --bs-accordion-btn-bg: transparent;
+    --bs-accordion-active-bg: transparent;
+    --bs-accordion-active-color: #ffffff;
+}
+body:not(.light_theme) .deposit_crypto_right .accordion-item {
+    background: transparent;
+    border-color: #2A2E35;
+    color: #EAECEF;
+}
+body:not(.light_theme) .deposit_crypto_right .accordion-button,
+body:not(.light_theme) .deposit_crypto_right .accordion-button:not(.collapsed) {
+    background: transparent !important;
+    color: #EAECEF !important;
+    box-shadow: none;
+}
+body:not(.light_theme) .deposit_crypto_right .accordion-body {
+    color: #A3A8B3;
+}
+body:not(.light_theme) .deposit_crypto_right .accordion-body strong {
+    color: #EAECEF;
+}
+/* FAQ caret image is filter:brightness(0) in baseline which is invisible
+   in dark. Invert it. */
+body:not(.light_theme) .deposit_crypto_right .accordion-button::after,
+body:not(.light_theme) .deposit_crypto_right .accordion-button[aria-expanded="true"]::after {
+    filter: brightness(0) invert(1) !important;
+}
+
+/* Deposit history. */
+body:not(.light_theme) .depositcrypto_lft .deposit_history_title {
+    color: #EAECEF;
+}
+body:not(.light_theme) .depositcrypto_lft .deposit_history_viewall {
+    color: #A3A8B3;
+}
+body:not(.light_theme) .depositcrypto_lft .deposit_history_viewall:hover {
+    color: #EAECEF;
+}
+body:not(.light_theme) .depositcrypto_lft .deposit_history_card,
+body:not(.light_theme) .depositcrypto_lft .deposit_history_head_wrap,
+body:not(.light_theme) .depositcrypto_lft .deposit_history_head {
+    background: transparent;
+}
+body:not(.light_theme) .depositcrypto_lft .deposit_history_head_cell {
+    color: #848E9C;
+}
+body:not(.light_theme) .depositcrypto_lft .deposit_history_empty_text {
+    color: #EAECEF;
+}
+
+/* Select coin / network rows — inputs + dropdowns read from these
+   classes elsewhere in the tree; harmless double-assignment in dark. */
+body:not(.light_theme) .depositcrypto_lft .search_icon_s {
+    background: #16181D;
+    border-color: #2A2E35;
+    color: #EAECEF;
+}
+
+/* Primary CTA button ("Generate Address" / "Transfer Completed"). */
+body:not(.light_theme) .depositcrypto_lft .coin_items_select .login_btn input[type="button"] {
+    background: #D1AA67;
+    color: #101010;
+    border: none;
+}
+
+/* ──────────────────────────────────────────────────────────────
+   Deposit page — responsive polish.
+   Baseline has a @991 rule that stacks the left/right columns,
+   but the page header is fixed at 66% width, side paddings are
+   desktop-sized, and the copy field / QR box overflow on phones.
+   ────────────────────────────────────────────────────────────── */
+@media screen and (max-width: 1200px) {
+    .depositcrypto_lft .deposit_crypto_page_head {
+        width: 100%;
+    }
+    .deposit_crypto_block_coin {
+        gap: 40px;
+    }
+}
+
+@media screen and (max-width: 991px) {
+    .depositcrypto_lft {
+        padding-left: 24px;
+        padding-right: 24px;
+        margin-top: 24px;
+    }
+    .depositcrypto_lft .deposit_crypto_left,
+    .depositcrypto_lft .deposit_crypto_right {
+        width: 100%;
+    }
+    .depositcrypto_lft .deposit_details_grid {
+        grid-template-columns: 1fr !important;
+    }
+    .depositcrypto_lft .deposit_history_head {
+        min-width: 560px;
+    }
+}
+
+@media screen and (max-width: 767px) {
+    .depositcrypto_lft {
+        padding: 16px 16px 28px;
+        margin-top: 16px;
+    }
+    .depositcrypto_lft h1 {
+        font-size: 22px;
+    }
+    .depositcrypto_lft .deposit_crypto_page_head {
+        gap: 10px;
+    }
+    .depositcrypto_lft .deposit_crypto_left {
+        padding-left: 28px;
+    }
+    .depositcrypto_lft .deposit_step_header h2 {
+        font-size: 14px;
+    }
+    .depositcrypto_lft .deposit_details_card {
+        padding: 14px;
+    }
+    .depositcrypto_lft .deposit_field_input {
+        grid-template-columns: 1fr;
+    }
+    .depositcrypto_lft .deposit_copy_btn {
+        justify-content: center;
+    }
+    .depositcrypto_lft .deposit_qr_box {
+        padding: 10px;
+    }
+    .depositcrypto_lft .deposit_qr_img {
+        width: 120px;
+        height: 120px;
+    }
+    .depositcrypto_lft .deposit_history_title {
+        font-size: 17px;
+    }
+    .depositcrypto_lft .deposit_history_empty {
+        padding: 36px 12px 44px;
+    }
+    .depositcrypto_lft .deposit_history_empty_text {
+        font-size: 15px;
+    }
+    .depositcrypto_lft .coin_items_select .col-sm-6 {
+        width: 100%;
+    }
+    .deposit_crypto_right .faq_container {
+        padding: 20px;
+    }
+}
+
+@media screen and (max-width: 480px) {
+    .depositcrypto_lft .deposit_crypto_page_head {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    .depositcrypto_lft .deposit_details_card {
+        padding: 12px;
+        border-radius: 10px;
+    }
+    .depositcrypto_lft .deposit_field_input input {
+        font-size: 12px;
+    }
+}
+
+/* ──────────────────────────────────────────────────────────────
+   Login / Signup / Forgot-password pages — dark-mode overrides.
+   Baseline hardcodes white surfaces (.login_fullhieght bg:#fff,
+   .form_block_login bg:#fff color:#000), dark text for headings
+   and labels, and light grey input fills (#F5F6F7). In dark mode
+   none of that reads. These rules scope under the body class each
+   page sets (loginbg/signupbg/forgot_password) so light mode is
+   untouched.
+   ────────────────────────────────────────────────────────────── */
+body:not(.light_theme).loginbg,
+body:not(.light_theme).signupbg {
+    background-color: #0f1113;
+}
+
+body:not(.light_theme).loginbg .login_fullhieght {
+    background-color: #0f1113 !important;
+}
+
+body:not(.light_theme).loginbg .login_section .form_block_login,
+body:not(.light_theme).signupbg .login_section .form_block_login,
+body:not(.light_theme).signupbg .login_section.bgsignup .form_block_login,
+body:not(.light_theme) .login_section.forgot_password .form_block_login {
+    background-color: transparent !important;
+    color: #EAECEF !important;
+}
+
+/* The signup wizard re-applies surfaces a few places — pin every one
+   that could carry a white fill to the dark page colour. */
+body:not(.light_theme).signupbg .login_section.bgsignup,
+body:not(.light_theme).signupbg .login_form_right,
+body:not(.light_theme).signupbg.signup-wizard-full-steps .login_form_right {
+    background-color: transparent !important;
+}
+
+/* Headings + labels */
+body:not(.light_theme) .form_block_login h2,
+body:not(.light_theme) .form_block_login h3,
+body:not(.light_theme) .form_block_login .login-wizard-title,
+body:not(.light_theme) .form_block_login .signup-wizard-step-meta {
+    color: #EAECEF;
+}
+
+body:not(.light_theme) .form_block_login label {
+    color: #C6CAD2;
+}
+
+body:not(.light_theme) .form_block_login p,
+body:not(.light_theme) .form_block_login .signup-wizard-subtitle {
+    color: #A3A8B3;
+}
+
+/* Inputs */
+body:not(.light_theme) .form_block_login .input_filed {
+    background-color: #16181D;
+    border-color: #2A2E35;
+    color: #EAECEF;
+}
+
+body:not(.light_theme) .form_block_login .input_filed:focus,
+body:not(.light_theme) .login_section .form_block_login .input_filed:focus,
+body:not(.light_theme) .login_section .form_block_login .input_filed:focus-visible {
+    border-color: #D1AA67 !important;
+    background-color: #16181D;
+}
+
+body:not(.light_theme) .form_block_login .input_filed::placeholder {
+    color: #6A7282;
+    opacity: 1;
+}
+
+/* Eye toggle + GET OTP button inside the password / OTP input */
+body:not(.light_theme) .form_block_login .get_otp,
+body:not(.light_theme) .form_block_login .get_otp.otp2 i {
+    color: #A3A8B3;
+}
+
+/* Select (country code, etc.) */
+body:not(.light_theme) .form_block_login select.input_filed {
+    background-color: #16181D;
+    color: #EAECEF;
+}
+
+body:not(.light_theme) .form_block_login select.input_filed option {
+    background-color: #16181D;
+    color: #EAECEF;
+}
+
+/* Login wizard tabs */
+body:not(.light_theme) .form_block_login.login-wizard-root .login-wizard-tabs button {
+    color: #A3A8B3;
+}
+body:not(.light_theme) .form_block_login.login-wizard-root .login-wizard-tabs button.is-active {
+    color: #EAECEF;
+}
+body:not(.light_theme) .form_block_login.login-wizard-root .login-wizard-tabs button.is-active::after {
+    background: #D1AA67;
+}
+
+/* Bind-IP checkbox row links */
+body:not(.light_theme) .form_block_login.login-wizard-root .login-wizard-bind-row a {
+    color: #D1AA67;
+}
+
+/* Primary CTA on login wizard (dark pill) — repaint for contrast */
+body:not(.light_theme) .form_block_login.login-wizard-root .login-wizard-next-btn {
+    background: #D1AA67;
+    color: #1a1205;
+}
+body:not(.light_theme) .form_block_login.login-wizard-root .login-wizard-next-btn:hover:not(:disabled) {
+    background: #E0B878;
+}
+
+/* Passkey + "Create account" links */
+body:not(.light_theme) .form_block_login.login-wizard-root .login-wizard-passkey-outline {
+    background: #1F2227;
+    border-color: #2A2E35;
+    color: #EAECEF;
+}
+body:not(.light_theme) .form_block_login.login-wizard-root .login-wizard-create-link {
+    color: #A3A8B3;
+}
+
+/* OTP cells — baseline forces background with !important, so match that. */
+body:not(.light_theme) .form_block_login .signup-wizard-otp-cell {
+    background: #1F2227 !important;
+    border-color: #2A2E35 !important;
+    color: #EAECEF;
+}
+body:not(.light_theme) .form_block_login .signup-wizard-otp-cell:focus {
+    border-color: #D1AA67 !important;
+}
+
+/* OTP resend / paste / back links */
+body:not(.light_theme) .form_block_login .signup-wizard-otp-link,
+body:not(.light_theme) .form_block_login .signup-wizard-back {
+    color: #EAECEF;
+}
+
+/* Divider + social buttons */
+body:not(.light_theme) .form_block_login .signup-wizard-divider {
+    color: #A3A8B3;
+}
+body:not(.light_theme) .form_block_login .signup-wizard-divider::before,
+body:not(.light_theme) .form_block_login .signup-wizard-divider::after {
+    background: #2A2E35;
+}
+body:not(.light_theme) .form_block_login .signup-wizard-social-btn {
+    background: #1F2227;
+    border-color: #2A2E35;
+}
+
+/* Signup password rules list */
+body:not(.light_theme) .form_block_login .signup-wizard-rule-row {
+    color: #A3A8B3;
+}
+body:not(.light_theme) .form_block_login .signup-wizard-rule-row.is-ok i {
+    color: #10B981;
+}
+body:not(.light_theme) .form_block_login .signup-wizard-rule-row.is-bad i {
+    color: #EF4444;
+}
+
+/* Signup privileges table */
+body:not(.light_theme) .form_block_login .signup-wizard-priv-table th,
+body:not(.light_theme) .form_block_login .signup-wizard-priv-table td {
+    border-bottom-color: #2A2E35;
+    color: #EAECEF;
+}
+body:not(.light_theme) .form_block_login .signup-wizard-priv-table th {
+    color: #848E9C;
+}
+
+/* Step dots (active uses gold already, faded dots need dark bg) */
+body:not(.light_theme) .form_block_login .signup-wizard-steps-bar li {
+    background: rgba(255, 255, 255, 0.15);
+}
+
+/* ── Signup split layout ── */
+body:not(.light_theme).signupbg {
+    background: linear-gradient(
+        90deg,
+        #000000 0%,
+        #000000 50%,
+        #0f1113 50%,
+        #0f1113 100%
+    ) !important;
+}
+
+body:not(.light_theme).signupbg .sign_rewards {
+    background-color: #000000 !important;
+}
+
+body:not(.light_theme).signupbg .login_section.bgsignup {
+    background-color: #0f1113 !important;
+}
+
+body:not(.light_theme).signupbg.signup-wizard-full-steps,
+body:not(.light_theme).signupbg.signup-wizard-full-steps .login_section.bgsignup {
+    background: #0f1113 !important;
+    background-color: #0f1113 !important;
+}
+
+/* Signup login-pills (tab switcher for Email/Phone).
+   Baseline uses `color: #0a0a0a !important` for active and `#84888C !important`
+   for idle tabs (see login-pills rules at ~3071 and nav-tabs rule at ~4327).
+   We match the `!important` to flip both states in dark mode. */
+body:not(.light_theme) .login-pills .nav-link,
+body:not(.light_theme) .login_section .nav.nav-tabs li button {
+    color: #A3A8B3 !important;
+}
+body:not(.light_theme) .login-pills .nav-link.active,
+body:not(.light_theme) body .login_section .login-pills li .nav-link.active,
+body:not(.light_theme) .login_section .nav.nav-tabs li button.active {
+    color: #EAECEF !important;
+}
+/* Active tab underline bar — baseline paints it `#000`, invisible on dark. */
+body:not(.light_theme) .login_section .nav.nav-tabs li button:before {
+    background-color: #D1AA67;
+}
+
+/* Verify-bonus title accent stays gold */
+body:not(.light_theme) h3.mb-2.verify_hd {
+    color: #EAECEF;
+}
+
+/* Collapse at ≤991px: signup single-column stays dark instead of white */
+@media screen and (max-width: 991px) {
+    body:not(.light_theme).signupbg,
+    body:not(.light_theme).signupbg.signup-wizard-full-steps {
+        background: #0f1113 !important;
+    }
+}
+
+/* Anti-phishing / registered-user hint pills (if rendered as .email_code) */
+body:not(.light_theme) .form_block_login .email_code {
+    color: #EAECEF;
+}
+body:not(.light_theme) .form_block_login .email_code .get_otp {
+    color: #A3A8B3;
+}
