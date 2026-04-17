@@ -4,15 +4,18 @@ import {
     formatPrice,
     formatQuantity,
     getPricePrecision,
+    getQuantityPrecision,
     isValidPriceInput,
     isValidQuantityInput,
 } from "../utils/formatting";
 import {
     dAdd,
+    dCmp,
     dDiv,
     dFloorToStep,
     dGtZero,
     dIsMultipleOf,
+    dMul,
     dPct,
     dRoundToStep,
     dSub,
@@ -23,6 +26,14 @@ import { useOrderFormStore } from "../stores/orderFormStore.js";
 
 export type OrderKind = "LIMIT" | "MARKET" | "STOP_LIMIT" | "STOP_MARKET";
 export type BuySellTab = "" | "buy" | "sell";
+
+// Strip leading zeros only when the next char is another digit. Keeps "0"
+// (user still typing) and "0.5" (decimal entry) intact but collapses "01"
+// → "1" so the field never shows a stray leading zero once the user enters
+// a non-zero integer on top of the default "0".
+function stripLeadingZero(s: string): string {
+    return s.replace(/^0+(?=\d)/, "");
+}
 
 type UseOrderFormArgs = {
     SelectedCoin: any;
@@ -77,12 +88,13 @@ export function useOrderForm({
 
     // Input handlers — tick/step-aware, block invalid values while typing.
     const handlePriceInput = useCallback((value: any, setter: (v: any) => void) => {
-        const stripped = String(value).replace(/,/g, "");
+        const stripped = stripLeadingZero(String(value).replace(/,/g, ""));
         if (isValidPriceInput(stripped, SelectedCoin)) setter(stripped);
     }, [SelectedCoin]);
 
     const handleQuantityInput = useCallback((value: any, setter: (v: any) => void) => {
-        if (isValidQuantityInput(value, SelectedCoin)) setter(value);
+        const stripped = stripLeadingZero(String(value));
+        if (isValidQuantityInput(stripped, SelectedCoin)) setter(stripped);
     }, [SelectedCoin]);
 
     // Decimal-safe helpers — use for any calc that hits price/qty/balance.
@@ -188,8 +200,10 @@ export function useOrderForm({
         setsellAmount(floorQtyToStep(dPct(SellCoinBal, safe)));
     }, [SellCoinBal, floorQtyToStep, setLimitSellPercent, setsellAmount]);
 
-    // Light client-side sanity checks. Authoritative validation lives server-side.
-    const validateOrder = useCallback((price: any, quantity: any, _side: any) => {
+    // Light client-side sanity checks. Authoritative validation lives
+    // server-side, but catching obvious issues here saves a round-trip
+    // and gives the user immediate feedback.
+    const validateOrder = useCallback((price: any, quantity: any, side: "BUY" | "SELL" | string) => {
         if (!dGtZero(quantity)) {
             alertErrorMessage("Enter a quantity greater than 0.");
             return false;
@@ -214,8 +228,54 @@ export function useOrderForm({
             return false;
         }
 
+        // Balance guard. For MARKET orders we don't know the exact fill
+        // price, so we use the latest ticker price (buyprice for BUY,
+        // sellPrice for SELL) as a best-effort estimate — server still
+        // re-validates and will reject if the market has moved.
+        //
+        // Comparisons use decimal strings via dCmp — Number() would lose
+        // precision above ~15 digits and fall back to scientific-notation
+        // display (e.g. "9.23e+23") in error messages. Format values via
+        // dToFixed for the user.
+        const fmt = (n: any) => {
+            const q = getQuantityPrecision(SelectedCoin);
+            return dToFixed(n, q).replace(/\.?0+$/, "");
+        };
+        const isBuy = String(side).toUpperCase() === "BUY";
+        if (isBuy) {
+            const quoteCode = SelectedCoin?.quote_currency ?? "quote";
+            if (BuyCoinBal === undefined || BuyCoinBal === null) {
+                alertErrorMessage(`${quoteCode} balance not loaded — try again.`);
+                return false;
+            }
+            const refPrice = needsPrice ? price : buyprice;
+            if (!dGtZero(refPrice)) {
+                alertErrorMessage("Unable to estimate order cost — market price unavailable.");
+                return false;
+            }
+            const required = dMul(refPrice, quantity);
+            if (dCmp(required, BuyCoinBal) === 1) {
+                alertErrorMessage(
+                    `Insufficient ${quoteCode} balance. Need ${fmt(required)}, have ${fmt(BuyCoinBal)}.`,
+                );
+                return false;
+            }
+        } else {
+            const baseCode = SelectedCoin?.base_currency ?? "base";
+            if (SellCoinBal === undefined || SellCoinBal === null) {
+                alertErrorMessage(`${baseCode} balance not loaded — try again.`);
+                return false;
+            }
+            if (dCmp(quantity, SellCoinBal) === 1) {
+                alertErrorMessage(
+                    `Insufficient ${baseCode} balance. Need ${fmt(quantity)}, have ${fmt(SellCoinBal)}.`,
+                );
+                return false;
+            }
+        }
+
         return true;
-    }, [SelectedCoin]);
+    }, [SelectedCoin, BuyCoinBal, SellCoinBal, buyprice, sellPrice]);
 
     // Called from handleSelectCoin when switching pairs. Clear the price fields
     // so the seed effect re-fills them from the new pair's market price. Reset

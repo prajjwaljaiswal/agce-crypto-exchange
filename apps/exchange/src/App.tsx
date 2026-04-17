@@ -134,7 +134,7 @@ export default function App() {
     <AppProviders>
       <AppInner />
       <Toaster
-        position="top-center"
+        position="top-right"
         reverseOrder={false}
         containerStyle={{ zIndex: 2147483647 }}
         toastOptions={{ style: { zIndex: 2147483647 } }}

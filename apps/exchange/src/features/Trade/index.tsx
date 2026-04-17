@@ -18,6 +18,8 @@ import { useOrderForm } from "./hooks/useOrderForm.js";
 import { useOrderBookDepth } from "./hooks/useOrderBookDepth.js";
 import { useMarketData } from "./hooks/useMarketData.js";
 import { useMyOrders } from "./hooks/useMyOrders.js";
+import { useMyTrades } from "./hooks/useMyTrades.js";
+import { useUserBalanceSocket } from "./hooks/useUserBalanceSocket.js";
 import { useSpotWallets } from "./hooks/useSpotWallets.js";
 import { usePairBalance } from "./hooks/usePairBalance.js";
 import { useOrderBookUI } from "./hooks/useOrderBookUI.js";
@@ -90,6 +92,12 @@ const Trade = () => {
         cancelOrder, refreshMyOrders,
     } = useMyOrders(isAuthenticated);
 
+    // Trade History — executed fills where the user was maker or taker.
+    const { trades: myTrades, refresh: refreshMyTrades } = useMyTrades(
+        isAuthenticated,
+        currentUserId,
+    );
+
     // Market-data: REST polling + socket subscriptions + derived price stats.
     const {
         BuyOrders, setBuyOrders,
@@ -106,10 +114,15 @@ const Trade = () => {
         isPricePositive, setIsPricePositive,
     } = useMarketData(SelectedCoin, getSocket, isConnected, currentUserId, () => {
         // Invoked when a local:trade event involves the current user.
+        // Balances update via the user:balance socket channel — no REST.
         refreshMyOrders();
-        fetchSpotWallets();
-        refreshPairBalanceRef.current();
+        refreshMyTrades();
     });
+
+    // Listen for per-user balance pushes from wallet-service → market-
+    // data-service → user:balance:<userId> room. Keeps AssetsPanel and
+    // order-form Available/Max in sync instantly on place / cancel / fill.
+    useUserBalanceSocket(SelectedCoin, getSocket, isConnected);
 
     // Holds the latest refreshPairBalance — lets us invoke it from callbacks
     // declared BEFORE usePairBalance() runs (useMarketData's onUserTrade).
@@ -165,13 +178,16 @@ const Trade = () => {
         window.scrollTo({ top: 0, behavior: 'smooth' });
     }, []);
 
-    // Refresh user-specific snapshots whenever the socket (re)connects.
-    // User channels (user:order:*, user:balance:*) aren't implemented yet,
-    // so events may have been missed during the disconnect — pull fresh REST.
+    // Refresh user-specific snapshots on (re)connect. Orders/trades have
+    // no private socket channel yet, so we re-seed them here. Balances
+    // ARE pushed live via user:balance:<userId>, but we still pull once
+    // on connect in case events were missed during the disconnect — the
+    // push then keeps it fresh after.
     useEffect(() => {
         if (!isAuthenticated) return;
         if (!isConnected) return;
         refreshMyOrders();
+        refreshMyTrades();
         fetchSpotWallets();
         refreshPairBalanceRef.current();
     }, [isAuthenticated, isConnected]);
@@ -256,9 +272,9 @@ const Trade = () => {
             alertSuccessMessage(`${label} — ${placed.status || 'placed'}${placed.orderId ? ` (${placed.orderId.slice(0, 8)})` : ''}`);
             setbuyOrderPrice('');
             setsellOrderPrice('');
+            // Balances refresh automatically via the user:balance socket
+            // push — no REST refetch needed here.
             refreshMyOrders();
-            fetchSpotWallets();
-            refreshPairBalance();
         } catch (err) {
             alertErrorMessage(toErrorMessage(err, 'Order failed'));
         }
@@ -266,8 +282,7 @@ const Trade = () => {
 
     const handleCancelOrder = async (orderId: string) => {
         await cancelOrder(orderId);
-        fetchSpotWallets();
-        refreshPairBalance();
+        // user:balance socket will push the released funds.
     };
 
     const depth = useOrderBookDepth(BuyOrders, SellOrders, orderBookAggStep);
@@ -440,6 +455,7 @@ const Trade = () => {
                             <SpotOrdersPanel
                                 openOrders={openOrders}
                                 pastOrders={pastOrders}
+                                myTrades={myTrades}
                                 positionOrderTab={positionOrderTab}
                                 setPositionOrderTab={setPositionOrderTab}
                                 openOrderKindTab={openOrderKindTab}

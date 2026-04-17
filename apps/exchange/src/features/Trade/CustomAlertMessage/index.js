@@ -1,16 +1,14 @@
-import { createElement, Fragment } from 'react';
+import { createElement } from 'react';
 import toast from 'react-hot-toast';
 
+// Wrap long messages (e.g. URLs in error payloads) so the toast bubble
+// contains the text instead of letting it spill outside.
 const toastStyle = {
   background: '#2b313c',
   color: '#e0e0e0',
-  paddingRight: '32px',
-};
-
-const closeCss = {
-  cursor: 'pointer',
-  paddingLeft: '5px',
-  fontSize: '18px',
+  maxWidth: '420px',
+  wordBreak: 'break-word',
+  overflowWrap: 'anywhere',
 };
 
 const toTitleCase = (str) => {
@@ -20,37 +18,22 @@ const toTitleCase = (str) => {
 
 function alertErrorMessage(message) {
   toast.error(
-    (t) => createElement(Fragment, null,
-      createElement('span', null, toTitleCase(message) || 'Network Error...Please Try Again Later'),
-      // createElement('span', { style: closeCss, onClick: () => toast.dismiss(t.id) },
-      //   createElement('i', { className: 'ri-close-circle-line' })
-      // )
-    ),
-    { position: 'bottom-center', style: toastStyle }
+    () => createElement('span', null, toTitleCase(message) || 'Network Error...Please Try Again Later'),
+    { style: toastStyle }
   );
 }
 
 function alertSuccessMessage(message) {
   toast.success(
-    (t) => createElement(Fragment, null,
-      createElement('span', null, toTitleCase(message) || 'Success'),
-      // createElement('span', { style: closeCss, onClick: () => toast.dismiss(t.id) },
-      //   createElement('i', { className: 'ri-close-circle-line' })
-      // )
-    ),
-    { position: 'bottom-center', style: toastStyle }
+    () => createElement('span', null, toTitleCase(message) || 'Success'),
+    { style: toastStyle }
   );
 }
 
 function alertWarningMessage(message) {
   toast(
-    (t) => createElement(Fragment, null,
-      createElement('span', null, toTitleCase(message) || 'Oops...Something Went Wrong'),
-      // createElement('span', { style: closeCss, onClick: () => toast.dismiss(t.id) },
-      //   createElement('i', { className: 'ri-close-circle-line' })
-      // )
-    ),
-    { position: 'bottom-center', icon: '⚠️', style: toastStyle }
+    () => createElement('span', null, toTitleCase(message) || 'Oops...Something Went Wrong'),
+    { icon: '⚠️', style: toastStyle }
   );
 }
 

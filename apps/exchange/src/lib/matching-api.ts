@@ -96,6 +96,23 @@ export interface Order {
   updatedAt?: string
 }
 
+/** User-scoped trade fill returned by GET /api/v1/orders/mine/trades. */
+export interface UserTrade {
+  tradeId: string
+  symbol: string
+  price: string
+  quantity: string
+  makerOrderId: string
+  takerOrderId: string
+  makerUserId: string
+  takerUserId: string
+  /** Side of the taker leg (not necessarily the current user). */
+  takerSide: OrderSide
+  /** Epoch ms. */
+  timestamp: number
+  instance?: string
+}
+
 // ──────────────────────────────────────────────────────────────────────────
 // Tiny fetch wrapper
 // Separate from lib/http.ts because matching-service doesn't wrap responses
@@ -269,6 +286,13 @@ export const ordersApi = {
 
   mine(limit = 100, signal?: AbortSignal) {
     return request<Order[]>(`${ORDERS}/mine`, { signal, query: { limit } })
+  },
+
+  myTrades(limit = 100, signal?: AbortSignal) {
+    return request<UserTrade[]>(`${ORDERS}/mine/trades`, {
+      signal,
+      query: { limit },
+    })
   },
 }
 

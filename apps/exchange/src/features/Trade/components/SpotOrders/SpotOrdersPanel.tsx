@@ -1,5 +1,6 @@
 import moment from "moment";
 import { SPOT_OPEN_ORDER_KINDS } from "../../constants/uiOptions.js";
+import type { MyTradeRow } from "../../hooks/useMyTrades.js";
 
 function nineDecimalFormat(data: any) {
     if (typeof data === "number") return parseFloat(data.toFixed(9));
@@ -9,6 +10,7 @@ function nineDecimalFormat(data: any) {
 type SpotOrdersPanelProps = {
     openOrders: any[];
     pastOrders: any[];
+    myTrades: MyTradeRow[];
     positionOrderTab: string;
     setPositionOrderTab: (v: string) => void;
     openOrderKindTab: string;
@@ -28,6 +30,7 @@ type SpotOrdersPanelProps = {
 export function SpotOrdersPanel({
     openOrders,
     pastOrders,
+    myTrades,
     positionOrderTab,
     setPositionOrderTab,
     openOrderKindTab,
@@ -217,15 +220,86 @@ export function SpotOrdersPanel({
 
             </div>
 
-            {/* ── Placeholder tabs (Trade History / Bots) ── */}
+            {/* ── Trade History ── */}
             <div className={`cnt_table tradeHistory ${positionOrderTab === "tradeHistory" ? "active" : ""}`}>
+
+                {/* Desktop */}
                 <div className="desktop_view2">
-                    <div className="table-responsive">
-                        <div className="spot_orders_empty_state" role="status">
-                            <img src="/images/no-data.svg" alt="" width={120} height={144} className="spot_orders_empty_telescope" />
-                        </div>
+                    <div className="table-responsive" style={{ height: "353px" }}>
+                        <table className="table table_home">
+                            <thead>
+                                <tr>
+                                    <th>Date</th>
+                                    <th>Trading Pair</th>
+                                    <th>Side</th>
+                                    <th>Role</th>
+                                    <th>Price</th>
+                                    <th>Quantity</th>
+                                    <th>Total</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {myTrades?.length > 0 ? (
+                                    myTrades.map((t) => (
+                                        <tr key={t.tradeId}>
+                                            <td>
+                                                <div className="c_view justify-content-start">
+                                                    <span>
+                                                        {moment(t.timestamp).format("DD/MM/YYYY")}{" "}
+                                                        <small>{moment(t.timestamp).format("hh:mm")}</small>
+                                                    </span>
+                                                </div>
+                                            </td>
+                                            <td>{`${t.base}/${t.quote}`}</td>
+                                            <td className={t.side === "BUY" ? "text-success" : "text-danger"}>{t.side}</td>
+                                            <td>{t.isTaker ? "Taker" : "Maker"}</td>
+                                            <td>{nineDecimalFormat(t.price)}</td>
+                                            <td>{nineDecimalFormat(t.quantity)}</td>
+                                            <td>{nineDecimalFormat(t.total)} {t.quote}</td>
+                                        </tr>
+                                    ))
+                                ) : (
+                                    <tr className="no-data-row spot_orders_no_data_row">
+                                        <td colSpan={7}>
+                                            <div className="spot_orders_empty_state" role="status">
+                                                <img src="/images/no-data.svg" alt="" width={120} height={144} className="spot_orders_empty_telescope" />
+                                            </div>
+                                        </td>
+                                    </tr>
+                                )}
+                            </tbody>
+                        </table>
                     </div>
                 </div>
+
+                {/* Mobile */}
+                <div className="order_history_mobile_view twomobile">
+                    <div className="d-flex datalist_mbl">
+                        {myTrades?.length > 0 ? (
+                            myTrades.map((t) => (
+                                <div key={t.tradeId} className="order_datalist">
+                                    <ul className="listdata">
+                                        <li><span className="date">Date</span><span className="date_light">{moment(t.timestamp).format("DD/MM/YYYY")}</span></li>
+                                        <li><span>Time</span><span>{moment(t.timestamp).format("hh:mm")}</span></li>
+                                        <li><span>Currency Pair</span><span>{t.base}/{t.quote}</span></li>
+                                        <li><span>Side</span><span className={t.side === "BUY" ? "text-success" : "text-danger"}>{t.side}</span></li>
+                                        <li><span>Role</span><span>{t.isTaker ? "Taker" : "Maker"}</span></li>
+                                        <li><span>Price</span><span>{nineDecimalFormat(t.price)}</span></li>
+                                        <li><span>Quantity</span><span>{nineDecimalFormat(t.quantity)}</span></li>
+                                        <li><span>Total</span><span>{nineDecimalFormat(t.total)} {t.quote}</span></li>
+                                    </ul>
+                                </div>
+                            ))
+                        ) : (
+                            <div className="no-data-wrapper w-100 d-flex justify-content-center py-4">
+                                <div className="spot_orders_empty_state" role="status">
+                                    <img src="/images/no-data.svg" alt="" width={120} height={144} className="spot_orders_empty_telescope" />
+                                </div>
+                            </div>
+                        )}
+                    </div>
+                </div>
+
             </div>
 
             <div className={`cnt_table loan ${positionOrderTab === "loan" ? "active" : ""}`}>

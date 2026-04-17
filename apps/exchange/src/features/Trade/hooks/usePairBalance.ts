@@ -3,25 +3,27 @@ import { walletApi } from "../../../lib/matching-api.js";
 import { useWalletsStore } from "../stores/walletsStore.js";
 
 /**
- * Fetches the balance of the ONE asset the user needs for the active tab:
- *   - Buy tab  → quote currency (e.g. USDT for BTC-USDT) → BuyCoinBal
- *   - Sell tab → base  currency (e.g. BTC  for BTC-USDT) → SellCoinBal
+ * Fetches balances for BOTH legs of the selected pair in parallel:
+ *   - quote currency (e.g. USDT for BTC-USDT) → BuyCoinBal
+ *   - base  currency (e.g. BTC  for BTC-USDT) → SellCoinBal
+ *
+ * The AssetsPanel shows both balances regardless of the active tab, so
+ * fetching only the active-side asset (as before) left the other leg
+ * stuck at 0.
  *
  * Uses per-asset REST: GET /api/v1/wallet/balances/:asset.
- * Separate from useSpotWallets which powers the full-wallet AssetsPanel.
+ * Separate from useSpotWallets which powers the full-wallet list.
  */
 export function usePairBalance(
     selectedCoin: any,
-    showBuySellTab: "" | "buy" | "sell" | string,
+    _showBuySellTab: "" | "buy" | "sell" | string,
 ) {
     const { setBuyCoinBal, setSellCoinBal } = useWalletsStore();
 
-    // Track latest pair + side in refs so `refresh` is callable no-arg
-    // from order place / cancel / reconnect callbacks.
+    // Track latest pair in a ref so `refresh` is callable no-arg from
+    // order place / cancel / reconnect callbacks.
     const coinRef = useRef(selectedCoin);
-    const sideRef = useRef(showBuySellTab);
     useEffect(() => { coinRef.current = selectedCoin; }, [selectedCoin]);
-    useEffect(() => { sideRef.current = showBuySellTab; }, [showBuySellTab]);
 
     const refresh = useCallback(async () => {
         const coin = coinRef.current;
@@ -29,29 +31,27 @@ export function usePairBalance(
         const quote = coin?.quote_currency;
         if (!base || !quote) return;
 
-        // Default to "buy" when the tab is empty (desktop initial render).
-        const side = sideRef.current || "buy";
-        const asset = side === "sell" ? base : quote;
+        const toNum = (bal: any): number => {
+            const raw = bal?.free ?? bal?.available ?? "0";
+            const n = parseFloat(raw);
+            return Number.isFinite(n) ? n : 0;
+        };
 
-        try {
-            const bal = await walletApi.balance(asset);
-            const raw = bal?.free ?? (bal as any)?.available ?? "0";
-            const val = parseFloat(raw);
-            const num = Number.isFinite(val) ? val : 0;
-            if (side === "sell") setSellCoinBal(num);
-            else setBuyCoinBal(num);
-        } catch {
-            // non-critical — leave previous value
-        }
+        const [quoteRes, baseRes] = await Promise.allSettled([
+            walletApi.balance(quote),
+            walletApi.balance(base),
+        ]);
+        if (quoteRes.status === "fulfilled") setBuyCoinBal(toNum(quoteRes.value));
+        if (baseRes.status === "fulfilled") setSellCoinBal(toNum(baseRes.value));
     }, [setBuyCoinBal, setSellCoinBal]);
 
-    // Auto-refresh when the pair or active side changes.
+    // Auto-refresh when the pair changes.
     useEffect(() => {
         const base = selectedCoin?.base_currency;
         const quote = selectedCoin?.quote_currency;
         if (!base || !quote) return;
         refresh();
-    }, [selectedCoin?.base_currency, selectedCoin?.quote_currency, showBuySellTab, refresh]);
+    }, [selectedCoin?.base_currency, selectedCoin?.quote_currency, refresh]);
 
     return { refreshPairBalance: refresh };
 }

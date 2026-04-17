@@ -1,106 +1,133 @@
 import { useContext, useEffect, useState } from 'react'
 import { SocketContext } from '../Trade/SocketContext.js'
 
-const RAW_URL = import.meta.env.VITE_MARKET_DATA_URL || 'http://localhost:8080'
-const MARKET_DATA_ORIGIN = (() => {
-  try {
-    return new URL(RAW_URL).origin
-  } catch {
-    return RAW_URL
-  }
-})()
-const REST_PREFIX = import.meta.env.VITE_MARKET_DATA_REST_PREFIX || '/market-data'
-const REST_BASE = `${MARKET_DATA_ORIGIN}${REST_PREFIX}`
+/**
+ * Market-page data source — LOCAL AGCE pairs only, via the
+ * `local_all_tickers` broadcast on market-data-service.
+ *
+ *   URL:       VITE_MARKET_DATA_URL  (gateway, e.g. http://192.168.1.13:8080)
+ *   Path:      VITE_MARKET_DATA_PATH (/market-data/socket.io/)
+ *   Subscribe: { channel: "local_all_tickers" }
+ *   Event:     "local:all_tickers"  (array payload, every ~1s)
+ *
+ * REST seed on mount — `GET /api/v1/market/symbols` (matching-service
+ * through the gateway) populates rows with zero placeholders instantly
+ * so the table isn't blank while waiting for the first socket tick.
+ * The socket then overlays live stats as trades happen on each pair.
+ */
 
-function normalizeRest(row) {
-  return {
-    symbol: row.symbol,
-    lastPrice: Number(row.lastPrice),
-    priceChange: Number(row.priceChange),
-    priceChangePercent: Number(row.priceChangePercent),
-    high: Number(row.highPrice),
-    low: Number(row.lowPrice),
-    volume: Number(row.volume),
-    quoteVolume: Number(row.quoteVolume),
-    openPrice: Number(row.openPrice),
-    count: Number(row.count) || 0,
-  }
+const MATCHING_BASE =
+    import.meta.env.VITE_MATCHING_API_URL ||
+    import.meta.env.VITE_AUTH_API_URL ||
+    'http://localhost:8080'
+
+/** "BTC-USDT" → "BTCUSDT"; match the FEATURED / UI symbol format. */
+function normalizeKey(symbol) {
+    return String(symbol || '').replace(/-/g, '').toUpperCase()
 }
 
-function normalizeStream(t) {
-  return {
-    symbol: t.s,
-    lastPrice: Number(t.c),
-    priceChange: Number(t.p),
-    priceChangePercent: Number(t.P),
-    high: Number(t.h),
-    low: Number(t.l),
-    volume: Number(t.v),
-    quoteVolume: Number(t.q),
-    openPrice: Number(t.o),
-    count: Number(t.n) || 0,
-  }
+/** Zero-filled row used while a pair has no trade history yet. */
+function emptyRow(symbol) {
+    return {
+        symbol: normalizeKey(symbol),
+        lastPrice: 0,
+        priceChange: 0,
+        priceChangePercent: 0,
+        high: 0,
+        low: 0,
+        volume: 0,
+        quoteVolume: 0,
+        openPrice: 0,
+        count: 0,
+    }
+}
+
+/** Map a `local_all_tickers` row → the shape Market/index.jsx consumes. */
+function normalizeLocal(t) {
+    const last = Number(t.last ?? 0)
+    const volume = Number(t.volume ?? 0)
+    return {
+        symbol: normalizeKey(t.symbol),
+        lastPrice: last,
+        priceChange: Number(t.priceChange ?? 0),
+        priceChangePercent: Number(t.priceChangePercent ?? 0),
+        high: Number(t.high ?? 0),
+        low: Number(t.low ?? 0),
+        volume,
+        // local ticker doesn't emit quoteVolume — estimate as base vol × last.
+        quoteVolume: last * volume,
+        openPrice: Number(t.open ?? 0),
+        count: Number(t.count ?? 0),
+    }
 }
 
 export function useMarketTickers() {
-  const { getSocket, isConnected } = useContext(SocketContext)
-  const [tickers, setTickers] = useState({})
-  const [isLoading, setIsLoading] = useState(true)
-  const [error, setError] = useState(null)
+    const { getSocket, isConnected } = useContext(SocketContext)
+    const [tickers, setTickers] = useState({})
+    const [isLoading, setIsLoading] = useState(true)
+    const [error, setError] = useState(null)
 
-  useEffect(() => {
-    let cancelled = false
-    setIsLoading(true)
-    fetch(`${REST_BASE}/api/v1/binance/ticker/24hr`)
-      .then((r) => (r.ok ? r.json() : Promise.reject(new Error(`HTTP ${r.status}`))))
-      .then((rows) => {
-        if (cancelled) return
-        const map = {}
-        for (const row of rows) {
-          if (!row?.symbol) continue
-          map[row.symbol] = normalizeRest(row)
+    // REST seed — get the pair list up so the table isn't empty while
+    // we wait for the first socket frame.
+    useEffect(() => {
+        let cancelled = false
+        const url = `${MATCHING_BASE.replace(/\/$/, '')}/api/v1/market/symbols`
+        fetch(url)
+            .then((r) => (r.ok ? r.json() : Promise.reject(new Error(`HTTP ${r.status}`))))
+            .then((body) => {
+                if (cancelled) return
+                // matching-service returns { success, data: [...] }; tolerate either shape.
+                const symbols = Array.isArray(body?.data) ? body.data : Array.isArray(body) ? body : []
+                const seed = {}
+                for (const s of symbols) {
+                    const key = normalizeKey(s)
+                    if (key) seed[key] = emptyRow(s)
+                }
+                setTickers((prev) => ({ ...seed, ...prev }))
+                setIsLoading(false)
+                setError(null)
+            })
+            .catch((err) => {
+                if (cancelled) return
+                console.warn('[useMarketTickers] /market/symbols seed failed:', err.message)
+                setError(err)
+                setIsLoading(false)
+            })
+        return () => {
+            cancelled = true
         }
-        setTickers(map)
-        setIsLoading(false)
-      })
-      .catch((err) => {
-        if (cancelled) return
-        console.warn('[useMarketTickers] REST bootstrap failed:', err.message)
-        setError(err)
-        setIsLoading(false)
-      })
-    return () => {
-      cancelled = true
-    }
-  }, [])
+    }, [])
 
-  useEffect(() => {
-    const socket = getSocket()
-    if (!socket || !isConnected) return undefined
+    // Live overlay — subscribe to local_all_tickers, merge every frame.
+    useEffect(() => {
+        const socket = getSocket()
+        if (!socket || !isConnected) return undefined
 
-    socket.emit('subscribe', { channel: 'all_tickers' })
+        socket.emit('subscribe', { channel: 'local_all_tickers' })
 
-    const handleData = (event) => {
-      if (!event || (event.channel !== 'all_tickers' && event.channel !== 'ticker')) return
-      const payload = event.payload
-      if (!payload) return
-      const frames = Array.isArray(payload) ? payload : [payload]
-      setTickers((prev) => {
-        const next = { ...prev }
-        for (const t of frames) {
-          if (!t?.s) continue
-          next[t.s] = normalizeStream(t)
+        const handle = (payload) => {
+            const rows = Array.isArray(payload) ? payload : [payload]
+            if (!rows.length) return
+            setTickers((prev) => {
+                const next = { ...prev }
+                for (const raw of rows) {
+                    if (!raw?.symbol) continue
+                    const row = normalizeLocal(raw)
+                    next[row.symbol] = row
+                }
+                return next
+            })
+            // Any real frame clears a stale "failed" state from the REST seed.
+            setError(null)
+            setIsLoading(false)
         }
-        return next
-      })
-    }
 
-    socket.on('data', handleData)
-    return () => {
-      socket.emit('unsubscribe', { channel: 'all_tickers' })
-      socket.off('data', handleData)
-    }
-  }, [getSocket, isConnected])
+        socket.on('local:all_tickers', handle)
+        return () => {
+            socket.emit('unsubscribe', { channel: 'local_all_tickers' })
+            socket.off('local:all_tickers', handle)
+        }
+    }, [getSocket, isConnected])
 
-  return { tickers, isLoading, error }
+    return { tickers, isLoading, error }
 }

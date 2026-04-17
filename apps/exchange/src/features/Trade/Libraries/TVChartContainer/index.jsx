@@ -107,11 +107,6 @@ export default function TVChartContainer({ symbol }) {
 
       applyChartThemeToWidget(instance, TV_CHART_CONTAINER);
 
-      chart.getAllStudies().forEach((study) => {
-        if (study.name.toLowerCase().includes('volume')) chart.removeEntity(study.id);
-      });
-      chart.createStudy('Volume', false, true);
-
       instance.headerReady?.().then(() => {
         const intervals = [
           { value: '1', label: '1 Min' },

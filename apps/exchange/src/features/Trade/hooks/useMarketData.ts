@@ -35,44 +35,6 @@ function finite(r: { price: number; quantity: number }) {
 
 const MAX_BOOK_LEVELS = 50;
 
-/**
- * Merge a local:depth delta into an existing book side. Each event carries
- * only the price levels that changed — quantity 0 means "remove this level",
- * any other quantity replaces whatever was there. Returns the new top-50
- * sorted array (bids descending, asks ascending).
- */
-function mergeDepthSide(
-    current: Array<{ price: number; quantity: number; remaining: number }>,
-    delta: any[],
-    side: "bids" | "asks",
-) {
-    const map = new Map<string, number>();
-    for (const lvl of current) map.set(String(lvl.price), lvl.quantity);
-
-    for (const raw of delta) {
-        const priceRaw = Array.isArray(raw) ? raw[0] : (raw?.price ?? raw?.p);
-        const qtyRaw = Array.isArray(raw) ? raw[1] : (raw?.quantity ?? raw?.qty ?? raw?.q);
-        const priceNum = parseFloat(priceRaw);
-        const qtyNum = parseFloat(qtyRaw);
-        if (!Number.isFinite(priceNum)) continue;
-        const key = String(priceNum);
-        if (!Number.isFinite(qtyNum) || qtyNum <= 0) {
-            map.delete(key); // qty 0 or invalid → remove level
-        } else {
-            map.set(key, qtyNum);
-        }
-    }
-
-    const rows = Array.from(map.entries()).map(([priceStr, qty]) => ({
-        price: parseFloat(priceStr),
-        quantity: qty,
-        remaining: qty,
-    }));
-    if (side === "bids") rows.sort((a, b) => b.price - a.price);
-    else rows.sort((a, b) => a.price - b.price);
-    return rows.slice(0, MAX_BOOK_LEVELS);
-}
-
 // ---------------------------------------------------------------------------
 // Hook
 // ---------------------------------------------------------------------------
@@ -201,27 +163,16 @@ export function useMarketData(
         };
 
         // Initial seed — runs once on mount and again on pair switch.
+        // After this, socket events (local:depth / local:trade / local:ticker)
+        // own all live updates; we never fall back to polling.
         pullDepth();
         pullTrades();
         pullTicker();
 
-        // Live updates:
-        //  - depth + trades come from local:depth / local:trade socket events
-        //    (handled by the socket effect below). Poll only as a fallback when
-        //    the socket is disconnected, otherwise the poll OVERWRITES live data.
-        //  - ticker (24h stats) is not emitted by the local matching engine,
-        //    so keep a slow poll regardless of socket state.
-        const depthId  = isConnected ? undefined : window.setInterval(pullDepth, 2_000);
-        const tradesId = isConnected ? undefined : window.setInterval(pullTrades, 5_000);
-        const tickerId = window.setInterval(pullTicker, 10_000);
-
         return () => {
             cancelled = true;
-            if (depthId  !== undefined) window.clearInterval(depthId);
-            if (tradesId !== undefined) window.clearInterval(tradesId);
-            window.clearInterval(tickerId);
         };
-    }, [SelectedCoin?.base_currency, SelectedCoin?.quote_currency, isConnected]);
+    }, [SelectedCoin?.base_currency, SelectedCoin?.quote_currency]);
 
     // -----------------------------------------------------------------------
     // Real-time updates via Socket.IO (matching-service local channels).
@@ -237,11 +188,13 @@ export function useMarketData(
 
         socket.emit('subscribe', { channel: 'local_trade', symbol: localSymbol });
         socket.emit('subscribe', { channel: 'local_depth', symbol: localSymbol });
+        socket.emit('subscribe', { channel: 'local_ticker', symbol: localSymbol });
 
         setloader(false);
 
         let loggedTrade = false;
         let loggedDepth = false;
+        let loggedTicker = false;
 
         const localTradeEvent = `local:trade:${localSymbol}`;
         const handleLocalTrade = (event: any) => {
@@ -289,23 +242,61 @@ export function useMarketData(
                 });
                 loggedDepth = true;
             }
-            // local:depth events are DELTAS — only the changed price levels.
-            // Merge them into the existing book; qty 0 means remove.
+            // Each local:depth event is a FULL top-N snapshot, not a delta —
+            // matching-service's publishDepthTick serialises the whole book
+            // (see matching_service/src/events/producers/depth.producer.ts).
+            // Merging would leave cancelled/removed price levels behind, so
+            // replace each side wholesale. Sort bids desc, asks asc, slice
+            // to the top 50 rows the UI can render.
             if (Array.isArray(e?.bids)) {
-                setBuyOrders((prev) => mergeDepthSide(prev, e.bids, 'bids'));
+                const rows = e.bids.map(parseLevel).filter(finite);
+                rows.sort((a: { price: number }, b: { price: number }) => b.price - a.price);
+                setBuyOrders(rows.slice(0, MAX_BOOK_LEVELS));
             }
             if (Array.isArray(e?.asks)) {
-                setSellOrders((prev) => mergeDepthSide(prev, e.asks, 'asks'));
+                const rows = e.asks.map(parseLevel).filter(finite);
+                rows.sort((a: { price: number }, b: { price: number }) => a.price - b.price);
+                setSellOrders(rows.slice(0, MAX_BOOK_LEVELS));
             }
         };
 
         socket.on(localDepthEvent, handleLocalDepth);
 
+        // local:ticker:<SYM> — 24h stats (last price, pct change, high, low,
+        // volume). market-data-service recomputes and emits these after every
+        // trade the matching engine produces (see matching-trades.consumer.ts
+        // line 81). Same payload shape as the REST ticker seed.
+        const localTickerEvent = `local:ticker:${localSymbol}`;
+        const handleLocalTicker = (event: any) => {
+            const e = event?.payload ?? event;
+            if (!loggedTicker) { console.log('[Trade] local_ticker event sample:', e); loggedTicker = true; }
+            const setIfPos = (v: any, setter: (n: number) => void) => {
+                if (v == null) return;
+                const n = parseFloat(v);
+                if (Number.isFinite(n) && n > 0) setter(n);
+            };
+            const setIfFinite = (v: any, setter: (n: number) => void) => {
+                if (v == null) return;
+                const n = parseFloat(v);
+                if (Number.isFinite(n)) setter(n);
+            };
+            setIfPos(e.last ?? e.lastPrice ?? e.close ?? e.c, setbuyprice);
+            setIfPos(e.bestAsk ?? e.ask ?? e.a, setsellPrice);
+            setIfFinite(e.priceChangePercent ?? e.changePercent ?? e.P, setpriceChange);
+            setIfFinite(e.priceChange ?? e.change ?? e.p, setChangesHour);
+            setIfPos(e.high ?? e.h ?? e.highPrice, setpriceHigh);
+            setIfPos(e.low ?? e.l ?? e.lowPrice, setpriceLow);
+            setIfFinite(e.volume ?? e.v ?? e.baseVolume, setvolume);
+        };
+        socket.on(localTickerEvent, handleLocalTicker);
+
         return () => {
             socket.emit('unsubscribe', { channel: 'local_trade', symbol: localSymbol });
             socket.emit('unsubscribe', { channel: 'local_depth', symbol: localSymbol });
+            socket.emit('unsubscribe', { channel: 'local_ticker', symbol: localSymbol });
             socket.off(localTradeEvent, handleLocalTrade);
             socket.off(localDepthEvent, handleLocalDepth);
+            socket.off(localTickerEvent, handleLocalTicker);
         };
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [SelectedCoin?.base_currency, SelectedCoin?.quote_currency, isConnected]);

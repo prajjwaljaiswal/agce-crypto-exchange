@@ -42,20 +42,37 @@ export function useMyOrders(isAuthenticated: boolean): MyOrdersApi {
             const mine = await ordersApi.mine(100);
             const isOpen = (s: string | undefined) =>
                 s === "OPEN" || s === "NEW" || s === "PARTIALLY_FILLED";
-            // Matching-service returns string decimals + filledQty; UI tables
-            // were built against numeric price/quantity/filled/remaining and
-            // `order_type` instead of `type`. Normalize once here.
+            // Matching-service returns string decimals + a single `symbol`
+            // field ("BTC-USDT"); the tables were built against the legacy
+            // POC shape (ask_currency / pay_currency / avg_execution_price /
+            // total_fee / numeric price / order_type). Bridge it here so the
+            // UI doesn't render "undefined/undefined" or NaN.
             const toRow = (o: typeof mine[number]) => {
                 const quantity = parseFloat(o.quantity);
                 const filled = o.filledQty ? parseFloat(o.filledQty) : 0;
+                const price = o.price ? parseFloat(o.price) : 0;
+                const [base, quote] = (o.symbol ?? "").split("-");
+                // ask_currency = what the user receives; pay_currency = what
+                // they spend. UI formats as BUY → ask/pay, SELL → pay/ask so
+                // both render as base/quote.
+                const askCurrency = o.side === "BUY" ? base : quote;
+                const payCurrency = o.side === "BUY" ? quote : base;
                 return {
                     ...o,
                     _id: o._id ?? o.orderId,
                     order_type: o.type,
-                    price: o.price ? parseFloat(o.price) : 0,
+                    price,
                     quantity,
                     filled,
                     remaining: Math.max(quantity - filled, 0),
+                    ask_currency: askCurrency,
+                    pay_currency: payCurrency,
+                    // Matching-service doesn't record avg fill price or fees
+                    // (fees belong to fee-service). Fall back to the order
+                    // price so Total = quantity * price rather than NaN.
+                    avg_execution_price: price,
+                    total_fee: 0,
+                    executed_prices: [],
                 };
             };
             setopenOrders(mine.filter((o) => isOpen(o.status)).map(toRow));
