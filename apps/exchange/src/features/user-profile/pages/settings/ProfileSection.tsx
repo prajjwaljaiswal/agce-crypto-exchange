@@ -1,8 +1,17 @@
+import { useAuth } from '../../../../providers/AuthProvider.js'
+
 interface ProfileSectionProps {
   onEditProfile: () => void
 }
 
 export function ProfileSection({ onEditProfile }: ProfileSectionProps) {
+  const { user } = useAuth()
+
+  const firstName = user?.firstName?.trim() ?? ''
+  const lastName = user?.lastName?.trim() ?? ''
+  const fullName = [firstName, lastName].filter(Boolean).join(' ')
+  const displayName = fullName || user?.email || '—'
+
   return (
     <div className="twofactor_outer_s">
       <h5>Profile</h5>
@@ -29,8 +38,8 @@ export function ProfileSection({ onEditProfile }: ProfileSectionProps) {
           </div>
 
           <div className="enable">
-            <img src="/images/user.png" alt="user" />
-            Demo User
+            <img src="/images/user.png" alt={fullName || 'User avatar'} />
+            {displayName}
           </div>
           <button type="button" className="btn" onClick={onEditProfile}>
             Change

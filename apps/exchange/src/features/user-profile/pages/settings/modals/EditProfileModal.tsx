@@ -1,5 +1,10 @@
 import { useEffect, useRef, useState, type ChangeEvent, type FormEvent } from 'react'
+import { useMutation, useQueryClient } from '@tanstack/react-query'
+import toast from 'react-hot-toast'
 import { Modal } from '@agce/ui'
+import { authApi } from '../../../../../lib/auth-api.js'
+import { formatApiError } from '../../../../../lib/errors.js'
+import type { UpdateMePayload } from '@agce/types'
 
 interface EditProfileModalProps {
   isOpen: boolean
@@ -12,14 +17,24 @@ interface EditProfileModalProps {
 
 const DEFAULT_AVATAR = '/images/user.png'
 
+function fileToDataUrl(file: File): Promise<string> {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader()
+    reader.onload = () => resolve(reader.result as string)
+    reader.onerror = () => reject(reader.error ?? new Error('Failed to read file'))
+    reader.readAsDataURL(file)
+  })
+}
+
 export function EditProfileModal({
   isOpen,
   onClose,
-  initialFirstName = 'Demo',
-  initialLastName = 'User',
+  initialFirstName = '',
+  initialLastName = '',
   initialAvatarUrl = DEFAULT_AVATAR,
   onSubmit,
 }: EditProfileModalProps) {
+  const queryClient = useQueryClient()
   const [firstName, setFirstName] = useState(initialFirstName)
   const [lastName, setLastName] = useState(initialLastName)
   const [avatarFile, setAvatarFile] = useState<File | null>(null)
@@ -41,18 +56,54 @@ export function EditProfileModal({
     return () => URL.revokeObjectURL(objectUrl)
   }, [avatarFile])
 
+  const mutation = useMutation({
+    mutationFn: (payload: UpdateMePayload) => authApi.updateMe(payload),
+    onSuccess: (_, payload) => {
+      toast.success('Profile updated')
+      queryClient.invalidateQueries({ queryKey: ['auth', 'me'] })
+      onSubmit?.({
+        firstName: payload.firstName ?? '',
+        lastName: payload.lastName ?? '',
+        avatarFile,
+      })
+      onClose()
+    },
+    onError: (error) => toast.error(formatApiError(error, 'Could not update profile.')),
+  })
+
   const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
     if (file) setAvatarFile(file)
   }
 
-  const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault()
-    onSubmit?.({ firstName: firstName.trim(), lastName: lastName.trim(), avatarFile })
-    onClose()
+    const trimmedFirst = firstName.trim()
+    const trimmedLast = lastName.trim()
+
+    const payload: UpdateMePayload = {
+      firstName: trimmedFirst,
+      lastName: trimmedLast,
+    }
+
+    if (avatarFile) {
+      try {
+        payload.profilePicture = await fileToDataUrl(avatarFile)
+      } catch {
+        toast.error('Could not read selected image.')
+        return
+      }
+    }
+
+    mutation.mutate(payload)
   }
 
+  const isDirty =
+    firstName.trim() !== initialFirstName.trim() ||
+    lastName.trim() !== initialLastName.trim() ||
+    avatarFile !== null
   const isValid = firstName.trim().length > 0 && lastName.trim().length > 0
+  const canSubmit = isValid && isDirty && !mutation.isPending
 
   return (
     <Modal
@@ -79,7 +130,7 @@ export function EditProfileModal({
             style={{
               width: '100%',
               height: '100%',
-              objectFit: 'none',
+              objectFit: 'cover',
               borderRadius: '50%',
             }}
           />
@@ -127,6 +178,7 @@ export function EditProfileModal({
               maxLength={50}
               value={firstName}
               onChange={(e) => setFirstName(e.target.value)}
+              disabled={mutation.isPending}
             />
           </div>
         </div>
@@ -141,6 +193,7 @@ export function EditProfileModal({
               maxLength={50}
               value={lastName}
               onChange={(e) => setLastName(e.target.value)}
+              disabled={mutation.isPending}
             />
           </div>
         </div>
@@ -148,18 +201,18 @@ export function EditProfileModal({
         <button
           type="submit"
           className="submit"
-          disabled={!isValid}
+          disabled={!canSubmit}
           style={{
-            backgroundColor: isValid ? 'var(--color-primary, #D1AA67)' : '#FFFFFF40',
-            color: isValid ? '#000' : '#FFFFFF80',
+            backgroundColor: canSubmit ? 'var(--color-primary, #D1AA67)' : '#FFFFFF40',
+            color: canSubmit ? '#000' : '#FFFFFF80',
             fontWeight: 600,
             fontSize: 15,
             padding: '12px 24px',
-            cursor: isValid ? 'pointer' : 'not-allowed',
+            cursor: canSubmit ? 'pointer' : 'not-allowed',
             transition: 'background-color 0.2s ease',
           }}
         >
-          Submit
+          {mutation.isPending ? 'Saving…' : 'Submit'}
         </button>
       </form>
     </Modal>

@@ -10788,6 +10788,13 @@ ul.navi_sidebar {
     box-shadow: 0px 4px 8px 0px #323232a6;
 }
 
+
+/* dark mode */
+
+body:not(.light_theme) .trade_marketvalue  {
+    border: 1px solid #323232;
+}
+
 .navi_sidebar li p {
     font-size: 11px;
     color: #ACACAC;

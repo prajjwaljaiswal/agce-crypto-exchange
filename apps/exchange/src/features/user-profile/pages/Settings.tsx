@@ -1,4 +1,5 @@
 import { useDisclosure } from '@agce/hooks'
+import { useAuth } from '../../../providers/AuthProvider.js'
 import { ProfileSection } from './settings/ProfileSection.js'
 import { CurrencyPreferenceSection } from './settings/CurrencyPreferenceSection.js'
 import { SecuritySection } from './settings/SecuritySection.js'
@@ -45,6 +46,7 @@ const PASSWORD_VERIFY_OPTIONS = [
 ]
 
 export function Settings() {
+  const { user } = useAuth()
   const editProfile = useDisclosure()
   const passwordChange = useDisclosure()
   const antiPhishingInfo = useDisclosure()
@@ -66,7 +68,12 @@ export function Settings() {
         onSetAntiPhishing={antiPhishingInfo.open}
       />
 
-      <EditProfileModal isOpen={editProfile.isOpen} onClose={editProfile.close} />
+      <EditProfileModal
+        isOpen={editProfile.isOpen}
+        onClose={editProfile.close}
+        initialFirstName={user?.firstName ?? ''}
+        initialLastName={user?.lastName ?? ''}
+      />
 
       <PasswordChangeModal
         isOpen={passwordChange.isOpen}

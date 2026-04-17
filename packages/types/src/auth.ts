@@ -7,7 +7,12 @@ export interface Country {
   flag: string
 }
 
-export type OtpType = 'SIGNUP' | 'LOGIN' | 'RESET_PASSWORD' | 'WITHDRAWAL'
+export type OtpType =
+  | 'SIGNUP'
+  | 'LOGIN'
+  | 'RESET_PASSWORD'
+  | 'WITHDRAWAL'
+  | 'ANTI_PHISHING'
 
 export type OtpPurpose = OtpType
 
@@ -108,6 +113,10 @@ export interface MeResponse extends AuthUser {
   kycLevel?: string
   jurisdiction?: Jurisdiction | string
   preferredCurrency?: string
+  // Anti-phishing: backend may return the raw code string if set, or an empty
+  // string / undefined if not set. Some backends expose only `hasAntiPhishingCode`.
+  antiPhishingCode?: string
+  hasAntiPhishingCode?: boolean
   // Session metadata — populated by backend on /me. ISO-8601 timestamp
   // (e.g. "2026-04-17T09:32:04.512Z") and IPv4/IPv6 string.
   lastLoginAt?: string
@@ -121,6 +130,53 @@ export interface UpdatePreferredCurrencyPayload {
 
 export interface UpdatePreferredCurrencyResponse {
   preferredCurrency?: string
+  message?: string
+}
+
+// POST /api/v1/auth/anti-phishing-code — set or update the user's anti-phishing code.
+// Requires an OTP obtained via send-otp with type ANTI_PHISHING.
+export interface SetAntiPhishingCodePayload {
+  code: string
+  otp: string
+}
+
+// DELETE /api/v1/auth/anti-phishing-code — remove the user's anti-phishing code.
+// Also requires an OTP (ANTI_PHISHING type).
+export interface RemoveAntiPhishingCodePayload {
+  otp: string
+}
+
+export interface AntiPhishingCodeResponse {
+  antiPhishingCode?: string
+  message?: string
+}
+
+// POST /api/v1/auth/change-password — authenticated password reset.
+// The OTP is obtained first via send-otp (type: RESET_PASSWORD).
+export interface ChangePasswordPayload {
+  otp: string
+  newPassword: string
+  confirmPassword: string
+}
+
+export interface ChangePasswordResponse {
+  message?: string
+}
+
+// PATCH /api/v1/auth/me — partial profile update.
+// All fields are optional; backend only touches what you send.
+export interface UpdateMePayload {
+  firstName?: string
+  lastName?: string
+  profilePicture?: string
+}
+
+// Backend returns the updated MeResponse shape (may include the new values,
+// may just return a message). Kept loose — caller should invalidate /me.
+export interface UpdateMeResponse {
+  firstName?: string
+  lastName?: string
+  profilePicture?: string
   message?: string
 }
 

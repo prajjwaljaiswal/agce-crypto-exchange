@@ -10,6 +10,13 @@ import type {
   RegisterPayload,
   RegisterResponse,
   SendOtpPayload,
+  ChangePasswordPayload,
+  ChangePasswordResponse,
+  SetAntiPhishingCodePayload,
+  RemoveAntiPhishingCodePayload,
+  AntiPhishingCodeResponse,
+  UpdateMePayload,
+  UpdateMeResponse,
   UpdatePreferredCurrencyPayload,
   UpdatePreferredCurrencyResponse,
   VerifyOtpPayload,
@@ -59,6 +66,26 @@ export const authApi = {
 
   me(): Promise<MeResponse> {
     return http(`${BASE}/me`)
+  },
+
+  updateMe(payload: UpdateMePayload): Promise<UpdateMeResponse> {
+    return http(`${BASE}/me`, { method: 'PATCH', body: payload })
+  },
+
+  changePassword(payload: ChangePasswordPayload): Promise<ChangePasswordResponse> {
+    return http(`${BASE}/change-password`, { method: 'POST', body: payload })
+  },
+
+  setAntiPhishingCode(
+    payload: SetAntiPhishingCodePayload,
+  ): Promise<AntiPhishingCodeResponse> {
+    return http(`${BASE}/anti-phishing-code`, { method: 'POST', body: payload })
+  },
+
+  removeAntiPhishingCode(
+    payload: RemoveAntiPhishingCodePayload,
+  ): Promise<AntiPhishingCodeResponse> {
+    return http(`${BASE}/anti-phishing-code`, { method: 'DELETE', body: payload })
   },
 
   updatePreferredCurrency(
