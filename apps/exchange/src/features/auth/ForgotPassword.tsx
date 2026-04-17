@@ -4,22 +4,11 @@ import { useMutation } from '@tanstack/react-query'
 import toast from 'react-hot-toast'
 import { authApi } from '../../lib/auth-api.js'
 import { formatApiError } from '../../lib/errors.js'
+import { CountryCodeSelect } from './CountryCodeSelect.js'
 
 type Tab = 'email' | 'phone'
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
-
-const COUNTRY_OPTIONS = [
-  { value: '+91', label: '🇮🇳 +91 India' },
-  { value: '+971', label: '🇦🇪 +971 UAE' },
-  { value: '+966', label: '🇸🇦 +966 Saudi Arabia' },
-  { value: '+974', label: '🇶🇦 +974 Qatar' },
-  { value: '+965', label: '🇰🇼 +965 Kuwait' },
-  { value: '+973', label: '🇧🇭 +973 Bahrain' },
-  { value: '+968', label: '🇴🇲 +968 Oman' },
-  { value: '+1', label: '🇺🇸 +1 USA' },
-  { value: '+44', label: '🇬🇧 +44 UK' },
-]
 
 export function ForgotPassword() {
   const navigate = useNavigate()
@@ -28,6 +17,7 @@ export function ForgotPassword() {
   const [signId, setSignId] = useState('')
   const [otp, setOtp] = useState('')
   const [newPassword, setNewPassword] = useState('')
+  const [confirmPassword, setConfirmPassword] = useState('')
   const signIdInputRef = useRef<HTMLInputElement>(null)
 
   // Auto-focus identifier input on tab switch
@@ -94,6 +84,14 @@ export function ForgotPassword() {
       showError('Password must be at least 8 characters')
       return
     }
+    if (!confirmPassword) {
+      showError('Please confirm your new password')
+      return
+    }
+    if (newPassword !== confirmPassword) {
+      showError('Passwords do not match')
+      return
+    }
     const identifier = buildIdentifier()
     if (!identifier) {
       showError('Please re-enter your email or phone.')
@@ -107,6 +105,7 @@ export function ForgotPassword() {
     setSignId('')
     setOtp('')
     setNewPassword('')
+    setConfirmPassword('')
   }
 
   return (
@@ -185,6 +184,23 @@ export function ForgotPassword() {
                         onChange={(e) => setNewPassword(e.target.value)}
                       />
                     </div>
+                    <div className="col-sm-12 input_block">
+                      <label>Confirm Password*</label>
+                      <input
+                        type="password"
+                        className={`input_filed ${
+                          confirmPassword && confirmPassword !== newPassword ? 'is-invalid' : ''
+                        }`}
+                        placeholder="Re-enter New Password"
+                        value={confirmPassword}
+                        onChange={(e) => setConfirmPassword(e.target.value)}
+                      />
+                      {confirmPassword && confirmPassword !== newPassword && (
+                        <small style={{ color: '#dc2626', display: 'block', marginTop: 4 }}>
+                          Passwords do not match
+                        </small>
+                      )}
+                    </div>
                   </div>
                   <div className="col-lg-12 col-md-10 col-12 mx-auto mt-4">
                     <button
@@ -209,16 +225,12 @@ export function ForgotPassword() {
                   <div className="row">
                     <div className="col-sm-12 input_block">
                       <label>Mobile Number*</label>
-                      <select
-                        className="input_filed"
-                        value={countryCode}
-                        onChange={(e) => setCountryCode(e.target.value)}
-                        style={{ padding: '12px 16px', marginBottom: 8 }}
-                      >
-                        {COUNTRY_OPTIONS.map((o) => (
-                          <option key={o.value} value={o.value}>{o.label}</option>
-                        ))}
-                      </select>
+                      <div style={{ marginBottom: 8 }}>
+                        <CountryCodeSelect
+                          value={countryCode}
+                          onChange={(dial) => setCountryCode(dial)}
+                        />
+                      </div>
                       <input
                         ref={signIdInputRef}
                         className="input_filed"
@@ -260,6 +272,23 @@ export function ForgotPassword() {
                         value={newPassword}
                         onChange={(e) => setNewPassword(e.target.value)}
                       />
+                    </div>
+                    <div className="col-sm-12 input_block">
+                      <label>Confirm Password*</label>
+                      <input
+                        type="password"
+                        className={`input_filed ${
+                          confirmPassword && confirmPassword !== newPassword ? 'is-invalid' : ''
+                        }`}
+                        placeholder="Re-enter New Password"
+                        value={confirmPassword}
+                        onChange={(e) => setConfirmPassword(e.target.value)}
+                      />
+                      {confirmPassword && confirmPassword !== newPassword && (
+                        <small style={{ color: '#dc2626', display: 'block', marginTop: 4 }}>
+                          Passwords do not match
+                        </small>
+                      )}
                     </div>
                   </div>
                   <div className="col-lg-12 col-md-10 col-12 mx-auto mt-4">

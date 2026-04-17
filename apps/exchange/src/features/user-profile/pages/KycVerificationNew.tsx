@@ -942,9 +942,13 @@ export function KycVerificationNew() {
     try {
       const identifier = user?.identifier ?? '';
       const isEmail = identifier.includes('@');
+      const firstName = user?.firstName?.trim();
+      const lastName = user?.lastName?.trim();
       const session = await startKyc({
         jurisdiction: mapInstanceToJurisdiction(instance.id),
         ...(isEmail ? { email: identifier } : identifier.startsWith('+') ? { phone: identifier } : {}),
+        ...(firstName ? { firstName } : {}),
+        ...(lastName ? { lastName } : {}),
       });
       setPendingVerifyUrl(session.diditUrl);
     } catch (err) {

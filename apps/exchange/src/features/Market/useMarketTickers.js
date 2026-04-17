@@ -28,17 +28,26 @@ function normalizeKey(symbol) {
 }
 
 /** Zero-filled row used while a pair has no trade history yet. */
-function emptyRow(symbol) {
+function emptyRow(meta) {
+    // meta may be a plain string (legacy shape) or an object from
+    // /api/v1/market/symbols carrying baseAsset / quoteAsset / iconUrl / etc.
+    const sym = typeof meta === 'string' ? meta : meta?.symbol
+    const refPrice = Number(meta?.referencePrice ?? 0) || 0
     return {
-        symbol: normalizeKey(symbol),
-        lastPrice: 0,
+        symbol: normalizeKey(sym),
+        baseAsset: typeof meta === 'object' ? meta?.baseAsset ?? null : null,
+        quoteAsset: typeof meta === 'object' ? meta?.quoteAsset ?? null : null,
+        iconUrl: typeof meta === 'object' ? meta?.iconUrl ?? null : null,
+        // Seed with the server-provided reference price so the table doesn't
+        // render zeros before the first socket frame arrives.
+        lastPrice: refPrice,
         priceChange: 0,
         priceChangePercent: 0,
-        high: 0,
-        low: 0,
+        high: refPrice,
+        low: refPrice,
         volume: 0,
         quoteVolume: 0,
-        openPrice: 0,
+        openPrice: refPrice,
         count: 0,
     }
 }
@@ -81,7 +90,10 @@ export function useMarketTickers() {
                 const symbols = Array.isArray(body?.data) ? body.data : Array.isArray(body) ? body : []
                 const seed = {}
                 for (const s of symbols) {
-                    const key = normalizeKey(s)
+                    // Each entry may be a plain "BTC-USDT" string or an object with
+                    // { symbol, baseAsset, quoteAsset, iconUrl, referencePrice, ... }.
+                    const sym = typeof s === 'string' ? s : s?.symbol
+                    const key = normalizeKey(sym)
                     if (key) seed[key] = emptyRow(s)
                 }
                 setTickers((prev) => ({ ...seed, ...prev }))
@@ -114,7 +126,15 @@ export function useMarketTickers() {
                 for (const raw of rows) {
                     if (!raw?.symbol) continue
                     const row = normalizeLocal(raw)
-                    next[row.symbol] = row
+                    // Preserve REST-seeded metadata (iconUrl, baseAsset, quoteAsset)
+                    // that the socket frame doesn't carry.
+                    const existing = next[row.symbol]
+                    next[row.symbol] = {
+                        iconUrl: existing?.iconUrl ?? null,
+                        baseAsset: existing?.baseAsset ?? null,
+                        quoteAsset: existing?.quoteAsset ?? null,
+                        ...row,
+                    }
                 }
                 return next
             })

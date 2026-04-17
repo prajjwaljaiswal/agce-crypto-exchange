@@ -134,9 +134,12 @@ export type {
   VerifyOtpPayload,
   RefreshTokenPayload,
   MeResponse,
+  UpdatePreferredCurrencyPayload,
+  UpdatePreferredCurrencyResponse,
   SignupPayload,
   GoogleLoginPayload,
   GoogleRegisterPayload,
+  Country,
 } from './auth.js'
 
 export type {

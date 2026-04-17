@@ -31,17 +31,26 @@ export async function refreshAccessToken(): Promise<boolean> {
 
   inFlight = (async () => {
     try {
+      console.info('[refresh] posting to /api/v1/auth/refresh-token')
       const response = await fetch(`${getBaseUrl()}/api/v1/auth/refresh-token`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ refreshToken }),
       })
-      if (!response.ok) return false
+      if (!response.ok) {
+        console.warn('[refresh] HTTP', response.status, await response.text().catch(() => ''))
+        return false
+      }
       const body = (await response.json()) as ApiEnvelope<AuthTokens>
-      if (!body.success || !body.data[0]) return false
+      if (!body.success || !body.data[0]) {
+        console.warn('[refresh] envelope rejected', body)
+        return false
+      }
       tokenStore.set(body.data[0])
+      console.info('[refresh] tokens updated OK')
       return true
-    } catch {
+    } catch (err) {
+      console.error('[refresh] threw', err)
       return false
     } finally {
       inFlight = null

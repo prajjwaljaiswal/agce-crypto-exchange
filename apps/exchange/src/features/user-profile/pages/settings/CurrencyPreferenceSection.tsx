@@ -1,9 +1,14 @@
+import { useState } from 'react'
+import { useMutation } from '@tanstack/react-query'
+import toast from 'react-hot-toast'
+import { authApi } from '../../../../lib/auth-api.js'
+import { formatApiError } from '../../../../lib/errors.js'
+
 interface CurrencyOption {
   code: string
   label: string
   icon: string
   iconWidth?: string
-  active?: boolean
 }
 
 const CURRENCIES: CurrencyOption[] = [
@@ -11,7 +16,6 @@ const CURRENCIES: CurrencyOption[] = [
     code: 'USDT',
     label: 'Tether USD (USDT)',
     icon: '/images/icon/tether.png',
-    active: true,
   },
   {
     code: 'BTC',
@@ -22,7 +26,23 @@ const CURRENCIES: CurrencyOption[] = [
   { code: 'BNB', label: 'BNB', icon: '/images/icon/bnb copy.png' },
 ]
 
-export function CurrencyPreferenceSection() {
+interface Props {
+  initialCurrency?: string
+  onSaved?: (currency: string) => void
+}
+
+export function CurrencyPreferenceSection({ initialCurrency = 'USDT', onSaved }: Props) {
+  const [selected, setSelected] = useState(initialCurrency)
+
+  const mutation = useMutation({
+    mutationFn: (currency: string) => authApi.updatePreferredCurrency({ currency }),
+    onSuccess: (_, currency) => {
+      toast.success('Currency preference saved')
+      onSaved?.(currency)
+    },
+    onError: (error) => toast.error(formatApiError(error, 'Could not save currency preference.')),
+  })
+
   return (
     <div className="twofactor_outer_s">
       <h5>Currency Preference</h5>
@@ -31,33 +51,57 @@ export function CurrencyPreferenceSection() {
       <div className="two_factor_list">
         <div className="currency_list_b">
           <ul>
-            {CURRENCIES.map((c) => (
-              <li key={c.code} className={c.active ? 'active' : ''}>
-                <div className="currency_bit">
-                  <img
-                    src={c.icon}
-                    className="img-fluid"
-                    alt={c.code}
-                    width={c.iconWidth}
-                  />
-                </div>
-                <h6>{c.label}</h6>
-                <div className="vector_bottom">
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    width="60"
-                    height="52"
-                    viewBox="0 0 60 52"
-                    fill="none"
-                  >
-                    <path d="M59.6296 0L60 52H0L59.6296 0Z" fill="#3B3B3B" />
-                  </svg>
-                </div>
-              </li>
-            ))}
+            {CURRENCIES.map((c) => {
+              const isActive = c.code === selected
+              return (
+                <li
+                  key={c.code}
+                  className={isActive ? 'active' : ''}
+                  onClick={() => setSelected(c.code)}
+                  style={{ cursor: 'pointer' }}
+                  role="button"
+                  tabIndex={0}
+                  aria-pressed={isActive}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                      e.preventDefault()
+                      setSelected(c.code)
+                    }
+                  }}
+                >
+                  <div className="currency_bit">
+                    <img
+                      src={c.icon}
+                      className="img-fluid"
+                      alt={c.code}
+                      width={c.iconWidth}
+                    />
+                  </div>
+                  <h6>{c.label}</h6>
+                  <div className="vector_bottom">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="60"
+                      height="52"
+                      viewBox="0 0 60 52"
+                      fill="none"
+                    >
+                      <path d="M59.6296 0L60 52H0L59.6296 0Z" fill="#3B3B3B" />
+                    </svg>
+                  </div>
+                </li>
+              )
+            })}
           </ul>
           <div className="savebtn">
-            <button type="button">Save Currency Preference</button>
+            <button
+              type="button"
+              className="p-3"
+              disabled={mutation.isPending || selected === initialCurrency}
+              onClick={() => mutation.mutate(selected)}
+            >
+              {mutation.isPending ? 'Saving…' : 'Save Currency Preference'}
+            </button>
           </div>
         </div>
       </div>

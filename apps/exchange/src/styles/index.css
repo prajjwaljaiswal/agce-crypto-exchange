@@ -71,3 +71,54 @@ code {
     display: flex !important;
   }
 }
+
+/*
+ * Anti-phishing info modal — default (dark-theme) text colors.
+ * light_theme.css already scopes `.anti-phishing-heading` / `.anti-phishing-paragraph`
+ * to `body.light_theme` with darker grey values (higher specificity), so these
+ * base rules only apply in dark mode without overriding light mode.
+ */
+.anti-phishing-heading {
+  color: #ffffff;
+}
+
+.anti-phishing-paragraph {
+  color: rgba(255, 255, 255, 0.82);
+}
+
+/* Flush layout for the anti-phishing info modal — we render our own padded
+   header / footer, so the Bootstrap .modal-body padding must go. */
+.modal-content.anti-phishing-modal .modal-body {
+  padding: 0 !important;
+}
+
+/* Anti-phishing modal header — theme-aware text colours.
+   Dark mode (default) → white; light mode → black. */
+.anti-phishing-header-title {
+  color: #ffffff;
+}
+.anti-phishing-header-subtitle {
+  color: rgba(255, 255, 255, 0.65);
+}
+.anti-phishing-header-close {
+  color: #ffffff;
+}
+
+body.light_theme .anti-phishing-header-title {
+  color: #0b0b0b;
+}
+body.light_theme .anti-phishing-header-subtitle {
+  color: rgba(0, 0, 0, 0.62);
+}
+.anti-phishing-header-close:hover {
+  background: rgba(255, 255, 255, 0.18) !important;
+}
+
+body.light_theme .anti-phishing-header-close {
+  color: #0b0b0b;
+  background: rgba(0, 0, 0, 0.06) !important;
+  border-color: rgba(0, 0, 0, 0.12) !important;
+}
+body.light_theme .anti-phishing-header-close:hover {
+  background: rgba(0, 0, 0, 0.14) !important;
+}

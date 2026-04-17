@@ -1,5 +1,12 @@
 export type Jurisdiction = 'INDIA' | 'ABU_DHABI' | 'DUBAI' | 'GLOBAL'
 
+export interface Country {
+  iso2: string
+  name: string
+  dialCode: string
+  flag: string
+}
+
 export type OtpType = 'SIGNUP' | 'LOGIN' | 'RESET_PASSWORD' | 'WITHDRAWAL'
 
 export type OtpPurpose = OtpType
@@ -12,6 +19,8 @@ export interface AuthUser {
   id: string
   userId?: string
   identifier?: string
+  firstName?: string
+  lastName?: string
 }
 
 export interface AuthTokens {
@@ -28,6 +37,8 @@ export interface RegisterPayload {
   identifier: string
   password: string
   jurisdiction: Jurisdiction
+  firstName?: string
+  lastName?: string
 }
 
 export interface RegisteredUser {
@@ -96,11 +107,21 @@ export interface MeResponse extends AuthUser {
   kycStatus?: string
   kycLevel?: string
   jurisdiction?: Jurisdiction | string
+  preferredCurrency?: string
   // Session metadata — populated by backend on /me. ISO-8601 timestamp
   // (e.g. "2026-04-17T09:32:04.512Z") and IPv4/IPv6 string.
   lastLoginAt?: string
   lastLoginIp?: string
   createdAt?: string
+}
+
+export interface UpdatePreferredCurrencyPayload {
+  currency: string
+}
+
+export interface UpdatePreferredCurrencyResponse {
+  preferredCurrency?: string
+  message?: string
 }
 
 export interface AuthSession extends AuthTokens {

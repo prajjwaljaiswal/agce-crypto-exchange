@@ -13,6 +13,9 @@ export interface HttpOptions {
   headers?: Record<string, string>
   auth?: boolean
   signal?: AbortSignal
+  // When true, `data` is returned as-is (full array) rather than unwrapped to data[0].
+  // Use for list endpoints like GET /auth/countries.
+  listResponse?: boolean
 }
 
 export class ApiError extends Error {
@@ -53,7 +56,7 @@ function buildHeaders(opts: HttpOptions): Headers {
   return headers
 }
 
-async function parseEnvelope<T>(response: Response): Promise<T> {
+async function parseEnvelope<T>(response: Response, listResponse = false): Promise<T> {
   const text = await response.text()
   let body: ApiEnvelope<T> | undefined
   if (text) {
@@ -78,7 +81,8 @@ async function parseEnvelope<T>(response: Response): Promise<T> {
 
   // Auth service wraps singletons in data[0] (array envelope).
   // KYC service returns data as a plain object. Handle both.
-  if (Array.isArray(body.data)) {
+  // For list endpoints (e.g. /auth/countries), caller opts in to get the full array.
+  if (Array.isArray(body.data) && !listResponse) {
     return body.data[0] as T
   }
   return body.data as unknown as T
@@ -102,7 +106,9 @@ export async function http<T>(path: string, opts: HttpOptions = {}): Promise<T> 
 
   const response = await fetch(url, init)
 
-  if (response.status === 401 && opts.auth !== false) {
+  // Some backends return 403 (not 401) for an expired access token.
+  // Treat both as "try to refresh once before giving up".
+  if ((response.status === 401 || response.status === 403) && opts.auth !== false) {
     const refreshed = await refreshAccessToken()
     if (refreshed) {
       const retryInit: RequestInit = {
@@ -110,12 +116,12 @@ export async function http<T>(path: string, opts: HttpOptions = {}): Promise<T> 
         headers: buildHeaders(opts),
       }
       const retryResponse = await fetch(url, retryInit)
-      return parseEnvelope<T>(retryResponse)
+      return parseEnvelope<T>(retryResponse, opts.listResponse)
     }
     tokenStore.clear()
     emitAuthExpired()
-    throw new ApiError('Session expired', 401)
+    throw new ApiError('Session expired', response.status)
   }
 
-  return parseEnvelope<T>(response)
+  return parseEnvelope<T>(response, opts.listResponse)
 }

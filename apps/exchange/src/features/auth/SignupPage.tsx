@@ -10,23 +10,12 @@ import { kycApi } from '../../lib/kyc-api.js'
 import { formatApiError, isApiErrorWithStatus } from '../../lib/errors.js'
 import { KycVerifyWarningModal } from '../user-profile/pages/kyc/modals/KycVerifyWarningModal.js'
 import { SocialLoginButtons } from './SocialLoginButtons.js'
+import { CountryCodeSelect } from './CountryCodeSelect.js'
 import './signup-wizard.css'
 
 const API_PASSWORD_REGEX = /^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{8,}$/
 
 type AccountTab = 'email' | 'phone'
-
-const COUNTRY_OPTIONS = [
-  { value: '+91', label: '🇮🇳 +91 India' },
-  { value: '+971', label: '🇦🇪 +971 UAE' },
-  { value: '+966', label: '🇸🇦 +966 Saudi Arabia' },
-  { value: '+974', label: '🇶🇦 +974 Qatar' },
-  { value: '+965', label: '🇰🇼 +965 Kuwait' },
-  { value: '+973', label: '🇧🇭 +973 Bahrain' },
-  { value: '+968', label: '🇴🇲 +968 Oman' },
-  { value: '+1', label: '🇺🇸 +1 USA' },
-  { value: '+44', label: '🇬🇧 +44 UK' },
-]
 
 export function SignupPage() {
   const navigate = useNavigate()
@@ -43,7 +32,11 @@ export function SignupPage() {
   const [referralOpen, setReferralOpen] = useState(!!invitationFromUrl)
   const [signId, setSignId] = useState(emailFromUrl)
   const [password, setPassword] = useState('')
+  const [confirmPassword, setConfirmPassword] = useState('')
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false)
   const [countryCode, setCountryCode] = useState('+91')
+  const [firstName, setFirstName] = useState('')
+  const [lastName, setLastName] = useState('')
   const [invitation, setInvitation] = useState(invitationFromUrl)
   const [showPassword, setShowPassword] = useState(false)
   const [registeredBy, setRegisteredBy] = useState('')
@@ -60,6 +53,8 @@ export function SignupPage() {
 
   const referralLocked = Boolean(invitationFromUrl)
   const passwordInputType = showPassword ? 'text' : 'password'
+  const confirmPasswordInputType = showConfirmPassword ? 'text' : 'password'
+  const passwordsMatch = confirmPassword.length > 0 && password === confirmPassword
 
   const usernamePart =
     accountTab === 'email' && signId.includes('@')
@@ -131,12 +126,16 @@ export function SignupPage() {
     setWizardStep(1)
     setSignId(tab === 'email' ? emailFromUrl : '')
     setPassword('')
+    setConfirmPassword('')
+    setShowConfirmPassword(false)
     setRegisteredBy('')
     setShowPassword(false)
     setAttemptLeft('')
     setOtpTimer(0)
     setOtpSingle('')
     setReferralOpen(!!invitationFromUrl)
+    setFirstName('')
+    setLastName('')
   }
 
   const showError = (msg: string) => toast.error(msg)
@@ -183,6 +182,8 @@ export function SignupPage() {
         identifier: pendingIdentifier,
         password,
         jurisdiction: mapInstanceToJurisdiction(instance.id),
+        firstName: firstName.trim(),
+        lastName: lastName.trim(),
       })
     },
     onSuccess: (response) => {
@@ -209,6 +210,8 @@ export function SignupPage() {
   const startKycMutation = useMutation({
     mutationFn: () => {
       const isEmail = pendingIdentifier.includes('@')
+      const first = firstName.trim()
+      const last = lastName.trim()
       return kycApi.startSession({
         jurisdiction: mapInstanceToJurisdiction(instance.id),
         ...(isEmail
@@ -216,6 +219,8 @@ export function SignupPage() {
           : pendingIdentifier.startsWith('+')
             ? { phone: pendingIdentifier }
             : {}),
+        ...(first ? { firstName: first } : {}),
+        ...(last ? { lastName: last } : {}),
       })
     },
     onSuccess: (session) => {
@@ -226,6 +231,13 @@ export function SignupPage() {
 
   /* ── Step 1: validate email / phone → checkIdentifier → go to step 2 ── */
   const step1Next = () => {
+    const first = firstName.trim()
+    const last = lastName.trim()
+    if (!first) { showError('Please enter your first name'); return }
+    if (!last) { showError('Please enter your last name'); return }
+    if (first !== firstName) setFirstName(first)
+    if (last !== lastName) setLastName(last)
+
     let identifier: string
     if (accountTab === 'email') {
       const email = signId.trim()
@@ -264,6 +276,8 @@ export function SignupPage() {
       )
       return false
     }
+    if (!confirmPassword) { showError('Please confirm your password.'); return false }
+    if (password !== confirmPassword) { showError('Passwords do not match.'); return false }
     return true
   }
 
@@ -442,6 +456,28 @@ export function SignupPage() {
                     {wizardStep === 1 && (
                       <form onSubmit={(e) => { e.preventDefault(); step1Next() }} noValidate>
                         <div className="row">
+                          <div className="col-sm-12 input_block">
+                            <div className="signup-wizard-name-row">
+                              <input
+                                className="input_filed"
+                                type="text"
+                                placeholder="First name"
+                                value={firstName}
+                                onChange={(e) => setFirstName(e.target.value)}
+                                onBlur={(e) => setFirstName(e.target.value.trim())}
+                                autoComplete="given-name"
+                              />
+                              <input
+                                className="input_filed"
+                                type="text"
+                                placeholder="Last name"
+                                value={lastName}
+                                onChange={(e) => setLastName(e.target.value)}
+                                onBlur={(e) => setLastName(e.target.value.trim())}
+                                autoComplete="family-name"
+                              />
+                            </div>
+                          </div>
                           {accountTab === 'email' ? (
                             <div className="col-sm-12 input_block">
                               <div className="email_code">
@@ -460,16 +496,10 @@ export function SignupPage() {
                           ) : (
                             <>
                               <div className="col-sm-12 input_block">
-                                <select
-                                  className="input_filed"
+                                <CountryCodeSelect
                                   value={countryCode}
-                                  onChange={(e) => setCountryCode(e.target.value)}
-                                  style={{ padding: '12px 16px' }}
-                                >
-                                  {COUNTRY_OPTIONS.map((o) => (
-                                    <option key={o.value} value={o.value}>{o.label}</option>
-                                  ))}
-                                </select>
+                                  onChange={(dial) => setCountryCode(dial)}
+                                />
                               </div>
                               <div className="col-sm-12 input_block">
                                 <div className="phone-input-wrapper">
@@ -580,6 +610,33 @@ export function SignupPage() {
                           </div>
 
                           <div className="col-sm-12 input_block">
+                            <label htmlFor="signup-confirm-password-field">Confirm Password</label>
+                            <div className="email_code">
+                              <input
+                                id="signup-confirm-password-field"
+                                className="input_filed"
+                                type={confirmPasswordInputType}
+                                placeholder="Re-enter the password"
+                                value={confirmPassword}
+                                onChange={(e) => setConfirmPassword(e.target.value)}
+                                autoComplete="new-password"
+                                style={{ paddingRight: 44 }}
+                              />
+                              <div
+                                className="get_otp otp2"
+                                role="button"
+                                tabIndex={0}
+                                onClick={() => setShowConfirmPassword((s) => !s)}
+                                onKeyDown={(e) => e.key === 'Enter' && setShowConfirmPassword((s) => !s)}
+                              >
+                                {showConfirmPassword
+                                  ? <i className="ri-eye-line" />
+                                  : <i className="ri-eye-off-line" />}
+                              </div>
+                            </div>
+                          </div>
+
+                          <div className="col-sm-12 input_block">
                             <div className={`signup-wizard-rule-row ${notAllNumbers ? 'is-ok' : 'is-bad'}`}>
                               <i className={notAllNumbers ? 'ri-checkbox-circle-fill' : 'ri-close-circle-fill'} aria-hidden />
                               <span>Cannot be all numbers</span>
@@ -595,6 +652,10 @@ export function SignupPage() {
                             <div className={`signup-wizard-rule-row ${notContainsUsername ? 'is-ok' : 'is-bad'}`}>
                               <i className={notContainsUsername ? 'ri-checkbox-circle-fill' : 'ri-close-circle-fill'} aria-hidden />
                               <span>Cannot contain username</span>
+                            </div>
+                            <div className={`signup-wizard-rule-row ${passwordsMatch ? 'is-ok' : 'is-bad'}`}>
+                              <i className={passwordsMatch ? 'ri-checkbox-circle-fill' : 'ri-close-circle-fill'} aria-hidden />
+                              <span>Passwords must match</span>
                             </div>
                           </div>
 

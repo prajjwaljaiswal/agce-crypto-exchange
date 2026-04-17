@@ -49,7 +49,7 @@ export function AssetOverview() {
   return (
     <div className="dashboard_right">
       <div className="row">
-        <div className="col-sm-10">
+        <div className="col-sm-12">
           <div className="overview_section">
             <div className="estimated_balance">
               <h6>
@@ -98,7 +98,7 @@ export function AssetOverview() {
       <div className="dashboard_listing_section Overview_mid">
         <div className="assets_wallets_section">
           <div className="row">
-            <div className="col-sm-10">
+            <div className="col-sm-12">
               <div className="market_section">
                 <div className="coin_view_top">
                   <div className="wallet_tabs">
@@ -185,7 +185,7 @@ export function AssetOverview() {
         </div>
 
         <div className="row mt-4">
-          <div className="col-sm-10">
+          <div className="col-sm-12">
             <div className="market_section">
               <div className="top_heading">
                 <h4>Account Distribution</h4>

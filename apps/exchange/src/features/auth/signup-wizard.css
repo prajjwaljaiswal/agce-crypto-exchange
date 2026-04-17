@@ -670,3 +670,21 @@ body.signupbg.signup-wizard-full-steps .form_block_login {
     font-size: 0.875rem;
   }
 }
+
+.signup-wizard-name-row {
+  display: flex;
+  gap: 12px;
+  width: 100%;
+}
+
+.signup-wizard-name-row > .input_filed {
+  flex: 1;
+  min-width: 0;
+}
+
+@media (max-width: 480px) {
+  .signup-wizard-name-row {
+    flex-direction: column;
+    gap: 10px;
+  }
+}

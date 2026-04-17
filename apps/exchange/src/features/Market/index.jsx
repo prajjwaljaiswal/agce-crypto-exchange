@@ -32,25 +32,37 @@ const CHANGE_WINDOWS = ["24H", "7D", "30D"];
 const TABLE_LIMIT = 100;
 
 
-function CoinIcon({ base }) {
-  const src = `/images/market-img/icons/${base.toLowerCase()}.svg`;
+function CoinIcon({ base, iconUrl }) {
+  // Prefer the API-provided iconUrl; fall back to the bundled SVG when absent
+  // or after a load error (e.g. iconUrl: null for BTC in the current payload).
+  const localSrc = `/images/market-img/icons/${base.toLowerCase()}.svg`;
+  const initialSrc = iconUrl || localSrc;
   const letter = base.charAt(0);
   return (
     <img
       alt={base}
-      src={src}
+      src={initialSrc}
+      data-fallback={localSrc}
       className="img-fluid icon_img coinimg me-2"
       onError={(e) => {
-        const parent = e.currentTarget.parentElement;
+        const img = e.currentTarget;
+        const fallback = img.getAttribute("data-fallback");
+        // First error: try the bundled SVG before giving up.
+        if (fallback && img.src !== window.location.origin + fallback && !img.src.endsWith(fallback)) {
+          img.src = fallback;
+          img.removeAttribute("data-fallback");
+          return;
+        }
+        const parent = img.parentElement;
         if (!parent) return;
-        e.currentTarget.style.display = "none";
+        img.style.display = "none";
         if (!parent.querySelector(".coin-fallback")) {
           const span = document.createElement("span");
           span.className = "coin-fallback me-2";
           span.textContent = letter;
           span.style.cssText =
             "display:inline-flex;align-items:center;justify-content:center;width:28px;height:28px;border-radius:50%;background:#2a2a2a;color:#e5b64a;font-weight:700;font-size:12px;";
-          parent.insertBefore(span, e.currentTarget);
+          parent.insertBefore(span, img);
         }
       }}
     />
@@ -67,7 +79,7 @@ function FeaturedCard({ info, ticker }) {
         <div className="market_value_card">
           <div className="d-flex tophd">
             <h5>
-              <CoinIcon base={info.base} />
+              <CoinIcon base={info.base} iconUrl={ticker?.iconUrl} />
               {info.base}
             </h5>
             <div className={positive ? "value text-green" : "value text-danger"}>
@@ -412,7 +424,7 @@ const Market = () => {
                                   <span className="star_btn btn_icon">
                                     <i className="ri-star-line text-warning me-2"></i>
                                   </span>
-                                  <CoinIcon base={base} />
+                                  <CoinIcon base={base} iconUrl={t.iconUrl} />
                                   <div className="coin_info">
                                     <div className="coin_name_lft">
                                       {base}/{quote}

@@ -1,6 +1,7 @@
 import type {
   AuthTokens,
   CheckIdentifierPayload,
+  Country,
   GoogleLoginPayload,
   GoogleRegisterPayload,
   LoginResponse,
@@ -9,15 +10,23 @@ import type {
   RegisterPayload,
   RegisterResponse,
   SendOtpPayload,
+  UpdatePreferredCurrencyPayload,
+  UpdatePreferredCurrencyResponse,
   VerifyOtpPayload,
 } from '@agce/types'
 import { http } from './http.js'
 
 const BASE = '/api/v1/auth'
 
+const COMMON_BASE = '/api/v1'
+
 export const authApi = {
   health(): Promise<{ status: string }> {
     return http('/healthz', { auth: false })
+  },
+
+  countries(): Promise<Country[]> {
+    return http(`${COMMON_BASE}/countries`, { auth: false, listResponse: true })
   },
 
   checkIdentifier(payload: CheckIdentifierPayload): Promise<{ message?: string }> {
@@ -50,6 +59,12 @@ export const authApi = {
 
   me(): Promise<MeResponse> {
     return http(`${BASE}/me`)
+  },
+
+  updatePreferredCurrency(
+    payload: UpdatePreferredCurrencyPayload,
+  ): Promise<UpdatePreferredCurrencyResponse> {
+    return http(`${BASE}/me/preferred-currency`, { method: 'PUT', body: payload })
   },
 
   // Google OAuth — calls the same /login and /register endpoints as password auth,

@@ -7,6 +7,7 @@ import { useAuth } from '../../providers/index.js'
 import { authApi } from '../../lib/auth-api.js'
 import { formatApiError } from '../../lib/errors.js'
 import { SocialLoginButtons } from './SocialLoginButtons.js'
+import { CountryCodeSelect } from './CountryCodeSelect.js'
 import './signup-wizard.css'
 import './login-wizard.css'
 
@@ -15,18 +16,6 @@ function isLoginSuccess(response: LoginResponse): response is LoginSuccess {
 }
 
 type AccountTab = 'email_user' | 'phone' | 'qr'
-
-const COUNTRY_OPTIONS = [
-  { value: '+91', label: '🇮🇳 +91 India' },
-  { value: '+971', label: '🇦🇪 +971 UAE' },
-  { value: '+966', label: '🇸🇦 +966 Saudi Arabia' },
-  { value: '+974', label: '🇶🇦 +974 Qatar' },
-  { value: '+965', label: '🇰🇼 +965 Kuwait' },
-  { value: '+973', label: '🇧🇭 +973 Bahrain' },
-  { value: '+968', label: '🇴🇲 +968 Oman' },
-  { value: '+1', label: '🇺🇸 +1 USA' },
-  { value: '+44', label: '🇬🇧 +44 UK' },
-]
 
 interface AuthMethod {
   type: number
@@ -356,16 +345,10 @@ export function LoginPage() {
                       {accountTab === 'phone' && (
                         <>
                           <div className="col-sm-12 input_block">
-                            <select
-                              className="input_filed"
+                            <CountryCodeSelect
                               value={countryCode}
-                              onChange={(e) => setCountryCode(e.target.value)}
-                              style={{ padding: '12px 16px' }}
-                            >
-                              {COUNTRY_OPTIONS.map((o) => (
-                                <option key={o.value} value={o.value}>{o.label}</option>
-                              ))}
-                            </select>
+                              onChange={(dial) => setCountryCode(dial)}
+                            />
                           </div>
                           <div className="col-sm-12 input_block">
                             <div className="phone-input-wrapper">

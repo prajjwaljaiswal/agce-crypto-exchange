@@ -1,0 +1,176 @@
+.country-code-select {
+  position: relative;
+  width: 100%;
+}
+
+.country-code-select__trigger {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  text-align: left;
+  cursor: pointer;
+  padding: 12px 16px;
+}
+
+.country-code-select__trigger:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.country-code-select__flag {
+  font-size: 20px;
+  line-height: 1;
+  display: inline-block;
+}
+
+.country-code-select__flag-img {
+  width: 22px;
+  height: 16px;
+  object-fit: cover;
+  border-radius: 2px;
+  box-shadow: 0 0 0 1px rgba(15, 23, 42, 0.08);
+  flex-shrink: 0;
+  display: block;
+}
+
+.country-code-select__dial {
+  font-weight: 600;
+  color: #1a1a1a;
+}
+
+.country-code-select__name {
+  flex: 1;
+  color: #84888c;
+  font-size: 13px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.country-code-select__caret {
+  color: #84888c;
+  font-size: 18px;
+  margin-left: 6px;
+  transition: transform 0.15s ease;
+}
+
+.country-code-select__trigger[aria-expanded='true'] .country-code-select__caret {
+  transform: rotate(180deg);
+}
+
+.country-code-select__panel {
+  position: absolute;
+  top: calc(100% + 6px);
+  left: 0;
+  right: 0;
+  background: #ffffff;
+  border: 1px solid #e6e8eb;
+  border-radius: 10px;
+  box-shadow: 0 10px 24px rgba(15, 23, 42, 0.12);
+  z-index: 30;
+  overflow: hidden;
+}
+
+.country-code-select__search {
+  padding: 10px;
+  border-bottom: 1px solid #f0f1f3;
+}
+
+.country-code-select__search input {
+  width: 100%;
+  padding: 10px 12px;
+  font-size: 14px;
+  border: 1px solid #e6e8eb;
+  border-radius: 8px;
+  background: #f8f9fa;
+  color: #1a1a1a;
+  outline: none;
+  box-sizing: border-box;
+}
+
+.country-code-select__search input:focus {
+  border-color: var(--color-primary, #d4a017);
+  background: #ffffff;
+}
+
+.country-code-select__list {
+  list-style: none;
+  margin: 0;
+  padding: 6px 0;
+  max-height: 260px;
+  overflow-y: auto;
+}
+
+.country-code-select__option {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 14px;
+  cursor: pointer;
+  font-size: 14px;
+  color: #1a1a1a;
+  transition: background-color 0.12s ease;
+}
+
+.country-code-select__option:hover {
+  background: #f5f6f7;
+}
+
+.country-code-select__option.is-selected {
+  background: color-mix(in srgb, var(--color-primary, #d4a017) 12%, transparent);
+  font-weight: 600;
+}
+
+.country-code-select__option-name {
+  flex: 1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.country-code-select__option-dial {
+  color: #84888c;
+  font-variant-numeric: tabular-nums;
+}
+
+.country-code-select__empty {
+  padding: 16px;
+  text-align: center;
+  color: #84888c;
+  font-size: 13px;
+}
+
+/* Dark theme override — align with exchange's existing dark mode pattern. */
+body.dark .country-code-select__panel,
+body[data-theme='dark'] .country-code-select__panel {
+  background: #1a1d21;
+  border-color: #2a2d31;
+}
+
+body.dark .country-code-select__search,
+body[data-theme='dark'] .country-code-select__search {
+  border-bottom-color: #2a2d31;
+}
+
+body.dark .country-code-select__search input,
+body[data-theme='dark'] .country-code-select__search input {
+  background: #22262b;
+  border-color: #2a2d31;
+  color: #f5f6f7;
+}
+
+body.dark .country-code-select__option,
+body[data-theme='dark'] .country-code-select__option {
+  color: #f5f6f7;
+}
+
+body.dark .country-code-select__option:hover,
+body[data-theme='dark'] .country-code-select__option:hover {
+  background: #22262b;
+}
+
+body.dark .country-code-select__dial,
+body[data-theme='dark'] .country-code-select__dial {
+  color: #f5f6f7;
+}
