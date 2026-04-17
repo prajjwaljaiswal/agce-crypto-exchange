@@ -13712,6 +13712,44 @@ td.text-danger {
 
 .market_page .custom-tab-content table.table td .btb_tbl button.btn.trade_btn{ background-color: #303236; color: #fff; margin: 0px; }
 
+.market_page table.table td .btb_tbl .trade_btn,
+.market_page table.table td .btb_tbl a.trade_btn,
+.market_page table.table td .btb_tbl .btn.trade_btn {
+    background-color: var(--color-primary, #e5b64a);
+    color: #0b0b0b;
+    font-size: 14px;
+    padding: 8px 18px;
+    border-radius: 50px;
+    margin: 0;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 600;
+    transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.market_page table.table td .btb_tbl .trade_btn:hover,
+.market_page table.table td .btb_tbl a.trade_btn:hover,
+.market_page table.table td .btb_tbl .btn.trade_btn:hover {
+    background-color: var(--color-primary-hover, #d4a43e);
+    color: #0b0b0b;
+}
+
+body.light_theme .market_page table.table td .btb_tbl .trade_btn,
+body.light_theme .market_page table.table td .btb_tbl a.trade_btn,
+body.light_theme .market_page table.table td .btb_tbl .btn.trade_btn {
+    background-color: #303236;
+    color: #fff;
+}
+
+body.light_theme .market_page table.table td .btb_tbl .trade_btn:hover,
+body.light_theme .market_page table.table td .btb_tbl a.trade_btn:hover,
+body.light_theme .market_page table.table td .btb_tbl .btn.trade_btn:hover {
+    background-color: #1a1b1d;
+    color: #fff;
+}
+
 .market_page .custom-tab-content table.table td.right_0{ padding-right: 0px; }
 
 .market_page img.coinimg {
@@ -31337,4 +31375,273 @@ body:not(.light_theme) .form_block_login .email_code {
 }
 body:not(.light_theme) .form_block_login .email_code .get_otp {
     color: #A3A8B3;
+}
+
+/* ──────────────────────────────────────────────────────────────
+   Activity Logs page — card, table, and mobile stack.
+   Dark by default (matches the profile shell), light-theme
+   overrides below. The layout is desktop table + mobile card
+   list; both render side-by-side in the DOM and CSS toggles
+   which is visible per breakpoint.
+   ────────────────────────────────────────────────────────────── */
+.activity-logs-page {
+    padding: 24px 0 40px;
+    color: #EAECEF;
+}
+
+.activity-logs-card {
+    /* background: #1F2227; */
+    border: 1px solid #2A2E35;
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.35);
+}
+
+.activity-logs-header {
+    /* padding: 20px 24px 16px !important; */
+    height: 90px;
+    padding: 20px;
+    border-bottom: 1px solid #2A2E35;
+}
+.activity-logs-header h1 {
+    font-size: 22px !important;
+    font-weight: 600 !important;
+    margin: 0 0 4px !important;
+    color: inherit !important;
+    line-height: 1.2 !important;
+    padding: 0 !important;
+}
+.activity-logs-header p {
+    font-size: 13px;
+    color: #A3A8B3;
+    margin: 0 !important;
+    line-height: 1.4;
+    padding: 0;
+}
+
+.activity-logs-table-wrap {
+    overflow-x: auto;
+}
+.activity-logs-table {
+    width: 100%;
+    border-collapse: collapse;
+    min-width: 640px;
+}
+.activity-logs-table thead th {
+    font-size: 12px;
+    font-weight: 500;
+    letter-spacing: 0.02em;
+    text-transform: uppercase;
+    text-align: left;
+    color: #848E9C;
+    padding: 14px 24px;
+    background: rgba(255, 255, 255, 0.02);
+    border-bottom: 1px solid #2A2E35;
+    white-space: nowrap;
+}
+.activity-logs-table thead th.right_t {
+    text-align: right;
+}
+.activity-logs-table tbody tr {
+    border-bottom: 1px solid #242830;
+    transition: background-color 120ms ease;
+}
+.activity-logs-table tbody tr:last-child {
+    border-bottom: none;
+}
+.activity-logs-table tbody tr:hover {
+    background: rgba(255, 255, 255, 0.03);
+}
+.activity-logs-table tbody td {
+    padding: 14px 24px;
+    font-size: 14px;
+    vertical-align: middle;
+    color: #EAECEF;
+}
+.activity-logs-table td.activity-log-activity {
+    font-weight: 500;
+}
+.activity-logs-table td.activity-log-ip {
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    font-size: 13px;
+    color: #A3A8B3;
+}
+.activity-logs-table td.activity-log-date {
+    color: #A3A8B3;
+    white-space: nowrap;
+}
+.activity-logs-table td.right_t {
+    text-align: right;
+}
+
+/* Severity badge */
+.activity-log-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 10px;
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 500;
+    line-height: 1;
+    white-space: nowrap;
+}
+.activity-log-badge i {
+    font-size: 7px;
+}
+.activity-log-badge--success {
+    background: rgba(16, 185, 129, 0.12);
+    color: #10B981;
+}
+.activity-log-badge--warning {
+    background: rgba(234, 179, 8, 0.14);
+    color: #EAB308;
+}
+.activity-log-badge--danger {
+    background: rgba(239, 68, 68, 0.14);
+    color: #EF4444;
+}
+
+/* Mobile card list — hidden on desktop. */
+.activity-logs-mobile {
+    display: none;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+.activity-logs-mobile .activity-log-card {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding: 14px 16px;
+    border-bottom: 1px solid #242830;
+}
+.activity-logs-mobile .activity-log-card:last-child {
+    border-bottom: none;
+}
+.activity-log-card-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+}
+.activity-log-card-top .activity-log-activity {
+    font-size: 14px;
+    font-weight: 500;
+    color: #EAECEF;
+}
+.activity-log-card-meta {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    font-size: 13px;
+    color: #A3A8B3;
+}
+.activity-log-card-meta span {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+}
+.activity-log-card-meta i {
+    font-size: 14px;
+    color: #6A7282;
+}
+
+/* Responsive: desktop ≥768 uses table, ≤767 uses mobile cards. */
+@media screen and (max-width: 767px) {
+    .activity-logs-page {
+        padding: 16px 0 32px;
+    }
+    .activity-logs-header {
+        padding: 18px 16px 14px;
+    }
+    .activity-logs-header h1 {
+        font-size: 18px;
+    }
+    .activity-logs-header p {
+        font-size: 12px;
+    }
+    .activity-logs-table-wrap {
+        display: none;
+    }
+    .activity-logs-mobile {
+        display: block;
+    }
+    .activity-logs-card {
+        border-radius: 14px;
+    }
+}
+
+/* Light-theme overrides — forced with !important so they beat
+   anything else in the cascade (baseline table td rules, etc.). */
+body.light_theme .activity-logs-page {
+    color: #111827 !important;
+}
+body.light_theme .activity-logs-card {
+    background: #ffffff !important;
+    border-color: #e5e7eb !important;
+    box-shadow: 0 4px 16px rgba(17, 24, 39, 0.06) !important;
+}
+body.light_theme .activity-logs-header {
+    border-bottom-color: #e5e7eb !important;
+    height: 90px;
+    color: white;
+}
+/* not light theme */
+
+body.light_theme .activity-logs-header p {
+    color: #6A7282 !important;
+}
+body.light_theme .activity-logs-table thead th {
+    background: #f9fafb !important;
+    color: #6A7282 !important;
+    border-bottom-color: #e5e7eb !important;
+}
+body.light_theme .activity-logs-table tbody tr {
+    border-bottom-color: #f1f3f5 !important;
+}
+body.light_theme .activity-logs-table tbody tr:hover {
+    background: #f9fafb !important;
+}
+body.light_theme .activity-logs-table tbody td {
+    color: #111827 !important;
+}
+body.light_theme .activity-logs-table td.activity-log-ip,
+body.light_theme .activity-logs-table td.activity-log-date {
+    color: #4b5563 !important;
+}
+body.light_theme .activity-log-card-top .activity-log-activity {
+    color: #111827 !important;
+}
+body.light_theme .activity-log-card-meta {
+    color: #4b5563 !important;
+}
+body.light_theme .activity-log-card-meta i {
+    color: #9ca3af !important;
+}
+body.light_theme .activity-logs-mobile .activity-log-card {
+    border-bottom-color: #f1f3f5 !important;
+}
+
+/* ──────────────────────────────────────────────────────────────
+   Profile/Asset-Management sidebar — hide whenever the header
+   shows the mobile hamburger (Bootstrap `navbar-expand-lg`
+   breaks at ≤991px, so the `.navbar-toggler` appears there).
+   Between 768–991px the baseline kept the desktop sidebar
+   visible alongside the hamburger — two navigation surfaces
+   on screen at once. This rule hides the desktop rail as soon
+   as the hamburger surfaces, and lets the `.active` class
+   (set by ProfileLayout's mobile toggle) still open it when
+   the user taps through.
+   Dashboard main column also reclaims its 340px sidebar gutter. */
+@media screen and (max-width: 991px) {
+    .leftside_menu {
+        display: none !important;
+    }
+    .leftside_menu.active {
+        display: flex !important;
+    }
+    .dashboard_right {
+        padding-left: 20px !important;
+    }
 }

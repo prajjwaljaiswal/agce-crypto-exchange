@@ -1,44 +1,36 @@
 import { useContext, useEffect, useState } from 'react'
 import { SocketContext } from '../Trade/SocketContext.js'
+import { marketApi } from '../../lib/matching-api.js'
 
-const RAW_URL = import.meta.env.VITE_MARKET_DATA_URL || 'http://localhost:8080'
-const MARKET_DATA_ORIGIN = (() => {
-  try {
-    return new URL(RAW_URL).origin
-  } catch {
-    return RAW_URL
-  }
-})()
-const REST_PREFIX = import.meta.env.VITE_MARKET_DATA_REST_PREFIX || '/market-data'
-const REST_BASE = `${MARKET_DATA_ORIGIN}${REST_PREFIX}`
-
-function normalizeRest(row) {
+function emptyTicker(symbol) {
   return {
-    symbol: row.symbol,
-    lastPrice: Number(row.lastPrice),
-    priceChange: Number(row.priceChange),
-    priceChangePercent: Number(row.priceChangePercent),
-    high: Number(row.highPrice),
-    low: Number(row.lowPrice),
-    volume: Number(row.volume),
-    quoteVolume: Number(row.quoteVolume),
-    openPrice: Number(row.openPrice),
-    count: Number(row.count) || 0,
+    symbol,
+    source: 'local',
+    lastPrice: 0,
+    priceChange: 0,
+    priceChangePercent: 0,
+    high: 0,
+    low: 0,
+    volume: 0,
+    quoteVolume: 0,
+    openPrice: 0,
+    count: 0,
   }
 }
 
 function normalizeStream(t) {
   return {
-    symbol: t.s,
-    lastPrice: Number(t.c),
-    priceChange: Number(t.p),
-    priceChangePercent: Number(t.P),
-    high: Number(t.h),
-    low: Number(t.l),
-    volume: Number(t.v),
-    quoteVolume: Number(t.q),
-    openPrice: Number(t.o),
-    count: Number(t.n) || 0,
+    symbol: String(t.symbol ?? ''),
+    source: t.source ?? 'local',
+    lastPrice: Number(t.last ?? t.lastPrice ?? 0),
+    priceChange: Number(t.priceChange ?? 0),
+    priceChangePercent: Number(t.priceChangePercent ?? 0),
+    high: Number(t.high ?? 0),
+    low: Number(t.low ?? 0),
+    volume: Number(t.volume ?? 0),
+    quoteVolume: Number(t.quoteVolume ?? 0),
+    openPrice: Number(t.open ?? t.openPrice ?? 0),
+    count: Number(t.count ?? 0),
   }
 }
 
@@ -51,21 +43,21 @@ export function useMarketTickers() {
   useEffect(() => {
     let cancelled = false
     setIsLoading(true)
-    fetch(`${REST_BASE}/api/v1/binance/ticker/24hr`)
-      .then((r) => (r.ok ? r.json() : Promise.reject(new Error(`HTTP ${r.status}`))))
-      .then((rows) => {
+    marketApi
+      .symbols()
+      .then((symbols) => {
         if (cancelled) return
         const map = {}
-        for (const row of rows) {
-          if (!row?.symbol) continue
-          map[row.symbol] = normalizeRest(row)
+        for (const symbol of symbols ?? []) {
+          if (!symbol) continue
+          map[symbol] = emptyTicker(symbol)
         }
         setTickers(map)
         setIsLoading(false)
       })
       .catch((err) => {
         if (cancelled) return
-        console.warn('[useMarketTickers] REST bootstrap failed:', err.message)
+        console.warn('[useMarketTickers] symbols bootstrap failed:', err.message)
         setError(err)
         setIsLoading(false)
       })
@@ -78,31 +70,29 @@ export function useMarketTickers() {
     const socket = getSocket()
 
     console.log('[useMarketTickers] socket:', socket, 'isConnected:', isConnected)
-    
+
     if (!socket || !isConnected) return undefined
 
-    socket.emit('subscribe', { channel: 'all_tickers' })
+    socket.emit('subscribe', { channel: 'local_all_tickers' })
 
-    const handleData = (event) => {
-      console.log('[useMarketTickers] received data:', event)
-      if (!event || (event.channel !== 'all_tickers' && event.channel !== 'ticker')) return
-      const payload = event.payload
+    const handleAllTickers = (event) => {
+      const payload = event?.payload ?? event
       if (!payload) return
       const frames = Array.isArray(payload) ? payload : [payload]
       setTickers((prev) => {
         const next = { ...prev }
         for (const t of frames) {
-          if (!t?.s) continue
-          next[t.s] = normalizeStream(t)
+          if (!t?.symbol) continue
+          next[t.symbol] = normalizeStream(t)
         }
         return next
       })
     }
 
-    socket.on('data', handleData)
+    socket.on('local:all_tickers', handleAllTickers)
     return () => {
-      socket.emit('unsubscribe', { channel: 'all_tickers' })
-      socket.off('data', handleData)
+      socket.emit('unsubscribe', { channel: 'local_all_tickers' })
+      socket.off('local:all_tickers', handleAllTickers)
     }
   }, [getSocket, isConnected])
 

@@ -11,6 +11,7 @@ import {
   SecurityCenterCard,
   VipServicesCard,
 } from './components/SideWidgets.js'
+import { useSpotMarketCoins } from './hooks/useSpotMarketCoins.js'
 import {
   ANNOUNCEMENTS,
   NEWCOMER_PERKS,
@@ -42,10 +43,13 @@ function formatTimestamp(iso?: string): string | undefined {
 
 export function Dashboard() {
   const { user } = useAuth()
+  const { coins: liveCoins } = useSpotMarketCoins()
 
   useEffect(() => {
     document.title = 'AGCE — Dashboard'
   }, [])
+
+  const marketCoins = liveCoins.length > 0 ? liveCoins : TRENDING_MARKETS
 
   const profile = useMemo<ProfileSnapshot>(() => {
     if (!user) return PROFILE_SNAPSHOT
@@ -74,7 +78,7 @@ export function Dashboard() {
           <NewcomerPerks steps={NEWCOMER_PERKS} />
 
           <div className="listing_left_outer">
-            <SpotMarketsCard coins={TRENDING_MARKETS} />
+            <SpotMarketsCard coins={marketCoins} />
           </div>
         </div>
 
