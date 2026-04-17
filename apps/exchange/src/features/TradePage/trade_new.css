@@ -3805,10 +3805,6 @@ body.light_theme.bs_tab_row {
 
 @media screen and (max-width:1550px) {
 
-    .trade_card.p-2.overflow_card.mb-1 {
-        width: calc(100% + 33.6%);
-    }
-
     ul.favorites_list_tabs {
         gap: 12px;
         margin: 12px 7px;
