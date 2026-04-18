@@ -1,105 +1,45 @@
-import { MOCK_RECENT_SWAPS } from './__mocks__/swaps.js'
+import { useEffect, useState } from 'react'
+import { OrderDetailsModal } from '../components/swap/OrderDetailsModal.js'
+import { RecentSwapsTable } from '../components/swap/RecentSwapsTable.js'
+import { SelectCoinModal } from '../components/swap/SelectCoinModal.js'
+import { SwapForm } from '../components/swap/SwapForm.js'
 
 export function Swap() {
+  const [searchCoinOpen, setSearchCoinOpen] = useState(false)
+  const [moreDetailsOpen, setMoreDetailsOpen] = useState(false)
+  const anyOpen = searchCoinOpen || moreDetailsOpen
+
+  useEffect(() => {
+    if (!anyOpen) return
+    document.body.classList.add('modal-open')
+    document.body.style.overflow = 'hidden'
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key !== 'Escape') return
+      setSearchCoinOpen(false)
+      setMoreDetailsOpen(false)
+    }
+    window.addEventListener('keydown', onKey)
+    return () => {
+      document.body.classList.remove('modal-open')
+      document.body.style.overflow = ''
+      window.removeEventListener('keydown', onKey)
+    }
+  }, [anyOpen])
+
   return (
-    <div className="dashboard_right">
-      <div className="swap_outer_section">
-        <div className="swaplist d-flex justify-content-between mb-3">
-          <div>
-            <p>
-              Daily limit: <strong>100,000 USDT</strong>
-            </p>
-          </div>
-          <div>
-            <p>
-              Fee: <strong>0.1%</strong>
-            </p>
-          </div>
-        </div>
-
-        <div className="swap_usdtdata">
-          <div className="swap_ustd_bl">
-            <label>From</label>
-            <div className="d-flex justify-content-between align-items-center">
-              <input
-                type="number"
-                className="emailinput"
-                placeholder="0.00"
-                defaultValue="1000"
-              />
-              <button type="button" className="btn btn-outline-custom">
-                USDT
-              </button>
-            </div>
-            <small>Available: 14566.12 USDT</small>
-          </div>
-
-          <div className="text-center my-2">
-            <button type="button" className="btn btn-link">
-              <i className="ri-arrow-up-down-line" />
-            </button>
-          </div>
-
-          <div className="swap_ustd_bl">
-            <label>To</label>
-            <div className="d-flex justify-content-between align-items-center">
-              <input
-                type="number"
-                className="emailinput"
-                placeholder="0.00"
-                defaultValue="0.01487"
-                readOnly
-              />
-              <button type="button" className="btn btn-outline-custom">
-                BTC
-              </button>
-            </div>
-            <small>Rate: 1 BTC = 67250.12 USDT</small>
-          </div>
-
-          <button type="button" className="btn btn-deposit w-100 mt-3">
-            Swap Now
-          </button>
-        </div>
+    <>
+      <div className="dashboard_right">
+        <SwapForm
+          onPickCoin={() => setSearchCoinOpen(true)}
+          onSwap={() => setMoreDetailsOpen(true)}
+        />
+        <RecentSwapsTable />
       </div>
 
-      <div className="dashboard_recent_s mt-4">
-        <div className="top_heading">
-          <h4>Recent Swaps</h4>
-        </div>
-        <div className="swap_tb_his">
-          <div className="table-responsive">
-            <table>
-              <thead>
-                <tr>
-                  <th>S.No</th>
-                  <th>Date</th>
-                  <th>Pair</th>
-                  <th>Pay</th>
-                  <th>Get</th>
-                  <th>Fee</th>
-                  <th>Rate</th>
-                  <th className="right_t">Status</th>
-                </tr>
-              </thead>
-              <tbody>
-                {MOCK_RECENT_SWAPS.map((s) => (
-                  <tr key={s.id}>
-                    <td>{s.id}</td>
-                    <td>{s.date}</td>
-                    <td>{s.pair}</td>
-                    <td>{s.pay}</td>
-                    <td>{s.get}</td>
-                    <td>{s.fee}</td>
-                    <td>{s.rate}</td>
-                    <td className="right_t green">{s.status}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </div>
-      </div>
-    </div>
+      <SelectCoinModal open={searchCoinOpen} onClose={() => setSearchCoinOpen(false)} />
+      <OrderDetailsModal open={moreDetailsOpen} onClose={() => setMoreDetailsOpen(false)} />
+
+      {anyOpen && <div className="modal-backdrop fade show" />}
+    </>
   )
 }
