@@ -133,9 +133,9 @@ export function useOrderForm({
         if (!dGtZero(value)) { setter(""); return; }
         const stepSize = SelectedCoin?.step_size ?? "0.00001";
         if (dToNumber(value) < dToNumber(stepSize)) { setter(String(stepSize)); return; }
-        // Round to step, then to price-precision string.
+        // Round to step, then to quantity-precision string.
         const rounded = dRoundToStep(value, stepSize);
-        const prec = getPricePrecision(SelectedCoin);
+        const prec = getQuantityPrecision(SelectedCoin);
         setter(dToFixed(rounded, prec).replace(/\.?0+$/, ""));
     }, [SelectedCoin]);
 
