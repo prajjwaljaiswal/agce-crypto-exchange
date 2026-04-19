@@ -2,6 +2,10 @@ import { useCallback, useEffect, useRef, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useMutation } from '@tanstack/react-query'
 import toast from 'react-hot-toast'
+import {
+  startAuthentication,
+  browserSupportsWebAuthn,
+} from '@simplewebauthn/browser'
 import type { LoginResponse, LoginSuccess } from '@agce/types'
 import { useAuth } from '../../providers/index.js'
 import { authApi } from '../../lib/auth-api.js'
@@ -154,6 +158,42 @@ export function LoginPage() {
     onError: (error) => showError(formatApiError(error, 'Could not resend code.')),
   })
 
+  const passkeyLoginMutation = useMutation({
+    mutationFn: async (payload: { identifier: string }) => {
+      const { challengeId, options } = await authApi.passkeyLoginOptions({
+        identifier: payload.identifier,
+      })
+      const assertion = await startAuthentication({
+        optionsJSON: options as unknown as Parameters<
+          typeof startAuthentication
+        >[0]['optionsJSON'],
+      })
+      return authApi.loginWithPasskey({
+        provider: 'PASSKEY',
+        identifier: payload.identifier,
+        challengeId,
+        response: assertion as unknown as Record<string, unknown>,
+      })
+    },
+    onSuccess: (response) => {
+      showSuccess('Login successful!')
+      const userId = response.user?.userId ?? response.user?.id ?? ''
+      handleLoginSuccess({
+        accessToken: response.accessToken,
+        refreshToken: response.refreshToken,
+        userId,
+      })
+    },
+    onError: (error) => {
+      const err = error as { name?: string; message?: string }
+      if (err?.name === 'NotAllowedError' || err?.name === 'AbortError') {
+        showError('Passkey prompt was cancelled.')
+        return
+      }
+      showError(formatApiError(error, 'Passkey login failed.'))
+    },
+  })
+
   const switchLoginTab = (tab: AccountTab) => {
     if (wizardStep === 2) return
     setAccountTab(tab)
@@ -168,24 +208,41 @@ export function LoginPage() {
     setResendTimer(0)
   }
 
+  // Resolve the identifier from the current form state.
+  // Returns null (and shows a toast) if the input is missing/invalid.
+  const resolveIdentifier = (): string | null => {
+    if (accountTab === 'email_user') {
+      const raw = signId.trim()
+      if (!raw) { showError('Please enter your email or username'); return null }
+      return raw
+    }
+    const digits = signId.replace(/\D/g, '').replace(/^0+/, '')
+    if (!digits || digits.length < 6) { showError('Please enter a valid phone number'); return null }
+    return `${countryCode}${digits}`
+  }
+
   /* ── Step 1 submit ── */
   const submitLoginStep1 = () => {
     if (accountTab === 'qr') { showError('QR code login is coming soon.'); return }
     if (!password) { showError('Please enter your password'); return }
 
-    let identifier: string
-    if (accountTab === 'email_user') {
-      const raw = signId.trim()
-      if (!raw) { showError('Please enter your email or username'); return }
-      identifier = raw
-    } else {
-      const digits = signId.replace(/\D/g, '').replace(/^0+/, '')
-      if (!digits || digits.length < 6) { showError('Please enter a valid phone number'); return }
-      identifier = `${countryCode}${digits}`
-    }
+    const identifier = resolveIdentifier()
+    if (!identifier) return
 
     setPendingIdentifier(identifier)
     loginMutation.mutate({ identifier, password, bindIp })
+  }
+
+  const submitPasskeyLogin = () => {
+    if (accountTab === 'qr') return
+    if (!browserSupportsWebAuthn()) {
+      showError('Your browser does not support passkeys.')
+      return
+    }
+    const identifier = resolveIdentifier()
+    if (!identifier) return
+    setPendingIdentifier(identifier)
+    passkeyLoginMutation.mutate({ identifier })
   }
 
   /* ── Step 2: OTP verify ── */
@@ -440,6 +497,20 @@ export function LoginPage() {
                               disabled={loginMutation.isPending}
                             >
                               {loginMutation.isPending ? 'Signing in…' : 'Next'}
+                            </button>
+                          </div>
+
+                          <div className="col-sm-12" style={{ marginTop: 10 }}>
+                            <button
+                              type="button"
+                              className="login-wizard-passkey-outline"
+                              onClick={submitPasskeyLogin}
+                              disabled={passkeyLoginMutation.isPending}
+                            >
+                              <i className="ri-fingerprint-line" aria-hidden />
+                              {passkeyLoginMutation.isPending
+                                ? 'Authenticating…'
+                                : 'Sign in with passkey'}
                             </button>
                           </div>
 

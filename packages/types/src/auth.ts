@@ -202,3 +202,70 @@ export interface GoogleRegisterPayload {
   redirectUri: string
   jurisdiction: Jurisdiction
 }
+
+// WebAuthn / Passkey — shapes are loose (JSON) so values produced by
+// @simplewebauthn/browser pass through unchanged to the backend.
+// http() unwraps data[0] before returning, so the types below reflect the
+// first element of the backend's `data` array.
+
+// POST /api/v1/auth/passkey/register-options (authenticated).
+// Body: none — server identifies the user via the access token.
+export interface PasskeyRegisterOptionsResponse {
+  options: Record<string, unknown>
+}
+
+// POST /api/v1/auth/passkey/verify-registration (authenticated).
+export interface PasskeyVerifyRegistrationPayload {
+  response: Record<string, unknown>
+  deviceName?: string
+}
+
+export interface PasskeyVerifyRegistrationResponse {
+  credentialId: string
+  deviceName?: string
+  message?: string
+}
+
+// POST /api/v1/auth/passkey/login-options (public).
+export interface PasskeyLoginOptionsPayload {
+  identifier: string
+}
+
+export interface PasskeyLoginOptionsResponse {
+  challengeId: string
+  options: Record<string, unknown>
+}
+
+// POST /api/v1/auth/login — passkey variant.
+export interface PasskeyLoginPayload {
+  provider: 'PASSKEY'
+  identifier: string
+  challengeId: string
+  response: Record<string, unknown>
+}
+
+// Response shape is distinct from the password LoginSuccess: `user` is nested,
+// there's no top-level `userId`, and no 2FA challenge branch.
+export interface PasskeyLoginSuccess {
+  accessToken: string
+  refreshToken: string
+  user: {
+    id?: string
+    userId?: string
+    email?: string
+    firstName?: string
+    lastName?: string
+  }
+}
+
+// GET /api/v1/auth/passkey/list (authenticated).
+export interface PasskeyListItem {
+  credentialId: string
+  deviceName?: string
+  createdAt?: string
+  lastUsedAt?: string
+}
+
+export interface PasskeyListResponse {
+  passkeys: PasskeyListItem[]
+}

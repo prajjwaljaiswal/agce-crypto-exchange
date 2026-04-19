@@ -8,6 +8,7 @@ import { AntiPhishingSetCodeModal } from './settings/modals/AntiPhishingSetCodeM
 import { VerificationOptionsModal } from './settings/modals/VerificationOptionsModal.js'
 import { PasswordChangeModal } from './settings/modals/PasswordChangeModal.js'
 import { EditProfileModal } from './settings/modals/EditProfileModal.js'
+import { PasskeySetupModal } from './settings/modals/PasskeySetupModal.js'
 
 const ALL_VERIFY_OPTIONS = [
   {
@@ -53,6 +54,7 @@ export function Settings() {
   const antiPhishingSetCode = useDisclosure()
   const antiPhishingVerifyOptions = useDisclosure()
   const passwordVerifyOptions = useDisclosure()
+  const passkeySetup = useDisclosure()
 
   const handleGetStarted = () => {
     antiPhishingInfo.close()
@@ -66,6 +68,7 @@ export function Settings() {
       <SecuritySection
         onChangePassword={passwordChange.open}
         onSetAntiPhishing={antiPhishingInfo.open}
+        onAddPasskey={passkeySetup.open}
       />
 
       <EditProfileModal
@@ -100,6 +103,11 @@ export function Settings() {
         isOpen={antiPhishingVerifyOptions.isOpen}
         onClose={antiPhishingVerifyOptions.close}
         options={ALL_VERIFY_OPTIONS}
+      />
+
+      <PasskeySetupModal
+        isOpen={passkeySetup.isOpen}
+        onClose={passkeySetup.close}
       />
     </div>
   )

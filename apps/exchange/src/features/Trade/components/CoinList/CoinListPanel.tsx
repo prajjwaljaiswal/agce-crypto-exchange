@@ -1,13 +1,26 @@
+type CoinPairDetail = {
+    icon_path?: string;
+    iconUrl?: string;
+    base_currency: string;
+    quote_currency: string;
+    base_currency_fullname: string;
+    change_percentage: number;
+    change: number;
+    buy_price: string | number;
+    _id: string;
+    symbol: string;
+};
+
 type CoinListPanelProps = {
-    CoinPairDetails: any[];
+    CoinPairDetails: CoinPairDetail[];
     coinFilter: string;
     setcoinFilter: (v: string) => void;
     favCoins: string[];
-    SelectedCoin: any;
+    SelectedCoin: CoinPairDetail | null;
     search: string;
     setsearch: (v: string) => void;
     token: string | null;
-    onSelectCoin: (data: any) => void;
+    onSelectCoin: (data: CoinPairDetail) => void;
     onToggleFav: (id: string) => void;
 };
 
@@ -83,6 +96,8 @@ export function CoinListPanel({
                                     SelectedCoin?.base_currency === data?.base_currency &&
                                     SelectedCoin?.quote_currency === data?.quote_currency;
 
+                                const iconSrc = data?.iconUrl || data?.icon_path || "/images/new_coin_icon.png";
+
                                 return (
                                     <tr
                                         key={data?._id || data?.symbol || index}
@@ -94,8 +109,8 @@ export function CoinListPanel({
                                         <td>
                                             <div className="d-flex align-items-center gap-1 p-2 ">
                                                 <img
-                                                    src={data?.icon_path}
-                                                    alt=""
+                                                    src={iconSrc}
+                                                    alt={`${data?.base_currency ?? ""} icon`}
                                                     className="img-fluid me-1 round_img"
                                                     onError={(e) => { const img = e.target as HTMLImageElement; img.onerror = null; img.src = "/images/new_coin_icon.png"; }}
                                                 />
@@ -118,12 +133,12 @@ export function CoinListPanel({
                                         <td className="text-end">
                                             <div className="d-flex justify-content-end align-items-center gap-2">
                                                 <div className="d-flex flex-column text-end">
-                                                    <span className={data?.change_percentage >= 0 ? "text-green" : "text-danger"}>
-                                                        {data?.change_percentage >= 0
-                                                            ? `+${Number(parseFloat(data?.change_percentage)?.toFixed(5))}`
-                                                            : Number(parseFloat(data?.change_percentage)?.toFixed(5))}%
+                                                    <span className={data.change_percentage >= 0 ? "text-green" : "text-danger"}>
+                                                        {data.change_percentage >= 0
+                                                            ? `+${data.change_percentage.toFixed(5)}`
+                                                            : data.change_percentage.toFixed(5)}%
                                                     </span>
-                                                    <span className="tokensubcnt">{parseFloat(data?.change?.toFixed(5)) || 0}</span>
+                                                    <span className="tokensubcnt">{parseFloat(data.change.toFixed(5)) || 0}</span>
                                                 </div>
 
                                                 {token && (

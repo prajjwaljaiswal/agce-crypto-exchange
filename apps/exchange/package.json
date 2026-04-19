@@ -16,6 +16,7 @@
     "@agce/types": "workspace:*",
     "@agce/ui": "workspace:*",
     "@react-oauth/google": "^0.13.5",
+    "@simplewebauthn/browser": "^13.3.0",
     "@tanstack/react-query": "^5.99.0",
     "@tanstack/react-query-devtools": "^5.99.0",
     "decimal.js": "^10.6.0",

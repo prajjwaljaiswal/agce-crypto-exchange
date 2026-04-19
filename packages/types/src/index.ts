@@ -147,6 +147,15 @@ export type {
   GoogleLoginPayload,
   GoogleRegisterPayload,
   Country,
+  PasskeyRegisterOptionsResponse,
+  PasskeyVerifyRegistrationPayload,
+  PasskeyVerifyRegistrationResponse,
+  PasskeyLoginOptionsPayload,
+  PasskeyLoginOptionsResponse,
+  PasskeyLoginPayload,
+  PasskeyLoginSuccess,
+  PasskeyListItem,
+  PasskeyListResponse,
 } from './auth.js'
 
 export type {

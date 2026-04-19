@@ -418,6 +418,7 @@ export interface TradingPair {
   referencePriceSource?: 'binance' | string
   referencePriceUpdatedAt?: string
   instance?: string
+  iconUrl?: string
 }
 
 export interface TradingPairDetail extends TradingPair {

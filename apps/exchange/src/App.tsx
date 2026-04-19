@@ -1,4 +1,4 @@
-import { Route, Routes, useLocation } from 'react-router-dom'
+import { Navigate, Route, Routes, useLocation } from 'react-router-dom'
 import { Toaster, ToastBar, toast } from 'react-hot-toast'
 import { X } from 'lucide-react'
 import { useTheme } from './providers/ThemeProvider.js'
@@ -87,7 +87,10 @@ function AppInner() {
             path="/announcement_details/:title/:announce_title_id"
             element={<AnnouncementDetails />}
           />
+          <Route path="/usd_futures" element={<Navigate to="/usd_futures/BTC_USDT" replace />} />
           <Route path="/usd_futures/:pairs" element={<UsdMFutures />} />
+          <Route path="/coin-m-futures" element={<ComingSoonPage title="Coin-M Futures" />} />
+          <Route path="/futures-options" element={<ComingSoonPage title="Futures Options" />} />
           <Route element={<RequireGuest />}>
             <Route path="/signup" element={<SignupPage />} />
             <Route path="/login" element={<LoginPage />} />
@@ -234,6 +237,15 @@ function ThemedToaster() {
         </ToastBar>
       )}
     </Toaster>
+  )
+}
+
+function ComingSoonPage({ title }: { title: string }) {
+  return (
+    <div className="container py-5 text-center">
+      <h1>{title}</h1>
+      <p className="mt-4 text-muted">This feature is coming soon.</p>
+    </div>
   )
 }
 

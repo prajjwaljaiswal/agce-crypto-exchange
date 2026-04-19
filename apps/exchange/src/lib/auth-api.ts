@@ -20,10 +20,22 @@ import type {
   UpdatePreferredCurrencyPayload,
   UpdatePreferredCurrencyResponse,
   VerifyOtpPayload,
+  PasskeyRegisterOptionsResponse,
+  PasskeyVerifyRegistrationPayload,
+  PasskeyVerifyRegistrationResponse,
+  PasskeyLoginOptionsPayload,
+  PasskeyLoginOptionsResponse,
+  PasskeyLoginPayload,
+  PasskeyLoginSuccess,
+  PasskeyListResponse,
 } from '@agce/types'
 import { http } from './http.js'
 
 const BASE = '/api/v1/auth'
+
+// Passkey routes are served directly under `/auth/*` at the gateway — no
+// `/api/v1` prefix, unlike the rest of the auth service.
+const PASSKEY_BASE = '/api/v1/auth'
 
 const COMMON_BASE = '/api/v1'
 
@@ -102,6 +114,51 @@ export const authApi = {
 
   googleRegister(payload: GoogleRegisterPayload): Promise<RegisterResponse> {
     return http(`${BASE}/register`, { method: 'POST', body: payload, auth: false })
+  },
+
+  // ── Passkey / WebAuthn ──
+  // Registration (authenticated): two legs.
+  passkeyRegisterOptions(): Promise<PasskeyRegisterOptionsResponse> {
+    return http(`${PASSKEY_BASE}/passkey/register-options`, { method: 'POST' })
+  },
+
+  passkeyVerifyRegistration(
+    payload: PasskeyVerifyRegistrationPayload,
+  ): Promise<PasskeyVerifyRegistrationResponse> {
+    return http(`${PASSKEY_BASE}/passkey/verify-registration`, {
+      method: 'POST',
+      body: payload,
+    })
+  },
+
+  // Login (public): get options+challengeId, then post assertion to /auth/login.
+  passkeyLoginOptions(
+    payload: PasskeyLoginOptionsPayload,
+  ): Promise<PasskeyLoginOptionsResponse> {
+    return http(`${PASSKEY_BASE}/passkey/login-options`, {
+      method: 'POST',
+      body: payload,
+      auth: false,
+    })
+  },
+
+  loginWithPasskey(payload: PasskeyLoginPayload): Promise<PasskeyLoginSuccess> {
+    return http(`${PASSKEY_BASE}/login`, {
+      method: 'POST',
+      body: payload,
+      auth: false,
+    })
+  },
+
+  // Management (authenticated).
+  passkeyList(): Promise<PasskeyListResponse> {
+    return http(`${PASSKEY_BASE}/passkey/list`)
+  },
+
+  passkeyDelete(credentialId: string): Promise<{ message?: string }> {
+    return http(`${PASSKEY_BASE}/passkey/${encodeURIComponent(credentialId)}`, {
+      method: 'DELETE',
+    })
   },
 }
 

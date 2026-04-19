@@ -1,11 +1,13 @@
 interface SecuritySectionProps {
   onChangePassword: () => void
   onSetAntiPhishing: () => void
+  onAddPasskey: () => void
 }
 
 export function SecuritySection({
   onChangePassword,
   onSetAntiPhishing,
+  onAddPasskey,
 }: SecuritySectionProps) {
   return (
     <div className="twofactor_outer_s">
@@ -27,6 +29,23 @@ export function SecuritySection({
 
           <button type="button" className="btn" onClick={onChangePassword}>
             Change Password
+          </button>
+        </div>
+
+        <div className="factor_bl active">
+          <div className="lftcnt">
+            <h6>
+              <i className="ri-fingerprint-line anti-phishing-icon-spaced" />
+              Passkey
+            </h6>
+            <p>
+              Sign in with Face ID, Touch ID, Windows Hello, or a security key
+              instead of your password. You can keep using your password too.
+            </p>
+          </div>
+          <button type="button" className="btn" onClick={onAddPasskey}>
+            <i className="ri-add-line anti-phishing-icon-tight" />
+            Add Passkey
           </button>
         </div>
 
