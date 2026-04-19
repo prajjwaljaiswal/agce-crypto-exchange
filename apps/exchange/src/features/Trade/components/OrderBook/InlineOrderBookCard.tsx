@@ -211,7 +211,7 @@ export function InlineOrderBookCard({
                                                             );
                                                         })
                                                     ) : (
-                                                        <tr><td colSpan={3} className="text-center text-muted py-4">No sell orders</td></tr>
+                                                        <tr><td colSpan={3} className="text-center  py-4">No sell orders</td></tr>
                                                     )}
                                                 </tbody>
                                             </table>
@@ -252,7 +252,7 @@ export function InlineOrderBookCard({
                                                             );
                                                         })
                                                     ) : (
-                                                        <tr><td colSpan={3} className="text-center text-muted py-4">No buy orders</td></tr>
+                                                        <tr><td colSpan={3} className="text-center py-4">No buy orders</td></tr>
                                                     )}
                                                 </tbody>
                                             </table>
@@ -410,7 +410,7 @@ export function InlineOrderBookCard({
                                                 <div className="no_data_s">
                                                     <img src="/images/no_data_vector.svg" className="img-fluid dark_img" width="96" height="96" alt="" />
                                                     <img src="/images/no_data_vector_light.png" className="img-fluid light_img" width="96" height="96" alt="" />
-                                                    <p className="mt-2 text-muted">No trades yet</p>
+                                                    <p className="mt-2">No trades yet</p>
                                                 </div>
                                             </div>
                                         </td>

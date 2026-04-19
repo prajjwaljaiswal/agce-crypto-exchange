@@ -136,7 +136,8 @@ const Trade = () => {
         buyOrderPrice, setbuyOrderPrice, buyamount,
         sellOrderPrice, setsellOrderPrice, sellAmount,
         buyStopPrice, sellStopPrice,
-        limitBuyFok, limitBuyIoc, limitSellFok, limitSellIoc,
+        limitBuyFok, limitBuyIoc, limitBuyPostOnly,
+        limitSellFok, limitSellIoc, limitSellPostOnly,
         validateOrder, resetForm, fillFromAskRow, fillFromBidRow,
     } = form;
 
@@ -269,9 +270,11 @@ const Trade = () => {
         const isBuy = side === 'BUY';
         const fok = isBuy ? limitBuyFok : limitSellFok;
         const ioc = isBuy ? limitBuyIoc : limitSellIoc;
-        // Default GTC; FOK > IOC toggles only apply to LIMIT orders. MARKET is IOC by spec.
+        const postOnly = isBuy ? limitBuyPostOnly : limitSellPostOnly;
+        // Default GTC; POST_ONLY > FOK > IOC toggles only apply to LIMIT orders. MARKET is IOC by spec.
         let timeInForce: PlaceOrderPayload['timeInForce'] = 'GTC';
         if (!isLimitFamily) timeInForce = 'IOC';
+        else if (postOnly) timeInForce = 'POST_ONLY';
         else if (fok) timeInForce = 'FOK';
         else if (ioc) timeInForce = 'IOC';
 

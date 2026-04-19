@@ -42,6 +42,7 @@ export function OrderForm({
         limitBuyPercent,
         limitBuyFok, setLimitBuyFok,
         limitBuyIoc, setLimitBuyIoc,
+        limitBuyPostOnly, setLimitBuyPostOnly,
         marketBuyPercent,
         buySlippageEnabled, setBuySlippageEnabled,
         buySlippageInput, setBuySlippageInput,
@@ -51,6 +52,7 @@ export function OrderForm({
         limitSellPercent,
         limitSellFok, setLimitSellFok,
         limitSellIoc, setLimitSellIoc,
+        limitSellPostOnly, setLimitSellPostOnly,
         marketSellPercent,
         stopPercent, setStopPercent,
         priceFieldFocus, setPriceFieldFocus,
@@ -413,6 +415,10 @@ export function OrderForm({
                                             <input type="checkbox" checked={limitBuyIoc} onChange={(e) => setLimitBuyIoc(e.target.checked)} />
                                             <span>IOC</span>
                                         </label>
+                                        <label className="stop_check">
+                                            <input type="checkbox" checked={limitBuyPostOnly} onChange={(e) => setLimitBuyPostOnly(e.target.checked)} />
+                                            <span>Post Only</span>
+                                        </label>
                                     </div>
                                 </>
                             ) : null}
@@ -692,6 +698,10 @@ export function OrderForm({
                                         <label className="stop_check">
                                             <input type="checkbox" checked={limitSellIoc} onChange={(e) => setLimitSellIoc(e.target.checked)} />
                                             <span>IOC</span>
+                                        </label>
+                                        <label className="stop_check">
+                                            <input type="checkbox" checked={limitSellPostOnly} onChange={(e) => setLimitSellPostOnly(e.target.checked)} />
+                                            <span>Post Only</span>
                                         </label>
                                     </div>
                                 </>

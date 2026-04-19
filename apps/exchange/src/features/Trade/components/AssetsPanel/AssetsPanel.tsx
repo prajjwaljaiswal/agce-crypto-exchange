@@ -1,3 +1,4 @@
+import { useRef, useState } from "react";
 import { Link } from "react-router-dom";
 
 type AssetsPanelProps = {
@@ -10,6 +11,14 @@ type AssetsPanelProps = {
     onRefresh: () => void;
 };
 
+const ASSET_ACTIONS = [
+    { label: "Deposit", icon: "ri-download-2-line", path: "/asset_managemnet/deposit" },
+    { label: "Withdraw", icon: "ri-upload-2-line", path: "/asset_managemnet/withdraw" },
+    { label: "Convert", icon: "ri-swap-line", path: "/user_profile/swap" },
+    { label: "Transfer", icon: "ri-arrow-left-right-line", path: "/user_profile/asset_overview" },
+    { label: "History", icon: "ri-time-line", path: "/user_profile/asset_overview" },
+];
+
 export function AssetsPanel({
     SelectedCoin,
     BuyCoinBal,
@@ -19,6 +28,42 @@ export function AssetsPanel({
     walletsLoading,
     onRefresh,
 }: AssetsPanelProps) {
+    const sliderRef = useRef<HTMLDivElement>(null);
+    const [isDragging, setIsDragging] = useState(false);
+    const dragState = useRef({ startX: 0, scrollLeft: 0, moved: false });
+
+    const onPointerDown = (e: React.PointerEvent<HTMLDivElement>) => {
+        const el = sliderRef.current;
+        if (!el) return;
+        setIsDragging(true);
+        dragState.current = {
+            startX: e.clientX,
+            scrollLeft: el.scrollLeft,
+            moved: false,
+        };
+        el.setPointerCapture(e.pointerId);
+    };
+
+    const onPointerMove = (e: React.PointerEvent<HTMLDivElement>) => {
+        if (!isDragging || !sliderRef.current) return;
+        const dx = e.clientX - dragState.current.startX;
+        if (Math.abs(dx) > 4) dragState.current.moved = true;
+        sliderRef.current.scrollLeft = dragState.current.scrollLeft - dx;
+    };
+
+    const endDrag = (e: React.PointerEvent<HTMLDivElement>) => {
+        if (!isDragging) return;
+        setIsDragging(false);
+        sliderRef.current?.releasePointerCapture(e.pointerId);
+    };
+
+    const suppressClickIfDragged = (e: React.MouseEvent) => {
+        if (dragState.current.moved) {
+            e.preventDefault();
+            dragState.current.moved = false;
+        }
+    };
+
     return (
         <div className="assets_right d-none d-lg-block assets_panel_desktop">
             <div id="tab_4" className="assets_panel_inner">
@@ -48,10 +93,26 @@ export function AssetsPanel({
                     </div>
                 </div>
 
-                <div className="assets_panel_actions">
-                    <Link className="assets_panel_pill" to={token ? "/asset_managemnet/deposit" : "/login"}>Deposit</Link>
-                    <Link className="assets_panel_pill" to={token ? "/user_profile/swap" : "/login"}>Convert</Link>
-                    <Link className="assets_panel_pill" to={token ? "/user_profile/asset_overview" : "/login"}>Transfer</Link>
+                <div
+                    ref={sliderRef}
+                    className={`assets_panel_actions assets_panel_slider${isDragging ? " is-dragging" : ""}`}
+                    onPointerDown={onPointerDown}
+                    onPointerMove={onPointerMove}
+                    onPointerUp={endDrag}
+                    onPointerCancel={endDrag}
+                >
+                    {ASSET_ACTIONS.map((action) => (
+                        <Link
+                            key={action.label}
+                            className="assets_panel_pill"
+                            to={token ? action.path : "/login"}
+                            onClick={suppressClickIfDragged}
+                            draggable={false}
+                        >
+                            <i className={action.icon} aria-hidden="true" />
+                            <span>{action.label}</span>
+                        </Link>
+                    ))}
                 </div>
 
                 <div className="assets_panel_list_card">

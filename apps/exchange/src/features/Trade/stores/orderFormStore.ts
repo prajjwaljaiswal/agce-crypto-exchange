@@ -13,6 +13,7 @@ interface OrderFormState {
     limitBuyPercent: number;
     limitBuyFok: boolean;
     limitBuyIoc: boolean;
+    limitBuyPostOnly: boolean;
     marketBuyPercent: number;
     buySlippageEnabled: boolean;
     buySlippageInput: string;
@@ -23,6 +24,7 @@ interface OrderFormState {
     limitSellPercent: number;
     limitSellFok: boolean;
     limitSellIoc: boolean;
+    limitSellPostOnly: boolean;
     marketSellPercent: number;
     // shared
     stopPercent: number;
@@ -37,6 +39,7 @@ interface OrderFormState {
     setLimitBuyPercent: (v: number) => void;
     setLimitBuyFok: (v: boolean) => void;
     setLimitBuyIoc: (v: boolean) => void;
+    setLimitBuyPostOnly: (v: boolean) => void;
     setMarketBuyPercent: (v: number) => void;
     setBuySlippageEnabled: (v: boolean) => void;
     setBuySlippageInput: (v: string) => void;
@@ -46,6 +49,7 @@ interface OrderFormState {
     setLimitSellPercent: (v: number) => void;
     setLimitSellFok: (v: boolean) => void;
     setLimitSellIoc: (v: boolean) => void;
+    setLimitSellPostOnly: (v: boolean) => void;
     setMarketSellPercent: (v: number) => void;
     setStopPercent: (v: number) => void;
     setPriceFieldFocus: (v: string | null | ((prev: string | null) => string | null)) => void;
@@ -62,6 +66,7 @@ const initial = {
     limitBuyPercent: 0,
     limitBuyFok: false,
     limitBuyIoc: false,
+    limitBuyPostOnly: false,
     marketBuyPercent: 0,
     buySlippageEnabled: false,
     buySlippageInput: "",
@@ -71,6 +76,7 @@ const initial = {
     limitSellPercent: 0,
     limitSellFok: true,
     limitSellIoc: false,
+    limitSellPostOnly: false,
     marketSellPercent: 0,
     stopPercent: 0,
     priceFieldFocus: null as string | null,
@@ -87,6 +93,7 @@ export const useOrderFormStore = create<OrderFormState>((set) => ({
     setLimitBuyPercent: (v) => set({ limitBuyPercent: v }),
     setLimitBuyFok: (v) => set({ limitBuyFok: v }),
     setLimitBuyIoc: (v) => set({ limitBuyIoc: v }),
+    setLimitBuyPostOnly: (v) => set({ limitBuyPostOnly: v }),
     setMarketBuyPercent: (v) => set({ marketBuyPercent: v }),
     setBuySlippageEnabled: (v) => set({ buySlippageEnabled: v }),
     setBuySlippageInput: (v) => set({ buySlippageInput: v }),
@@ -96,6 +103,7 @@ export const useOrderFormStore = create<OrderFormState>((set) => ({
     setLimitSellPercent: (v) => set({ limitSellPercent: v }),
     setLimitSellFok: (v) => set({ limitSellFok: v }),
     setLimitSellIoc: (v) => set({ limitSellIoc: v }),
+    setLimitSellPostOnly: (v) => set({ limitSellPostOnly: v }),
     setMarketSellPercent: (v) => set({ marketSellPercent: v }),
     setStopPercent: (v) => set({ stopPercent: v }),
     setPriceFieldFocus: (v) => set((s) => ({ priceFieldFocus: typeof v === "function" ? v(s.priceFieldFocus) : v })),

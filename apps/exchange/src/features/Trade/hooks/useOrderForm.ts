@@ -63,6 +63,7 @@ export function useOrderForm({
         limitBuyPercent, setLimitBuyPercent,
         limitBuyFok, setLimitBuyFok,
         limitBuyIoc, setLimitBuyIoc,
+        limitBuyPostOnly, setLimitBuyPostOnly,
         marketBuyPercent, setMarketBuyPercent,
         buySlippageEnabled, setBuySlippageEnabled,
         buySlippageInput, setBuySlippageInput,
@@ -72,6 +73,7 @@ export function useOrderForm({
         limitSellPercent, setLimitSellPercent,
         limitSellFok, setLimitSellFok,
         limitSellIoc, setLimitSellIoc,
+        limitSellPostOnly, setLimitSellPostOnly,
         marketSellPercent, setMarketSellPercent,
         stopPercent, setStopPercent,
         priceFieldFocus, setPriceFieldFocus,
@@ -348,6 +350,7 @@ export function useOrderForm({
         limitBuyPercent,
         limitBuyFok, setLimitBuyFok,
         limitBuyIoc, setLimitBuyIoc,
+        limitBuyPostOnly, setLimitBuyPostOnly,
         marketBuyPercent,
         buySlippageEnabled, setBuySlippageEnabled,
         buySlippageInput, setBuySlippageInput,
@@ -359,6 +362,7 @@ export function useOrderForm({
         limitSellPercent,
         limitSellFok, setLimitSellFok,
         limitSellIoc, setLimitSellIoc,
+        limitSellPostOnly, setLimitSellPostOnly,
         marketSellPercent,
 
         // shared

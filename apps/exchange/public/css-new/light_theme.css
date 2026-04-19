@@ -1679,19 +1679,6 @@ body.light_theme .sell_spot_form .limit_buy_checks .stop_check span {
     color: #374151;
 }
 
-body.light_theme .buy_spot_form .custom-btn.btn-success.btn-mini {
-    background: #2BC287 !important;
-    border: none !important;
-    color: #ffffff !important;
-    font-weight: 500;
-    font-size: 15px;
-    font-family: "Inter", sans-serif;
-    border-radius: 50px !important;
-    padding: 11px 22px !important;
-    margin-top: 6px !important;
-    margin-bottom: 14px !important;
-    box-shadow: none !important;
-}
 
 body.light_theme .buy_spot_form .custom-btn.btn-success.btn-mini:hover,
 body.light_theme .buy_spot_form .custom-btn.btn-success.btn-mini:focus {
@@ -1763,8 +1750,8 @@ body.light_theme .sell_spot_form .stop_apr_card {
     box-shadow: none;
 }
 
-body.light_theme .buy_spot_form .stop_apr_text,
-body.light_theme .sell_spot_form .stop_apr_text {
+.buy_spot_form .stop_apr_text,
+ .sell_spot_form .stop_apr_text {
     color: #FF9447;
     font-weight: 500;
     font-size: 12px;
