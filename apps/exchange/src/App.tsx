@@ -1,5 +1,7 @@
 import { Route, Routes, useLocation } from 'react-router-dom'
-import { Toaster } from 'react-hot-toast'
+import { Toaster, ToastBar, toast } from 'react-hot-toast'
+import { X } from 'lucide-react'
+import { useTheme } from './providers/ThemeProvider.js'
 import { AppProviders } from './providers/index.js'
 import { UserHeader } from './components/layout/UserHeader.js'
 import { Footer } from './components/layout/Footer.js'
@@ -130,16 +132,116 @@ function AppInner() {
   )
 }
 
+function ThemedToaster() {
+  const { theme } = useTheme()
+  const isDark = theme === 'dark'
+
+  const palette = isDark
+    ? {
+        background: '#1f2937',
+        color: '#f9fafb',
+        shadow:
+          '0 10px 25px -5px rgba(0, 0, 0, 0.35), 0 8px 10px -6px rgba(0, 0, 0, 0.25)',
+        closeBg: 'rgba(255, 255, 255, 0.12)',
+        closeBgHover: 'rgba(255, 255, 255, 0.22)',
+        closeColor: 'rgba(255, 255, 255, 0.75)',
+        closeColorHover: '#ffffff',
+      }
+    : {
+        background: '#ffffff',
+        color: '#111827',
+        shadow:
+          '0 10px 25px -5px rgba(0, 0, 0, 0.12), 0 8px 10px -6px rgba(0, 0, 0, 0.08)',
+        closeBg: 'rgba(0, 0, 0, 0.06)',
+        closeBgHover: 'rgba(0, 0, 0, 0.12)',
+        closeColor: 'rgba(0, 0, 0, 0.55)',
+        closeColorHover: '#111827',
+      }
+
+  return (
+    <Toaster
+      position="top-center"
+      reverseOrder={false}
+      containerStyle={{ zIndex: 2147483647 }}
+      toastOptions={{
+        duration: 4000,
+        style: {
+          zIndex: 2147483647,
+          background: palette.background,
+          color: palette.color,
+          padding: '12px 16px',
+          borderRadius: '12px',
+          boxShadow: palette.shadow,
+          fontSize: '14px',
+          fontWeight: 500,
+          maxWidth: '420px',
+          border: isDark ? 'none' : '1px solid rgba(0, 0, 0, 0.06)',
+        },
+        success: {
+          iconTheme: { primary: '#10b981', secondary: '#ffffff' },
+        },
+        error: {
+          iconTheme: { primary: '#ef4444', secondary: '#ffffff' },
+        },
+      }}
+    >
+      {(t) => (
+        <ToastBar toast={t}>
+          {({ icon, message }) => (
+            <div
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '12px',
+                width: '100%',
+              }}
+            >
+              <span style={{ display: 'flex', flexShrink: 0 }}>{icon}</span>
+              <span style={{ flex: 1, lineHeight: 1.4 }}>{message}</span>
+              {t.type !== 'loading' && (
+                <button
+                  onClick={() => toast.dismiss(t.id)}
+                  aria-label="Close"
+                  style={{
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    flexShrink: 0,
+                    width: '20px',
+                    height: '20px',
+                    padding: 0,
+                    border: 'none',
+                    borderRadius: '9999px',
+                    background: palette.closeBg,
+                    color: palette.closeColor,
+                    cursor: 'pointer',
+                    transition: 'all 0.15s ease',
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.background = palette.closeBgHover
+                    e.currentTarget.style.color = palette.closeColorHover
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.background = palette.closeBg
+                    e.currentTarget.style.color = palette.closeColor
+                  }}
+                >
+                  <X size={12} strokeWidth={2.5} />
+                </button>
+              )}
+            </div>
+          )}
+        </ToastBar>
+      )}
+    </Toaster>
+  )
+}
+
 export default function App() {
   return (
     <AppProviders>
       <AppInner />
-      <Toaster
-        position="top-right"
-        reverseOrder={false}
-        containerStyle={{ zIndex: 2147483647 }}
-        toastOptions={{ style: { zIndex: 2147483647 } }}
-      />
+      <ThemedToaster />
     </AppProviders>
   )
 }
