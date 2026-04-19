@@ -140,7 +140,7 @@ export function InlineOrderBookCard({
                                 onClick={() => setOrderBookAggOpen((o) => !o)}
                             >
                                 <span className="orderbook_agg_dd_value">{String(orderBookAggStep)}</span>
-                                <span className={`orderbook_agg_dd_caret ${orderBookAggOpen ? "is-open" : ""}`} aria-hidden />
+                                <i className={`ri-arrow-down-s-line orderbook_agg_dd_caret ${orderBookAggOpen ? 'is-open' : ''}`} />
                             </button>
                             {orderBookAggOpen && (
                                 <ul className="orderbook_agg_dd_menu" role="listbox" aria-label="Order book aggregation">
@@ -185,7 +185,7 @@ export function InlineOrderBookCard({
                                     </div>
 
                                     {/* Asks */}
-                                    <div className="price_card_body scroll_y orderbook-side-scroll" style={{ position: "relative", minHeight: "200px" }}>
+                                    <div className="price_card_body scroll_y orderbook-side-scroll orderbook-asks-fill-bottom" style={{ position: "relative", minHeight: "200px", display: "flex", flexDirection: "column", justifyContent: "flex-end" }}>
                                         {loader ? (
                                             <div style={{ display: "flex", alignItems: "center", justifyContent: "center", height: "100%", minHeight: "200px" }}>
                                                 <div className="spinner-border" style={{ width: "1.5rem", height: "1.5rem", borderColor: "rgba(255, 255, 255, 0.3)", borderRightColor: "transparent" }} />

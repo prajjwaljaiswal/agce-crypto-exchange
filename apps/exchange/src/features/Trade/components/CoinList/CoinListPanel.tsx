@@ -40,7 +40,7 @@ export function CoinListPanel({
                 </div>
             </div>
 
-            <ul className="favorites_list_tabs">
+            <ul className="favorites_list_tabs p-2 mb-2">
                 {token && (
                     <li>
                         <button
@@ -51,7 +51,7 @@ export function CoinListPanel({
                         </button>
                     </li>
                 )}
-                {CoinPairDetails && [...new Set(CoinPairDetails.map(item => item?.quote_currency)), "BTC", "BNB", "ETH"].map((quoteCurrency, idx) => (
+                {CoinPairDetails && [...new Set(CoinPairDetails.map(item => item?.quote_currency))].map((quoteCurrency, idx) => (
                     <li key={idx}>
                         <button
                             className={coinFilter === quoteCurrency ? 'active' : ''}
@@ -92,7 +92,7 @@ export function CoinListPanel({
                                     >
                                         {/* Pair */}
                                         <td>
-                                            <div className="d-flex align-items-center gap-1">
+                                            <div className="d-flex align-items-center gap-1 p-2 ">
                                                 <img
                                                     src={data?.icon_path}
                                                     alt=""

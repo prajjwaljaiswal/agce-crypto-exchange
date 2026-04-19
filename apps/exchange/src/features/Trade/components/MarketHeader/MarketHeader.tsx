@@ -7,6 +7,7 @@ type MarketHeaderProps = {
     priceHigh: number;
     priceLow: number;
     volume: number;
+    isPairMenuOpen?: boolean;
     onPairClick: () => void;
 };
 
@@ -19,6 +20,7 @@ export function MarketHeader({
     priceHigh,
     priceLow,
     volume,
+    isPairMenuOpen = false,
     onPairClick,
 }: MarketHeaderProps) {
 
@@ -28,7 +30,7 @@ export function MarketHeader({
 
                 <div className="headline_left__lBBPY_leftmain d-flex align-items-center">
                     <div
-                        className="headline_symbolName__KfmIZ mt_tr_pr cursor-pointer"
+                        className={`headline_symbolName__KfmIZ mt_tr_pr cursor-pointer mh-pair-toggle ${isPairMenuOpen ? 'is-open' : ''}`}
                         onClick={onPairClick}
                     >
                         <div className="headline_bigName__dspVW">
@@ -36,11 +38,11 @@ export function MarketHeader({
                         </div>
 
                         <div>
-                            
+
                             <div className="headline_bigName__dspVW">
                                 <h1>
                                     {SelectedCoin ? `${SelectedCoin?.base_currency}/${SelectedCoin?.quote_currency}` : "---/---"}
-                                    <i className="ri-arrow-down-s-line ms-1"></i>
+                                    <i className={`ri-arrow-down-s-line ms-1 mh-pair-arrow ${isPairMenuOpen ? 'is-open' : ''}`}></i>
                                 </h1>
                             </div>
                             <div className="headline_etfDisplay__P4Hdv">

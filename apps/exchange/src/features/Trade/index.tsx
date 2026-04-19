@@ -145,7 +145,10 @@ const Trade = () => {
 
     // Derive SelectedCoin from the URL param (e.g. /trade/BTC_USDT).
     useEffect(() => {
-        const raw = tradeParam || 'BTC_USDT';
+        const raw = tradeParam;
+
+        if (!raw) return;
+        
         const [base, quote] = raw.split('_');
         if (!base || !quote) return;
         setSelectedCoin({ base_currency: base, quote_currency: quote });
@@ -211,7 +214,10 @@ const Trade = () => {
         if (
             SelectedCoin?.base_currency_id === data?.base_currency_id &&
             SelectedCoin?.quote_currency_id === data?.quote_currency_id
-        ) return;
+        ) {
+            setIsFavouritesOpen(false);
+            return;
+        }
 
         resetOrderbook();
         resetForm();
@@ -221,7 +227,23 @@ const Trade = () => {
         setsellPrice(data?.sell_price);
         setExpandedRowIndex(null);
         setDesAndLinks({ description: data?.description ?? "", links: [] });
+        setIsFavouritesOpen(false);
     };
+
+    // Close the desktop pair dropdown when the user clicks outside of it
+    // (but not on the pair toggle in the market header, which handles its own toggle).
+    useEffect(() => {
+        if (!isFavouritesOpen) return;
+        const handler = (e: MouseEvent) => {
+            const target = e.target as HTMLElement | null;
+            if (!target) return;
+            if (target.closest('.trade_favourites_lft')) return;
+            if (target.closest('.headline_symbolName__KfmIZ')) return;
+            setIsFavouritesOpen(false);
+        };
+        document.addEventListener('mousedown', handler);
+        return () => document.removeEventListener('mousedown', handler);
+    }, [isFavouritesOpen, setIsFavouritesOpen]);
 
     const handleOrderPlace = async (
         orderType: string,
@@ -290,7 +312,7 @@ const Trade = () => {
     return (
         <>
             <Helmet>
-                <title>{`${SelectedCoin?.base_currency || "BTC"}/${SelectedCoin?.quote_currency || "USDT"} Spot Trading – AGCE`}</title>
+                <title>{`${SelectedCoin?.base_currency}/${SelectedCoin?.quote_currency || "USDT"} Spot Trading – AGCE`}</title>
                 <meta name="description" content="Trade Bitcoin against USDT on AGCE with intuitive interface, live market data and safety features. Register today." />
                 <meta name="keywords" content="spot bitcoin usdt, trade bitcoin exchange, AGCE spot trading, BTC USDT AGCE" />
             </Helmet>
@@ -324,6 +346,7 @@ const Trade = () => {
                                 priceHigh={priceHigh}
                                 priceLow={priceLow}
                                 volume={volume}
+                                isPairMenuOpen={isFavouritesOpen}
                                 onPairClick={() => {
                                     if (typeof window !== "undefined" && window.matchMedia && window.matchMedia("(max-width: 991px)").matches) {
                                         setShowMobileFavouritesPopup(true);

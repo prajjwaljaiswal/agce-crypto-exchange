@@ -1093,6 +1093,440 @@ span.tokensubcnt {
     color: #ffffffde;
 }
 
+/* Autosearch — input clear button */
+.coin-search-clear {
+    background: transparent;
+    border: 0;
+    padding: 2px 6px;
+    margin-left: 4px;
+    color: #949AA4;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    line-height: 1;
+    border-radius: 50%;
+    transition: background-color 0.12s ease, color 0.12s ease;
+}
+.coin-search-clear:hover {
+    color: #fff;
+    background: rgba(255, 255, 255, 0.08);
+}
+body.light_theme .coin-search-clear:hover {
+    color: #111;
+    background: rgba(0, 0, 0, 0.06);
+}
+
+/* Let the search input stack above the dropdown's top border when open. */
+.spot-list-search.is-open .ivu-input {
+    border-color: rgba(254, 169, 3, 0.55);
+    box-shadow: 0 0 0 3px rgba(254, 169, 3, 0.12);
+}
+
+/* Autosearch — floating results dropdown */
+.coin-search-dropdown {
+    position: absolute;
+    top: calc(100% + 4px);
+    left: 10px;
+    right: 10px;
+    z-index: 50;
+    max-height: 380px;
+    overflow-y: auto;
+    background: #1c1f26;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 10px;
+    box-shadow: 0 16px 40px rgba(0, 0, 0, 0.55);
+    padding: 6px 6px 0;
+    display: flex;
+    flex-direction: column;
+    animation: coin-search-pop 140ms ease-out;
+}
+@keyframes coin-search-pop {
+    from { opacity: 0; transform: translateY(-4px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+body.light_theme .coin-search-dropdown {
+    background: #ffffff;
+    border-color: rgba(0, 0, 0, 0.08);
+    box-shadow: 0 16px 40px rgba(0, 0, 0, 0.14);
+}
+
+.coin-search-dropdown::-webkit-scrollbar { width: 6px; }
+.coin-search-dropdown::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.15);
+    border-radius: 3px;
+}
+body.light_theme .coin-search-dropdown::-webkit-scrollbar-thumb {
+    background: rgba(0, 0, 0, 0.18);
+}
+
+.coin-search-section {
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: #949AA4;
+    padding: 6px 10px 4px;
+}
+
+.coin-search-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    width: 100%;
+    padding: 8px 10px;
+    background: transparent;
+    border: 0;
+    border-radius: 8px;
+    color: #fffffff2;
+    text-align: left;
+    cursor: pointer;
+    transition: background-color 0.12s ease;
+}
+.coin-search-item.highlighted,
+.coin-search-item:focus-visible {
+    background: rgba(254, 169, 3, 0.12);
+    outline: none;
+}
+.coin-search-item.active {
+    background: rgba(254, 169, 3, 0.18);
+}
+.coin-search-item.active.highlighted {
+    background: rgba(254, 169, 3, 0.24);
+}
+body.light_theme .coin-search-item { color: #1f1f1f; }
+body.light_theme .coin-search-item.highlighted,
+body.light_theme .coin-search-item:focus-visible { background: rgba(254, 169, 3, 0.14); }
+body.light_theme .coin-search-item.active { background: rgba(254, 169, 3, 0.22); }
+
+.coin-search-item-left {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    min-width: 0;
+    flex: 1;
+}
+.coin-search-item-left .round_img {
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
+    object-fit: cover;
+    flex-shrink: 0;
+    background: rgba(255, 255, 255, 0.04);
+}
+
+.coin-search-item-meta {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    gap: 1px;
+}
+.coin-search-pair {
+    font-size: 13px;
+    font-weight: 600;
+    line-height: 1.25;
+    letter-spacing: 0.01em;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.coin-search-pair .coin-search-quote {
+    color: #949AA4;
+    font-weight: 400;
+}
+.coin-search-item-meta .tokensubcnt {
+    font-size: 11px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 140px;
+}
+
+.coin-search-hl {
+    background: transparent;
+    color: #fea903;
+    padding: 0;
+    font-weight: 700;
+}
+
+.coin-search-item-right {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex-shrink: 0;
+    font-size: 12px;
+    line-height: 1.3;
+}
+.coin-search-item-nums {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    min-width: 60px;
+}
+.coin-search-price {
+    color: #fffffff2;
+    font-weight: 500;
+    font-variant-numeric: tabular-nums;
+}
+body.light_theme .coin-search-price { color: #1f1f1f; }
+.coin-search-change {
+    font-size: 11px;
+    font-variant-numeric: tabular-nums;
+}
+
+.coin-search-fav {
+    background: transparent;
+    border: 0;
+    color: #565A62;
+    width: 26px;
+    height: 26px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    border-radius: 50%;
+    font-size: 15px;
+    transition: color 0.12s ease, background-color 0.12s ease;
+}
+.coin-search-fav:hover { color: #fea903; background: rgba(254, 169, 3, 0.08); }
+.coin-search-fav.is-fav { color: #fea903; }
+
+.coin-search-empty {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 20px 14px;
+    color: #949AA4;
+    font-size: 13px;
+}
+.coin-search-empty i {
+    font-size: 18px;
+    opacity: 0.6;
+}
+.coin-search-empty-text {
+    display: flex;
+    flex-direction: column;
+    line-height: 1.35;
+}
+.coin-search-empty-text strong {
+    color: #fffffff2;
+    font-weight: 600;
+    word-break: break-all;
+}
+body.light_theme .coin-search-empty-text strong { color: #1f1f1f; }
+
+.coin-search-footer {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+    padding: 8px 12px;
+    margin-top: 4px;
+    border-top: 1px solid rgba(255, 255, 255, 0.06);
+    color: #949AA4;
+    font-size: 11px;
+    position: sticky;
+    bottom: 0;
+    background: inherit;
+}
+body.light_theme .coin-search-footer {
+    border-top-color: rgba(0, 0, 0, 0.06);
+}
+.coin-search-footer kbd {
+    display: inline-block;
+    min-width: 18px;
+    padding: 1px 5px;
+    margin-right: 4px;
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 4px;
+    font-family: inherit;
+    font-size: 10px;
+    color: #d7d7d7;
+    text-align: center;
+}
+body.light_theme .coin-search-footer kbd {
+    background: rgba(0, 0, 0, 0.04);
+    border-color: rgba(0, 0, 0, 0.1);
+    color: #444;
+}
+
+@media (max-width: 991px) {
+    .coin-search-dropdown { max-height: 60vh; }
+    .coin-search-footer { display: none; }
+}
+
+/* ---------------- Coin list table (sidebar) ---------------- */
+
+.trade_favourites_lft .spot-list-search {
+    padding: 10px 10px 6px;
+}
+
+.trade_favourites_lft .spot-list-search .ivu-input {
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 8px;
+    padding: 2px 10px;
+    transition: border-color 0.15s ease, background-color 0.15s ease;
+}
+.trade_favourites_lft .spot-list-search .ivu-input:focus-within {
+    border-color: rgba(254, 169, 3, 0.55);
+    background: rgba(255, 255, 255, 0.06);
+}
+.trade_favourites_lft .spot-list-search .ivu-input input {
+    font-size: 13px;
+    padding: 5px 2px;
+}
+.trade_favourites_lft .spot-list-search i.ri-search-2-line {
+    color: #949AA4;
+    font-size: 15px;
+    margin-right: 8px;
+}
+
+.trade_favourites_lft ul.favorites_list_tabs {
+    gap: 14px;
+    margin: 2px 12px 0;
+    padding-bottom: 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
+.trade_favourites_lft ul.favorites_list_tabs li button {
+    font-size: 12px;
+    padding: 4px 0 8px;
+    color: #949AA4;
+    border-bottom: 2px solid transparent;
+    transition: color 0.12s ease, border-color 0.12s ease;
+}
+.trade_favourites_lft ul.favorites_list_tabs li button:hover {
+    color: #d7d7d7;
+}
+.trade_favourites_lft ul.favorites_list_tabs li button.active {
+    color: #fea903;
+    border-bottom-color: #fea903;
+}
+
+.coin-list-table-wrap {
+    padding: 6px 0 8px !important;
+}
+
+.coin-list-table thead tr th {
+    font-size: 11px;
+    font-weight: 500;
+    color: #6b7280;
+    letter-spacing: 0.03em;
+    text-transform: uppercase;
+    padding: 6px 12px !important;
+    border-bottom: 0;
+    position: sticky;
+    top: 0;
+    background: inherit;
+    z-index: 1;
+}
+
+.coin-list-table tbody tr.coin-list-row {
+    cursor: pointer;
+    position: relative;
+    transition: background-color 0.12s ease;
+}
+.coin-list-table tbody tr.coin-list-row td {
+    padding: 7px 12px !important;
+    vertical-align: middle;
+    border: 0;
+}
+.coin-list-table tbody tr.coin-list-row:hover {
+    background: rgba(255, 255, 255, 0.035);
+}
+.coin-list-table tbody tr.coin-list-row.active {
+    background: rgba(254, 169, 3, 0.08);
+}
+.coin-list-table tbody tr.coin-list-row.active::before {
+    content: "";
+    position: absolute;
+    inset: 0 auto 0 0;
+    width: 2px;
+    background: #fea903;
+}
+body.light_theme .coin-list-table tbody tr.coin-list-row:hover {
+    background: rgba(0, 0, 0, 0.03);
+}
+body.light_theme .coin-list-table tbody tr.coin-list-row.active {
+    background: rgba(254, 169, 3, 0.12);
+}
+
+.coin-list-pair {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    min-width: 0;
+}
+.coin-list-pair .round_img {
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    object-fit: cover;
+    flex-shrink: 0;
+    background: rgba(255, 255, 255, 0.04);
+}
+.coin-list-pair-meta {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    line-height: 1.2;
+}
+.coin-list-pair-label {
+    font-size: 13px;
+    font-weight: 600;
+    color: #fffffff2;
+    white-space: nowrap;
+}
+.coin-list-pair-quote {
+    color: #949AA4;
+    font-weight: 400;
+}
+.coin-list-pair-meta .tokensubcnt {
+    font-size: 11px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 120px;
+}
+body.light_theme .coin-list-pair-label { color: #1f1f1f; }
+
+.coin-list-fav {
+    background: transparent;
+    border: 0;
+    color: #565A62;
+    width: 20px;
+    height: 20px;
+    padding: 0;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-size: 13px;
+    border-radius: 50%;
+    flex-shrink: 0;
+    transition: color 0.12s ease;
+}
+.coin-list-fav:hover { color: #fea903; }
+.coin-list-fav.is-fav { color: #fea903; }
+
+.coin-list-price {
+    font-size: 12.5px;
+    font-weight: 500;
+    color: #fffffff2;
+    font-variant-numeric: tabular-nums;
+}
+body.light_theme .coin-list-price { color: #1f1f1f; }
+
+.coin-list-change {
+    font-size: 12px;
+    font-weight: 500;
+    font-variant-numeric: tabular-nums;
+    display: inline-block;
+    min-width: 54px;
+    text-align: right;
+}
+
 .buy_sell_cards ul.nav.custom-tabs li a.active {
     color: #000 !important;
     background-color: #fea903 !important;
@@ -1961,7 +2395,7 @@ body.light_theme ul.favorites_list_tabs li button.active {
 
 .trade-wrapper .table-responsive {
     min-height: 300px;
-    max-height: 700px;
+    max-height: 500px;
 }
 
 .trade-wrapper div#tab_3.d-none.d-lg-block .table-responsive {
@@ -2142,17 +2576,24 @@ h3.headingspot {
     color: #070808;
 }
 
+/* In dark theme */
+
+html[data-theme="dark"] .orderbook_agg_dd_value,
+html[data-theme="dark"] .orderbook_agg_dd_caret {
+    color: white;
+}
+
 .orderbook_agg_dd_value {
     color: #070808;
     line-height: 1;
 }
 
 .orderbook_agg_dd_caret {
-    width: 0;
-    height: 0;
-    border-left: 4px solid transparent;
-    border-right: 4px solid transparent;
-    border-top: 5px solid #070808;
+    display: inline-flex;
+    align-items: center;
+    font-size: 14px;
+    line-height: 1;
+    color: #070808;
     transition: transform 0.15s ease;
 }
 
@@ -2705,6 +3146,36 @@ html[data-theme="dark"] .trade_pct_slider_input::-moz-range-thumb {
     color: #9aa1af;
     font-size: 14px;
     font-weight: 400;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.stop_avail_info {
+    font-size: 13px;
+    line-height: 1;
+    color: #9aa1af;
+    cursor: help;
+}
+
+.stop_avail_info:hover {
+    color: #6b7280;
+}
+
+html[data-theme='dark'] .stop_avail_label {
+    color: #f9fafb;
+}
+
+html[data-theme='dark'] .stop_avail_info {
+    color: #f9fafb;
+}
+
+html[data-theme='dark'] .stop_avail_info:hover {
+    color: #d1d5db;
+}
+
+html[data-theme='dark'] .limit_buy_plus img {
+    filter: brightness(0) invert(1);
 }
 
 .stop_avail_val {
@@ -4003,11 +4474,15 @@ body.light_theme.bs_tab_row {
         flex-shrink: 0;
         margin: 12px 12px 0;
         padding-bottom: 10px;
-        background-color: #ffffff;
+        background-color: #2b313c;
         position: sticky;
         border: none;
         top: 56px;
         z-index: 2;
+    }
+
+    body.light_theme .trade_favourites_lft.is-open ul.favorites_list_tabs {
+        background-color: #ffffff;
     }
 
     .trade_favourites_lft.is-open .price_card {
@@ -5124,4 +5599,108 @@ body.light_theme .position_order .position_list.spot_orders_primary_tabs {
 body.light_theme .spot_orders_filter_bar {
     background: none;
     border-bottom-color: #EDEFF2;
+}
+
+/* ── Coin-pair dropdown: theme-aware polish ─────────────────────────── */
+
+/* Arrow rotates when the dropdown is open */
+.mh-pair-arrow {
+    display: inline-block;
+    transition: transform 0.2s ease;
+    opacity: 0.85;
+}
+.mh-pair-toggle:hover .mh-pair-arrow {
+    opacity: 1;
+    color: var(--color-primary, #D1AA67);
+}
+.mh-pair-arrow.is-open {
+    transform: rotate(180deg);
+    color: var(--color-primary, #D1AA67);
+    opacity: 1;
+}
+.mh-pair-toggle.is-open .headline_bigName__dspVW h1 {
+    color: var(--color-primary, #D1AA67);
+}
+
+/* Desktop dropdown surface: rounded, primary-tinted border, soft elevation, pop-in animation */
+@media screen and (min-width: 992px) {
+    .trade_favourites_lft.is-open {
+        border-radius: 12px !important;
+        border: 1px solid color-mix(in srgb, var(--color-primary, #D1AA67) 22%, transparent);
+        box-shadow:
+            0 20px 50px rgba(0, 0, 0, 0.45),
+            0 0 0 1px rgba(255, 255, 255, 0.02),
+            0 0 24px -8px color-mix(in srgb, var(--color-primary, #D1AA67) 30%, transparent);
+        animation: coin-dd-pop 180ms cubic-bezier(0.2, 0.6, 0.2, 1);
+    }
+    body.light_theme .trade_favourites_lft.is-open {
+        background-color: #ffffff;
+        border-color: color-mix(in srgb, var(--color-primary, #D1AA67) 32%, transparent);
+        box-shadow:
+            0 18px 48px rgba(16, 24, 40, 0.12),
+            0 0 0 1px rgba(0, 0, 0, 0.02);
+    }
+}
+
+@keyframes coin-dd-pop {
+    from { opacity: 0; transform: translateY(-6px) scale(0.985); }
+    to   { opacity: 1; transform: translateY(0)     scale(1); }
+}
+
+/* Filter tabs use the instance primary colour */
+.trade_favourites_lft ul.favorites_list_tabs li button.active,
+.mobile-favourites-popup ul.favorites_list_tabs li button.active {
+    color: var(--color-primary, #D1AA67);
+    border-bottom-color: var(--color-primary, #D1AA67);
+}
+body.light_theme .trade_favourites_lft ul.favorites_list_tabs li button.active,
+body.light_theme .mobile-favourites-popup ul.favorites_list_tabs li button.active {
+    color: var(--color-primary, #D1AA67);
+    border-bottom: 2px solid var(--color-primary, #D1AA67);
+}
+
+/* Pair rows: smooth hover + primary-tinted selected state */
+.trade_favourites_lft .price_card_body tr,
+.mobile-favourites-popup .price_card_body tr {
+    transition: background-color 0.14s ease, box-shadow 0.14s ease;
+}
+.trade_favourites_lft .price_card_body tr:hover,
+.mobile-favourites-popup .price_card_body tr:hover {
+    background: rgba(255, 255, 255, 0.04);
+}
+.trade_favourites_lft .price_card_body tr.active,
+.mobile-favourites-popup .price_card_body tr.active {
+    background: color-mix(in srgb, var(--color-primary, #D1AA67) 12%, transparent);
+    box-shadow: inset 3px 0 0 0 var(--color-primary, #D1AA67);
+}
+body.light_theme .trade_favourites_lft .price_card_body tr:hover,
+body.light_theme .mobile-favourites-popup .price_card_body tr:hover {
+    background: rgba(0, 0, 0, 0.035);
+}
+body.light_theme .trade_favourites_lft .price_card_body tr.active,
+body.light_theme .mobile-favourites-popup .price_card_body tr.active {
+    background: color-mix(in srgb, var(--color-primary, #D1AA67) 14%, transparent);
+    box-shadow: inset 3px 0 0 0 var(--color-primary, #D1AA67);
+}
+
+/* Favourite star — filled uses the instance primary, empty stays muted */
+.trade_favourites_lft .ri-star-fill,
+.mobile-favourites-popup .ri-star-fill {
+    color: var(--color-primary, #D1AA67);
+}
+.trade_favourites_lft .ri-star-line,
+.mobile-favourites-popup .ri-star-line {
+    color: #6b7280;
+    transition: color 0.12s ease;
+}
+.trade_favourites_lft .ri-star-line:hover,
+.mobile-favourites-popup .ri-star-line:hover {
+    color: var(--color-primary, #D1AA67);
+}
+
+/* Search input focus ring inherits primary */
+.trade_favourites_lft .spot-list-search .ivu-input:focus-within,
+.mobile-favourites-popup .spot-list-search .ivu-input:focus-within {
+    border-color: color-mix(in srgb, var(--color-primary, #D1AA67) 60%, transparent);
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-primary, #D1AA67) 16%, transparent);
 }

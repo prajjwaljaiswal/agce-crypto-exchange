@@ -74,7 +74,7 @@ export function OrderBookPanel({
                             className={`orderbook-view-toggle ${orderBookViewMode === "both" ? "active" : ""}`}
                             onClick={() => setOrderBookViewMode("both")}
                         >
-                            <img alt="" src="/images/order_1.svg" width="22" height="11" />
+                            <img alt="" src="/images/order_1.svg" width="22" height="11" /> 
                         </button>
                     </li>
                     <li className={`usdt-tab ${orderBookViewMode === "bids" ? "activepop" : ""}`}>

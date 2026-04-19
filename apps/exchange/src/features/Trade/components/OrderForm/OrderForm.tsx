@@ -129,9 +129,9 @@ export function OrderForm({
                             </div>
                         </div>
 
-                        <div className="info_icon">
+                        {/* <div className="info_icon">
                             <i className="ri-information-fill" />
-                        </div>
+                        </div> */}
 
                     </div>
 
@@ -243,7 +243,7 @@ export function OrderForm({
                                             }
                                         />
                                         <span className="input-group-text text-start">
-                                            <small>{SelectedCoin?.quote_currency}</small>
+                                            {/* <small>{SelectedCoin?.quote_currency}</small> */}
                                         </span>
                                     </div>
                                 </div>
@@ -378,12 +378,19 @@ export function OrderForm({
                                 <>
                                     <div className="stop_avail_block limit_buy_avail">
                                         <div className="stop_avail_row limit_buy_avail_row">
-                                            <span className="stop_avail_label">Available</span>
+                                            <span className="stop_avail_label">
+                                                Available
+                                                <i
+                                                    className="ri-information-line stop_avail_info"
+                                                    title={`Funds in your spot wallet available to place a buy order, denominated in ${SelectedCoin?.quote_currency ?? "the quote currency"}.`}
+                                                    aria-label="Available balance info"
+                                                />
+                                            </span>
                                             <div className="stop_avail_rgt">
                                                 <span className="stop_avail_val">
                                                     {token ? `${BuyCoinBal ? parseFloat(BuyCoinBal.toFixed(8)) : "0.00"} ${SelectedCoin?.quote_currency}` : `-- ${SelectedCoin?.quote_currency}`}
                                                 </span>
-                                                <Link className="limit_buy_plus" to={token ? "/asset_managemnet/deposit" : "/login"} aria-label="Deposit">
+                                                <Link className="limit_buy_plus" to={token ? "/asset_managemnet/deposit" : "/login"} aria-label="Deposit" title="Deposit funds">
                                                     <img src="/images/plushicon.svg" alt="plus" />
                                                 </Link>
                                             </div>
@@ -651,12 +658,19 @@ export function OrderForm({
                                 <>
                                     <div className="stop_avail_block limit_buy_avail">
                                         <div className="stop_avail_row limit_buy_avail_row">
-                                            <span className="stop_avail_label">Available</span>
+                                            <span className="stop_avail_label">
+                                                Available
+                                                <i
+                                                    className="ri-information-line stop_avail_info"
+                                                    title={`Funds in your spot wallet available to place a sell order, denominated in ${SelectedCoin?.base_currency ?? "the base currency"}.`}
+                                                    aria-label="Available balance info"
+                                                />
+                                            </span>
                                             <div className="stop_avail_rgt">
                                                 <span className="stop_avail_val">
                                                     {token ? `${SellCoinBal ? parseFloat(SellCoinBal.toFixed(8)) : "0.00"} ${SelectedCoin?.base_currency}` : `-- ${SelectedCoin?.base_currency}`}
                                                 </span>
-                                                <Link className="limit_buy_plus" to={token ? "/asset_managemnet/deposit" : "/login"} aria-label="Deposit">
+                                                <Link className="limit_buy_plus" to={token ? "/asset_managemnet/deposit" : "/login"} aria-label="Deposit" title="Deposit funds">
                                                     <img src="/images/plushicon.svg" alt="plus" />
                                                 </Link>
                                             </div>

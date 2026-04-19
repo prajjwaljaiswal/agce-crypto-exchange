@@ -118,8 +118,8 @@ export function OrderBookMidPriceRow({
             <div className="d-flex align-items-center gap-2 flex-wrap db_bl">
                 <b className={useGreenAccent ? "text-green orderbook-mid-main" : "text-danger orderbook-mid-main"}>{formatPriceThousands(buyprice)}</b>
                 <i className={`ri-arrow-${isPricePositive ? "up" : "down"}-line orderbook-mid-arrow ${useGreenAccent ? "text-green" : "text-danger"}`} />
-                <span className="text-muted orderbook-mid-usd">${formatPriceThousands(buyprice)}</span>
-                {showChangePct ? <span className="text-muted small orderbook-mid-pct">{Number(priceChange ?? 0).toFixed(2)}%</span> : null}
+                {/* <span className="text-muted orderbook-mid-usd">${formatPriceThousands(buyprice)}</span> */}
+                {showChangePct ? <span>{Number(priceChange ?? 0).toFixed(2)}%</span> : null}
             </div>
             <div className="arrowright_icon">
                 <i className="ri-arrow-right-s-line" />

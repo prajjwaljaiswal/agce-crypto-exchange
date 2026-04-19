@@ -83,14 +83,12 @@ export function useCoinList(): CoinListApi {
         return () => { cancelled = true; };
     }, []);
 
-    // Filter the pair list by search term whenever it or AllData changes.
+    // Keep the pair list in sync with AllData. The search term drives the
+    // autosearch dropdown in CoinListPanel and no longer narrows this list,
+    // so the tab-filtered table stays stable while the user types.
     useEffect(() => {
-        const filtered = AllData?.pairs?.filter((item: any) =>
-            item?.base_currency?.toLowerCase().includes(search?.toLowerCase()) ||
-            item?.quote_currency?.toLowerCase().includes(search?.toLowerCase())
-        );
-        setCoinPairDetails(filtered ?? []);
-    }, [search, AllData]);
+        setCoinPairDetails(AllData?.pairs ?? []);
+    }, [AllData]);
 
     // Default the coin filter to the first quote currency once data arrives.
     useEffect(() => {

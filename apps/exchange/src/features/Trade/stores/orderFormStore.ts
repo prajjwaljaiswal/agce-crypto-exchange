@@ -60,7 +60,7 @@ const initial = {
     buyamount: 0 as number | string,
     buyStopPrice: "",
     limitBuyPercent: 0,
-    limitBuyFok: true,
+    limitBuyFok: false,
     limitBuyIoc: false,
     marketBuyPercent: 0,
     buySlippageEnabled: false,
