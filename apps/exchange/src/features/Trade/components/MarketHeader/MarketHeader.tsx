@@ -11,6 +11,21 @@ type MarketHeaderProps = {
     onPairClick: () => void;
 };
 
+function toAbsoluteIconUrl(iconPath?: string): string | undefined {
+    if (!iconPath) return undefined;
+    if (/^https?:\/\//i.test(iconPath)) return iconPath;
+
+    const env = import.meta.env as Record<string, string | undefined>;
+    const base =
+        (env.VITE_MATCHING_API_URL ?? env.VITE_AUTH_API_URL ?? "").replace(
+            /\/+$/,
+            "",
+        );
+    if (!base) return iconPath;
+    const normalizedPath = iconPath.startsWith("/") ? iconPath : `/${iconPath}`;
+    return `${base}${normalizedPath}`;
+}
+
 export function MarketHeader({
     SelectedCoin,
     buyprice,
@@ -23,6 +38,10 @@ export function MarketHeader({
     isPairMenuOpen = false,
     onPairClick,
 }: MarketHeaderProps) {
+    const iconSrc =
+        toAbsoluteIconUrl(
+            SelectedCoin?.icon_path || SelectedCoin?.baseIconUrl || SelectedCoin?.iconUrl,
+        ) || "/images/new_coin_icon.png";
 
     return (
         <div className="trade_card p-2 overflow_card mb-1">
@@ -34,7 +53,7 @@ export function MarketHeader({
                         onClick={onPairClick}
                     >
                         <div className="headline_bigName__dspVW">
-                            <img alt="" src={SelectedCoin?.icon_path} width="24" className="img-fluid round_img" onError={(e) => { const img = e.target as HTMLImageElement; img.onerror = null; img.src = "/images/new_coin_icon.png"; }} />
+                            <img alt="" src={iconSrc} width="24" className="img-fluid round_img" onError={(e) => { const img = e.target as HTMLImageElement; img.onerror = null; img.src = "/images/new_coin_icon.png"; }} />
                         </div>
 
                         <div>

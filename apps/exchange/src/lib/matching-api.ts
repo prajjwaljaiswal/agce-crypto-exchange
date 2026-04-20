@@ -351,9 +351,29 @@ export const walletApi = {
 // ──────────────────────────────────────────────────────────────────────────
 
 export interface DepositAddressResponse {
-  assetId: string
+  asset: string
+  network: string
+  networkDisplayName: string
   address: string
   tag: string | null
+  fireblocksAssetId: string
+  vaultAccountId: string
+  minDeposit: string
+  confirmationsRequired: number
+}
+
+export interface CustodyAddressEntry {
+  asset: string
+  network: string
+  address: string
+  tag?: string
+  createdAt: string
+}
+
+export interface CustodyOverviewResponse {
+  userId: string
+  vaultAccountId: string
+  addresses: CustodyAddressEntry[]
 }
 
 export interface DepositRecord {
@@ -370,10 +390,17 @@ export interface DepositRecord {
 const CUSTODY = '/api/v1/custody'
 
 export const custodyApi = {
-  depositAddress(fireblocksAssetId: string, signal?: AbortSignal) {
+  me(signal?: AbortSignal) {
+    return request<CustodyOverviewResponse>(`${CUSTODY}/me`, { signal })
+  },
+
+  depositAddress(
+    payload: { asset: string; network: string },
+    signal?: AbortSignal,
+  ) {
     return request<DepositAddressResponse>(`${CUSTODY}/deposit-address`, {
       method: 'POST',
-      body: { assetId: fireblocksAssetId },
+      body: payload,
       signal,
     })
   },
@@ -406,6 +433,8 @@ export interface Asset {
   iconUrl: string
   description: string
   decimals: number
+  minDeposit: string
+  depositFee: string
   category: 'CRYPTO' | 'STABLECOIN' | 'FIAT' | string
   isActive: boolean
   instance: string
@@ -413,18 +442,22 @@ export interface Asset {
 }
 
 export const assetsApi = {
-  list(signal?: AbortSignal) {
-    return request<Asset[]>('/api/v1/assets', { auth: false, signal })
+  list(signal?: AbortSignal, search?: string) {
+    return request<Asset[]>('/api/v1/assets', {
+      auth: false,
+      signal,
+      query: { q: search },
+    })
   },
 
   get(code: string, signal?: AbortSignal) {
     return request<Asset>(`/api/v1/assets/${encodeURIComponent(code)}`, { auth: false, signal })
   },
 
-  networks(code: string, signal?: AbortSignal) {
+  networks(code: string, signal?: AbortSignal, search?: string) {
     return request<AssetNetwork[]>(
       `/api/v1/assets/${encodeURIComponent(code)}/networks`,
-      { auth: false, signal },
+      { auth: false, signal, query: { q: search } },
     )
   },
 }

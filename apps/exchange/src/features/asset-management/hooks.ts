@@ -1,27 +1,35 @@
-import { useMutation, useQuery } from '@tanstack/react-query'
+import { keepPreviousData, useMutation, useQuery } from '@tanstack/react-query'
 import { assetsApi, custodyApi } from '../../lib/matching-api.js'
 
-export function useAssets() {
+export function useAssets(search = '') {
   return useQuery({
-    queryKey: ['assets'],
-    queryFn: ({ signal }) => assetsApi.list(signal),
+    queryKey: ['assets', search],
+    queryFn: ({ signal }) => assetsApi.list(signal, search),
     staleTime: 5 * 60_000,
+    placeholderData: keepPreviousData,
   })
 }
 
-export function useNetworks(assetCode: string) {
+export function useNetworks(assetCode: string, search = '') {
   return useQuery({
-    queryKey: ['assets', assetCode, 'networks'],
-    queryFn: ({ signal }) => assetsApi.networks(assetCode, signal),
+    queryKey: ['assets', assetCode, 'networks', search],
+    queryFn: ({ signal }) => assetsApi.networks(assetCode, signal, search),
     enabled: Boolean(assetCode),
     staleTime: 5 * 60_000,
+    placeholderData: keepPreviousData,
   })
 }
 
 export function useGenerateDepositAddress() {
   return useMutation({
-    mutationFn: (fireblocksAssetId: string) =>
-      custodyApi.depositAddress(fireblocksAssetId),
+    mutationFn: (payload: { asset: string; network: string }) =>
+      custodyApi.depositAddress(payload),
+  })
+}
+
+export function useCustodyOverview() {
+  return useMutation({
+    mutationFn: () => custodyApi.me(),
   })
 }
 

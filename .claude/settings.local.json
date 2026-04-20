@@ -16,6 +16,9 @@
       "Bash(kubectl -n agce scale deployment market-maker-service --replicas=1)",
       "Bash(kubectl -n agce logs deployment/market-maker-service -f --timestamps=true)",
       "Bash(curl -X PUT http://192.168.1.13:9000/api/v1/asset/admin -H 'X-Admin-Token: dev-admin-token' -H 'Content-Type: application/json' -d '{\"assetCode\":\"BTC\",\"name\":\"Bitcoin\",\"decimals\":8,\"category\":\"CRYPTO\",\"isActive\":true}')"
+    ],
+    "additionalDirectories": [
+      "/home/prajjwal/Desktop/Abhay/AGCE_microservices/algo-trading-bot-service/src/routes"
     ]
   }
 }

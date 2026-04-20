@@ -6,16 +6,32 @@ import type { DepositCoin } from '../constants.js'
 interface SelectCoinStepProps {
   selectedCoin: string
   coins: DepositCoin[]
+  searchCoins: DepositCoin[]
   isLoading: boolean
+  coinSearch: string
+  onCoinSearchChange: (value: string) => void
   onSelect: (code: string) => void
 }
 
-export function SelectCoinStep({ selectedCoin, coins, isLoading, onSelect }: SelectCoinStepProps) {
+export function SelectCoinStep({
+  selectedCoin,
+  coins,
+  searchCoins,
+  isLoading,
+  coinSearch,
+  onCoinSearchChange,
+  onSelect,
+}: SelectCoinStepProps) {
   const picker = useDisclosure()
+
+  const handleClose = () => {
+    onCoinSearchChange('')
+    picker.close()
+  }
 
   const handleSelectCoin = (code: string) => {
     onSelect(code)
-    picker.close()
+    handleClose()
   }
 
   return (
@@ -31,28 +47,33 @@ export function SelectCoinStep({ selectedCoin, coins, isLoading, onSelect }: Sel
 
       <Modal
         isOpen={picker.isOpen}
-        onClose={picker.close}
+        onClose={handleClose}
         modalClassName="search_form search_coin search_form_modal_2"
         title="Select Crypto"
       >
-        {isLoading ? (
-          <div style={{ padding: '20px', textAlign: 'center' }}>Loading coins...</div>
-        ) : (
-          <>
-            <form>
-              <input
-                type="text"
-                className="searchfield"
-                placeholder="Search coin name"
-                defaultValue=""
-              />
-            </form>
+        <>
+          <form>
+            <input
+              type="text"
+              className="searchfield"
+              placeholder="Search coin name"
+              value={coinSearch}
+              onChange={(e) => onCoinSearchChange(e.target.value)}
+            />
+          </form>
 
+          {isLoading ? (
+            <div style={{ padding: '20px', textAlign: 'center' }}>Loading coins...</div>
+          ) : searchCoins.length === 0 ? (
+            <div style={{ padding: '20px', textAlign: 'center', color: '#98a2b3' }}>
+              No coin found
+            </div>
+          ) : (
             <div className="hot_trading_t">
               <div className="table-responsive">
                 <table>
                   <tbody>
-                    {coins.map((coin) => (
+                    {searchCoins.map((coin) => (
                       <tr
                         key={coin.code}
                         onClick={() => handleSelectCoin(coin.code)}
@@ -81,13 +102,25 @@ export function SelectCoinStep({ selectedCoin, coins, isLoading, onSelect }: Sel
                 </table>
               </div>
             </div>
-          </>
-        )}
+          )}
+        </>
       </Modal>
 
       <div className="coin_items_select">
-        {coins.map((coin) => (
-          <div key={coin.code} className="coin_items_list">
+        {coins.slice(0, 3).map((coin) => (
+          <div
+            key={coin.code}
+            className={`coin_items_list ${selectedCoin === coin.code ? 'active' : ''}`}
+            role="button"
+            tabIndex={0}
+            onClick={() => onSelect(coin.code)}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault()
+                onSelect(coin.code)
+              }
+            }}
+          >
             <img src={coin.icon} alt={coin.code} />
             {coin.code}
           </div>

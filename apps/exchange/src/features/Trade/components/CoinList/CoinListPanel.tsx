@@ -1,6 +1,7 @@
 type CoinPairDetail = {
     icon_path?: string;
     iconUrl?: string;
+    baseIconUrl?: string;
     base_currency: string;
     quote_currency: string;
     base_currency_fullname: string;
@@ -10,6 +11,21 @@ type CoinPairDetail = {
     _id: string;
     symbol: string;
 };
+
+function toAbsoluteIconUrl(iconPath?: string): string | undefined {
+    if (!iconPath) return undefined;
+    if (/^https?:\/\//i.test(iconPath)) return iconPath;
+
+    const env = import.meta.env as Record<string, string | undefined>;
+    const base =
+        (env.VITE_MATCHING_API_URL ?? env.VITE_AUTH_API_URL ?? "").replace(
+            /\/+$/,
+            "",
+        );
+    if (!base) return iconPath;
+    const normalizedPath = iconPath.startsWith("/") ? iconPath : `/${iconPath}`;
+    return `${base}${normalizedPath}`;
+}
 
 type CoinListPanelProps = {
     CoinPairDetails: CoinPairDetail[];
@@ -96,7 +112,10 @@ export function CoinListPanel({
                                     SelectedCoin?.base_currency === data?.base_currency &&
                                     SelectedCoin?.quote_currency === data?.quote_currency;
 
-                                const iconSrc = data?.iconUrl || data?.icon_path || "/images/new_coin_icon.png";
+                                const iconSrc =
+                                    toAbsoluteIconUrl(
+                                        data?.baseIconUrl || data?.iconUrl || data?.icon_path,
+                                    ) || "/images/new_coin_icon.png";
 
                                 return (
                                     <tr
