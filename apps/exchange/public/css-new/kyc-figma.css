@@ -3490,6 +3490,15 @@ body:not(.light_theme) .dashboard_right.kyc-page.kyc-1 {
 body:not(.light_theme) .dashboard_right.kyc-page .container27,
 body:not(.light_theme) .dashboard_right.kyc-page .container28,
 body:not(.light_theme) .dashboard_right.kyc-page .container29,
+body:not(.light_theme) .dashboard_right.kyc-page .container15,
+body:not(.light_theme) .dashboard_right.kyc-page .container10,
+body:not(.light_theme) .dashboard_right.kyc-page .container11,
+body:not(.light_theme) .dashboard_right.kyc-page .container12,
+body:not(.light_theme) .dashboard_right.kyc-page .container14,
+body:not(.light_theme) .dashboard_right.kyc-page .container22,
+body:not(.light_theme) .dashboard_right.kyc-page .container23,
+body:not(.light_theme) .dashboard_right.kyc-page .container24,
+body:not(.light_theme) .dashboard_right.kyc-page .container26,
 body:not(.light_theme) .dashboard_right.kyc-page .verification-details .container35,
 body:not(.light_theme) .dashboard_right.kyc-page .verification-details-wrapper .container-frame,
 body:not(.light_theme) .dashboard_right.kyc-page .background,
@@ -3497,6 +3506,39 @@ body:not(.light_theme) .dashboard_right.kyc-page .background2 {
   background-color: #1F2227;
   border-color: #2A2E35;
   color: #EAECEF;
+}
+
+/* Failed/pending view — alert banner (`.container7`) keeps its red accent
+   stripe but needs a dark surface + light copy. */
+body:not(.light_theme) .dashboard_right.kyc-page .container7 {
+  background-color: #2B1A1C;
+  color: #EAECEF;
+}
+
+/* kyc-1 (started) view — Standard Identity Verification card outline.
+   Baseline ships `border: 1px solid #f2f3f4` which reads as a bright frame
+   on dark. Lift the surface slightly so the card still separates from the
+   page background once the border is darkened. */
+body:not(.light_theme) .dashboard_right.kyc-page .frame-parent13 {
+  background-color: #1F2227;
+  border-color: #2A2E35;
+}
+
+/* Failed/pending view — FAQ row dividers use `.container17/19/20` (kyc-1
+   uses `.container29` which is already covered above). */
+body:not(.light_theme) .dashboard_right.kyc-page .container17,
+body:not(.light_theme) .dashboard_right.kyc-page .container19,
+body:not(.light_theme) .dashboard_right.kyc-page .container20 {
+  border-color: #2A2E35;
+}
+
+/* Failed/pending view — outline "Need Help?" button + its label. */
+body:not(.light_theme) .dashboard_right.kyc-page .button10 {
+  border-color: #2A2E35;
+}
+body:not(.light_theme) .dashboard_right.kyc-page .button10:hover {
+  background-color: #2B313C;
+  border-color: #3A3F47;
 }
 
 body:not(.light_theme) .dashboard_right.kyc-page .background:hover,
@@ -3526,10 +3568,32 @@ body:not(.light_theme) .dashboard_right.kyc-page .how-to-complete,
 body:not(.light_theme) .dashboard_right.kyc-page .how-to-complete2,
 body:not(.light_theme) .dashboard_right.kyc-page .how-to-complete3,
 body:not(.light_theme) .dashboard_right.kyc-page .how-to-complete4,
+body:not(.light_theme) .dashboard_right.kyc-page .why-is-kyc,
+body:not(.light_theme) .dashboard_right.kyc-page .why-is-an,
+body:not(.light_theme) .dashboard_right.kyc-page .agce-user-0c52a95c,
+body:not(.light_theme) .dashboard_right.kyc-page .locked-features-,
+body:not(.light_theme) .dashboard_right.kyc-page .locked-features-2,
+body:not(.light_theme) .dashboard_right.kyc-page .verification-incomplete,
+body:not(.light_theme) .dashboard_right.kyc-page .trading,
+body:not(.light_theme) .dashboard_right.kyc-page .withdrawal2,
+body:not(.light_theme) .dashboard_right.kyc-page .trading2,
+body:not(.light_theme) .dashboard_right.kyc-page .need-help,
 body:not(.light_theme) .dashboard_right.kyc-page .verification-details h3,
 body:not(.light_theme) .dashboard_right.kyc-page .verification-complete-parent h1,
 body:not(.light_theme) .dashboard_right.kyc-page .your-identity-has {
   color: #EAECEF;
+}
+
+/* Muted secondary copy in failed/pending view — alert body, locked-card
+   subtitles, and FAQ paragraph (`.paragraph` / `.paragraph2`). */
+body:not(.light_theme) .dashboard_right.kyc-page .your-identity-verification,
+body:not(.light_theme) .dashboard_right.kyc-page .locked-to-prevent,
+body:not(.light_theme) .dashboard_right.kyc-page .locked-to-prevent3,
+body:not(.light_theme) .dashboard_right.kyc-page .verification-ensures-safe,
+body:not(.light_theme) .dashboard_right.kyc-page .verification-ensures-safe2,
+body:not(.light_theme) .dashboard_right.kyc-page .paragraph .to-protect-your,
+body:not(.light_theme) .dashboard_right.kyc-page .paragraph2 .advanced-verification-unlocks {
+  color: #A3A8B3;
 }
 
 /* Muted copy — keep as a mid-tone gray that reads on dark. */

@@ -13,9 +13,10 @@ import '../../../../public/css-new/kyc-figma.css'
 type KycView = "center" | "failed" | "complete" | "pending";
 
 function resolveKycView(status: string | undefined): KycView {
-  if (status === "APPROVED") return "complete";
-  if (status === "DECLINED") return "failed";
-  if (status === "IN_PROGRESS" || status === "IN_REVIEW" || status === "RESUBMITTED") return "pending";
+  const s = (status ?? "").toUpperCase();
+  if (s === "APPROVED" || s === "VERIFIED") return "complete";
+  if (s === "DECLINED" || s === "REJECTED" || s === "EXPIRED") return "failed";
+  if (s === "IN_PROGRESS" || s === "IN_REVIEW" || s === "RESUBMITTED" || s === "PENDING") return "pending";
   return "center";
 }
 
@@ -963,7 +964,11 @@ export function KycVerificationNew() {
     return `AGCE User-${local.slice(0, 8)}`;
   }, [user]);
 
-  const view = useMemo(() => resolveKycView(kycData?.status), [kycData?.status]);
+  // Prefer the live kyc-service status when present; fall back to the /me
+  // snapshot (auth-service uses "REJECTED" instead of "DECLINED") so the page
+  // still renders the correct view if /api/v1/kyc/status has no record yet.
+  const effectiveStatus = kycData?.status ?? user?.kycStatus;
+  const view = useMemo(() => resolveKycView(effectiveStatus), [effectiveStatus]);
 
   if (isLoading) {
     return (

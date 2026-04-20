@@ -30154,6 +30154,12 @@ body:not(.light_theme) .navi_sidebar li.active button {
     color: #ffffff;
 }
 
+/* Sidebar outer column — baseline `border-right: 1px solid #EDEFF2`
+   renders as a bright vertical line against the dark page. */
+body:not(.light_theme) .leftside_menu {
+    border-right-color: #2A2E35;
+}
+
 /* Logout pill — baseline is a white button with black text. */
 body:not(.light_theme) .leftside_menu .logout_btn a {
     background-color: #1F2227;
