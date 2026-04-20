@@ -1,10 +1,37 @@
 import { useDisclosure } from '@agce/hooks'
+import { useAuth } from '../../../providers/AuthProvider.js'
 import { MOCK_FACTORS, SECURITY_TIPS } from './__mocks__/twoFactorData.js'
 import { PasskeySetupModal } from './settings/modals/PasskeySetupModal.js'
+import { GoogleAuthSetupModal } from './settings/modals/GoogleAuthSetupModal.js'
+import { useRemovePasskey } from '../hooks/useRemovePasskey.js'
+import { useRemoveGoogleAuth } from '../hooks/useRemoveGoogleAuth.js'
+
+const REMOVE_BTN_STYLE: React.CSSProperties = {
+  border: '1px solid #ef4444',
+  color: '#ef4444',
+  background: 'transparent',
+}
 
 export function TwoFactor() {
+  const { user } = useAuth()
   const passkeySetup = useDisclosure()
-  const activeCount = MOCK_FACTORS.filter((f) => f.active).length
+  const googleAuthSetup = useDisclosure()
+  const removePasskey = useRemovePasskey()
+  const removeGoogleAuth = useRemoveGoogleAuth()
+
+  const isPasskeyEnabled = Boolean(user?.isPasskeyEnabled)
+  const isGoogleAuthEnabled = Boolean(
+    user?.isGoogleAuthenticatorEnabled ?? user?.googleAuthenticatorEnabled,
+  )
+
+  // Derive active state for dynamic rows from /me. Email/mobile still come
+  // from the mock until backend exposes those flags.
+  const factors = MOCK_FACTORS.map((f) => {
+    if (f.id === 'passkey') return { ...f, active: isPasskeyEnabled }
+    if (f.id === 'google') return { ...f, active: isGoogleAuthEnabled }
+    return f
+  })
+  const activeCount = factors.filter((f) => f.active).length
 
   return (
     <div className="dashboard_right">
@@ -14,16 +41,56 @@ export function TwoFactor() {
           <p>
             Current security level:{' '}
             <strong className="text-success">
-              High ({activeCount}/{MOCK_FACTORS.length} methods active)
+              High ({activeCount}/{factors.length} methods active)
             </strong>
           </p>
         </div>
 
         <div className="two_factor_list">
-          {MOCK_FACTORS.map((f) => {
+          {factors.map((f) => {
+            const isPasskey = f.id === 'passkey'
+            const isGoogle = f.id === 'google'
+            const isActionable = isPasskey || isGoogle
+
+            const showRemovePasskey = isPasskey && isPasskeyEnabled
+            const showRemoveGoogle = isGoogle && isGoogleAuthEnabled
+
+            const isPending =
+              (isPasskey && removePasskey.isPending) ||
+              (isGoogle && removeGoogleAuth.isPending)
+
             const handleClick = () => {
-              if (f.id === 'passkey') passkeySetup.open()
+              if (!isActionable) return
+              if (isPasskey) {
+                if (showRemovePasskey) {
+                  if (removePasskey.isPending) return
+                  removePasskey.mutate()
+                } else {
+                  passkeySetup.open()
+                }
+                return
+              }
+              if (isGoogle) {
+                if (showRemoveGoogle) {
+                  if (removeGoogleAuth.isPending) return
+                  removeGoogleAuth.mutate()
+                } else {
+                  googleAuthSetup.open()
+                }
+              }
             }
+
+            const removing = showRemovePasskey || showRemoveGoogle
+            const label = removing
+              ? isPending
+                ? 'Removing…'
+                : isPasskey
+                  ? 'Remove Passkey'
+                  : 'Disable'
+              : f.active
+                ? 'Change'
+                : 'Enable'
+
             return (
               <div
                 key={f.id}
@@ -42,8 +109,10 @@ export function TwoFactor() {
                   type="button"
                   className="btn btn-outline-custom"
                   onClick={handleClick}
+                  disabled={isActionable && isPending}
+                  style={removing ? REMOVE_BTN_STYLE : undefined}
                 >
-                  {f.active ? 'Change' : 'Enable'}
+                  {label}
                 </button>
               </div>
             )
@@ -63,6 +132,10 @@ export function TwoFactor() {
       <PasskeySetupModal
         isOpen={passkeySetup.isOpen}
         onClose={passkeySetup.close}
+      />
+      <GoogleAuthSetupModal
+        isOpen={googleAuthSetup.isOpen}
+        onClose={googleAuthSetup.close}
       />
     </div>
   )

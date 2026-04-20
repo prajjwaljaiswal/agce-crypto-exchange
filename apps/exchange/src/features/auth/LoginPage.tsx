@@ -114,30 +114,46 @@ export function LoginPage() {
         handleLoginSuccess(response)
         return
       }
-      // Backend sends the LOGIN OTP as part of /login when 2FA is enabled.
-      const stubMethods: AuthMethod[] = [
-        {
-          type: 1,
-          label: 'Email',
-          icon: 'ri-mail-line',
-          description: 'Receive verification codes via email',
-          maskedValue: pendingIdentifier,
-        },
-      ]
-      setAvailableMethods(stubMethods)
-      setSelectedAuthMethod(1)
-      setResendTimer(60)
+      // 2FA branch: if the backend says Google Authenticator is enabled, no
+      // OTP was sent — prompt for a TOTP code instead. Otherwise backend has
+      // already dispatched an email OTP.
+      const useGoogleAuth = response.googleAuthenticatorEnabled === true
+      const methods: AuthMethod[] = useGoogleAuth
+        ? [
+            {
+              type: 2,
+              label: 'Google Authenticator',
+              icon: 'ri-shield-keyhole-line',
+              description: 'Enter the 6-digit code from your authenticator app',
+            },
+          ]
+        : [
+            {
+              type: 1,
+              label: 'Email',
+              icon: 'ri-mail-line',
+              description: 'Receive verification codes via email',
+              maskedValue: pendingIdentifier,
+            },
+          ]
+      setAvailableMethods(methods)
+      setSelectedAuthMethod(useGoogleAuth ? 2 : 1)
+      setResendTimer(useGoogleAuth ? 0 : 60)
       setOtpSingle('')
       setLoginPendingVerification(true)
       setWizardStep(2)
-      showSuccess('Verification code sent.')
+      showSuccess(useGoogleAuth ? 'Enter your authenticator code.' : 'Verification code sent.')
     },
     onError: (error) => showError(formatApiError(error, 'Login failed.')),
   })
 
   const verifyOtpMutation = useMutation({
-    mutationFn: (payload: { identifier: string; otp: string; bindIp: boolean }) =>
-      authApi.verifyOtp({ ...payload, purpose: 'LOGIN' }),
+    mutationFn: (payload: {
+      identifier: string
+      otp: string
+      bindIp: boolean
+      purpose: 'LOGIN' | 'GOOGLE'
+    }) => authApi.verifyOtp(payload),
     onSuccess: (response) => {
       if (response && typeof response === 'object' && 'accessToken' in response) {
         showSuccess('Login successful!')
@@ -247,16 +263,17 @@ export function LoginPage() {
 
   /* ── Step 2: OTP verify ── */
   const handleAuthVerify = () => {
-    // Passkey + authenticator paths are intentionally not wired — backend only supports email OTP
-    // for 2FA today. See Phase 3 plan, question #6.
-    if (selectedAuthMethod !== 1) {
-      showError('Only email-based verification is supported right now.')
+    // Phone (3) + passkey (4) aren't wired yet. Email (1) = purpose LOGIN,
+    // authenticator (2) = purpose GOOGLE.
+    if (selectedAuthMethod !== 1 && selectedAuthMethod !== 2) {
+      showError('This verification method is not supported yet.')
       return
     }
     const code = getOtpDigitsStr()
     if (code.length < 6) { showError('Please enter a valid 6-digit code'); return }
     if (!pendingIdentifier) { showError('Session expired — please log in again.'); return }
-    verifyOtpMutation.mutate({ identifier: pendingIdentifier, otp: code, bindIp })
+    const purpose = selectedAuthMethod === 2 ? 'GOOGLE' : 'LOGIN'
+    verifyOtpMutation.mutate({ identifier: pendingIdentifier, otp: code, bindIp, purpose })
   }
 
   const sendLoginOtp = (method: number) => {

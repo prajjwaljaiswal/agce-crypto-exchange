@@ -4,6 +4,7 @@ import { Helmet } from "react-helmet-async";
 import "./market-quote-select.css";
 import MarketQuoteSelect from "./MarketQuoteSelect";
 import { useMarketTickers } from "./useMarketTickers.js";
+import { useFavorites } from "./useFavorites.js";
 import {
   COIN_NAMES,
   splitPair,
@@ -206,6 +207,7 @@ function getSortValue(t, key) {
 
 const Market = () => {
   const { tickers, isLoading, error } = useMarketTickers();
+  const { isFavorite, toggleFavorite } = useFavorites();
   const [quoteFilter, setQuoteFilter] = useState("USDT");
   const [subTab, setSubTab] = useState("all");
   const [search, setSearch] = useState("");
@@ -417,13 +419,22 @@ const Market = () => {
                           const positive = t.priceChangePercent >= 0;
                           const tradePath = `/trade/${base}_${quote || "USDT"}`;
                           const mcap = marketCap(base, t.lastPrice);
+                          const favSymbol = `${base}-${quote || "USDT"}`;
+                          const favorited = isFavorite(favSymbol);
                           return (
                             <tr key={t.symbol}>
                               <td>
                                 <div className="td_div">
-                                  <span className="star_btn btn_icon">
-                                    <i className="ri-star-line text-warning me-2"></i>
-                                  </span>
+                                  <button
+                                    type="button"
+                                    className="star_btn btn_icon"
+                                    aria-label={favorited ? "Remove from favorites" : "Add to favorites"}
+                                    aria-pressed={favorited}
+                                    onClick={() => toggleFavorite(favSymbol)}
+                                    style={{ background: "transparent", border: "none", padding: 0, cursor: "pointer" }}
+                                  >
+                                    <i className={`${favorited ? "ri-star-fill" : "ri-star-line"} text-warning me-2`}></i>
+                                  </button>
                                   <CoinIcon base={base} iconUrl={t.iconUrl} />
                                   <div className="coin_info">
                                     <div className="coin_name_lft">

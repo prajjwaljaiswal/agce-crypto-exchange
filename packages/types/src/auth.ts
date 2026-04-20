@@ -13,6 +13,7 @@ export type OtpType =
   | 'RESET_PASSWORD'
   | 'WITHDRAWAL'
   | 'ANTI_PHISHING'
+  | 'GOOGLE'
 
 export type OtpPurpose = OtpType
 
@@ -75,6 +76,10 @@ export interface PasswordLoginPayload {
 
 export interface TwoFactorChallenge {
   twoFactorRequired: true
+  // Present when the user has Google Authenticator enabled — backend does NOT
+  // send an email/SMS OTP in that case, client must collect a TOTP code and
+  // call /verify-otp with purpose:'GOOGLE'.
+  googleAuthenticatorEnabled?: boolean
 }
 
 export interface LoginSuccess extends AuthTokens {
@@ -117,6 +122,13 @@ export interface MeResponse extends AuthUser {
   // string / undefined if not set. Some backends expose only `hasAntiPhishingCode`.
   antiPhishingCode?: string
   hasAntiPhishingCode?: boolean
+  // True once the user has registered at least one WebAuthn credential.
+  isPasskeyEnabled?: boolean
+  // True once the user has enabled Google Authenticator (TOTP). When true,
+  // `/login` returns `twoFactorRequired: true` without sending an email/SMS
+  // OTP — the client must collect a TOTP code and verify with purpose:'GOOGLE'.
+  isGoogleAuthenticatorEnabled?: boolean
+  googleAuthenticatorEnabled?: boolean
   // Session metadata — populated by backend on /me. ISO-8601 timestamp
   // (e.g. "2026-04-17T09:32:04.512Z") and IPv4/IPv6 string.
   lastLoginAt?: string
@@ -268,4 +280,12 @@ export interface PasskeyListItem {
 
 export interface PasskeyListResponse {
   passkeys: PasskeyListItem[]
+}
+
+// POST /api/v1/auth/google-authenticator (authenticated).
+// http() unwraps data[0], so callers get the first element of the backend's data array.
+export interface GoogleAuthSetupResponse {
+  secret: string
+  // Base64-encoded PNG data URI (e.g. "data:image/png;base64,iVBOR...").
+  qrCode: string
 }

@@ -9,6 +9,9 @@ import { VerificationOptionsModal } from './settings/modals/VerificationOptionsM
 import { PasswordChangeModal } from './settings/modals/PasswordChangeModal.js'
 import { EditProfileModal } from './settings/modals/EditProfileModal.js'
 import { PasskeySetupModal } from './settings/modals/PasskeySetupModal.js'
+import { GoogleAuthSetupModal } from './settings/modals/GoogleAuthSetupModal.js'
+import { useRemovePasskey } from '../hooks/useRemovePasskey.js'
+import { useRemoveGoogleAuth } from '../hooks/useRemoveGoogleAuth.js'
 
 const ALL_VERIFY_OPTIONS = [
   {
@@ -55,6 +58,13 @@ export function Settings() {
   const antiPhishingVerifyOptions = useDisclosure()
   const passwordVerifyOptions = useDisclosure()
   const passkeySetup = useDisclosure()
+  const googleAuthSetup = useDisclosure()
+  const removePasskey = useRemovePasskey()
+  const removeGoogleAuth = useRemoveGoogleAuth()
+  const isPasskeyEnabled = Boolean(user?.isPasskeyEnabled)
+  const isGoogleAuthEnabled = Boolean(
+    user?.isGoogleAuthenticatorEnabled ?? user?.googleAuthenticatorEnabled,
+  )
 
   const handleGetStarted = () => {
     antiPhishingInfo.close()
@@ -69,6 +79,13 @@ export function Settings() {
         onChangePassword={passwordChange.open}
         onSetAntiPhishing={antiPhishingInfo.open}
         onAddPasskey={passkeySetup.open}
+        onRemovePasskey={() => removePasskey.mutate()}
+        onEnableGoogleAuth={googleAuthSetup.open}
+        onDisableGoogleAuth={() => removeGoogleAuth.mutate()}
+        isPasskeyEnabled={isPasskeyEnabled}
+        isRemovingPasskey={removePasskey.isPending}
+        isGoogleAuthEnabled={isGoogleAuthEnabled}
+        isDisablingGoogleAuth={removeGoogleAuth.isPending}
       />
 
       <EditProfileModal
@@ -108,6 +125,10 @@ export function Settings() {
       <PasskeySetupModal
         isOpen={passkeySetup.isOpen}
         onClose={passkeySetup.close}
+      />
+      <GoogleAuthSetupModal
+        isOpen={googleAuthSetup.isOpen}
+        onClose={googleAuthSetup.close}
       />
     </div>
   )

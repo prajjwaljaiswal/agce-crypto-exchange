@@ -156,6 +156,7 @@ export type {
   PasskeyLoginSuccess,
   PasskeyListItem,
   PasskeyListResponse,
+  GoogleAuthSetupResponse,
 } from './auth.js'
 
 export type {

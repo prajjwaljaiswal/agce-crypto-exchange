@@ -2,12 +2,32 @@ interface SecuritySectionProps {
   onChangePassword: () => void
   onSetAntiPhishing: () => void
   onAddPasskey: () => void
+  onRemovePasskey: () => void
+  onEnableGoogleAuth: () => void
+  onDisableGoogleAuth: () => void
+  isPasskeyEnabled?: boolean
+  isRemovingPasskey?: boolean
+  isGoogleAuthEnabled?: boolean
+  isDisablingGoogleAuth?: boolean
+}
+
+const REMOVE_BTN_STYLE: React.CSSProperties = {
+  border: '1px solid #ef4444',
+  color: '#ef4444',
+  background: 'transparent',
 }
 
 export function SecuritySection({
   onChangePassword,
   onSetAntiPhishing,
   onAddPasskey,
+  onRemovePasskey,
+  onEnableGoogleAuth,
+  onDisableGoogleAuth,
+  isPasskeyEnabled = false,
+  isRemovingPasskey = false,
+  isGoogleAuthEnabled = false,
+  isDisablingGoogleAuth = false,
 }: SecuritySectionProps) {
   return (
     <div className="twofactor_outer_s">
@@ -32,7 +52,7 @@ export function SecuritySection({
           </button>
         </div>
 
-        <div className="factor_bl active">
+        <div className={`factor_bl${isPasskeyEnabled ? ' active' : ''}`}>
           <div className="lftcnt">
             <h6>
               <i className="ri-fingerprint-line anti-phishing-icon-spaced" />
@@ -43,10 +63,51 @@ export function SecuritySection({
               instead of your password. You can keep using your password too.
             </p>
           </div>
-          <button type="button" className="btn" onClick={onAddPasskey}>
-            <i className="ri-add-line anti-phishing-icon-tight" />
-            Add Passkey
-          </button>
+          {isPasskeyEnabled ? (
+            <button
+              type="button"
+              className="btn"
+              style={REMOVE_BTN_STYLE}
+              onClick={onRemovePasskey}
+              disabled={isRemovingPasskey}
+            >
+              {isRemovingPasskey ? 'Removing…' : 'Remove Passkey'}
+            </button>
+          ) : (
+            <button type="button" className="btn" onClick={onAddPasskey}>
+              <i className="ri-add-line anti-phishing-icon-tight" />
+              Add Passkey
+            </button>
+          )}
+        </div>
+
+        <div className={`factor_bl${isGoogleAuthEnabled ? ' active' : ''}`}>
+          <div className="lftcnt">
+            <h6>
+              <i className="ri-shield-keyhole-line anti-phishing-icon-spaced" />
+              Google Authenticator
+            </h6>
+            <p>
+              Use a time-based 6-digit code from Google Authenticator or a
+              compatible app as your second factor when signing in.
+            </p>
+          </div>
+          {isGoogleAuthEnabled ? (
+            <button
+              type="button"
+              className="btn"
+              style={REMOVE_BTN_STYLE}
+              onClick={onDisableGoogleAuth}
+              disabled={isDisablingGoogleAuth}
+            >
+              {isDisablingGoogleAuth ? 'Disabling…' : 'Disable'}
+            </button>
+          ) : (
+            <button type="button" className="btn" onClick={onEnableGoogleAuth}>
+              <i className="ri-add-line anti-phishing-icon-tight" />
+              Enable
+            </button>
+          )}
         </div>
 
         <div className="factor_bl active">

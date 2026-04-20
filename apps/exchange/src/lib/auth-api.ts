@@ -28,6 +28,7 @@ import type {
   PasskeyLoginPayload,
   PasskeyLoginSuccess,
   PasskeyListResponse,
+  GoogleAuthSetupResponse,
 } from '@agce/types'
 import { http } from './http.js'
 
@@ -159,6 +160,19 @@ export const authApi = {
     return http(`${PASSKEY_BASE}/passkey/${encodeURIComponent(credentialId)}`, {
       method: 'DELETE',
     })
+  },
+
+  // ── Google Authenticator (TOTP) ──
+  // Enable: returns the TOTP secret + a base64-encoded QR data URI for the user
+  // to scan with their authenticator app. Account flag flips server-side.
+  googleAuthSetup(): Promise<GoogleAuthSetupResponse> {
+    return http(`${BASE}/google-authenticator`, { method: 'POST' })
+  },
+
+  // Disable: removes the stored secret. Backend returns the updated MeResponse,
+  // but we drop the body — callers invalidate the ['auth','me'] query instead.
+  googleAuthDisable(): Promise<MeResponse> {
+    return http(`${BASE}/google-authenticator`, { method: 'DELETE' })
   },
 }
 
