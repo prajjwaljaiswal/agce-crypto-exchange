@@ -166,7 +166,7 @@ export const authApi = {
   // Enable: returns the TOTP secret + a base64-encoded QR data URI for the user
   // to scan with their authenticator app. Account flag flips server-side.
   googleAuthSetup(): Promise<GoogleAuthSetupResponse> {
-    return http(`${BASE}/google-authenticator`, { method: 'POST' })
+    return http(`${BASE}/google-authenticator`, { method: 'POST', body: {} })
   },
 
   // Disable: removes the stored secret. Backend returns the updated MeResponse,

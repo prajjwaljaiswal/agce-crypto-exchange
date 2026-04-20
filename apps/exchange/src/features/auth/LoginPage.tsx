@@ -114,35 +114,36 @@ export function LoginPage() {
         handleLoginSuccess(response)
         return
       }
-      // 2FA branch: if the backend says Google Authenticator is enabled, no
-      // OTP was sent — prompt for a TOTP code instead. Otherwise backend has
-      // already dispatched an email OTP.
-      const useGoogleAuth = response.googleAuthenticatorEnabled === true
-      const methods: AuthMethod[] = useGoogleAuth
-        ? [
-            {
-              type: 2,
-              label: 'Google Authenticator',
-              icon: 'ri-shield-keyhole-line',
-              description: 'Enter the 6-digit code from your authenticator app',
-            },
-          ]
-        : [
-            {
-              type: 1,
-              label: 'Email',
-              icon: 'ri-mail-line',
-              description: 'Receive verification codes via email',
-              maskedValue: pendingIdentifier,
-            },
-          ]
+      // 2FA branch. The backend's `twoFactorRequired` challenge does not tell
+      // us which method is active, so we surface both: start on email (the
+      // default OTP the backend dispatches) and let the user switch to the
+      // authenticator via the method modal if they have TOTP enabled.
+      const preferGoogleAuth =
+        response.googleAuthenticatorEnabled === true ||
+        response.isGoogleAuthenticatorEnabled === true
+      const methods: AuthMethod[] = [
+        {
+          type: 1,
+          label: 'Email',
+          icon: 'ri-mail-line',
+          description: 'Receive verification codes via email',
+          maskedValue: pendingIdentifier,
+        },
+        {
+          type: 2,
+          label: 'Google Authenticator',
+          icon: 'ri-shield-keyhole-line',
+          description: 'Enter the 6-digit code from your authenticator app',
+        },
+      ]
+      const startMethod = preferGoogleAuth ? 2 : 1
       setAvailableMethods(methods)
-      setSelectedAuthMethod(useGoogleAuth ? 2 : 1)
-      setResendTimer(useGoogleAuth ? 0 : 60)
+      setSelectedAuthMethod(startMethod)
+      setResendTimer(startMethod === 2 ? 0 : 60)
       setOtpSingle('')
       setLoginPendingVerification(true)
       setWizardStep(2)
-      showSuccess(useGoogleAuth ? 'Enter your authenticator code.' : 'Verification code sent.')
+      showSuccess(startMethod === 2 ? 'Enter your authenticator code.' : 'Verification code sent.')
     },
     onError: (error) => showError(formatApiError(error, 'Login failed.')),
   })

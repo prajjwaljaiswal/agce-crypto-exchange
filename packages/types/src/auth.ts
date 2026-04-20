@@ -78,8 +78,10 @@ export interface TwoFactorChallenge {
   twoFactorRequired: true
   // Present when the user has Google Authenticator enabled — backend does NOT
   // send an email/SMS OTP in that case, client must collect a TOTP code and
-  // call /verify-otp with purpose:'GOOGLE'.
+  // call /verify-otp with purpose:'GOOGLE'. Backend has shipped both field
+  // names across versions, so callers should accept either.
   googleAuthenticatorEnabled?: boolean
+  isGoogleAuthenticatorEnabled?: boolean
 }
 
 export interface LoginSuccess extends AuthTokens {
