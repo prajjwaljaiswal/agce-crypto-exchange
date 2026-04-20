@@ -1,13 +1,13 @@
 import { useState } from 'react'
-import { SAMPLE_MEMO } from '../constants.js'
 import { StepBadge } from './StepBadge.js'
 import { CopyField } from './CopyField.js'
 
 interface DepositDetailsCardProps {
   depositAddress: string
+  memo: string | null
 }
 
-export function DepositDetailsCard({ depositAddress }: DepositDetailsCardProps) {
+export function DepositDetailsCard({ depositAddress, memo }: DepositDetailsCardProps) {
   const [isOpen, setIsOpen] = useState(true)
   const hasAddress = Boolean(depositAddress)
 
@@ -64,7 +64,7 @@ export function DepositDetailsCard({ depositAddress }: DepositDetailsCardProps) 
 
             <div className="deposit_details_fields">
               <CopyField label="Deposit Address" value={depositAddress} />
-              <CopyField label="Memo (Tag)" value={SAMPLE_MEMO} />
+              {memo && <CopyField label="Memo (Tag)" value={memo} />}
 
               <div className="deposit_details_meta">
                 <div className="deposit_meta_row">

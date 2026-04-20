@@ -347,6 +347,43 @@ export const walletApi = {
 }
 
 // ──────────────────────────────────────────────────────────────────────────
+// Custody API  –  Deposit address generation & history
+// ──────────────────────────────────────────────────────────────────────────
+
+export interface DepositAddressResponse {
+  assetId: string
+  address: string
+  tag: string | null
+}
+
+export interface DepositRecord {
+  id: string
+  assetId: string
+  network: string
+  address: string
+  txId: string | null
+  amount: string
+  status: string
+  createdAt: string
+}
+
+const CUSTODY = '/api/v1/custody'
+
+export const custodyApi = {
+  depositAddress(fireblocksAssetId: string, signal?: AbortSignal) {
+    return request<DepositAddressResponse>(`${CUSTODY}/deposit-address`, {
+      method: 'POST',
+      body: { assetId: fireblocksAssetId },
+      signal,
+    })
+  },
+
+  depositHistory(limit = 50, signal?: AbortSignal) {
+    return request<DepositRecord[]>(`${CUSTODY}/deposits`, { signal, query: { limit } })
+  },
+}
+
+// ──────────────────────────────────────────────────────────────────────────
 // Assets API  –  GET /api/v1/assets
 // ──────────────────────────────────────────────────────────────────────────
 

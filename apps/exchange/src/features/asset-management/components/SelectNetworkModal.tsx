@@ -1,9 +1,11 @@
 import { useEffect, useMemo, useState } from 'react'
-import { DEPOSIT_NETWORK_OPTIONS } from '../constants.js'
+import type { DepositNetwork } from '../constants.js'
 
 interface SelectNetworkModalProps {
   open: boolean
   selectedNetwork: string
+  networks: DepositNetwork[]
+  isLoading: boolean
   onClose: () => void
   onSelect: (code: string) => void
 }
@@ -11,6 +13,8 @@ interface SelectNetworkModalProps {
 export function SelectNetworkModal({
   open,
   selectedNetwork,
+  networks,
+  isLoading,
   onClose,
   onSelect,
 }: SelectNetworkModalProps) {
@@ -18,11 +22,11 @@ export function SelectNetworkModal({
 
   const filtered = useMemo(() => {
     const q = search.trim().toLowerCase()
-    if (!q) return DEPOSIT_NETWORK_OPTIONS
-    return DEPOSIT_NETWORK_OPTIONS.filter(
+    if (!q) return networks
+    return networks.filter(
       (n) => n.code.toLowerCase().includes(q) || n.name.toLowerCase().includes(q),
     )
-  }, [search])
+  }, [search, networks])
 
   useEffect(() => {
     if (!open) {
@@ -97,7 +101,9 @@ export function SelectNetworkModal({
         </div>
 
         <div className="deposit_select_network_list" role="listbox" aria-label="Networks">
-          {filtered.length === 0 ? (
+          {isLoading ? (
+            <p className="deposit_select_network_empty">Loading networks...</p>
+          ) : filtered.length === 0 ? (
             <p className="deposit_select_network_empty">No network found</p>
           ) : (
             filtered.map((n) => (
