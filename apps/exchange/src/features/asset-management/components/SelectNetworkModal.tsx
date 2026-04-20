@@ -1,9 +1,13 @@
-import { useEffect, useMemo, useState } from 'react'
-import { DEPOSIT_NETWORK_OPTIONS } from '../constants.js'
+import { useEffect } from 'react'
+import type { DepositNetwork } from '../constants.js'
 
 interface SelectNetworkModalProps {
   open: boolean
   selectedNetwork: string
+  networks: DepositNetwork[]
+  isLoading: boolean
+  search: string
+  onSearchChange: (value: string) => void
   onClose: () => void
   onSelect: (code: string) => void
 }
@@ -11,22 +15,16 @@ interface SelectNetworkModalProps {
 export function SelectNetworkModal({
   open,
   selectedNetwork,
+  networks,
+  isLoading,
+  search,
+  onSearchChange,
   onClose,
   onSelect,
 }: SelectNetworkModalProps) {
-  const [search, setSearch] = useState('')
-
-  const filtered = useMemo(() => {
-    const q = search.trim().toLowerCase()
-    if (!q) return DEPOSIT_NETWORK_OPTIONS
-    return DEPOSIT_NETWORK_OPTIONS.filter(
-      (n) => n.code.toLowerCase().includes(q) || n.name.toLowerCase().includes(q),
-    )
-  }, [search])
-
   useEffect(() => {
     if (!open) {
-      setSearch('')
+      onSearchChange('')
       return
     }
 
@@ -42,7 +40,7 @@ export function SelectNetworkModal({
       window.removeEventListener('keydown', onKey)
       document.body.style.overflow = prevOverflow
     }
-  }, [open, onClose])
+  }, [open, onClose, onSearchChange])
 
   if (!open) return null
 
@@ -90,17 +88,21 @@ export function SelectNetworkModal({
             className="deposit_select_network_search_input"
             placeholder="Select Network"
             value={search}
-            onChange={(e) => setSearch(e.target.value)}
+            onChange={(e) => onSearchChange(e.target.value)}
             autoComplete="off"
             autoFocus
           />
         </div>
 
         <div className="deposit_select_network_list" role="listbox" aria-label="Networks">
-          {filtered.length === 0 ? (
-            <p className="deposit_select_network_empty">No network found</p>
+          {isLoading ? (
+            <p className="deposit_select_network_empty">Loading networks...</p>
+          ) : networks.length === 0 ? (
+            <p className="deposit_select_network_empty">
+              {search.trim() ? 'No network found' : 'No networks available'}
+            </p>
           ) : (
-            filtered.map((n) => (
+            networks.map((n) => (
               <button
                 key={n.code}
                 type="button"
@@ -110,13 +112,30 @@ export function SelectNetworkModal({
                 onClick={() => onSelect(n.code)}
               >
                 <span className="deposit_select_network_card_lft">
-                  <span className="deposit_select_network_code">{n.code}</span>
-                  <span className="deposit_select_network_name">{n.name}</span>
+                  <span
+                    className="deposit_select_network_code"
+                    style={{ color: '#101828', fontWeight: 500 }}
+                  >
+                    {n.code}
+                  </span>
+                  <span
+                    className="deposit_select_network_name"
+                    style={{ color: '#667085' }}
+                  >
+                    {n.name}
+                  </span>
                 </span>
                 <span className="deposit_select_network_card_rgt">
-                  <span className="deposit_select_network_eta">{n.eta}</span>
+                  <span
+                    className="deposit_select_network_eta"
+                    style={{ color: '#101828' }}
+                  >
+                    {n.eta}
+                  </span>
                   <span className="deposit_select_network_min">
-                    {n.minDeposit === '—' ? ' ' : `Min Deposit: ${n.minDeposit}`}
+                    <span style={{ color: '#667085' }}>
+                      {n.minDeposit === '—' ? ' ' : `Min Deposit: ${n.minDeposit}`}
+                    </span>
                   </span>
                 </span>
               </button>

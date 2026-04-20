@@ -347,6 +347,70 @@ export const walletApi = {
 }
 
 // ──────────────────────────────────────────────────────────────────────────
+// Custody API  –  Deposit address generation & history
+// ──────────────────────────────────────────────────────────────────────────
+
+export interface DepositAddressResponse {
+  asset: string
+  network: string
+  networkDisplayName: string
+  address: string
+  tag: string | null
+  fireblocksAssetId: string
+  vaultAccountId: string
+  minDeposit: string
+  confirmationsRequired: number
+}
+
+export interface CustodyAddressEntry {
+  asset: string
+  network: string
+  address: string
+  tag?: string
+  createdAt: string
+}
+
+export interface CustodyOverviewResponse {
+  userId: string
+  vaultAccountId: string
+  addresses: CustodyAddressEntry[]
+}
+
+export interface DepositRecord {
+  id: string
+  assetId: string
+  network: string
+  address: string
+  txId: string | null
+  amount: string
+  status: string
+  createdAt: string
+}
+
+const CUSTODY = '/api/v1/custody'
+
+export const custodyApi = {
+  me(signal?: AbortSignal) {
+    return request<CustodyOverviewResponse>(`${CUSTODY}/me`, { signal })
+  },
+
+  depositAddress(
+    payload: { asset: string; network: string },
+    signal?: AbortSignal,
+  ) {
+    return request<DepositAddressResponse>(`${CUSTODY}/deposit-address`, {
+      method: 'POST',
+      body: payload,
+      signal,
+    })
+  },
+
+  depositHistory(limit = 50, signal?: AbortSignal) {
+    return request<DepositRecord[]>(`${CUSTODY}/deposits`, { signal, query: { limit } })
+  },
+}
+
+// ──────────────────────────────────────────────────────────────────────────
 // Assets API  –  GET /api/v1/assets
 // ──────────────────────────────────────────────────────────────────────────
 
@@ -369,6 +433,8 @@ export interface Asset {
   iconUrl: string
   description: string
   decimals: number
+  minDeposit: string
+  depositFee: string
   category: 'CRYPTO' | 'STABLECOIN' | 'FIAT' | string
   isActive: boolean
   instance: string
@@ -376,18 +442,22 @@ export interface Asset {
 }
 
 export const assetsApi = {
-  list(signal?: AbortSignal) {
-    return request<Asset[]>('/api/v1/assets', { auth: false, signal })
+  list(signal?: AbortSignal, search?: string) {
+    return request<Asset[]>('/api/v1/assets', {
+      auth: false,
+      signal,
+      query: { q: search },
+    })
   },
 
   get(code: string, signal?: AbortSignal) {
     return request<Asset>(`/api/v1/assets/${encodeURIComponent(code)}`, { auth: false, signal })
   },
 
-  networks(code: string, signal?: AbortSignal) {
+  networks(code: string, signal?: AbortSignal, search?: string) {
     return request<AssetNetwork[]>(
       `/api/v1/assets/${encodeURIComponent(code)}/networks`,
-      { auth: false, signal },
+      { auth: false, signal, query: { q: search } },
     )
   },
 }

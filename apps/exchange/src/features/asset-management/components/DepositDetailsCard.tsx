@@ -1,15 +1,58 @@
-import { useState } from 'react'
-import { SAMPLE_MEMO } from '../constants.js'
+import { useEffect, useMemo, useState } from 'react'
+import QRCode from 'qrcode'
 import { StepBadge } from './StepBadge.js'
 import { CopyField } from './CopyField.js'
 
 interface DepositDetailsCardProps {
   depositAddress: string
+  memo: string | null
+  minDeposit?: string
+  confirmationsRequired?: number
+  selectedCoin?: string
+  expectedArrival?: string
+  expectedUnlock?: string
 }
 
-export function DepositDetailsCard({ depositAddress }: DepositDetailsCardProps) {
+export function DepositDetailsCard({
+  depositAddress,
+  memo,
+  minDeposit,
+  confirmationsRequired,
+  selectedCoin,
+  expectedArrival,
+  expectedUnlock,
+}: DepositDetailsCardProps) {
   const [isOpen, setIsOpen] = useState(true)
+  const [qrDataUrl, setQrDataUrl] = useState<string | null>(null)
   const hasAddress = Boolean(depositAddress)
+  const qrPayload = useMemo(() => {
+    if (!depositAddress) return ''
+    return memo ? `${depositAddress}?memo=${encodeURIComponent(memo)}` : depositAddress
+  }, [depositAddress, memo])
+
+  useEffect(() => {
+    let cancelled = false
+    if (!qrPayload) {
+      setQrDataUrl(null)
+      return
+    }
+
+    void QRCode.toDataURL(qrPayload, {
+      width: 180,
+      margin: 1,
+      errorCorrectionLevel: 'M',
+    })
+      .then((url: string) => {
+        if (!cancelled) setQrDataUrl(url)
+      })
+      .catch(() => {
+        if (!cancelled) setQrDataUrl(null)
+      })
+
+    return () => {
+      cancelled = true
+    }
+  }, [qrPayload])
 
   return (
     <div className="deposit_step_section select_network_s">
@@ -53,31 +96,48 @@ export function DepositDetailsCard({ depositAddress }: DepositDetailsCardProps) 
           <div id="deposit-details-grid" className="deposit_details_grid">
             <div className="deposit_qr_box_container">
               <div className="deposit_qr_box">
-                <img
-                  src="/images/deposit_scan.png"
-                  alt="Deposit QR"
-                  className="deposit_qr_img"
-                />
+                {qrDataUrl ? (
+                  <img
+                    src={qrDataUrl}
+                    alt="Deposit QR"
+                    className="deposit_qr_img"
+                  />
+                ) : (
+                  <img
+                    src="/images/deposit_scan.png"
+                    alt="Deposit QR"
+                    className="deposit_qr_img"
+                  />
+                )}
               </div>
               <div className="deposit_qr_hint">Scan to deposit</div>
             </div>
 
             <div className="deposit_details_fields">
               <CopyField label="Deposit Address" value={depositAddress} />
-              <CopyField label="Memo (Tag)" value={SAMPLE_MEMO} />
+              {memo && <CopyField label="Memo (Tag)" value={memo} />}
 
               <div className="deposit_details_meta">
                 <div className="deposit_meta_row">
                   <span className="deposit_meta_label">Minimum Deposit:</span>
-                  <span className="deposit_meta_value">1 USDT</span>
+                  <span className="deposit_meta_value">
+                    {minDeposit ? `${minDeposit}${selectedCoin ? ` ${selectedCoin}` : ''}` : '—'}
+                  </span>
                 </div>
                 <div className="deposit_meta_row">
                   <span className="deposit_meta_label">Expected Arrival:</span>
-                  <span className="deposit_meta_value">1 network confirmation</span>
+                  <span className="deposit_meta_value">
+                    {expectedArrival ?? '—'}
+                  </span>
                 </div>
                 <div className="deposit_meta_row">
                   <span className="deposit_meta_label">Expected Unlock:</span>
-                  <span className="deposit_meta_value">1 network confirmation</span>
+                  <span className="deposit_meta_value">
+                    {expectedUnlock
+                      ?? (typeof confirmationsRequired === 'number'
+                        ? `${confirmationsRequired} network confirmation${confirmationsRequired === 1 ? '' : 's'}`
+                        : '—')}
+                  </span>
                 </div>
               </div>
             </div>

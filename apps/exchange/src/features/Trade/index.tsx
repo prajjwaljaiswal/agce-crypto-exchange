@@ -37,6 +37,21 @@ import { toErrorMessage } from "./utils/errorMessage.js";
 import { useTradeUIStore } from "./stores/tradeUIStore.js";
 import { useWalletsStore } from "./stores/walletsStore.js";
 
+function toAbsoluteIconUrl(iconPath?: string): string | undefined {
+    if (!iconPath) return undefined;
+    if (/^https?:\/\//i.test(iconPath)) return iconPath;
+
+    const env = import.meta.env as Record<string, string | undefined>;
+    const base =
+        (env.VITE_MATCHING_API_URL ?? env.VITE_AUTH_API_URL ?? "").replace(
+            /\/+$/,
+            "",
+        );
+    if (!base) return iconPath;
+    const normalizedPath = iconPath.startsWith("/") ? iconPath : `/${iconPath}`;
+    return `${base}${normalizedPath}`;
+}
+
 const Trade = () => {
     const { getStatus } = usePlatformStatus();
     const isSpotDisabled = !getStatus('spot_trading').enabled;
@@ -145,6 +160,8 @@ const Trade = () => {
     const formatPriceThousands = (r: any) => fmtPriceThousandsUtil(r, SelectedCoin);
 
     // Derive SelectedCoin from the URL param (e.g. /trade/BTC_USDT).
+    // When pair catalogue is available, hydrate from full pair row so
+    // header icon and metadata don't briefly fall back to static image.
     useEffect(() => {
         const raw = tradeParam;
 
@@ -152,8 +169,63 @@ const Trade = () => {
         
         const [base, quote] = raw.split('_');
         if (!base || !quote) return;
-        setSelectedCoin({ base_currency: base, quote_currency: quote });
-    }, [tradeParam]);
+
+        const pair = AllData?.pairs?.find((item: any) =>
+            item?.base_currency === base &&
+            item?.quote_currency === quote
+        );
+        if (!pair) {
+            setSelectedCoin({ base_currency: base, quote_currency: quote });
+            return;
+        }
+
+        const normalizedBaseIcon =
+            toAbsoluteIconUrl(pair.baseIconUrl || pair.iconUrl || pair.icon_path) ||
+            pair.baseIconUrl ||
+            pair.iconUrl ||
+            pair.icon_path;
+        const normalizedQuoteIcon =
+            toAbsoluteIconUrl(pair.quoteIconUrl) || pair.quoteIconUrl;
+
+        setSelectedCoin({
+            ...pair,
+            icon_path: normalizedBaseIcon,
+            iconUrl: normalizedBaseIcon,
+            baseIconUrl: normalizedBaseIcon,
+            quoteIconUrl: normalizedQuoteIcon,
+        });
+    }, [tradeParam, AllData?.pairs]);
+
+    // Keep URL + selected pair in sync with live pair catalogue.
+    // If the route param is missing/invalid/unlisted, route to the first
+    // available pair so URL and header never diverge.
+    useEffect(() => {
+        const pairs = AllData?.pairs;
+        if (!pairs || pairs.length === 0) return;
+
+        const firstPair = pairs[0];
+        const fallbackPath = `/trade/${firstPair.base_currency}_${firstPair.quote_currency}`;
+
+        if (!tradeParam) {
+            navigate(fallbackPath, { replace: true });
+            return;
+        }
+
+        const [base, quote] = tradeParam.split('_');
+        if (!base || !quote) {
+            navigate(fallbackPath, { replace: true });
+            return;
+        }
+
+        const exists = pairs.some(
+            (item: any) =>
+                item?.base_currency === base &&
+                item?.quote_currency === quote,
+        );
+        if (!exists) {
+            navigate(fallbackPath, { replace: true });
+        }
+    }, [AllData?.pairs, tradeParam, navigate]);
 
     // Sync pair metadata + ticker stats from AllData whenever it loads or the
     // selected pair changes. Looks up by base/quote currency codes so it works
@@ -165,8 +237,21 @@ const Trade = () => {
             item?.quote_currency === SelectedCoin?.quote_currency
         );
         if (!pair) return;
+        const normalizedBaseIcon =
+            toAbsoluteIconUrl(pair.baseIconUrl || pair.iconUrl || pair.icon_path) ||
+            pair.baseIconUrl ||
+            pair.iconUrl ||
+            pair.icon_path;
+        const normalizedQuoteIcon =
+            toAbsoluteIconUrl(pair.quoteIconUrl) || pair.quoteIconUrl;
         // Enrich SelectedCoin with full metadata (tick_size, step_size, icon, etc.)
-        setSelectedCoin({ ...pair });
+        setSelectedCoin({
+            ...pair,
+            icon_path: normalizedBaseIcon,
+            iconUrl: normalizedBaseIcon,
+            baseIconUrl: normalizedBaseIcon,
+            quoteIconUrl: normalizedQuoteIcon,
+        });
         setDesAndLinks({ description: pair.description ?? "", links: [] });
         setIsPricePositive(pair.buy_price >= buyprice);
         setbuyprice(pair.buy_price);
@@ -223,7 +308,22 @@ const Trade = () => {
         resetOrderbook();
         resetForm();
         navigate(`/trade/${data?.base_currency}_${data?.quote_currency}`);
-        setSelectedCoin(data);
+        const normalizedBaseIcon =
+            toAbsoluteIconUrl(
+                data?.baseIconUrl || data?.iconUrl || data?.icon_path,
+            ) ||
+            data?.baseIconUrl ||
+            data?.iconUrl ||
+            data?.icon_path;
+        const normalizedQuoteIcon =
+            toAbsoluteIconUrl(data?.quoteIconUrl) || data?.quoteIconUrl;
+        setSelectedCoin({
+            ...data,
+            icon_path: normalizedBaseIcon,
+            iconUrl: normalizedBaseIcon,
+            baseIconUrl: normalizedBaseIcon,
+            quoteIconUrl: normalizedQuoteIcon,
+        });
         setbuyprice(data?.buy_price);
         setsellPrice(data?.sell_price);
         setExpandedRowIndex(null);
