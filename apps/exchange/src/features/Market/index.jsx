@@ -208,6 +208,7 @@ function getSortValue(t, key) {
 const Market = () => {
   const { tickers, isLoading, error } = useMarketTickers();
   const { isFavorite, toggleFavorite } = useFavorites();
+  const [topTab, setTopTab] = useState("spot");
   const [quoteFilter, setQuoteFilter] = useState("USDT");
   const [subTab, setSubTab] = useState("all");
   const [search, setSearch] = useState("");
@@ -232,7 +233,12 @@ const Market = () => {
   const rows = useMemo(() => {
     let list = allList;
 
-    if (quoteFilter !== "All") {
+    if (topTab === "favorites") {
+      list = list.filter((t) => {
+        const { base, quote } = splitPair(t.symbol);
+        return isFavorite(`${base}-${quote || "USDT"}`);
+      });
+    } else if (quoteFilter !== "All") {
       list = list.filter((t) => splitPair(t.symbol).quote === quoteFilter);
     }
 
@@ -259,7 +265,7 @@ const Market = () => {
     }
 
     return list.slice(0, TABLE_LIMIT);
-  }, [allList, quoteFilter, subTab, search, sort]);
+  }, [allList, topTab, quoteFilter, subTab, search, sort, isFavorite]);
 
   return (
     <>
@@ -297,10 +303,22 @@ const Market = () => {
             <div className="d-flex-between mb-3 custom_dlflex">
               <ul className="nav nav-pills mb-2 overflowx_scroll funds_tab market_tabs" role="tablist">
                 <li className="nav-item">
-                  <button type="button" className="nav-link">Favorites</button>
+                  <button
+                    type="button"
+                    className={`nav-link ${topTab === "favorites" ? "active" : ""}`}
+                    onClick={() => setTopTab("favorites")}
+                  >
+                    Favorites
+                  </button>
                 </li>
                 <li className="nav-item">
-                  <button type="button" className="nav-link active">Spot</button>
+                  <button
+                    type="button"
+                    className={`nav-link ${topTab === "spot" ? "active" : ""}`}
+                    onClick={() => setTopTab("spot")}
+                  >
+                    Spot
+                  </button>
                 </li>
                 <li className="nav-item">
                   <button type="button" className="nav-link">Futures</button>
@@ -411,7 +429,11 @@ const Market = () => {
                         </tr>
                       ) : rows.length === 0 ? (
                         <tr>
-                          <td colSpan={8} className="text-center py-5">No matches</td>
+                          <td colSpan={8} className="text-center py-5">
+                            {topTab === "favorites"
+                              ? "No favorites yet. Tap the star on any pair to add it."
+                              : "No matches"}
+                          </td>
                         </tr>
                       ) : (
                         rows.map((t) => {
