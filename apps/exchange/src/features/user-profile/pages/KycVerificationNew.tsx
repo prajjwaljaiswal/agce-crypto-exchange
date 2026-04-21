@@ -1,11 +1,10 @@
-import { useMemo, useState, useCallback, useEffect } from "react";
+import { useMemo, useState, useCallback, useEffect, useRef } from "react";
 import { Link, useSearchParams, useNavigate } from "react-router-dom";
 import { useQueryClient } from "@tanstack/react-query";
 import { useInstanceConfig } from "@agce/hooks";
 import { mapInstanceToJurisdiction } from "@agce/config";
 import { useKycStatus, useStartKyc } from "./kyc/hooks.js";
 import { useAuth } from "../../../providers/index.js";
-import { KycVerifyWarningModal } from "./kyc/modals/KycVerifyWarningModal.js";
 import { formatApiError } from "../../../lib/errors.js";
 
 import '../../../../public/css-new/kyc-figma.css'
@@ -828,93 +827,123 @@ function ViewPending({ displayName }: { displayName: string }) {
   );
 }
 
-function ViewCenter({ onVerify, isVerifying }: { onVerify: () => void; isVerifying: boolean }) {
+function ViewCenter({ onVerify, isVerifying, pendingVerifyUrl, onVerificationDone }: {
+  onVerify: () => void;
+  isVerifying: boolean;
+  pendingVerifyUrl: string;
+  onVerificationDone: () => void;
+}) {
   return (
     <section className="frame-wrapper4">
       <div className="frame-parent11">
         <div className="frame-parent12">
-          <section className="verification-center-parent">
-            <h2 className="verification-center2">Verification Center</h2>
-            <div className="manage-your-identity2">Manage your identity verification and unlock platform features</div>
-            <div className="frame-parent13">
-              <div className="standard-identity-verification-parent">
-                <h2 className="standard-identity-verification">Standard Identity Verification</h2>
-                <div className="manage-your-identity2">It takes only 2-5 minutes to verify your account.</div>
+          {pendingVerifyUrl ? (
+            <section className="verification-center-parent" style={{ width: '70%' }}>
+              <div style={{ width: '100%', height: '95vh', minHeight: 100 }}>
+                <iframe
+                  src={pendingVerifyUrl}
+                  title="Identity verification"
+                  allow="camera; microphone; fullscreen; clipboard-read; clipboard-write"
+                  style={{ width: '100%', height: '100%', border: 0, borderRadius: 12 }}
+                />
               </div>
-              <button type="button" className="button23" onClick={onVerify} disabled={isVerifying}>
-                <div className="verify-now">{isVerifying ? "Starting…" : "Verify Now"}</div>
-              </button>
-              <div className="rectangle-div" aria-hidden="true" />
-              <img
-                className="a3cde5-da6b-41f8-89ee-884ddd64-icon"
-                src="/images/Kyc-image/417922960-04a3cde5-da6b-41f8-89ee-884ddd64db8f-1.svg"
-                alt=""
-                loading="lazy"
-              />
-            </div>
-          </section>
-          <section className="container-parent3">
-            <div className="container21">
-              <img src="/images/lock_icon2.svg" alt="Locked Features" />
-              <div className="heading-23">
-                <div className="locked-features-2">Locked Features - Verify to Unlock</div>
-              </div>
-            </div>
-            <div className="container-parent4">
-              <div className="container22">
-                <img src="/images/withdrawal_icon2.svg" alt="Withdrawal" />
-                <div className="deposit-area-wrapper">
-                  <div className="deposit-area">
-                    <div className="withdrawal2">Withdrawal</div>
-                    <div className="locked-to-prevent3">Locked to prevent fraud until identity is verified.</div>
+              {/* <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: 16 }}>
+                <button
+                  type="button"
+                  className="primary_btn"
+                  style={{ width: 'auto', padding: '10px 30px' }}
+                  onClick={onVerificationDone}
+                >
+                  Done
+                </button>
+              </div> */}
+            </section>
+          ) : (
+            <>
+              <section className="verification-center-parent">
+                <h2 className="verification-center2">Verification Center</h2>
+                <div className="manage-your-identity2">Manage your identity verification and unlock platform features</div>
+                <div className="frame-parent13">
+                  <div className="standard-identity-verification-parent">
+                    <h2 className="standard-identity-verification">Standard Identity Verification</h2>
+                    <div className="manage-your-identity2">It takes only 2-5 minutes to verify your account.</div>
+                  </div>
+                  <button type="button" className="button23" onClick={onVerify} disabled={isVerifying}>
+                    <div className="verify-now">{isVerifying ? "Starting…" : "Verify Now"}</div>
+                  </button>
+                  <div className="rectangle-div" aria-hidden="true" />
+                  <img
+                    className="a3cde5-da6b-41f8-89ee-884ddd64-icon"
+                    src="/images/Kyc-image/417922960-04a3cde5-da6b-41f8-89ee-884ddd64db8f-1.svg"
+                    alt=""
+                    loading="lazy"
+                  />
+                </div>
+              </section>
+              <section className="container-parent3">
+                <div className="container21">
+                  <img src="/images/lock_icon2.svg" alt="Locked Features" />
+                  <div className="heading-23">
+                    <div className="locked-features-2">Locked Features - Verify to Unlock</div>
                   </div>
                 </div>
-                <div className="icon-holders">
-                  <img src="/images/lock_icon2.svg" alt="Withdrawal" />
-                </div>
-              </div>
-              <div className="container23">
-                <img src="/images/deposit-icon2.svg" alt="Withdrawal" />
-                <div className="container-child">
-                  <div className="frame-parent14">
-                    <div className="deposit-container">
-                      <div className="withdrawal2">Deposit</div>
+                <div className="container-parent4">
+                  <div className="container22">
+                    <img src="/images/withdrawal_icon2.svg" alt="Withdrawal" />
+                    <div className="deposit-area-wrapper">
+                      <div className="deposit-area">
+                        <div className="withdrawal2">Withdrawal</div>
+                        <div className="locked-to-prevent3">Locked to prevent fraud until identity is verified.</div>
+                      </div>
                     </div>
-                    <div className="locked-to-prevent3">Locked to prevent fraud until identity is verified.</div>
-                  </div>
-                </div>
-                <div className="icon-holders">
-                  <img src="/images/lock_icon2.svg" alt="Withdrawal" />
-                </div>
-              </div>
-              <div className="container24">
-                <div className="container-parent5">
-                  <div className="container25">
-                    <img src="/images/trading-icon.svg" alt="Withdrawal" />
-                    <div className="text23">
-                      <div className="trading2">Trading</div>
+                    <div className="icon-holders">
+                      <img src="/images/lock_icon2.svg" alt="Withdrawal" />
                     </div>
                   </div>
-                  <div className="verification-ensures-safe-and-wrapper">
-                    <div className="verification-ensures-safe2">Verification ensures safe and legitimate transactions.</div>
+                  <div className="container23">
+                    <img src="/images/deposit-icon2.svg" alt="Withdrawal" />
+                    <div className="container-child">
+                      <div className="frame-parent14">
+                        <div className="deposit-container">
+                          <div className="withdrawal2">Deposit</div>
+                        </div>
+                        <div className="locked-to-prevent3">Locked to prevent fraud until identity is verified.</div>
+                      </div>
+                    </div>
+                    <div className="icon-holders">
+                      <img src="/images/lock_icon2.svg" alt="Withdrawal" />
+                    </div>
+                  </div>
+                  <div className="container24">
+                    <div className="container-parent5">
+                      <div className="container25">
+                        <img src="/images/trading-icon.svg" alt="Withdrawal" />
+                        <div className="text23">
+                          <div className="trading2">Trading</div>
+                        </div>
+                      </div>
+                      <div className="verification-ensures-safe-and-wrapper">
+                        <div className="verification-ensures-safe2">Verification ensures safe and legitimate transactions.</div>
+                      </div>
+                    </div>
+                    <div className="icon-holders">
+                      <img src="/images/lock_icon2.svg" alt="Withdrawal" />
+                    </div>
+                  </div>
+                  <div className="container26">
+                    <img src="/images/p2p-icon2.svg" alt="Withdrawal" />
+                    <div className="p2p-group">
+                      <div className="withdrawal2">P2P</div>
+                      <div className="locked-to-prevent3">Requires verification for secure transactions.</div>
+                    </div>
+                    <div className="icon-holders">
+                      <img src="/images/lock_icon2.svg" alt="Withdrawal" />
+                    </div>
                   </div>
                 </div>
-                <div className="icon-holders">
-                  <img src="/images/lock_icon2.svg" alt="Withdrawal" />
-                </div>
-              </div>
-              <div className="container26">
-                <img src="/images/p2p-icon2.svg" alt="Withdrawal" />
-                <div className="p2p-group">
-                  <div className="withdrawal2">P2P</div>
-                  <div className="locked-to-prevent3">Requires verification for secure transactions.</div>
-                </div>
-                <div className="icon-holders">
-                  <img src="/images/lock_icon2.svg" alt="Withdrawal" />
-                </div>
-              </div>
-            </div>
-          </section>
+              </section>
+            </>
+          )}
         </div>
         <FaqBlockCenter />
       </div>
@@ -923,7 +952,7 @@ function ViewCenter({ onVerify, isVerifying }: { onVerify: () => void; isVerifyi
 }
 
 export function KycVerificationNew() {
-  const [searchParams] = useSearchParams();
+  const [searchParams, setSearchParams] = useSearchParams();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const { user } = useAuth();
@@ -931,6 +960,7 @@ export function KycVerificationNew() {
   const { data: kycData, isLoading } = useKycStatus();
   const { mutateAsync: startKyc, isPending: isStarting } = useStartKyc();
   const [pendingVerifyUrl, setPendingVerifyUrl] = useState('');
+  const autostartFiredRef = useRef(false);
 
   // When Didit redirects back with ?session_id=, force a fresh status fetch
   useEffect(() => {
@@ -970,6 +1000,26 @@ export function KycVerificationNew() {
   const effectiveStatus = kycData?.status ?? user?.kycStatus;
   const view = useMemo(() => resolveKycView(effectiveStatus), [effectiveStatus]);
 
+  const handleVerificationDone = useCallback(() => {
+    setPendingVerifyUrl('');
+    queryClient.invalidateQueries({ queryKey: ['kyc', 'status'] });
+  }, [queryClient]);
+
+  // Autostart: when the signup flow lands here with ?autostart=1, kick off the
+  // Didit session immediately so the user sees the iframe without an extra
+  // click. Fires once per mount; the param is then cleared from the URL.
+  useEffect(() => {
+    if (autostartFiredRef.current) return;
+    if (searchParams.get('autostart') !== '1') return;
+    if (view !== 'center') return;
+    if (isStarting || pendingVerifyUrl) return;
+    autostartFiredRef.current = true;
+    const next = new URLSearchParams(searchParams);
+    next.delete('autostart');
+    setSearchParams(next, { replace: true });
+    handleVerify();
+  }, [searchParams, setSearchParams, view, isStarting, pendingVerifyUrl, handleVerify]);
+
   if (isLoading) {
     return (
       <div className="dashboard_right kyc-page">
@@ -982,11 +1032,6 @@ export function KycVerificationNew() {
 
   return (
     <div className={`dashboard_right kyc-page${view === "failed" || view === "pending" ? " kyc-failed" : ""}${view === "center" ? " kyc-1" : ""}`}>
-      <KycVerifyWarningModal
-        isOpen={!!pendingVerifyUrl}
-        onContinue={() => { window.location.href = pendingVerifyUrl; }}
-        onLater={() => setPendingVerifyUrl('')}
-      />
       <main className="navigation-group">
         {view === "complete" && <ViewComplete navigate={navigate} />}
         {view === "failed" && (
@@ -998,7 +1043,14 @@ export function KycVerificationNew() {
           />
         )}
         {view === "pending" && <ViewPending displayName={displayName} />}
-        {view === "center" && <ViewCenter onVerify={handleVerify} isVerifying={isStarting} />}
+        {view === "center" && (
+          <ViewCenter
+            onVerify={handleVerify}
+            isVerifying={isStarting}
+            pendingVerifyUrl={pendingVerifyUrl}
+            onVerificationDone={handleVerificationDone}
+          />
+        )}
       </main>
     </div>
   );

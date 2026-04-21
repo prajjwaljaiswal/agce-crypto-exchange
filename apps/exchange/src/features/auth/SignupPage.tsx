@@ -4,11 +4,9 @@ import { useMutation } from '@tanstack/react-query'
 import toast from 'react-hot-toast'
 import { useInstanceConfig } from '@agce/hooks'
 import { mapInstanceToJurisdiction } from '@agce/config'
-import { useAuth } from '../../providers/index.js'
 import { authApi } from '../../lib/auth-api.js'
-import { kycApi } from '../../lib/kyc-api.js'
+import { tokenStore } from '../../lib/tokenStore.js'
 import { formatApiError, isApiErrorWithStatus } from '../../lib/errors.js'
-import { KycVerifyWarningModal } from '../user-profile/pages/kyc/modals/KycVerifyWarningModal.js'
 import { SocialLoginButtons } from './SocialLoginButtons.js'
 import { CountryCodeSelect } from './CountryCodeSelect.js'
 import './signup-wizard.css'
@@ -19,7 +17,6 @@ type AccountTab = 'email' | 'phone'
 
 export function SignupPage() {
   const navigate = useNavigate()
-  const { login } = useAuth()
   const [params] = useSearchParams()
   const instance = useInstanceConfig()
 
@@ -28,15 +25,12 @@ export function SignupPage() {
 
   const [accountTab, setAccountTab] = useState<AccountTab>('email')
   const [wizardStep, setWizardStep] = useState(1)
-  const [pendingVerifyUrl, setPendingVerifyUrl] = useState('')
   const [referralOpen, setReferralOpen] = useState(!!invitationFromUrl)
   const [signId, setSignId] = useState(emailFromUrl)
   const [password, setPassword] = useState('')
   const [confirmPassword, setConfirmPassword] = useState('')
   const [showConfirmPassword, setShowConfirmPassword] = useState(false)
   const [countryCode, setCountryCode] = useState('+91')
-  const [firstName, setFirstName] = useState('')
-  const [lastName, setLastName] = useState('')
   const [invitation, setInvitation] = useState(invitationFromUrl)
   const [showPassword, setShowPassword] = useState(false)
   const [registeredBy, setRegisteredBy] = useState('')
@@ -107,17 +101,17 @@ export function SignupPage() {
     return () => window.clearTimeout(id)
   }, [wizardStep, accountTab])
 
-  // Auto-focus password input on step 2
+  // Auto-focus first OTP cell on step 2
   useEffect(() => {
     if (wizardStep !== 2) return
-    const id = window.setTimeout(() => passwordInputRef.current?.focus(), 120)
+    const id = window.setTimeout(() => otpInputRefs.current[0]?.focus(), 120)
     return () => window.clearTimeout(id)
   }, [wizardStep])
 
-  // Auto-focus first OTP cell on step 3
+  // Auto-focus password input on step 3
   useEffect(() => {
     if (wizardStep !== 3) return
-    const id = window.setTimeout(() => otpInputRefs.current[0]?.focus(), 120)
+    const id = window.setTimeout(() => passwordInputRef.current?.focus(), 120)
     return () => window.clearTimeout(id)
   }, [wizardStep])
 
@@ -134,18 +128,18 @@ export function SignupPage() {
     setOtpTimer(0)
     setOtpSingle('')
     setReferralOpen(!!invitationFromUrl)
-    setFirstName('')
-    setLastName('')
   }
 
   const showError = (msg: string) => toast.error(msg)
   const showSuccess = (msg: string) => toast.success(msg)
 
-  // Step 1: check the identifier is available before advancing.
+  // Signup flow: checkIdentifier → sendOtp → verifyOtp → register.
+  // Step 1 (identifier) checks availability and sends the OTP.
+  // Step 2 (OTP entry) verifies the code.
+  // Step 3 (password) registers the account.
   const checkIdentifierMutation = useMutation({
     mutationFn: (identifier: string) =>
       authApi.checkIdentifier({ identifier, purpose: 'SIGNUP' }),
-    onSuccess: () => setWizardStep(2),
     onError: (error) => {
       if (isApiErrorWithStatus(error, 409)) {
         showError('This email/phone is already registered. Please log in instead.')
@@ -155,9 +149,6 @@ export function SignupPage() {
     },
   })
 
-  // Signup flow: sendOtp → verifyOtp → register.
-  // Step 2 (password confirm) sends the OTP and advances to step 3.
-  // Step 3 (OTP entry) verifies the code and *then* calls register.
   const sendSignupOtpMutation = useMutation({
     mutationFn: (identifier: string) =>
       authApi.sendOtp({ identifier, type: 'SIGNUP' }),
@@ -166,31 +157,36 @@ export function SignupPage() {
       setRegisteredBy(accountTab === 'email' ? 'Email' : 'Mobile')
       setOtpSingle('')
       setOtpTimer(60)
-      setWizardStep(3)
+      setWizardStep(2)
     },
     onError: (error) => showError(formatApiError(error, 'Could not send verification code.')),
   })
 
-  const verifyAndRegisterMutation = useMutation({
-    mutationFn: async (otp: string) => {
-      await authApi.verifyOtp({
+  const verifySignupOtpMutation = useMutation({
+    mutationFn: (otp: string) =>
+      authApi.verifyOtp({
         identifier: pendingIdentifier,
         otp,
         purpose: 'SIGNUP',
-      })
-      return authApi.register({
+      }),
+    onSuccess: () => setWizardStep(3),
+    onError: (error) => showError(formatApiError(error, 'Could not verify code.')),
+  })
+
+  const registerSignupMutation = useMutation({
+    mutationFn: () =>
+      authApi.register({
         identifier: pendingIdentifier,
         password,
         jurisdiction: mapInstanceToJurisdiction(instance.id),
-        firstName: firstName.trim(),
-        lastName: lastName.trim(),
-      })
-    },
+      }),
     onSuccess: (response) => {
-      login(
-        { accessToken: response.accessToken, refreshToken: response.refreshToken },
-        { id: response.userId, userId: response.user.userId, identifier: pendingIdentifier },
-      )
+      // Persist tokens so the next page load (hard-nav to /user_profile/kyc)
+      // re-initialises AuthProvider with an authenticated session.
+      tokenStore.set({
+        accessToken: response.accessToken,
+        refreshToken: response.refreshToken,
+      })
       setWizardStep(4)
     },
     onError: (error) => showError(formatApiError(error, 'Could not complete signup.')),
@@ -207,37 +203,16 @@ export function SignupPage() {
     onError: (error) => showError(formatApiError(error, 'Could not resend code.')),
   })
 
-  const startKycMutation = useMutation({
-    mutationFn: () => {
-      const isEmail = pendingIdentifier.includes('@')
-      const first = firstName.trim()
-      const last = lastName.trim()
-      return kycApi.startSession({
-        jurisdiction: mapInstanceToJurisdiction(instance.id),
-        ...(isEmail
-          ? { email: pendingIdentifier }
-          : pendingIdentifier.startsWith('+')
-            ? { phone: pendingIdentifier }
-            : {}),
-        ...(first ? { firstName: first } : {}),
-        ...(last ? { lastName: last } : {}),
-      })
-    },
-    onSuccess: (session) => {
-      setPendingVerifyUrl(session.diditUrl)
-    },
-    onError: (error) => showError(formatApiError(error, 'Could not start verification. Please try again.')),
-  })
+  const handleVerifyNowClick = () => {
+    // Hard navigate so <AuthProvider> re-initialises from the tokens we already
+    // wrote to tokenStore on register success. An in-SPA navigate + login()
+    // races with <RequireGuest>, which can redirect to /user_profile/dashboard
+    // before the KYC URL takes effect.
+    window.location.href = '/user_profile/kyc?autostart=1'
+  }
 
   /* ── Step 1: validate email / phone → checkIdentifier → go to step 2 ── */
   const step1Next = () => {
-    const first = firstName.trim()
-    const last = lastName.trim()
-    if (!first) { showError('Please enter your first name'); return }
-    if (!last) { showError('Please enter your last name'); return }
-    if (first !== firstName) setFirstName(first)
-    if (last !== lastName) setLastName(last)
-
     let identifier: string
     if (accountTab === 'email') {
       const email = signId.trim()
@@ -257,10 +232,13 @@ export function SignupPage() {
       if (digits !== signId) setSignId(digits)
       identifier = `${countryCode}${digits}`
     }
-    checkIdentifierMutation.mutate(identifier)
+    setPendingIdentifier(identifier)
+    checkIdentifierMutation.mutate(identifier, {
+      onSuccess: () => sendSignupOtpMutation.mutate(identifier),
+    })
   }
 
-  /* ── Step 2: validate password → stub register → go to step 3 ── */
+  /* ── Step 3: validate password → register → go to step 4 ── */
   const validatePasswordStep = (): boolean => {
     if (!password) { showError('Please enter your password'); return false }
     if (!notAllNumbers) { showError('Password cannot be only numbers.'); return false }
@@ -283,20 +261,18 @@ export function SignupPage() {
 
   const submitPasswordAndRegister = () => {
     if (!validatePasswordStep()) return
-    const identifier =
-      accountTab === 'email' ? signId.trim() : `${countryCode}${signId.replace(/\D/g, '')}`
-    setPendingIdentifier(identifier)
-    sendSignupOtpMutation.mutate(identifier)
+    if (!pendingIdentifier) { showError('Session expired — please restart signup.'); return }
+    registerSignupMutation.mutate()
   }
 
-  /* ── Step 3: OTP ── */
+  /* ── Step 2: OTP ── */
   const getOtpDigitsStr = () => otpSingle.replace(/\D/g, '').slice(0, 6)
 
   const handleOtpSubmit = () => {
     const code = getOtpDigitsStr()
     if (code.length < 6) { showError('Please enter the 6-digit code'); return }
     if (!pendingIdentifier) { showError('Session expired — please restart signup.'); return }
-    verifyAndRegisterMutation.mutate(code)
+    verifySignupOtpMutation.mutate(code)
   }
 
   const handleResendOtp = () => {
@@ -361,7 +337,7 @@ export function SignupPage() {
   const goBackFromPasswordStep = () => setWizardStep(1)
 
   const goBackFromVerificationStep = () => {
-    setWizardStep(2)
+    setWizardStep(1)
     setRegisteredBy('')
     setOtpSingle('')
     setOtpTimer(0)
@@ -387,11 +363,11 @@ export function SignupPage() {
     wizardStep === 1
       ? 'Create Account'
       : wizardStep === 2
-        ? 'Set your password'
+        ? accountTab === 'email'
+          ? 'Verify your email'
+          : 'Verify your phone'
         : wizardStep === 3
-          ? accountTab === 'email'
-            ? 'Verify your email'
-            : 'Verify your phone'
+          ? 'Set your password'
           : ''
 
   const otpDigitsDisplay = getOtpDigitsStr()
@@ -456,28 +432,6 @@ export function SignupPage() {
                     {wizardStep === 1 && (
                       <form onSubmit={(e) => { e.preventDefault(); step1Next() }} noValidate>
                         <div className="row">
-                          <div className="col-sm-12 input_block">
-                            <div className="signup-wizard-name-row">
-                              <input
-                                className="input_filed"
-                                type="text"
-                                placeholder="First name"
-                                value={firstName}
-                                onChange={(e) => setFirstName(e.target.value)}
-                                onBlur={(e) => setFirstName(e.target.value.trim())}
-                                autoComplete="given-name"
-                              />
-                              <input
-                                className="input_filed"
-                                type="text"
-                                placeholder="Last name"
-                                value={lastName}
-                                onChange={(e) => setLastName(e.target.value)}
-                                onBlur={(e) => setLastName(e.target.value.trim())}
-                                autoComplete="family-name"
-                              />
-                            </div>
-                          </div>
                           {accountTab === 'email' ? (
                             <div className="col-sm-12 input_block">
                               <div className="email_code">
@@ -546,9 +500,13 @@ export function SignupPage() {
                             <button
                               className="next_btn"
                               type="submit"
-                              disabled={checkIdentifierMutation.isPending}
+                              disabled={checkIdentifierMutation.isPending || sendSignupOtpMutation.isPending}
                             >
-                              {checkIdentifierMutation.isPending ? 'Checking…' : 'Next'}
+                              {checkIdentifierMutation.isPending
+                                ? 'Checking…'
+                                : sendSignupOtpMutation.isPending
+                                  ? 'Sending code…'
+                                  : 'Next'}
                             </button>
                           </div>
 
@@ -569,8 +527,8 @@ export function SignupPage() {
                       </form>
                     )}
 
-                    {/* ── Step 2: password ── */}
-                    {wizardStep === 2 && (
+                    {/* ── Step 3: password ── */}
+                    {wizardStep === 3 && (
                       <form
                         onSubmit={(e) => { e.preventDefault(); submitPasswordAndRegister() }}
                         noValidate
@@ -662,8 +620,8 @@ export function SignupPage() {
                           <div className="col-sm-12 login_btn">
                             <input
                               type="submit"
-                              value={sendSignupOtpMutation.isPending ? 'Sending code…' : 'Confirm'}
-                              disabled={sendSignupOtpMutation.isPending}
+                              value={registerSignupMutation.isPending ? 'Creating account…' : 'Confirm'}
+                              disabled={registerSignupMutation.isPending}
                             />
                           </div>
                           <div className="col-sm-12">
@@ -679,8 +637,8 @@ export function SignupPage() {
                       </form>
                     )}
 
-                    {/* ── Step 3: OTP verification ── */}
-                    {wizardStep === 3 && (
+                    {/* ── Step 2: OTP verification ── */}
+                    {wizardStep === 2 && (
                       <form
                         onSubmit={(e) => { e.preventDefault(); handleOtpSubmit() }}
                         noValidate
@@ -757,9 +715,9 @@ export function SignupPage() {
                             <button
                               className="next_btn"
                               type="submit"
-                              disabled={verifyAndRegisterMutation.isPending}
+                              disabled={verifySignupOtpMutation.isPending}
                             >
-                              {verifyAndRegisterMutation.isPending ? 'Creating account…' : 'Next'}
+                              {verifySignupOtpMutation.isPending ? 'Verifying…' : 'Next'}
                             </button>
                           </div>
                           <div
@@ -789,12 +747,6 @@ export function SignupPage() {
                     )}
 
                     {/* ── Step 4: welcome / verify identity ── */}
-                    <KycVerifyWarningModal
-                      isOpen={!!pendingVerifyUrl}
-                      onContinue={() => { window.location.href = pendingVerifyUrl }}
-                      onLater={() => setPendingVerifyUrl('')}
-                    />
-
                     {wizardStep === 4 && (
                       <div className="row">
                         <div className="col-sm-12 input_block text-center">
@@ -861,10 +813,9 @@ export function SignupPage() {
                           <button
                             type="button"
                             className="next_btn"
-                            onClick={() => startKycMutation.mutate()}
-                            disabled={startKycMutation.isPending}
+                            onClick={handleVerifyNowClick}
                           >
-                            {startKycMutation.isPending ? 'Starting…' : 'Verify Now'}
+                            Verify Now
                           </button>
                         </div>
                         <div className="col-sm-12">
