@@ -3,6 +3,18 @@ import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { useAuth } from '../../providers/index.js'
 import { useTheme } from '../../providers/ThemeProvider.js'
 import { LogoutConfirmModal } from '../../features/user-profile/components/LogoutConfirmModal.js'
+import { useEstimatedBalance } from '../../features/user-profile/hooks/useEstimatedBalance.js'
+
+function formatBalance(raw: string | undefined, maxDecimals = 8): string {
+  if (!raw) return '0.00000000'
+  const n = Number(raw)
+  if (!Number.isFinite(n)) return '0.00000000'
+  const decimals = Math.abs(n) >= 1 ? Math.min(maxDecimals, 4) : maxDecimals
+  return n.toLocaleString(undefined, {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: decimals,
+  })
+}
 import {
   BUY_CRYPTO_SUBMENU_ITEMS,
   TRADE_SUBMENU_ITEMS,
@@ -25,6 +37,11 @@ export function UserHeader() {
 
   const { theme, toggleTheme } = useTheme()
   const isLightTheme = theme === 'light'
+
+  const { data: estimated } = useEstimatedBalance()
+  const preferredCurrency = estimated?.preferredCurrency ?? 'USDT'
+  const totalUsd = formatBalance(estimated?.totalValueInUSD)
+  const totalPreferred = formatBalance(estimated?.totalValue)
 
   const [isOpen, setIsOpen] = useState(false)
   const [openDropdown, setOpenDropdown] = useState<DropdownKey>(null)
@@ -554,8 +571,8 @@ export function UserHeader() {
                           )}
                         </h3>
                         <ul className="wallet_price_list">
-                          <li>{showBalance ? '0.00000000' : '*********'} USD</li>
-                          <li>≈ {showBalance ? '0.00000000' : '*********'} BNB</li>
+                          <li>{showBalance ? totalUsd : '*********'} USD</li>
+                          <li>≈ {showBalance ? totalPreferred : '*********'} {preferredCurrency}</li>
                         </ul>
                         <div className="wallet_btn_small">
                         <Link to="/asset_management/deposit">Deposit<svg xmlns="http://www.w3.org/2000/svg" width="20" height="18" viewBox="0 0 20 18" fill="none">
