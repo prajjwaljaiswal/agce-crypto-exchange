@@ -1,4 +1,5 @@
 import { useEffect } from "react";
+import { useQueryClient } from "@tanstack/react-query";
 import { useWalletsStore } from "../stores/walletsStore.js";
 
 /**
@@ -29,6 +30,8 @@ export function useUserBalanceSocket(
     getSocket: () => any,
     isConnected: boolean,
 ) {
+    const queryClient = useQueryClient();
+
     useEffect(() => {
         const socket = getSocket();
         if (!socket || !isConnected) return undefined;
@@ -41,7 +44,8 @@ export function useUserBalanceSocket(
 
             const store = useWalletsStore.getState();
 
-            // 1. Update per-active-pair balances if applicable.
+            // 1. Update per-active-pair FREE balance immediately (order form
+            //    reads these for Available/Max).
             if (asset === String(SelectedCoin?.quote_currency ?? "").toUpperCase()) {
                 store.setBuyCoinBal(after);
             }
@@ -49,13 +53,11 @@ export function useUserBalanceSocket(
                 store.setSellCoinBal(after);
             }
 
-            // 2. Update the wallet list (AssetsPanel) if this asset is tracked.
-            const next = store.spotWallets.map((w) =>
-                w.assetCode?.toUpperCase() === asset
-                    ? { ...w, balance: after }
-                    : w,
-            );
-            store.setSpotWallets(next);
+            // 2. Invalidate the shared estimated-balance cache so the AssetsPanel
+            //    list AND the Asset Overview page both pick up the authoritative
+            //    { free, locked, total } from the server. Avoids hand-math that
+            //    drifts when locked changes (e.g. after place/cancel).
+            queryClient.invalidateQueries({ queryKey: ["wallet", "estimated-balance"] });
         };
 
         socket.on("user:balance:update", handle);
@@ -67,5 +69,6 @@ export function useUserBalanceSocket(
         SelectedCoin?.quote_currency,
         getSocket,
         isConnected,
+        queryClient,
     ]);
 }

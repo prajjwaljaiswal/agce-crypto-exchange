@@ -5,7 +5,12 @@ export interface SpotWallet {
     short_name: string;
     full_name: string;
     icon_path: string;
+    /** Total = free + locked. Displayed as "Balance" in the Assets panel. */
     balance: number;
+    /** Free (unlocked) portion — available for new orders. */
+    free: number;
+    /** Held in open orders. */
+    locked: number;
     decimals: number;
     category: string;
     isActive: boolean;

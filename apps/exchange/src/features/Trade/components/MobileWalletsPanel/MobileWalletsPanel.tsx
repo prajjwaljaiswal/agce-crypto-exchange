@@ -51,7 +51,7 @@ export function MobileWalletsPanel({ showTab, token, spotWallets, walletsLoading
                                     <tbody>
                                         {spotWallets?.length > 0 ? (
                                             spotWallets.map((wallet, index) => (
-                                                <tr key={wallet?._id || index}>
+                                                <tr key={wallet?.assetCode || index}>
                                                     <td>
                                                         <div className="d-flex align-items-center">
                                                             <img
@@ -67,6 +67,12 @@ export function MobileWalletsPanel({ showTab, token, spotWallets, walletsLoading
                                                     </td>
                                                     <td className="text-end">
                                                         {parseFloat((wallet?.balance || 0).toFixed(8))}
+                                                        <span className="assets_panel_locked d-block">
+                                                            Avail: {parseFloat((wallet?.free || 0).toFixed(8))}
+                                                            {wallet?.locked > 0 && (
+                                                                <> · In-Order: {parseFloat((wallet.locked || 0).toFixed(8))}</>
+                                                            )}
+                                                        </span>
                                                     </td>
                                                 </tr>
                                             ))

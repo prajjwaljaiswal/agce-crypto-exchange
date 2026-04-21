@@ -1,4 +1,4 @@
-import { useContext, useEffect, useRef } from "react";
+import { useCallback, useContext, useEffect, useRef } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { alertErrorMessage, alertSuccessMessage } from "./CustomAlertMessage";
 import TVChartContainer from "./Libraries/TVChartContainer/index.jsx";
@@ -287,6 +287,13 @@ const Trade = () => {
     const { refreshPairBalance } = usePairBalance(SelectedCoin, showBuySellTab);
     useEffect(() => { refreshPairBalanceRef.current = refreshPairBalance; }, [refreshPairBalance]);
 
+    // Combined refresh for the Assets panel button — re-fetches the wallet list
+    // AND the active pair's quote/base balances shown at the top of the panel.
+    const refreshAssets = useCallback(() => {
+        fetchSpotWallets();
+        refreshPairBalance();
+    }, [fetchSpotWallets, refreshPairBalance]);
+
     // Reset orderbook state when the user switches pairs.
     const resetOrderbook = () => {
         setSellOrders([]);
@@ -512,7 +519,7 @@ const Trade = () => {
                                     token={token}
                                     spotWallets={spotWallets}
                                     walletsLoading={walletsLoading}
-                                    onRefresh={fetchSpotWallets}
+                                    onRefresh={refreshAssets}
                                 />
 
                                 <div className="col-lg-6">
@@ -604,7 +611,7 @@ const Trade = () => {
                                 token={token}
                                 spotWallets={spotWallets}
                                 walletsLoading={walletsLoading}
-                                onRefresh={fetchSpotWallets}
+                                onRefresh={refreshAssets}
                             />
                         </div>
 

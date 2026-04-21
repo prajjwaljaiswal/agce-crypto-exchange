@@ -76,7 +76,7 @@ export function AssetsPanel({
 
                 <div className="assets_balance_rows">
                     <div className="assets_balance_row">
-                        <span className="assets_balance_label">{SelectedCoin?.quote_currency || "USDT"} Balance</span>
+                        <span className="assets_balance_label">{SelectedCoin?.quote_currency || "USDT"} Available</span>
                         <span className="assets_balance_val">
                             {token
                                 ? `${BuyCoinBal !== undefined && BuyCoinBal !== null ? Number(BuyCoinBal).toFixed(8).replace(/\.?0+$/, "") : "0"} ${SelectedCoin?.quote_currency || "USDT"}`
@@ -84,7 +84,7 @@ export function AssetsPanel({
                         </span>
                     </div>
                     <div className="assets_balance_row">
-                        <span className="assets_balance_label">{SelectedCoin?.base_currency || "BTC"} Balance</span>
+                        <span className="assets_balance_label">{SelectedCoin?.base_currency || "BTC"} Available</span>
                         <span className="assets_balance_val">
                             {token
                                 ? `${SellCoinBal !== undefined && SellCoinBal !== null ? Number(SellCoinBal).toFixed(8).replace(/\.?0+$/, "") : "0"} ${SelectedCoin?.base_currency || "BTC"}`
@@ -129,12 +129,12 @@ export function AssetsPanel({
                         <>
                             <div className="assets_panel_list_head">
                                 <span>Asset</span>
-                                <span>Balance</span>
+                                <span className="text-end">Total / Available</span>
                             </div>
                             <ul className="assets_panel_asset_rows">
                                 {spotWallets?.length > 0 ? (
                                     spotWallets.map((wallet, index) => (
-                                        <li key={wallet?._id || index} className="assets_panel_asset_row">
+                                        <li key={wallet?.assetCode || index} className="assets_panel_asset_row">
                                             <div className="assets_panel_asset_left">
                                                 <img
                                                     src={wallet?.icon_path}
@@ -149,8 +149,14 @@ export function AssetsPanel({
                                                     <span className="assets_panel_full">{wallet?.full_name || wallet?.short_name}</span>
                                                 </div>
                                             </div>
-                                            <span className="assets_panel_bal">
+                                            <span className="assets_panel_bal text-end">
                                                 {parseFloat((wallet?.balance || 0).toFixed(8))}
+                                                <span className="assets_panel_locked d-block">
+                                                    Avail: {parseFloat((wallet?.free || 0).toFixed(8))}
+                                                    {wallet?.locked > 0 && (
+                                                        <> · In-Order: {parseFloat((wallet.locked || 0).toFixed(8))}</>
+                                                    )}
+                                                </span>
                                             </span>
                                         </li>
                                     ))
