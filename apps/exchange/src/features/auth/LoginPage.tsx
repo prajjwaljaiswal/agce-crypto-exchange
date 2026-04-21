@@ -114,21 +114,11 @@ export function LoginPage() {
         handleLoginSuccess(response)
         return
       }
-      // 2FA branch. The backend's `twoFactorRequired` challenge does not tell
-      // us which method is active, so we surface both: start on email (the
-      // default OTP the backend dispatches) and let the user switch to the
-      // authenticator via the method modal if they have TOTP enabled.
-      const preferGoogleAuth =
-        response.googleAuthenticatorEnabled === true ||
-        response.isGoogleAuthenticatorEnabled === true
+      // 2FA branch. The backend's `twoFactorRequired` challenge indicates MFA
+      // is enabled for this account, which on our platform means Google
+      // Authenticator. Always prompt for a TOTP passcode here — the email-OTP
+      // path is reserved for the separate forgot-password / verify-email flows.
       const methods: AuthMethod[] = [
-        {
-          type: 1,
-          label: 'Email',
-          icon: 'ri-mail-line',
-          description: 'Receive verification codes via email',
-          maskedValue: pendingIdentifier,
-        },
         {
           type: 2,
           label: 'Google Authenticator',
@@ -136,14 +126,13 @@ export function LoginPage() {
           description: 'Enter the 6-digit code from your authenticator app',
         },
       ]
-      const startMethod = preferGoogleAuth ? 2 : 1
       setAvailableMethods(methods)
-      setSelectedAuthMethod(startMethod)
-      setResendTimer(startMethod === 2 ? 0 : 60)
+      setSelectedAuthMethod(2)
+      setResendTimer(0)
       setOtpSingle('')
       setLoginPendingVerification(true)
       setWizardStep(2)
-      showSuccess(startMethod === 2 ? 'Enter your authenticator code.' : 'Verification code sent.')
+      showSuccess('Enter your authenticator code.')
     },
     onError: (error) => showError(formatApiError(error, 'Login failed.')),
   })

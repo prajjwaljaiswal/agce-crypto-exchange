@@ -1,6 +1,7 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useCoinListStore } from "../stores/coinListStore.js";
 import { assetsApi, pairsApi } from "../../../lib/matching-api.js";
+import { useFavorites } from "../../Market/useFavorites.js";
 
 export type CoinListApi = {
     search: string;
@@ -21,8 +22,10 @@ export function useCoinList(): CoinListApi {
         AllData, setAllData,
         CoinPairDetails, setCoinPairDetails,
         coinFilter, setcoinFilter,
-        favCoins, setfavCoins,
     } = useCoinListStore();
+
+    const { favorites, toggleFavorite } = useFavorites();
+    const favCoins = useMemo(() => Array.from(favorites), [favorites]);
 
     const [pairsLoading, setPairsLoading] = useState(false);
 
@@ -102,9 +105,7 @@ export function useCoinList(): CoinListApi {
     }, [CoinPairDetails, coinFilter]);
 
     const handleAddFav = (pairId: string) => {
-        setfavCoins((prev) =>
-            prev.includes(pairId) ? prev.filter((id) => id !== pairId) : [...prev, pairId]
-        );
+        toggleFavorite(pairId);
     };
 
     return {

@@ -105,8 +105,23 @@ export function CoinListPanel({
                     <tbody className="price_card_body">
                         {CoinPairDetails &&
                             CoinPairDetails.map((data, index) => {
-                                if (coinFilter === "FAV" && !favCoins.includes(data?._id)) return null;
-                                if (coinFilter !== "FAV" && (data?.quote_currency !== coinFilter && data?.base_currency !== coinFilter)) return null;
+                                const q = search.trim().toLowerCase();
+                                if (q) {
+                                    const haystack = [
+                                        data?.base_currency,
+                                        data?.quote_currency,
+                                        data?.symbol,
+                                        data?.base_currency_fullname,
+                                        `${data?.base_currency}/${data?.quote_currency}`,
+                                    ]
+                                        .filter(Boolean)
+                                        .join(" ")
+                                        .toLowerCase();
+                                    if (!haystack.includes(q)) return null;
+                                } else {
+                                    if (coinFilter === "FAV" && !favCoins.includes(data?._id)) return null;
+                                    if (coinFilter !== "FAV" && (data?.quote_currency !== coinFilter && data?.base_currency !== coinFilter)) return null;
+                                }
 
                                 const isActive =
                                     SelectedCoin?.base_currency === data?.base_currency &&

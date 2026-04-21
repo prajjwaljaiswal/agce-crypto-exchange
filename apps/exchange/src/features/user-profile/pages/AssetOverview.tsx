@@ -1,41 +1,31 @@
+import { useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { useInstanceConfig } from '@agce/hooks'
+import { useEstimatedBalance } from '../hooks/useEstimatedBalance.js'
+import { coinDisplayName, coinIconSrc } from '../../Market/marketFormat.js'
+import type { EstimatedBalanceAsset } from '../../../lib/matching-api.js'
 
-interface WalletRow {
-  coin: string
-  name: string
-  icon: string
-  available: string
-  inOrder: string
-  total: string
+const FALLBACK_ASSET_ICON = '/images/coin_icon.svg'
+
+function resolveIconUrl(iconPath: string | undefined, asset: string): string {
+  if (!iconPath) return coinIconSrc(asset)
+  if (/^https?:\/\//i.test(iconPath)) return iconPath
+  const env = import.meta.env as Record<string, string | undefined>
+  const base = (env.VITE_MATCHING_API_URL ?? env.VITE_AUTH_API_URL ?? '').replace(/\/+$/, '')
+  if (!base) return iconPath
+  return `${base}${iconPath.startsWith('/') ? iconPath : `/${iconPath}`}`
 }
 
-const CRYPTO_ROWS: WalletRow[] = [
-  {
-    coin: 'USDT',
-    name: 'Tether',
-    icon: '/images/dollaricon.svg',
-    available: '12580.45',
-    inOrder: '120',
-    total: '12700.45',
-  },
-  {
-    coin: 'BTC',
-    name: 'Bitcoin',
-    icon: '/images/option-img/btc_icon.svg',
-    available: '0.1245',
-    inOrder: '0',
-    total: '0.1245',
-  },
-  {
-    coin: 'ETH',
-    name: 'Ethereum',
-    icon: '/images/wallet_coins_balance.svg',
-    available: '1.8760',
-    inOrder: '0.25',
-    total: '2.1260',
-  },
-]
+function formatAmount(raw: string | undefined, maxDecimals = 8): string {
+  if (!raw) return '0'
+  const n = Number(raw)
+  if (!Number.isFinite(n)) return '0'
+  const decimals = Math.abs(n) >= 1 ? Math.min(maxDecimals, 4) : maxDecimals
+  return n.toLocaleString(undefined, {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: decimals,
+  })
+}
 
 const ACCOUNT_ROWS = [
   { account: 'Main Wallet', amount: '8,450.23 USDT', ratio: '58%' },
@@ -46,6 +36,33 @@ const ACCOUNT_ROWS = [
 
 export function AssetOverview() {
   const instance = useInstanceConfig()
+  const { data, isLoading, error } = useEstimatedBalance()
+  const [hidden, setHidden] = useState(false)
+  const [search, setSearch] = useState('')
+  const [hideZero, setHideZero] = useState(false)
+
+  const total = formatAmount(data?.totalValue)
+  const currency = data?.preferredCurrency ?? 'USDT'
+
+  const usdValue = useMemo<number | null>(() => {
+    const raw = data?.totalValueInUSD
+    if (!raw) return null
+    const n = Number(raw)
+    return Number.isFinite(n) ? n : null
+  }, [data?.totalValueInUSD])
+
+  const rows = useMemo<EstimatedBalanceAsset[]>(() => {
+    const list = data?.assets ?? []
+    const q = search.trim().toUpperCase()
+    return list.filter((a) => {
+      if (hideZero && Number(a.total) <= 0) return false
+      if (q && !a.asset.toUpperCase().includes(q)) return false
+      return true
+    })
+  }, [data?.assets, search, hideZero])
+
+  const displayTotal = hidden ? '••••••' : `${total} ${currency}`
+
   return (
     <div className="dashboard_right">
       <div className="row">
@@ -54,18 +71,40 @@ export function AssetOverview() {
             <div className="estimated_balance">
               <h6>
                 Estimated Balance
-                <button type="button">
-                  <i className="ri-eye-line" />
+                <button
+                  type="button"
+                  onClick={() => setHidden((v) => !v)}
+                  aria-label={hidden ? 'Show balance' : 'Hide balance'}
+                >
+                  <i className={hidden ? 'ri-eye-off-line' : 'ri-eye-line'} />
                 </button>
               </h6>
               <div className="wallet-header d-flex flex-wrap align-items-center justify-content-between">
                 <div>
-                  <div className="wallet-title">14566.12 USDT</div>
+                  <div className="wallet-title">
+                    {isLoading ? '—' : error ? 'Unavailable' : displayTotal}
+                  </div>
                   <div className="wallet-sub mt-1">
-                    ≈ 1202100.75 {instance.fiat.currency}
+                    ≈{' '}
+                    {hidden
+                      ? '••••••'
+                      : usdValue !== null
+                        ? `${formatAmount(String(usdValue))} USD`
+                        : '—'}
+                    {instance.fiat.currency &&
+                      instance.fiat.currency.toUpperCase() !== 'USD' && (
+                        <>
+                          {' '}/{' '}
+                          {hidden
+                            ? '••••••'
+                            : usdValue !== null
+                              ? `${formatAmount(String(usdValue))} ${instance.fiat.currency}`
+                              : '—'}
+                        </>
+                      )}
                     <Link
                       to="/asset_management/deposit"
-                      className="cursor-pointer"
+                      className="cursor-pointer ms-2"
                     >
                       Deposit crypto instantly with one-click{' '}
                       <i className="ri-arrow-right-s-line" />
@@ -116,10 +155,17 @@ export function AssetOverview() {
                         type="search"
                         className="custom_search"
                         placeholder="Search Crypto"
+                        value={search}
+                        onChange={(e) => setSearch(e.target.value)}
                       />
                     </div>
                     <div className="checkbox">
-                      <input type="checkbox" /> Hide 0 Balance
+                      <input
+                        type="checkbox"
+                        checked={hideZero}
+                        onChange={(e) => setHideZero(e.target.checked)}
+                      />{' '}
+                      Hide 0 Balance
                     </div>
                   </div>
                 </div>
@@ -134,46 +180,88 @@ export function AssetOverview() {
                             <th>Available Balance</th>
                             <th>In-Order Balance</th>
                             <th>Total Balance</th>
+                            <th>Value ({currency})</th>
+                            <th>Value (USD)</th>
                             <th className="right_td">Action</th>
                           </tr>
                         </thead>
                         <tbody>
-                          {CRYPTO_ROWS.map((row) => (
-                            <tr key={row.coin}>
-                              <td>
-                                <div className="td_first">
-                                  <div className="icon">
-                                    <img
-                                      src={row.icon}
-                                      height="30"
-                                      alt={row.coin}
-                                    />
-                                  </div>
-                                  <div className="price_heading">
-                                    {row.coin}
-                                    <br />
-                                    <span>{row.name}</span>
-                                  </div>
-                                </div>
-                              </td>
-                              <td>{row.available}</td>
-                              <td>{row.inOrder}</td>
-                              <td>{row.total}</td>
-                              <td className="right_td">
-                                <div className="d-flex gap-3 justify-content-end">
-                                  <Link to="/asset_management/deposit">
-                                    Deposit
-                                  </Link>
-                                  <Link to="/asset_management/withdraw">
-                                    Withdraw
-                                  </Link>
-                                  <Link to={`/trade/${row.coin}_USDT`}>
-                                    Trade
-                                  </Link>
-                                </div>
+                          {isLoading && (
+                            <tr>
+                              <td colSpan={7} style={{ textAlign: 'center' }}>
+                                Loading…
                               </td>
                             </tr>
-                          ))}
+                          )}
+                          {!isLoading && error && (
+                            <tr>
+                              <td colSpan={7} style={{ textAlign: 'center' }}>
+                                Could not load balances.
+                              </td>
+                            </tr>
+                          )}
+                          {!isLoading && !error && rows.length === 0 && (
+                            <tr>
+                              <td colSpan={7} style={{ textAlign: 'center' }}>
+                                No assets to show.
+                              </td>
+                            </tr>
+                          )}
+                          {!isLoading &&
+                            !error &&
+                            rows.map((row) => (
+                              <tr key={row.asset}>
+                                <td>
+                                  <div className="td_first">
+                                    <div className="icon">
+                                      <img
+                                        src={resolveIconUrl(row.iconPath, row.asset)}
+                                        height="30"
+                                        alt={row.asset}
+                                        onError={(e) => {
+                                          const img = e.currentTarget
+                                          img.onerror = null
+                                          img.src = FALLBACK_ASSET_ICON
+                                        }}
+                                      />
+                                    </div>
+                                    <div className="price_heading">
+                                      {row.asset}
+                                      <br />
+                                      <span>{coinDisplayName(row.asset)}</span>
+                                    </div>
+                                  </div>
+                                </td>
+                                <td>{formatAmount(row.free)}</td>
+                                <td>{formatAmount(row.locked)}</td>
+                                <td>{formatAmount(row.total)}</td>
+                                <td>
+                                  {hidden
+                                    ? '••••••'
+                                    : formatAmount(row.valueInPreferredCurrency)}
+                                </td>
+                                <td>
+                                  {hidden
+                                    ? '••••••'
+                                    : row.valueInUSD
+                                      ? formatAmount(row.valueInUSD)
+                                      : '—'}
+                                </td>
+                                <td className="right_td">
+                                  <div className="d-flex gap-3 justify-content-end">
+                                    <Link to="/asset_management/deposit">
+                                      Deposit
+                                    </Link>
+                                    <Link to="/asset_management/withdraw">
+                                      Withdraw
+                                    </Link>
+                                    <Link to={`/trade/${row.asset}_USDT`}>
+                                      Trade
+                                    </Link>
+                                  </div>
+                                </td>
+                              </tr>
+                            ))}
                         </tbody>
                       </table>
                     </div>

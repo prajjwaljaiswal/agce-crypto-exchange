@@ -1,18 +1,51 @@
+import { useState } from 'react'
 import { Link } from 'react-router-dom'
-import type { ProfileSnapshot } from '../types.js'
+import { useEstimatedBalance } from '../hooks/useEstimatedBalance.js'
 
-interface Props {
-  profile: ProfileSnapshot
+function formatAmount(raw: string | undefined, maxDecimals = 8): string {
+  if (!raw) return '0'
+  const n = Number(raw)
+  if (!Number.isFinite(n)) return '0'
+  const abs = Math.abs(n)
+  const decimals = abs >= 1 ? Math.min(maxDecimals, 4) : maxDecimals
+  return n.toLocaleString(undefined, {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: decimals,
+  })
 }
 
-export function WalletSnapshot({ profile }: Props) {
+export function WalletSnapshot() {
+  const { data, isLoading, error } = useEstimatedBalance()
+  const [hidden, setHidden] = useState(false)
+
+  const total = formatAmount(data?.totalValue)
+  const currency = data?.preferredCurrency ?? 'USDT'
+
+  const displayValue = isLoading
+    ? '—'
+    : error
+      ? 'Unavailable'
+      : hidden
+        ? '••••••'
+        : `${total} ${currency}`
+
   return (
     <div className="wallet_snapshot_bl">
       <div className="wallet_snapshot_bl_left">
         <span>WALLET SNAPSHOT</span>
         <p className="copycode">
-          {profile.walletBalanceUsd} USD {profile.walletBalanceBnb} BNB
-          <i className="ri-eye-off-line" />
+          {displayValue}
+          <i
+            className={hidden ? 'ri-eye-line' : 'ri-eye-off-line'}
+            role="button"
+            tabIndex={0}
+            onClick={() => setHidden((v) => !v)}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter' || e.key === ' ') setHidden((v) => !v)
+            }}
+            style={{ cursor: 'pointer' }}
+            aria-label={hidden ? 'Show balance' : 'Hide balance'}
+          />
         </p>
       </div>
 
@@ -23,17 +56,12 @@ export function WalletSnapshot({ profile }: Props) {
             Withdraw
           </button>
         </Link>
-         <Link to="/asset_management/deposit">
+        <Link to="/asset_management/deposit">
           <button type="button" className="">
             <i className="ri-arrow-right-down-line" />
             Deposit
           </button>
         </Link>
-        {/* <Link to="/asset_management/deposit">
-          <button type="button">
-            <i className="ri-arrow-right-down-line" /> Deposit
-          </button>
-        </Link> */}
       </div>
     </div>
   )

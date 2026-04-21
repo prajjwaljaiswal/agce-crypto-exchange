@@ -72,7 +72,7 @@ export function Dashboard() {
         <div className="dashboard_left_side">
           <div className="top_header_dash">
             <ProfileHeaderCard profile={profile} />
-            <WalletSnapshot profile={profile} />
+            <WalletSnapshot />
           </div>
 
           <NewcomerPerks steps={NEWCOMER_PERKS} />

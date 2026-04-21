@@ -330,6 +330,26 @@ export interface LedgerEntry {
   description?: string
 }
 
+export interface EstimatedBalanceAsset {
+  asset: string
+  /** Relative path from the backend (e.g. "/icons/btc.svg") — resolve against VITE_MATCHING_API_URL. */
+  iconPath?: string
+  free: string
+  locked: string
+  total: string
+  valueInPreferredCurrency: string
+  /** USD value as computed by the backend. */
+  valueInUSD?: string
+}
+
+export interface EstimatedBalanceResponse {
+  totalValue: string
+  /** Total portfolio value in USD, as computed by the backend. */
+  totalValueInUSD?: string
+  preferredCurrency: string
+  assets: EstimatedBalanceAsset[]
+}
+
 const WALLET = '/api/v1/wallet'
 
 export const walletApi = {
@@ -343,6 +363,10 @@ export const walletApi = {
 
   ledger(limit = 100, signal?: AbortSignal) {
     return request<LedgerEntry[]>(`${WALLET}/ledger`, { signal, query: { limit } })
+  },
+
+  estimatedBalance(signal?: AbortSignal) {
+    return request<EstimatedBalanceResponse>(`${WALLET}/estimated-balance`, { signal })
   },
 }
 
