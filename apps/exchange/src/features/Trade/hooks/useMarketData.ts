@@ -260,6 +260,26 @@ export function useMarketData(
             socket.emit('subscribe', { channel: 'local_ticker', symbol: localSymbol });
         }
 
+        // 1m kline → drives the mid-price row's green/red colour and
+        // ↑/↓ arrow. Close-vs-open of the CURRENT bar is what "is this
+        // candle green or red right now" maps to — same polarity the
+        // chart shows. Subscribing here keeps this hook self-contained;
+        // the chart/streaming module subscribes independently.
+        const klineInterval = '1m';
+        if (availability === 'GLOBAL') {
+            socket.emit('subscribe', {
+                channel: 'kline',
+                symbol: binanceSymbol,
+                interval: klineInterval,
+            });
+        } else {
+            socket.emit('subscribe', {
+                channel: 'local_kline',
+                symbol: localSymbol,
+                interval: klineInterval,
+            });
+        }
+
         setloader(false);
 
         let loggedTrade = false;
@@ -272,7 +292,10 @@ export function useMarketData(
             if (!loggedTrade) { console.log('[Trade] local_trade event sample:', e); loggedTrade = true; }
             const price = parseFloat(e.price ?? e.p);
             if (Number.isFinite(price)) {
-                setIsPricePositive(price >= buypriceRef.current);
+                // Polarity (green/red + arrow) is owned by the kline
+                // subscription below, not trade-tick updates, so the
+                // colour matches the in-progress 1m candle. We still
+                // update `buyprice` here for the mid-price row.
                 setbuyprice(price);
             }
             setRecentTrade((prev) => [
@@ -354,6 +377,10 @@ export function useMarketData(
             setIfPos(e.high ?? e.h ?? e.highPrice, setpriceHigh);
             setIfPos(e.low ?? e.l ?? e.lowPrice, setpriceLow);
             setIfFinite(e.volume ?? e.v ?? e.baseVolume, setvolume);
+            // Note: `isPricePositive` is NOT set here. It's driven
+            // exclusively by the current 1m bar's close-vs-open via the
+            // kline subscription below — that matches the green/red
+            // colour of the in-progress candle on the chart.
         };
 
         // LOCAL path — per-symbol event name emitted by market-data-service
@@ -383,15 +410,58 @@ export function useMarketData(
             socket.on(localTickerEvent, handleLocalTicker);
         }
 
+        // 1m kline handler. Fires on every tick update to the current
+        // bar (both LOCAL and GLOBAL paths); we only read open + close
+        // and set isPricePositive from their relationship. Binance
+        // wraps the candle under `k`; our local emitter uses the same
+        // shape — so a single unwrap works for both.
+        const localKlineEvent = `local:kline:${localSymbol}:${klineInterval}`;
+        let loggedKline = false;
+        const applyKlinePolarity = (frame: any) => {
+            const k = frame?.k ?? frame;
+            const open = parseFloat(k?.o ?? k?.open);
+            const close = parseFloat(k?.c ?? k?.close);
+            if (!Number.isFinite(open) || !Number.isFinite(close)) return;
+            if (!loggedKline) {
+                console.log('[Trade] kline polarity sample:', { open, close });
+                loggedKline = true;
+            }
+            setIsPricePositive(close >= open);
+        };
+        const handleLocalKline = (event: any) => applyKlinePolarity(event?.payload ?? event);
+        const handleBinanceKline = (envelope: any) => {
+            if (envelope?.channel !== 'kline') return;
+            if (envelope?.symbol && envelope.symbol !== binanceSymbol) return;
+            if (envelope?.interval && envelope.interval !== klineInterval) return;
+            applyKlinePolarity(envelope?.payload ?? envelope);
+        };
+        if (availability === 'GLOBAL') {
+            socket.on('data', handleBinanceKline);
+        } else {
+            socket.on(localKlineEvent, handleLocalKline);
+        }
+
         return () => {
             socket.emit('unsubscribe', { channel: 'local_trade', symbol: localSymbol });
             socket.emit('unsubscribe', { channel: 'local_depth', symbol: localSymbol });
             if (availability === 'GLOBAL') {
                 socket.emit('unsubscribe', { channel: 'ticker', symbol: binanceSymbol });
+                socket.emit('unsubscribe', {
+                    channel: 'kline',
+                    symbol: binanceSymbol,
+                    interval: klineInterval,
+                });
                 socket.off('data', handleBinanceData);
+                socket.off('data', handleBinanceKline);
             } else {
                 socket.emit('unsubscribe', { channel: 'local_ticker', symbol: localSymbol });
+                socket.emit('unsubscribe', {
+                    channel: 'local_kline',
+                    symbol: localSymbol,
+                    interval: klineInterval,
+                });
                 socket.off(localTickerEvent, handleLocalTicker);
+                socket.off(localKlineEvent, handleLocalKline);
             }
             socket.off(localTradeEvent, handleLocalTrade);
             socket.off(localDepthEvent, handleLocalDepth);

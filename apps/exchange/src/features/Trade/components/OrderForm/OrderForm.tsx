@@ -447,10 +447,10 @@ export function OrderForm({
                             {showSpotOrderFooter ? (
                                 <p className="trade_maker_taker_fees trade_maker_fees_split">
                                     <span className="trade_maker_fee_item">
-                                        Maker {SelectedCoin?.maker_fee ?? 0.2}%
+                                        Maker {SelectedCoin?.maker_fee ?? SelectedCoin?.makerFee ?? 0.2}%
                                     </span>
                                     <span className="trade_maker_fee_item">
-                                        Taker {SelectedCoin?.taker_fee ?? 0.2}%
+                                        Taker {SelectedCoin?.taker_fee ?? SelectedCoin?.takerFee ?? 0.2}%
                                     </span>
                                 </p>
                             ) : null}
@@ -731,10 +731,10 @@ export function OrderForm({
                             {showSpotOrderFooter ? (
                                 <p className="trade_maker_taker_fees trade_maker_fees_split">
                                     <span className="trade_maker_fee_item">
-                                        Maker {SelectedCoin?.maker_fee ?? 0.2}%
+                                        Maker {SelectedCoin?.maker_fee ?? SelectedCoin?.makerFee ?? 0.2}%
                                     </span>
                                     <span className="trade_maker_fee_item">
-                                        Taker {SelectedCoin?.taker_fee ?? 0.2}%
+                                        Taker {SelectedCoin?.taker_fee ?? SelectedCoin?.takerFee ?? 0.2}%
                                     </span>
                                 </p>
                             ) : null}

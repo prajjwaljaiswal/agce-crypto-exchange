@@ -145,6 +145,11 @@ export function useCoinList(): CoinListApi {
                         volume: 0,
                         maker_fee: makerFee,
                         taker_fee: takerFee,
+                        // Keep both casings so consumers reading either
+                        // `maker_fee` (legacy UI fields) or `makerFee`
+                        // (TradingPair backend shape) pick up a value.
+                        makerFee: makerFee,
+                        takerFee: takerFee,
                     };
                 });
 
