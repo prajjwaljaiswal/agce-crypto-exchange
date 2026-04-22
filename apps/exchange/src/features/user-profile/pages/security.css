@@ -218,14 +218,6 @@
   font-weight: 500;
 }
 
-.tf-sec-page__status-indicator {
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  background: #cbd5e1;
-  flex-shrink: 0;
-}
-
 .tf-sec-page__status-email {
   font-weight: 500;
   font-size: 14px;
@@ -276,28 +268,6 @@
 .tf-sec-page__btn:disabled {
   opacity: 0.65;
   cursor: not-allowed;
-}
-
-.tf-sec-page__btn--danger {
-  color: #b91c1c;
-  background: #fff;
-  border-color: #fecaca;
-}
-
-.tf-sec-page__btn--danger:hover:not(:disabled) {
-  background: #fef2f2;
-  border-color: #f87171;
-}
-
-.tf-sec-page__btn--dark {
-  color: #fff;
-  background: #1e293b;
-  border-color: #1e293b;
-}
-
-.tf-sec-page__btn--dark:hover:not(:disabled) {
-  background: #334155;
-  border-color: #334155;
 }
 
 @media (max-width: 720px) {
@@ -483,13 +453,6 @@ body.light_theme .tf-sec-page {
 .tf-sec-page__l2sv-verifybox-confirm:disabled {
   opacity: 0.45;
   cursor: not-allowed;
-}
-
-.tf-sec-page__l2sv-empty {
-  margin: 8px 0 16px;
-  font-size: 13px;
-  color: #8e939c;
-  line-height: 1.55;
 }
 
 .tf-sec-page__l2sv-list {
