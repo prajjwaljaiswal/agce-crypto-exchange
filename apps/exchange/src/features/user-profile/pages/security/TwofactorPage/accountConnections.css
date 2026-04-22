@@ -1,0 +1,618 @@
+/* Account Connections — scoped .acct-* */
+
+.acct-page {
+  width: 100%;
+  min-height: 100%;
+  padding: 35px 24px 48px;
+  max-width: 1220px;
+  margin: 0 auto;
+}
+
+.acct-page *,
+.acct-page *::before,
+.acct-page *::after {
+  box-sizing: border-box;
+}
+
+.acct-page__crumbs {
+  margin-bottom: 18px;
+}
+
+.acct-page__crumbList {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: #8e939c;
+  font-size: 15px;
+  font-weight: 500;
+}
+
+.acct-page__crumbItem--active {
+  color: #101828;
+  font-weight: 700;
+}
+
+.acct-page__crumbSep {
+  color: #8e939c;
+}
+
+.acct-page__crumbLink {
+  border: none;
+  background: transparent;
+  padding: 0;
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
+}
+
+.acct-page__crumbLink:hover {
+  color: #101828;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.acct-page__title {
+  margin: 0 0 12px;
+  font-size: 36px;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  color: #101828;
+}
+
+.acct-page__subtitle {
+  margin: -12px 0 22px;
+  font-size: 14px;
+  color: #8e939c;
+  font-weight: 500;
+  line-height: 1.5;
+}
+
+/* Connection cards */
+.acct-list {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding: 30px 40px;
+}
+
+.acct-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 18px 20px;
+  background: #f5f6f7;
+  border-radius: 12px;
+  border: 1px solid #eef2f6;
+}
+
+.acct-card__left {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  min-width: 0;
+}
+
+.acct-card__logo {
+  width: 26px;
+  padding: 4px;
+  height: 26px;
+  flex-shrink: 0;
+  background-color: #E9E9E9;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50px;
+}
+
+.acct-card__logo svg {
+  display: block;
+}
+
+.acct-card__body {
+  min-width: 0;
+}
+
+.acct-card__title {
+  font-size: 16px;
+  font-weight: 600;
+  color: #101828;
+  margin: 0 0 4px;
+}
+
+.acct-card__meta {
+  font-size: 12px;
+  font-weight: 500;
+  color: #6A7282;
+  margin: 0;
+}
+
+.acct-card__btn {
+  flex-shrink: 0;
+  height: 40px;
+  padding: 0 20px;
+  border-radius: 999px;
+  border: none;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.acct-card__btn--disconnect {
+  background: #e8eaed;
+  color: #101828;
+}
+
+.acct-card__btn--connect {
+  background: #d1aa67;
+  color: #101828;
+}
+
+/* Select unavailable */
+.acct-unavail {
+  max-width: 560px;
+  margin: 0 auto;
+}
+
+.acct-unavail__title {
+  margin: 0 0 10px;
+  font-size: 36px;
+  font-weight: 600;
+  color: #101828;
+  text-align: left;
+}
+
+.acct-unavail__sub {
+  margin: 0 0 22px;
+  font-size: 16px;
+  font-weight: 500;
+  color: #84888C;
+  text-align: left;
+  line-height: 1.5;
+}
+
+.acct-unavail__choice {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  padding: 16px 18px;
+  background: #f3f4f6;
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
+  cursor: pointer;
+  text-align: left;
+  margin-bottom: 16px;
+}
+
+.acct-unavail__choice.is-selected {
+  border-color: rgba(172, 138, 80, 0.45);
+}
+
+.acct-unavail__choiceLeft {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.acct-unavail__choiceIcon {
+  font-size: 22px;
+  color: #4a5565;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.acct-unavail__choiceTitle {
+  font-size: 14px;
+  font-weight: 700;
+  color: #101828;
+}
+
+.acct-unavail__choiceSub {
+  font-size: 12px;
+  color: #8e939c;
+  margin-top: 3px;
+}
+
+.acct-unavail__radio {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  border: 2px solid #d1d5db;
+  background: #fff;
+  flex-shrink: 0;
+}
+
+.acct-unavail__choice.is-selected .acct-unavail__radio {
+  border-color: #101828;
+  box-shadow: inset 0 0 0 2px #101828;
+}
+
+.acct-unavail__confirm {
+  width: 100%;
+  height: 50px;
+  border-radius: 999px;
+  border: none;
+  background: #a3a3a3;
+  margin-top: 10px;
+  color: #fff;
+  font-size: 15px;
+  font-weight: 500;
+  cursor: not-allowed;
+}
+
+.acct-unavail__confirm.is-enabled {
+  background: #2d2e32;
+  cursor: pointer;
+}
+
+.acct-unavail__how {
+  display: block;
+  width: 100%;
+  margin-top: 20px;
+  border: none;
+  background: transparent;
+  font-size: 16px;
+  font-weight: 600;
+  color: #ac8a50;
+  /* text-decoration: underline; */
+  text-underline-offset: 3px;
+  cursor: pointer;
+}
+
+/* Add Email */
+.acct-add {
+  max-width: 560px;
+  margin: 0 auto;
+}
+
+.acct-add__title {
+  margin: 0 0 10px;
+  font-size: 28px;
+  font-weight: 700;
+  color: #101828;
+}
+
+.acct-add__sub {
+  margin: 0 0 22px;
+  font-size: 14px;
+  color: #8e939c;
+  line-height: 1.5;
+}
+
+.acct-field {
+  margin-bottom: 18px;
+}
+
+.acct-label {
+  display: block;
+  font-size: 16px;
+  font-weight: 500;
+  color: #101828;
+  margin-bottom: 6px;
+}
+
+.acct-inputWrap {
+  position: relative;
+}
+
+.acct-input {
+  width: 100%;
+  height: 48px;
+  border-radius: 8px;
+  border: 1px solid #e5e7eb;
+  background: #ffffff;
+  padding: 0 14px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #101828;
+  outline: none;
+}
+
+.acct-input--code {
+  padding-right: 88px;
+}
+
+.acct-input::placeholder {
+  color: #9ca3af;
+}
+
+.acct-getCode {
+  position: absolute;
+  right: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  border: none;
+  background: transparent;
+  font-size: 12px;
+  font-weight: 700;
+  color: #ac8a50;
+  cursor: pointer;
+}
+
+.acct-add__submit {
+  width: 100%;
+  height: 52px;
+  margin-top: 8px;
+  border: none;
+  border-radius: 999px;
+  background: #a3a3a3;
+  color: #fff;
+  font-size: 15px;
+  font-weight: 700;
+  cursor: not-allowed;
+}
+
+.acct-add__submit.is-enabled {
+  background: #2d2e32;
+  cursor: pointer;
+}
+
+/* Modals */
+.acct-modalOverlay {
+  position: fixed;
+  inset: 0;
+  /* background: rgba(15, 23, 42, 0.25); */
+  backdrop-filter: blur(3px);
+  -webkit-backdrop-filter: blur(3px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  /* padding: 18px; */
+  z-index: 100000030;
+}
+
+.acct-emailModal {
+  width: 539px;
+  max-width: 92vw;
+  background: #fff;
+  border-radius: 14px;
+  border: 1px solid #E1E1E1;
+  box-shadow: 0 28px 60px rgba(15, 23, 42, 0.18);
+  padding: 22px 22px 0;
+  position: relative;
+  text-align: left;
+}
+
+.acct-emailModal__close {
+  position: absolute;
+  top: 14px;
+  right: 16px;
+  width: 34px;
+  height: 34px;
+  border: none;
+  background: transparent;
+  font-size: 22px;
+  line-height: 1;
+  cursor: pointer;
+  border-radius: 8px;
+  color: #111827;
+}
+
+.acct-emailModal__close:hover {
+  background: rgba(17, 24, 39, 0.06);
+}
+
+.acct-emailModal__title {
+  margin: 0 0 8px;
+  padding-right: 40px;
+  font-size: 24px;
+  font-weight: 600;
+  color: #101828;
+}
+
+.acct-emailModal__sub {
+  margin: 0 0 18px;
+  font-size: 16px;
+  line-height: 1.45;
+  font-weight: 500;
+  color: #6A7282;
+}
+
+.acct-emailModal__submit {
+  width: 100%;
+  height: 50px;
+  border: none;
+  border-radius: 999px;
+  background: #a3a3a3;
+  color: #fff;
+  font-size: 15px;
+  font-weight: 500;
+  cursor: not-allowed;
+  margin-top: 26px;
+}
+
+.acct-emailModal__submit.is-enabled {
+  background: #2d2e32;
+  cursor: pointer;
+}
+
+.acct-emailModal__link {
+  display: block;
+  width: 100%;
+  margin: 20px 0 20px;
+  border: none;
+  background: transparent;
+  text-align: center;
+  font-size: 15px;
+  font-weight: 500;
+  color: #ac8a50;
+  /* text-decoration: underline; */
+  text-underline-offset: 3px;
+  cursor: pointer;
+}
+
+.acct-emailModal__footer {
+  border-top: 1px solid #f4f4f4;
+  padding: 14px 0 16px;
+  margin: 0 -22px;
+  padding-left: 22px;
+  padding-right: 22px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  font-size: 14px;
+  color: #9ca3af;
+  font-weight: 500;
+}
+
+.acct-emailModal__footerIcon {
+  width: 18px;
+  height: 18px;
+  display: block;
+  object-fit: contain;
+  flex-shrink: 0;
+}
+
+/* Confirm reset modal */
+.acct-resetModal {
+  width: 628px;
+  max-width: 92vw;
+  background: #fff;
+  border-radius: 16px;
+  border: 1px solid #E1E1E1;
+  box-shadow: 0 28px 60px rgba(15, 23, 42, 0.18);
+  padding: 22px 24px 22px;
+  position: relative;
+  text-align: center;
+}
+
+.acct-resetModal__close {
+  position: absolute;
+  top: 12px;
+  right: 14px;
+  width: 34px;
+  height: 34px;
+  border: none;
+  background: transparent;
+  font-size: 22px;
+  cursor: pointer;
+  border-radius: 8px;
+}
+
+.acct-resetModal__close:hover {
+  background: rgba(17, 24, 39, 0.06);
+}
+
+.acct-resetModal__art {
+  margin: 8px auto 14px;
+  max-width: 200px;
+}
+
+.acct-resetModal__art img,
+.acct-resetModal__art svg {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+.acct-resetModal__title {
+  margin: 0 0 8px;
+  font-size: 24px;
+  font-weight: 600;
+  color: #101828;
+}
+
+.acct-resetModal__sub {
+  margin: 10px 0 16px;
+  font-size: 14px;
+  line-height: 1.5;
+  font-weight: 500;
+  color: #6A7282;
+  max-width: 420px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.acct-resetModal__box {
+  text-align: left;
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
+  padding: 18px;
+  background: #ffffff;
+  margin-bottom: 18px;
+  width: 505px;
+  margin: 0 auto;
+  margin-bottom: 24px;
+}
+
+.acct-resetModal__row {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  cursor: pointer;
+  margin: 0;
+}
+
+.acct-resetModal__row input {
+  margin-top: 2px;
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
+}
+
+.acct-resetModal__warnText {
+  font-size: 14px;
+  line-height: 1.45;
+  color: #101828;
+  font-weight: 400;
+}
+
+.acct-resetModal__actions {
+  display: flex;
+  gap: 12px;
+  max-width: 510px;
+  justify-content: center;
+  margin: 0 auto;
+}
+
+.acct-resetModal__cancel {
+  height: 46px;
+  min-width: 160px;
+  border-radius: 999px;
+  border: none;
+  background: #DDDDDD;
+  color: #374151;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.acct-resetModal__confirm {
+  flex: 1;
+  height: 46px;
+  border-radius: 999px;
+  border: none;
+  background: #a3a3a3;
+  color: #fff;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: not-allowed;
+}
+
+.acct-resetModal__confirm.is-enabled {
+  background: #2d2e32;
+  cursor: pointer;
+}
+
+@media (max-width: 520px) {
+  .acct-page__title {
+    font-size: 28px;
+  }
+
+  .acct-card {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .acct-card__btn {
+    width: 100%;
+  }
+}

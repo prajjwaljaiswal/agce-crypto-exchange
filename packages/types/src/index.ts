@@ -128,6 +128,8 @@ export type {
   RegisteredUser,
   PasswordLoginPayload,
   TwoFactorChallenge,
+  TwoFactorSecurity,
+  LoginMethodKind,
   LoginSuccess,
   LoginResponse,
   SendOtpPayload,
@@ -157,6 +159,12 @@ export type {
   PasskeyListItem,
   PasskeyListResponse,
   GoogleAuthSetupResponse,
+  MfaTarget,
+  ToggleMfaPayload,
+  ToggleMfaResponse,
+  BindMfaPayload,
+  BindMfaResponse,
+  TwoFactorIsBind,
 } from './auth.js'
 
 export type {

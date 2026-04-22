@@ -1,0 +1,32 @@
+/* Extra indent for deeply nested order menu (Futures → Perpetual → links) */
+body.light_theme .profile-sidebar-shell .order-sidebar-deep ul.btn-toggle-nav {
+    /* margin-left: 4px; */
+    padding-left: 0px;
+    padding-top: 0px;
+}
+
+body.light_theme .profile-sidebar-shell .order-sidebar-deep .order-sidebar-deep ul.btn-toggle-nav {
+  margin-left: 0px;
+  padding-left:0px;
+}
+
+/* Nested section toggles: align label column with top-level rows */
+/* body.light_theme .profile-sidebar-shell .order-sidebar-subtoggle {
+  padding-left: 8px !important;
+} */
+
+.profile-sidebar-shell .order-sidebar-spacer {
+  display: inline-block;
+  width: 22px;
+  min-width: 22px;
+  flex-shrink: 0;
+}
+
+.profile-sidebar-shell .navi_sidebar li.order-sidebar-deep .collapse li button {
+  padding: 18px 47px;
+}
+
+
+.profile-sidebar-shell .navi_sidebar li.order-sidebar-deep .collapse li a {
+  padding: 18px 47px;
+}

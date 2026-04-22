@@ -1,0 +1,1503 @@
+/* Spot Orders — main content only (.so-*), no header/sidebar */
+
+.so-desktopWrap {
+  width: 100%;
+  overflow: visible;
+}
+
+.so-page {
+  width: 100%;
+  max-width: 100%;
+  padding:0px;
+  background: #ffffff;
+  box-sizing: border-box;
+  overflow: visible;
+}
+
+.so-page *,
+.so-page *::before,
+.so-page *::after {
+  box-sizing: border-box;
+}
+
+body .so-table tbody td.first_child_td span{ font-size: 12px; font-weight: 400; color: #8E939C; display: block; }
+
+.so-page__title {
+  margin: 0 0 28px;
+  font-size: 24px;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  color: #101828;
+  line-height: 1.2;
+}
+
+/* Toolbar: filters left, download actions right (match Figma bar) */
+.so-toolbar {
+  display: flex;
+  flex-wrap: nowrap;
+  align-items: flex-end;
+  justify-content: flex-start;
+  gap: 16px;
+  margin-bottom: 0px;
+  padding-bottom: 24px;
+  border-bottom: 1px solid #f0f0f0;
+  -webkit-font-smoothing: antialiased;
+  overflow: visible; }
+
+.so-toolbar__left {
+  display: flex;
+  flex-wrap: nowrap;
+  align-items: start;
+  gap: 24px;
+  flex: 0 1 auto;
+  min-width: 0;
+  overflow: visible;
+}
+
+.so-toolbar__right {
+  display: flex;
+  flex-wrap: nowrap;
+  align-items: center;
+  gap: 10px;
+  flex-shrink: 0;
+  margin-left: auto;
+}
+
+.so-toolbar--stack {
+  flex-direction: column;
+  align-items: stretch;
+}
+
+.so-toolbar--stack .so-toolbar__left,
+.so-toolbar--stack .so-toolbar__right {
+  width: 100%;
+  justify-content: flex-start;
+}
+
+.so-toolbar--stack .so-toolbar__right {
+  flex-wrap: wrap;
+  margin-left: 0;
+}
+
+.so-toolbar--stack .so-dd,
+.so-toolbar--stack .so-dateBlock {
+  width: 100%;
+  min-width: 0;
+  max-width: none;
+}
+
+.so-toolbar--stack .so-dd__trigger,
+.so-toolbar--stack .so-dateRow {
+  width: 100%;
+}
+
+.so-toolbar--stack .so-dateRow {
+  flex-wrap: wrap;
+}
+
+.so-toolbar--stack .so-dateCell {
+  flex: 1 1 120px;
+  min-width: 0;
+  width: auto;
+}
+
+/* Custom dropdown — vertical panel + chevron (second-screen / Coin reference) */
+.so-dd {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  flex: 0 0 auto;
+  width: 100%;
+  min-width: 192px;
+  max-width: 192px;
+}
+
+.so-dd.is-open {
+  z-index: 10060;
+}
+
+.so-dd__label {
+  display: block;
+  font-size: 14px;
+  font-weight: 500;
+  color: #374151;
+  line-height: 1.25;
+  letter-spacing: 0;
+  cursor: pointer;
+  margin: 0;
+}
+
+.so-dd__trigger {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  width: 100%;
+  min-height: 36px;
+  padding: 0 14px 0 16px;
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 1.35;
+  color: #111827;
+  background: #ffffff;
+  border: 1px solid #E9EAEF;
+  border-radius: 6px;
+  cursor: pointer;
+  text-align: left;
+  outline: none;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.so-dd__trigger:hover {
+  border-color: #c4ccd4;
+}
+
+.so-dd__trigger:focus-visible {
+  border-color: #9ca3af;
+  box-shadow: 0 0 0 3px rgba(156, 163, 175, 0.25);
+}
+
+.so-dd__trigger.is-open {
+  border-color: #c4ccd4;
+  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.06);
+}
+
+.so-dd__value {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: #111827;
+}
+
+/* Muted placeholder style when used later */
+.so-dd__value--placeholder {
+  color: #94a3b8;
+}
+
+.so-dd__chevSvg {
+  flex-shrink: 0;
+  color: #4b5563;
+  transition: transform 0.2s ease;
+}
+
+.so-dd__chevSvg--open {
+  transform: rotate(180deg);
+}
+
+/* Open panel: horizontal tiles (reference — Contract / All + pair chips) */
+.so-dd__menu {
+  position: absolute;
+  top: calc(100% + 6px);
+  left: 0;
+  z-index: 10070;
+  margin: 0;
+  padding: 0;
+  background: #ffffff;
+}
+
+.so-dd__menu--tiles {
+  display: flex;
+  flex-flow: row wrap;
+  flex-direction: column;
+  align-items: start;
+  gap: 10px;
+  padding: 12px;
+  width: max-content;
+  min-width: 100%;
+  max-width: min(720px, calc(100vw - 48px));
+  list-style: none;
+  border: 1px solid #e0e0e0;
+  border-radius: 10px;
+  box-shadow: 0 4px 16px rgba(15, 23, 42, 0.1), 0 2px 6px rgba(15, 23, 42, 0.06);
+  overflow: visible;
+}
+
+.listing_left_outer ul li.so-dd__menuItem {
+  flex: 0 0 auto;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  border: none;
+  gap: 0px;
+  width: 100%;
+  display: block;
+  border-radius: 0px;
+}
+
+.listing_left_outer ul.so-dd__menu--tiles {
+  display: flex;
+  margin-top: 0px;
+  gap: 0px;
+  padding: 0px;
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.listing_left_outer ul li .so-dd__option--tile {
+  width: auto;
+  min-width: 100%;
+  justify-content: start;
+  border: none;
+  border-radius: 0px; }
+
+.so-dd__option--tile {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 42px;
+  padding: 10px 18px;
+  width: auto;
+  min-width: 52px;
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 1.2;
+  color: #1f2937;
+  text-align: center;
+  white-space: nowrap;
+  border: 1px solid #4b5563;
+  border-radius: 10px;
+  background: #ffffff;
+  cursor: pointer;
+  transition: background-color 0.12s ease, border-color 0.12s ease, color 0.12s ease;
+}
+
+.so-dd__option--tile:hover,
+.so-dd__option--tile:focus-visible {
+  background: #fafafa;
+  outline: none;
+}
+
+.so-dd__option--tile.is-selected {
+  background: #f5f5f5;
+  border-color: #d0d7de;
+  color: #111827;
+  font-weight: 600;
+}
+
+/* Date range — visible text matches design; native picker overlay */
+.so-dateBlock {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  flex: 0 0 auto;
+  min-width: 0;
+}
+
+.so-dateBlock__label {
+  font-size: 14px;
+  font-weight: 500;
+  color: #101828;
+  line-height: 1.2;
+}
+
+.so-dateRow {
+  display: flex;
+  align-items: center;
+  flex-wrap: nowrap;
+  gap: 8px;
+}
+
+.so-dateArrow {
+  flex-shrink: 0;
+  font-size: 13px;
+  color: #9ca3af;
+  user-select: none;
+  line-height: 1;
+}
+
+.so-dateCell {
+  position: relative;
+  flex: 0 0 auto;
+  width: 132px;
+  height: 36px;
+  background: #ffffff;
+  border: 1px solid #e0e0e0;
+  border-radius: 4px;
+}
+
+.so-dateCell:hover {
+  border-color: #d4d4d4;
+}
+
+.so-dateCell:focus-within {
+  border-color: #bdbdbd;
+}
+
+.so-dateCell__text {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  padding: 0 12px;
+  font-size: 14px;
+  font-weight: 400;
+  color: #1f2937;
+  pointer-events: none;
+}
+
+.so-dateCell__native {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  font-size: 16px;
+  line-height: 40px;
+  color: transparent;
+  background: transparent;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  opacity: 0;
+}
+
+.so-dateCell__native::-webkit-calendar-picker-indicator {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  cursor: pointer;
+  opacity: 0;
+}
+
+.so-dateCalBtn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 36px;
+  padding: 0;
+  flex-shrink: 0;
+  color: #6b7280;
+  background: #ffffff;
+  border: 1px solid #e0e0e0;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.so-dateCalBtn:hover {
+  border-color: #d4d4d4;
+  color: #374151;
+}
+
+/* Download / batch download */
+.so-dlBtn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  height: 36px;
+  padding: 0 14px;
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 400;
+  color: #1f2937;
+  background: #ffffff;
+  border: 1px solid #E9EAEF;
+  border-radius: 6px;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.so-dlBtn:hover {
+  border-color: #d4d4d4;
+  background: #fafafa;
+}
+
+.so-dlBtn__icon {
+  flex-shrink: 0;
+  color: #6b7280;
+}
+
+.so-tableWrap {
+  width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  border-radius: 0;
+}
+
+.so-table {
+  width: 100%;
+  min-width: 1080px;
+  border-collapse: collapse;
+  font-size: 14px;
+  font-weight: 500;
+  color: #101828;
+}
+
+body .so-table thead th {
+  padding: 12px 14px 14px;
+  text-align: left;
+  font-size: 12px;
+  font-weight: 500;
+  color: #98a2b3;
+  letter-spacing: 0.02em;
+  text-transform: none;
+  border-bottom: 1px solid #eef2f6;
+  white-space: nowrap;
+  background: #fff;
+}
+
+.so-table thead th.so-table__th--right,
+.so-table tbody td.so-table__td--right {
+  text-align: right;
+}
+
+.so-table thead th.so-table__th--center,
+.so-table tbody td.so-table__td--center {
+  text-align: center;
+}
+
+body .so-table tbody td {
+  padding: 14px;
+  /* border-bottom: 1px solid #f2f4f7; */
+  vertical-align: middle;
+  color: #101828;
+  font-size: 14px;
+  font-weight: 400;
+}
+
+.so-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+/* Wider futures / open-orders grid; airy row spacing (screenshot-style) */
+.so-table.so-table--air {
+  min-width: 1280px;
+}
+
+.so-table.so-table--air tbody td {
+  padding-top: 20px;
+  padding-bottom: 20px;
+  border-bottom: none;
+}
+
+.so-table.so-table--air tbody tr + tr td {
+  box-shadow:none
+}
+
+/* .so-table.so-table--air .so-side--buy,
+.so-table.so-table--air .so-side--sell {
+  background: transparent;
+  padding: 0;
+  border-radius: 0;
+  font-weight: 600;
+} */
+
+.so-table.so-table--air .so-side--buy {
+  color: #008236;
+}
+
+.so-table.so-table--air .so-side--sell {
+  color: #e7000b;
+}
+
+.so-table__td--muted {
+  color: #98a3b8;
+}
+
+/* Text-style cancel (Open Orders Action column) */
+.so-cancelLink {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2px 12px;
+  border: none;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 500;
+  color: #E7000B;
+  background: #FEF2F2;
+  cursor: pointer;
+}
+
+.so-cancelLink:hover {
+  text-decoration: underline;
+}
+
+/* Order History–style table: horizontal row dividers, wider grid */
+/* .so-table.so-table--rowLines tbody td {
+  border-bottom: 1px solid #f2f4f7;
+} */
+
+.so-table.so-table--rowLines tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.so-table.so-table--wide {
+  min-width: 1320px;
+}
+
+/* Position Orders table width */
+.so-table.so-table--positions {
+  min-width: 1280px;
+}
+
+/* Options Open Orders — full grid fits one screen width (scoped; other tables unchanged) */
+.so-optionsOpenOrdersPage {
+  min-width: 0;
+  max-width: 100%;
+}
+
+.so-optionsOpenOrdersPage .so-optionsOpenOrdersTableShell {
+  display: block;
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  overflow-x: hidden;
+  overflow-y: visible;
+}
+
+@media (max-width: 1100px) {
+  .so-optionsOpenOrdersPage .so-optionsOpenOrdersTableShell {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior-x: contain;
+  }
+}
+
+.so-optionsOpenOrdersPage .so-optionsOpenOrdersTableShell .so-table.so-table--optionsOpenOrders {
+  width: 100%;
+  min-width: 0;
+  max-width: 100%;
+  table-layout: fixed;
+}
+
+/* Column share of row (sums to 100%) */
+.so-optionsOpenOrdersPage col.so-optionsOpenOrders__cw--contract { width: 9%; }
+.so-optionsOpenOrdersPage col.so-optionsOpenOrders__cw--orderId { width: 9%; }
+.so-optionsOpenOrdersPage col.so-optionsOpenOrders__cw--time { width: 11%; }
+.so-optionsOpenOrdersPage col.so-optionsOpenOrders__cw--side { width: 6%; }
+.so-optionsOpenOrdersPage col.so-optionsOpenOrders__cw--price { width: 9%; }
+.so-optionsOpenOrdersPage col.so-optionsOpenOrders__cw--size { width: 7%; }
+.so-optionsOpenOrdersPage col.so-optionsOpenOrders__cw--unfilled { width: 7%; }
+.so-optionsOpenOrdersPage col.so-optionsOpenOrders__cw--fillPrice { width: 8%; }
+.so-optionsOpenOrdersPage col.so-optionsOpenOrders__cw--exec { width: 9%; }
+.so-optionsOpenOrdersPage col.so-optionsOpenOrders__cw--reduce { width: 7%; }
+.so-optionsOpenOrdersPage col.so-optionsOpenOrders__cw--action { width: 8%; }
+
+.so-optionsOpenOrdersPage .so-optionsOpenOrdersTableShell .so-table.so-table--optionsOpenOrders thead th {
+  padding: 8px 4px 10px;
+  font-size: 11px;
+  font-weight: 500;
+  line-height: 1.25;
+  white-space: normal;
+  word-break: break-word;
+  vertical-align: bottom;
+}
+
+.so-optionsOpenOrdersPage .so-optionsOpenOrdersTableShell .so-table.so-table--optionsOpenOrders tbody td {
+  padding: 10px 4px;
+  font-size: 12px;
+  line-height: 1.35;
+  overflow: hidden;
+  word-wrap: break-word;
+}
+
+.so-optionsOpenOrdersPage .so-optionsOpenOrdersTableShell .so-table.so-table--air tbody td {
+  padding-top: 10px;
+  padding-bottom: 10px;
+}
+
+.so-optionsOpenOrdersPage .so-optionsOpenOrders__strong {
+  font-weight: 600;
+  color: #101828;
+}
+
+.so-optionsOpenOrdersPage .so-optionsOpenOrders__cellClip {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.so-optionsOpenOrdersPage .so-optionsOpenOrders__tdTime {
+  white-space: normal;
+  font-size: 11px;
+}
+
+.so-optionsOpenOrdersPage .so-optionsOpenOrders__pill.so-side--buy,
+.so-optionsOpenOrdersPage .so-optionsOpenOrders__pill.so-side--sell {
+  padding: 2px 8px;
+  font-size: 11px;
+  font-weight: 500;
+}
+
+.so-optionsOpenOrdersPage .so-optionsOpenOrders__thReduce,
+.so-optionsOpenOrdersPage .so-optionsOpenOrders__tdReduce {
+  text-align: center;
+}
+
+.so-optionsOpenOrdersPage .so-optionsOpenOrders__thAction,
+.so-optionsOpenOrdersPage .so-optionsOpenOrders__tdAction {
+  text-align: center;
+}
+
+.so-optionsOpenOrdersPage .so-optionsOpenOrders__reduceText {
+  display: inline-block;
+  color: #101828;
+  font-weight: 400;
+}
+
+.so-optionsOpenOrdersPage .so-optionsOpenOrders__cancelBtn.so-cancelBtn {
+  padding: 3px 10px;
+  font-size: 11px;
+  min-height: 0;
+}
+
+/* Options Order History — 13 cols, fit one screen (scoped) */
+.so-optionsOrderHistoryPage {
+  min-width: 0;
+  max-width: 100%;
+}
+
+.so-optionsOrderHistoryPage .so-optionsOrderHistoryTableShell {
+  display: block;
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  overflow-x: hidden;
+  overflow-y: visible;
+}
+
+@media (max-width: 1200px) {
+  .so-optionsOrderHistoryPage .so-optionsOrderHistoryTableShell {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior-x: contain;
+  }
+}
+
+.so-optionsOrderHistoryPage .so-optionsOrderHistoryTableShell .so-table.so-table--optionsOrderHistory {
+  width: 100%;
+  min-width: 0;
+  max-width: 100%;
+  table-layout: fixed;
+}
+
+.so-optionsOrderHistoryPage col.so-optionsOrderHistory__cw--contract { width: 7%; }
+.so-optionsOrderHistoryPage col.so-optionsOrderHistory__cw--created { width: 8%; }
+.so-optionsOrderHistoryPage col.so-optionsOrderHistory__cw--end { width: 8%; }
+.so-optionsOrderHistoryPage col.so-optionsOrderHistory__cw--side { width: 5%; }
+.so-optionsOrderHistoryPage col.so-optionsOrderHistory__cw--size { width: 6%; }
+.so-optionsOrderHistoryPage col.so-optionsOrderHistory__cw--avg { width: 8%; }
+.so-optionsOrderHistoryPage col.so-optionsOrderHistory__cw--orderPx { width: 7%; }
+.so-optionsOrderHistoryPage col.so-optionsOrderHistory__cw--filled { width: 5%; }
+.so-optionsOrderHistoryPage col.so-optionsOrderHistory__cw--fee { width: 7%; }
+.so-optionsOrderHistoryPage col.so-optionsOrderHistory__cw--exec { width: 6%; }
+.so-optionsOrderHistoryPage col.so-optionsOrderHistory__cw--reduce { width: 6%; }
+.so-optionsOrderHistoryPage col.so-optionsOrderHistory__cw--orderId { width: 8%; }
+.so-optionsOrderHistoryPage col.so-optionsOrderHistory__cw--status { width: 9%; }
+
+.so-optionsOrderHistoryPage .so-optionsOrderHistoryTableShell .so-table.so-table--optionsOrderHistory thead th {
+  padding: 8px 3px 10px;
+  font-size: 10px;
+  font-weight: 500;
+  line-height: 1.2;
+  white-space: normal;
+  word-break: break-word;
+  vertical-align: bottom;
+}
+
+.so-optionsOrderHistoryPage .so-optionsOrderHistoryTableShell .so-table.so-table--optionsOrderHistory tbody td {
+  padding: 10px 3px;
+  font-size: 11px;
+  line-height: 1.3;
+  overflow: hidden;
+  word-wrap: break-word;
+}
+
+.so-optionsOrderHistoryPage .so-optionsOrderHistoryTableShell .so-table.so-table--air tbody td {
+  padding-top: 10px;
+  padding-bottom: 10px;
+}
+
+.so-optionsOrderHistoryPage .so-optionsOrderHistory__strong {
+  font-weight: 600;
+  color: #101828;
+}
+
+.so-optionsOrderHistoryPage .so-optionsOrderHistory__cellTime {
+  white-space: normal;
+  font-size: 10px;
+}
+
+.so-optionsOrderHistoryPage .so-optionsOrderHistory__cellClip {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.so-optionsOrderHistoryPage .so-optionsOrderHistory__sideCell {
+  color: #98a2b3;
+}
+
+.so-optionsOrderHistoryPage .so-optionsOrderHistory__tdReduce {
+  text-align: center;
+}
+
+.so-optionsOrderHistoryPage .so-optionsOrderHistoryTableShell .so-table.so-table--optionsOrderHistory tbody td.so-table__emptyWrap {
+  padding: 48px 24px !important;
+  text-align: center;
+  vertical-align: middle;
+  border-bottom: none !important;
+}
+
+/* Options Trade History — 8 cols, fit one screen (scoped) */
+.so-optionsTradeHistoryPage {
+  min-width: 0;
+  max-width: 100%;
+}
+
+.so-optionsTradeHistoryPage .so-optionsTradeHistoryTableShell {
+  display: block;
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  overflow-x: hidden;
+  overflow-y: visible;
+}
+
+@media (max-width: 900px) {
+  .so-optionsTradeHistoryPage .so-optionsTradeHistoryTableShell {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior-x: contain;
+  }
+}
+
+.so-optionsTradeHistoryPage .so-optionsTradeHistoryTableShell .so-table.so-table--optionsTradeHistory {
+  width: 100%;
+  min-width: 0;
+  max-width: 100%;
+  table-layout: fixed;
+}
+
+.so-optionsTradeHistoryPage col.so-optionsTradeHistory__cw--contract { width: 14%; }
+.so-optionsTradeHistoryPage col.so-optionsTradeHistory__cw--side { width: 10%; }
+.so-optionsTradeHistoryPage col.so-optionsTradeHistory__cw--size { width: 10%; }
+.so-optionsTradeHistoryPage col.so-optionsTradeHistory__cw--fill { width: 14%; }
+.so-optionsTradeHistoryPage col.so-optionsTradeHistory__cw--fee { width: 10%; }
+.so-optionsTradeHistoryPage col.so-optionsTradeHistory__cw--orderId { width: 14%; }
+.so-optionsTradeHistoryPage col.so-optionsTradeHistory__cw--tradeId { width: 14%; }
+.so-optionsTradeHistoryPage col.so-optionsTradeHistory__cw--tradedAt { width: 14%; }
+
+.so-optionsTradeHistoryPage .so-optionsTradeHistoryTableShell .so-table.so-table--optionsTradeHistory thead th {
+  padding: 10px 6px 12px;
+  font-size: 11px;
+  font-weight: 500;
+  line-height: 1.25;
+  white-space: normal;
+  word-break: break-word;
+  vertical-align: bottom;
+}
+
+.so-optionsTradeHistoryPage .so-optionsTradeHistoryTableShell .so-table.so-table--optionsTradeHistory tbody td {
+  padding: 14px 6px;
+  font-size: 13px;
+  line-height: 1.35;
+  overflow: hidden;
+  word-wrap: break-word;
+}
+
+.so-optionsTradeHistoryPage .so-optionsTradeHistoryTableShell .so-table.so-table--air tbody td {
+  padding-top: 14px;
+  padding-bottom: 14px;
+}
+
+.so-optionsTradeHistoryPage .so-optionsTradeHistory__strong {
+  font-weight: 600;
+  color: #101828;
+}
+
+.so-optionsTradeHistoryPage .so-optionsTradeHistory__pill.so-side--buy,
+.so-optionsTradeHistoryPage .so-optionsTradeHistory__pill.so-side--sell {
+  padding: 3px 10px;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.so-optionsTradeHistoryPage .so-optionsTradeHistory__cellClip {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.so-optionsTradeHistoryPage .so-optionsTradeHistory__cellTime {
+  white-space: normal;
+  font-size: 12px;
+}
+
+.so-optionsTradeHistoryPage .so-optionsTradeHistoryTableShell .so-table.so-table--optionsTradeHistory tbody td.so-table__emptyWrap {
+  padding: 48px 24px !important;
+  text-align: center;
+  vertical-align: middle;
+  border-bottom: none !important;
+}
+
+/* Options Position History — 5 cols, fit one screen (scoped) */
+.so-optionsPositionHistoryPage {
+  min-width: 0;
+  max-width: 100%;
+}
+
+.so-optionsPositionHistoryPage .so-optionsPositionHistoryTableShell {
+  display: block;
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  overflow-x: hidden;
+  overflow-y: visible;
+}
+
+@media (max-width: 640px) {
+  .so-optionsPositionHistoryPage .so-optionsPositionHistoryTableShell {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior-x: contain;
+  }
+}
+
+.so-optionsPositionHistoryPage .so-optionsPositionHistoryTableShell .so-table.so-table--optionsPositionHistory {
+  width: 100%;
+  min-width: 0;
+  max-width: 100%;
+  table-layout: fixed;
+}
+
+.so-optionsPositionHistoryPage col.so-optionsPositionHistory__cw--time { width: 22%; }
+.so-optionsPositionHistoryPage col.so-optionsPositionHistory__cw--symbol { width: 18%; }
+.so-optionsPositionHistoryPage col.so-optionsPositionHistory__cw--pnl { width: 22%; }
+.so-optionsPositionHistoryPage col.so-optionsPositionHistory__cw--source { width: 18%; }
+.so-optionsPositionHistoryPage col.so-optionsPositionHistory__cw--side { width: 20%; }
+
+.so-optionsPositionHistoryPage .so-optionsPositionHistoryTableShell .so-table.so-table--optionsPositionHistory thead th {
+  padding: 10px 8px 12px;
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 1.25;
+  white-space: normal;
+  word-break: break-word;
+  vertical-align: bottom;
+}
+
+.so-optionsPositionHistoryPage .so-optionsPositionHistoryTableShell .so-table.so-table--optionsPositionHistory tbody td {
+  padding: 14px 8px;
+  font-size: 13px;
+  line-height: 1.35;
+  overflow: hidden;
+  word-wrap: break-word;
+}
+
+.so-optionsPositionHistoryPage .so-optionsPositionHistoryTableShell .so-table.so-table--air tbody td {
+  padding-top: 14px;
+  padding-bottom: 14px;
+}
+
+.so-optionsPositionHistoryPage .so-optionsPositionHistory__cellTime {
+  white-space: normal;
+  font-size: 12px;
+}
+
+.so-optionsPositionHistoryPage .so-optionsPositionHistoryTableShell .so-table.so-table--optionsPositionHistory tbody td.so-table__emptyWrap {
+  padding: 48px 24px !important;
+  text-align: center;
+  vertical-align: middle;
+  border-bottom: none !important;
+}
+
+.so-table.so-table--positionHistory {
+  min-width: 800px;
+}
+
+.so-tableWrap--positionHistory {
+  min-height: 280px;
+}
+
+/* Futures position: Long (red on light pink) */
+.so-side--long {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 3px 12px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 500;
+  color: #E7000B;
+  background: #fef2f2;
+}
+
+/* Position status e.g. Closed */
+.so-badge--closed {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 3px 12px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight:500;
+  color: #374151;
+  background: #f3f4f6;
+}
+
+/* Realized PnL positive */
+.so-pnl--profit {
+  color: #16C784;
+  font-weight: 400;
+}
+
+.so-pnl--loss {
+  color: #E7000B;
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+}
+
+.so-spotPosAction--open {
+  color: #00a63e;
+  font-weight: 500;
+}
+
+.so-spotPosAction--close {
+  color: #e7000b;
+  font-weight: 500;
+}
+
+/* Trade History: contract + timestamp; green size */
+.so-contractCell {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 4px;
+}
+
+.so-contractCell__symbol {
+  font-weight: 400;
+  color: #101828;
+  font-size: 13px;
+  line-height: 1.3;
+}
+
+.so-contractCell__time {
+  font-size: 12px;
+  font-weight: 400;
+  color: #98a2b3;
+  line-height: 1.3;
+}
+
+.so-fillQty--pos {
+  color: #16A34A;
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+}
+
+.so-table.so-table--tradeHistory {
+  min-width: 880px;
+}
+
+.so-mobileCard__stack {
+  display: flex;
+  flex-direction: column;
+  align-items: start;
+  gap: 4px;
+  text-align: left;
+}
+
+span.so-mobileCard__stack.flex-direction-row {
+  flex-direction: row;
+  align-items: center !important;
+}
+
+span.so-mobileCard__stack.flex-direction-row span.so-table__td--muted.so-num {
+  font-size: 12px;
+  color: #101828;
+  font-weight: 400;
+}
+
+.so-tableWrap--staking .so-pnl--profit {
+  color: #008236;
+  font-weight: 500;
+  font-size: 13px;
+}
+
+span.so-mobileCard__stack.flex-direction-row span.so-table__td--muted.so-pnl--profit {
+  font-weight: 500;
+  font-size: 11px;
+}
+
+body .so-table tbody tdtd.onlgreen span.so-mobileCard__stack {
+  text-align: left;
+  align-items: normal;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.so-status {
+  display: inline-block;
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1.2;
+}
+
+.so-status--completed {
+  color: #008236;
+  font-weight: 500;
+  background-color: #F0FDF4;
+  font-size: 12px;
+  min-width: 85px;
+  padding: 5px 10px;
+  border-radius: 50px;
+}
+
+.so-status--pending {
+  color: #1E40AF;
+  font-weight: 500;
+  background-color: #DBEAFE;
+  font-size: 12px;
+  text-align: center;
+  min-width: 85px;
+  padding: 5px 10px;
+  border-radius: 50px;
+}
+
+.so-lpStatus {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 3px 10px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 1.2;
+  white-space: nowrap;
+}
+
+.so-lpStatus--upcoming {
+  color: #6B7280;
+  background: #F3F4F6;
+}
+
+.so-lpStatus--live {
+  color: #1E40AF;
+  background: #DBEAFE;
+}
+
+.so-lpStatus--ended {
+  color: #008236;
+  background: #F0FDF4;
+}
+
+.so-lpAchieved {
+  /* text-decoration: underline; */
+  text-underline-offset: 3px;
+}
+
+.so-lpDateCell {
+  line-height: 1.35;
+}
+
+.so-lpDateLbl {
+  color: #6B7280;
+  font-weight: 500;
+}
+
+.so-lpAmtWrap {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.so-lpStatus.so-lpStatus-ended{ color: #D1AA67; background: #FDF6E8; }
+
+.so-lpProgress {
+  display: flex;
+  align-items: center;
+  justify-content: start;
+  gap: 10px;
+}
+
+.so-lpProgress__bar {
+  position: relative;
+  width: 120px;
+  height: 6px;
+  background: #F3F4F6;
+  border-radius: 999px;
+  overflow: hidden;
+}
+
+.so-lpProgress__fill {
+  display: block;
+  height: 100%;
+  width: 0%;
+  background: #6366F1;
+  border-radius: 999px;
+}
+
+.so-lpProgress__pct {
+  color: #6B7280;
+  font-size: 12px;
+  font-weight: 500;
+  min-width: 34px;
+  text-align: right;
+}
+
+.so-lpProgress--mobile {
+  justify-content: flex-end;
+}
+
+.so-lpProgress--mobile .so-lpProgress__bar {
+  width: 110px;
+}
+
+.so-badge-processing {
+  color: #1E40AF;
+  font-weight: 500;
+  background-color: #DBEAFE;
+  font-size: 12px;
+  padding: 3px 10px;
+  border-radius: 50px;
+}
+
+.so-table.so-table--air tbody td .bankbtn {
+  font-size: 11px;
+  font-weight: 400;
+  background-color: #F3F4F6;
+  border-radius: 4px;
+  display: inline-block;
+  padding: 4px 7px;
+}
+
+table tbody tr td span.so-badge-crypto {
+  color: #8200DB;
+  font-weight: 500;
+  font-size: 12px;
+  background-color: #F3E8FF;
+  border: 1px solid #E9D4FF;
+  padding: 3px 7px;
+  border-radius: 50px;
+}
+
+.so-table.so-table--air tbody td strong{ font-weight: 500;}
+.so-side--buy {
+  color: #16A34A;
+  font-weight: 400;
+  background-color: #F0FDF4;
+  padding: 3px 10px;
+  border-radius: 50px;
+  font-size: 12px;
+}
+
+.so-side--sell {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2px 12px;
+  border: none;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 500;
+  color: #E7000B;
+  background: #FEF2F2;
+  cursor: pointer;
+}
+
+.so-num {
+  font-variant-numeric: tabular-nums;
+}
+
+.so-cancelBtn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2px 12px;
+  border: none;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 500;
+  color: #E7000B;
+  background: #FEF2F2;
+  cursor: pointer;
+}
+
+.so-cancelBtn:hover {
+  background: #fecdd3;
+}
+
+/* Mobile — visibility toggled by global .order_history_mobile_view / .desktop_view2 in style.css */
+.so-mobile {
+  padding: 20px 16px 32px;
+  background: #fff;
+}
+
+.so-mobile__title {
+  margin: 0 0 20px;
+  font-size: 22px;
+  font-weight: 700;
+  color: #101828;
+}
+
+.so-mobile__toolbar {
+  margin-bottom: 20px;
+}
+
+.so-mobileCard {
+  border: 1px solid #eef2f6;
+  border-radius: 12px;
+  padding: 14px 16px;
+  margin-bottom: 12px;
+}
+
+.so-mobileCard__row {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 6px 0;
+  font-size: 14px;
+}
+
+.so-mobileCard__row span:first-child {
+  color: #667085;
+  font-weight: 500;
+}
+
+.so-mobileCard__row span:last-child {
+  font-weight: 600;
+  color: #101828;
+  text-align: right;
+}
+
+.so-mobileCard__actions {
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid #f2f4f7;
+  text-align: center;
+}
+
+/* Staking orders — CTA + empty state (no-data.svg) */
+.so-goStakingBtn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 36px;
+  padding: 0 18px;
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 500;
+  color: #101828;
+  text-decoration: none;
+  background: #ffffff;
+  border: 1px solid #d0d7de;
+  border-radius: 6px;
+  transition: background-color 0.15s ease, border-color 0.15s ease;
+}
+
+.so-goStakingBtn:hover {
+  background: #fafafa;
+  border-color: #c4ccd4;
+  color: #101828;
+}
+
+.so-stakingCoin {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.so-stakingCoin__icon {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  object-fit: cover;
+  flex-shrink: 0;
+}
+
+.so-stakeProtocol {
+  color: #00a63e;
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+}
+
+.so-stakeType {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 3px 10px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 1.2;
+  white-space: nowrap;
+}
+
+.so-stakeType--flexible {
+  color: #1e40af;
+  background: #dbeafe;
+}
+
+.so-stakeType--locked {
+  color: #b45309;
+  background: #fef3c7;
+}
+
+.so-tableWrap--staking {
+  min-height: 320px;
+}
+
+.so-table.so-table--staking {
+  min-width: 720px;
+}
+
+.so-table.so-table--convert {
+  min-width: 920px;
+}
+
+.so-convertSpend {
+  color: #EF4444;
+  font-weight: 400;
+}
+
+.so-convertReceive {
+  color: #10B981;
+  font-weight: 400;
+}
+
+.so-table.so-table--copyTrading {
+  min-width: 1280px;
+}
+
+.so-tableWrap--copyTrading {
+  min-height: 300px;
+}
+
+.so-copyExitCell {
+  display: flex;
+  align-items: flex-end;
+  gap: 2px;
+}
+
+.so-table.so-table--staking tbody td.so-table__emptyWrap,
+.so-table.so-table--convert tbody td.so-table__emptyWrap,
+.so-table.so-table--copyTrading tbody td.so-table__emptyWrap,
+.so-table.so-table--wide tbody td.so-table__emptyWrap {
+  padding: 48px 24px !important;
+  text-align: center;
+  vertical-align: middle;
+  border-bottom: none !important;
+}
+
+.so-emptyState {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  min-height: 260px;
+  padding: 16px 0;
+}
+
+.so-emptyState--mobile {
+  min-height: 220px;
+  margin-top: 8px;
+  padding: 32px 16px 48px;
+  border: 1px solid #eef2f6;
+  border-radius: 12px;
+  background: #fff;
+}
+
+.so-emptyState__img {
+  display: block;
+  width: 120px;
+  height: auto;
+  max-height: 160px;
+  object-fit: contain;
+}
+
+.so-emptyState__caption {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 500;
+  color: #98a2b3;
+}
+
+@media (max-width: 640px) {
+  .so-page {
+    padding: 20px 16px 32px;
+  }
+
+  .so-page__title {
+    font-size: 26px;
+  }
+
+  .so-toolbar:not(.so-toolbar--stack) {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .so-toolbar:not(.so-toolbar--stack) .so-toolbar__left,
+  .so-toolbar:not(.so-toolbar--stack) .so-toolbar__right {
+    width: 100%;
+  }
+
+  .so-toolbar:not(.so-toolbar--stack) .so-toolbar__right {
+    justify-content: flex-start;
+  }
+
+  .so-dd,
+  .so-dateBlock {
+    width: 100%;
+    min-width: 0;
+  }
+
+  .so-dd__trigger {
+    width: 100%;
+    min-width: 0;
+  }
+
+  .so-toolbar--stack .so-goStakingBtn {
+    width: 100%;
+    justify-content: center;
+  }
+}
+
+/* Status badges */
+.so-status {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+
+.so-status--open,
+.so-status--new,
+.so-status--pending {
+  color: #0369a1;
+  background: #e0f2fe;
+}
+
+.so-status--filled {
+  color: #15803d;
+  background: #dcfce7;
+}
+
+.so-status--partially_filled {
+  color: #b45309;
+  background: #fef3c7;
+}
+
+.so-status--cancelled,
+.so-status--expired {
+  color: #6b7280;
+  background: #f3f4f6;
+}

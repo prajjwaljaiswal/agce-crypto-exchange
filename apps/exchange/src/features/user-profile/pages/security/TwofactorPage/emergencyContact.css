@@ -1,0 +1,170 @@
+/* Emergency Contact page — scoped under .ec-page */
+
+.ec-page {
+  width: 100%;
+  min-height: 100%;
+  padding: 35px 24px 48px;
+  max-width: 1190px;
+  margin: 0 auto;
+}
+
+.ec-page *,
+.ec-page *::before,
+.ec-page *::after {
+  box-sizing: border-box;
+}
+
+.ec-page__crumbs {
+  margin-bottom: 18px;
+}
+
+.ec-page__crumbList {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: #8e939c;
+  font-size: 15px;
+  font-weight: 500;
+}
+
+.ec-page__crumbItem--active {
+  color: #101828;
+}
+
+.ec-page__crumbSep {
+  color: #8e939c;
+}
+
+.ec-page__crumbLink {
+  border: none;
+  background: transparent;
+  padding: 0;
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
+}
+
+.ec-page__crumbLink:hover {
+  color: #101828;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.ec-page__title {
+  margin: 42px 32px 28px;
+  font-size: 36px;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  color: #2d2e32;
+  text-align: left;
+}
+
+.ec-page__art {
+  max-width: 220px;
+  display: flex;
+  justify-content: center;
+  margin: 50px auto;
+  justify-content: center;
+  align-items: center;
+  padding-top: 40px;
+}
+
+.ec-page__artImg {
+  width: min(280px, 86vw);
+  height: auto;
+  display: block;
+}
+
+.ec-page__body {
+  margin: 0 0 28px;
+  font-size: 18px;
+  line-height: 1.65;
+  font-weight: 500;
+  color: #4a5565;
+  text-align: left;
+  max-width: 640px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.ec-how {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  padding: 16px 18px;
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
+  background: #fff;
+  margin: 0 0 28px;
+  max-width: 640px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.ec-how__icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 8px;
+  background: #f3f4f6;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: #4a5565;
+  font-size: 22px;
+  flex-shrink: 0;
+}
+
+.ec-how__text {
+  min-width: 0;
+}
+
+.ec-how__title {
+  font-size: 16px;
+  font-weight: 500;
+  color: #2d2e32;
+  margin-bottom: 2px;
+}
+
+.ec-how__learn {
+  border: none;
+  background: transparent;
+  padding: 0;
+  font-size: 12px;
+  font-weight: 500;
+  color: #ac8a50;
+  cursor: pointer;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.ec-page__cta {
+  display: block;
+  width: 100%;
+  max-width: 640px;
+  margin: 0 auto;
+  height: 50px;
+  border: none;
+  border-radius: 999px;
+  background: #2d2e32;
+  color: #fff;
+  font-size: 15px;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.ec-page__cta:hover {
+  background: #1a1b1f;
+}
+
+@media (max-width: 520px) {
+  .ec-page {
+    padding: 22px 16px 40px;
+  }
+
+  .ec-page__title {
+    font-size: 28px;
+  }
+}

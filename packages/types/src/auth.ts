@@ -14,6 +14,10 @@ export type OtpType =
   | 'WITHDRAWAL'
   | 'ANTI_PHISHING'
   | 'GOOGLE'
+  | 'PHONE_VERIFY'
+  | 'BIND'
+  | 'FUND_PASSWORD'
+  | 'OTHER'
 
 export type OtpPurpose = OtpType
 
@@ -74,14 +78,37 @@ export interface PasswordLoginPayload {
   bindIp?: boolean
 }
 
-export interface TwoFactorChallenge {
-  twoFactorRequired: true
-  // Present when the user has Google Authenticator enabled — backend does NOT
-  // send an email/SMS OTP in that case, client must collect a TOTP code and
-  // call /verify-otp with purpose:'GOOGLE'. Backend has shipped both field
-  // names across versions, so callers should accept either.
+// Server-side identifiers for the verification channels a user can be
+// challenged with at login. Mirrors the backend enum exactly.
+export type LoginMethodKind = 'EMAIL' | 'MOBILE' | 'GOOGLE_AUTHENTICATOR' | 'PASSKEY'
+
+export interface TwoFactorIsBind {
+  mobileVerification?: boolean
+  emailVerification?: boolean
+  googleAuthenticator?: boolean
+  passkey?: boolean
+}
+
+export interface TwoFactorSecurity {
+  mobileVerification?: boolean
+  emailVerification?: boolean
   googleAuthenticatorEnabled?: boolean
   isGoogleAuthenticatorEnabled?: boolean
+  isPasskeyEnabled?: boolean
+  isBind?: TwoFactorIsBind
+}
+
+// Backend login response when 2FA is required. The client infers this branch
+// from the absence of an accessToken, not `twoFactorRequired` — older and
+// newer backend versions disagree on that field.
+//
+// Newer shape: { methods: [...], security: {...} }
+// Older (flat) shape: { mobileVerification, emailVerification, ... }
+// Both are accepted so the UI can migrate without a coordinated deploy.
+export interface TwoFactorChallenge extends TwoFactorSecurity {
+  twoFactorRequired?: true
+  methods?: LoginMethodKind[]
+  security?: TwoFactorSecurity
 }
 
 export interface LoginSuccess extends AuthTokens {
@@ -97,9 +124,15 @@ export interface SendOtpPayload {
 
 export interface VerifyOtpPayload {
   identifier: string
-  otp: string
   purpose: OtpPurpose
   bindIp?: boolean
+  // Legacy single-code flows (signup, password reset, withdrawal) still send
+  // `otp`. Multi-factor login sends one or more of the typed fields below,
+  // letting the backend verify every configured channel in a single call.
+  otp?: string
+  emailOtp?: string
+  mobileOtp?: string
+  googleTotp?: string
 }
 
 export interface RefreshTokenPayload {
@@ -113,6 +146,7 @@ export interface SignupPayload extends RegisterPayload {}
 // Shape returned by GET /api/v1/auth/me (unwrapped from data[0]).
 export interface MeResponse extends AuthUser {
   email?: string
+  phone?: string
   isRegistered?: boolean
   isEmailVerified?: boolean
   isPhoneVerified?: boolean
@@ -131,11 +165,42 @@ export interface MeResponse extends AuthUser {
   // OTP — the client must collect a TOTP code and verify with purpose:'GOOGLE'.
   isGoogleAuthenticatorEnabled?: boolean
   googleAuthenticatorEnabled?: boolean
+  // Newer backend shape: all 2FA-related flags nested under `security`.
+  // Components should prefer this over the top-level fields, falling back
+  // only for backwards compatibility with older responses.
+  security?: TwoFactorSecurity
+  isFundPasswordSet?: boolean
   // Session metadata — populated by backend on /me. ISO-8601 timestamp
   // (e.g. "2026-04-17T09:32:04.512Z") and IPv4/IPv6 string.
   lastLoginAt?: string
   lastLoginIp?: string
   createdAt?: string
+}
+
+// POST /api/v1/auth/fund-password — set fund password for the first time.
+export interface SetFundPasswordPayload {
+  identifier: string
+  otp: string
+  fundPassword: string
+}
+
+// PATCH /api/v1/auth/fund-password — change existing fund password.
+export interface ChangeFundPasswordPayload {
+  identifier: string
+  otp: string
+  currentFundPassword: string
+  newFundPassword: string
+}
+
+// DELETE /api/v1/auth/fund-password — remove fund password.
+export interface RemoveFundPasswordPayload {
+  identifier: string
+  otp: string
+  fundPassword: string
+}
+
+export interface FundPasswordResponse {
+  message?: string
 }
 
 export interface UpdatePreferredCurrencyPayload {
@@ -163,6 +228,28 @@ export interface RemoveAntiPhishingCodePayload {
 
 export interface AntiPhishingCodeResponse {
   antiPhishingCode?: string
+  message?: string
+}
+
+export type MfaTarget = 'email' | 'mobile' | 'google'
+
+export interface ToggleMfaPayload {
+  target: MfaTarget
+  otp: string
+}
+
+export interface ToggleMfaResponse {
+  message?: string
+}
+
+export interface BindMfaPayload {
+  target: MfaTarget
+  identifier: string
+  otp: string
+  totp?: string
+}
+
+export interface BindMfaResponse {
   message?: string
 }
 

@@ -1,0 +1,14 @@
+<svg width="280" height="200" viewBox="0 0 280 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Phone (folded L) -->
+  <path d="M72 32H148C156.837 32 164 39.1634 164 48V112C164 120.837 156.837 128 148 128H72C63.1634 128 56 120.837 56 112V48C56 39.1634 63.1634 32 72 32Z" stroke="#1E2329" stroke-width="2.2"/>
+  <path d="M72 128H148V152C148 160.837 140.837 168 132 168H88C79.1634 168 72 160.837 72 152V128Z" stroke="#1E2329" stroke-width="2.2"/>
+  <path d="M96 76L104 84L120 68" stroke="#C0A060" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M88 52H132" stroke="#1E2329" stroke-width="1.6" stroke-linecap="round"/>
+  <!-- Handset + arrows -->
+  <path d="M100 96C100 96 108 104 116 96" stroke="#1E2329" stroke-width="1.8" stroke-linecap="round"/>
+  <path d="M92 88L84 80M124 88L132 80" stroke="#C0A060" stroke-width="1.6" stroke-linecap="round"/>
+  <!-- Location pin -->
+  <path d="M196 44C196 32.9543 204.954 24 216 24C227.046 24 236 32.9543 236 44C236 58 216 84 216 84C216 84 196 58 196 44Z" stroke="#1E2329" stroke-width="2.2"/>
+  <path d="M216 36C211.582 36 208 39.5817 208 44C208 48.4183 211.582 52 216 52C220.418 52 224 48.4183 224 44C224 39.5817 220.418 36 216 36Z" stroke="#C0A060" stroke-width="1.6"/>
+  <path d="M216 42L217.5 45.5H221L218.25 47.75L219.75 51.25L216 49L212.25 51.25L213.75 47.75L211 45.5H214.5L216 42Z" fill="#C0A060"/>
+</svg>

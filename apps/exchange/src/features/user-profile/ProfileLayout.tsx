@@ -1,12 +1,11 @@
-import { useState } from 'react'
-import { Link, Outlet, useNavigate } from 'react-router-dom'
-import { useSidebarState } from '@agce/hooks'
-import { useAuth } from '../../providers/index.js'
-import { usePageTitle } from './hooks/usePageTitle.js'
-import { isWalletPageTitle } from './hooks/pageTitleFromPath.js'
-import { LogoutConfirmModal } from './components/LogoutConfirmModal.js'
-
-type SectionKey = 'assets' | 'orders' | 'account'
+import { useContext, useEffect, useState, useMemo } from 'react'
+import { Link, Outlet, useLocation, useNavigate } from 'react-router-dom'
+import { Helmet } from 'react-helmet-async'
+import { ProfileContext } from '../../context/ProfileProvider.js'
+import OrderSidebar from '../../customComponents/OrderSidebar.js'
+import DashboardSidebar from '../../customComponents/DashboardSidebar.js'
+import { isOrderSidebarPath } from '../../customComponents/userProfileSidebarMode.js'
+import './profile-sidebar.css'
 
 const capitalizeWallet = (str: string) => {
   if (!str) return 'Wallet'
@@ -14,364 +13,167 @@ const capitalizeWallet = (str: string) => {
 }
 
 export function ProfileLayout() {
+  const location = useLocation()
   const navigate = useNavigate()
-  const { logout } = useAuth()
+  const { currentPage, setCurrentPage, walletTypes } = useContext(ProfileContext)
 
-  // TODO: replace with wallet types fetched from backend (ProfileContext)
-  const [walletTypes] = useState<string[]>([])
-  const [logoutConfirmOpen, setLogoutConfirmOpen] = useState(false)
+  const orderRail = useMemo(() => isOrderSidebarPath(location.pathname), [location.pathname])
+  const hideSidebar = location.pathname.startsWith('/user_profile/security/')
 
-  const currentPage = usePageTitle()
-  const isWalletPage = isWalletPageTitle(currentPage)
+  useEffect(() => {
+    const path = location.pathname
 
-  const { isActive, toggleActive, openSection, toggleSection } =
-    useSidebarState<SectionKey>()
+    if (path.includes('/user_profile/dashboard')) setCurrentPage('Dashboard')
+    else if (path.includes('asset_overview')) setCurrentPage('Overview')
+    else if (path.includes('wallet/')) {
+      const walletMatch = path.match(/wallet\/([^/]+)/)
+      if (walletMatch && walletMatch[1]) {
+        setCurrentPage(capitalizeWallet(walletMatch[1]))
+      }
+    } else if (path.includes('spot_position_history')) setCurrentPage('Spot Position History')
+    else if (path.includes('spot_order_history') || path.includes('spot_open_orders')) setCurrentPage('Spot Order History')
+    else if (path.includes('spot_orders')) setCurrentPage('Spot Order')
+    else if (path.includes('futures_open_orders')) setCurrentPage('Futures Open Order')
+    else if (path.includes('transaction_history')) setCurrentPage('Transaction History')
+    else if (path.includes('futures_order_history')) setCurrentPage('Futures Order History')
+    else if (path.includes('options_position_history')) setCurrentPage('Options Position History')
+    else if (path.includes('position_history')) setCurrentPage('Position History')
+    else if (path.includes('position_orders')) setCurrentPage('Position Orders')
+    else if (path.includes('futures_trade_history')) setCurrentPage('Futures Trade History')
+    else if (path.includes('options_order_history')) setCurrentPage('Options Order History')
+    else if (path.includes('options_trade_history')) setCurrentPage('Options Trade History')
+    else if (path.includes('options_open_orders')) setCurrentPage('Options Open Orders')
+    else if (path.includes('staking_orders')) setCurrentPage('Staking Orders')
+    else if (path.includes('convert_orders')) setCurrentPage('Convert')
+    else if (path.includes('copy_trading_orders')) setCurrentPage('Copy Trading')
+    else if (path.includes('launchpad_transactions')) setCurrentPage('Launchpad Transactions')
+    else if (path === '/user_profile/orders' || path.includes('/user_profile/orders/open_orders')) setCurrentPage('Open Order')
+    else if (path.includes('swap_history')) setCurrentPage('Swap History')
+    else if (path.includes('profile_setting')) setCurrentPage('Settings')
+    else if (path.includes('kyc')) setCurrentPage('Identification')
+    else if (path.includes('bank')) setCurrentPage('Bank Details')
+    else if (path.includes('currency_preference')) setCurrentPage('Currency Preference')
+    else if (path.includes('support')) setCurrentPage('Support')
+    else if (
+      path.includes('two_factor_authentication') ||
+      (path.startsWith('/user_profile/security') && !path.includes('/user_profile/security/'))
+    ) {
+      setCurrentPage('Security')
+    } else if (path.includes('password_security')) setCurrentPage('Reset Password')
+    else if (path.includes('arbitrage_bot') || path.includes('arbitrage_dashboard')) setCurrentPage('Arbitrage Bot')
+    else if (path.includes('wallet_transfer_History')) setCurrentPage('Wallet Transfer History')
+    else if (path.includes('swap')) setCurrentPage('Quick Swap')
+    else if (path.includes('notification')) setCurrentPage('Notification')
+    else if (path.includes('activity_logs')) setCurrentPage('Activity logs')
+    else if (path.includes('earning_plan_history')) setCurrentPage('Earning Plan History')
+    else if (path.includes('bonus_history')) setCurrentPage('Bonus History')
+  }, [location.pathname, setCurrentPage])
 
-  const requestLogout = () => setLogoutConfirmOpen(true)
-  const confirmLogout = () => {
-    setLogoutConfirmOpen(false)
-    logout()
-    navigate('/', { replace: true })
+  const [isActive, setIsActive] = useState(false)
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(false)
+
+  const toggleContent = (page?: string) => {
+    setIsActive((v) => !v)
+    if (page) setCurrentPage(page)
   }
-  const cancelLogout = () => setLogoutConfirmOpen(false)
 
-  const assetsActiveUl = currentPage === 'Overview' || isWalletPage
-  const ordersActiveUl =
-    currentPage === 'Spot Order' ||
-    currentPage === 'Open Order' ||
-    currentPage === 'Transaction History' ||
-    currentPage === 'Swap History' ||
-    currentPage === 'Wallet Transfer History' ||
-    currentPage === 'Earning Plan History'
-  const accountActiveUl =
-    currentPage === 'Settings' ||
-    currentPage === 'Verification' ||
-    currentPage === 'Support'
+  const getPageIcon = useMemo(() => {
+    const iconMap: Record<string, string> = {
+      Dashboard: '/images/dasboard_home.svg',
+      Overview: '/images/dashboard_assets.svg',
+      'Spot Order': '/images/dashboard_order.svg',
+      'Spot Order History': '/images/dashboard_order.svg',
+      'Spot Position History': '/images/dashboard_order.svg',
+      'Open Order': '/images/dashboard_order.svg',
+      'Futures Open Order': '/images/dashboard_order.svg',
+      'Futures Order History': '/images/dashboard_order.svg',
+      'Position History': '/images/dashboard_order.svg',
+      'Position Orders': '/images/dashboard_order.svg',
+      'Futures Trade History': '/images/dashboard_order.svg',
+      'Staking Orders': '/images/earning_icon3.svg',
+      Convert: '/images/quick-swap.svg',
+      'Copy Trading': '/images/dashboard_order.svg',
+      'Launchpad Transactions': '/images/earning_icon3.svg',
+      Identification: '/images/dashboard_profile.svg',
+      'Transaction History': '/images/dashboard_order.svg',
+      'Swap History': '/images/dashboard_order.svg',
+      'Wallet Transfer History': '/images/dashboard_order.svg',
+      'Earning Plan History': '/images/dashboard_order.svg',
+      'Bonus History': '/images/dashboard_order.svg',
+      Settings: '/images/dashboard_profile.svg',
+      Verification: '/images/dashboard_profile.svg',
+      kyc: '/images/dashboard_profile.svg',
+      'Bank Details': '/images/dashboard_profile.svg',
+      'Currency Preference': '/images/dashboard_profile.svg',
+      Support: '/images/dashboard_profile.svg',
+      Earning: '/images/earning_icon3.svg',
+      Security: '/images/dashboard_security.svg',
+      'Reset Password': '/images/dashboard_security.svg',
+      'Quick Swap': '/images/quick-swap.svg',
+      Notification: '/images/dashboard_notification.svg',
+      'Activity logs': '/images/dashboard_logs.svg',
+    }
+
+    if (currentPage?.includes('Wallet') && currentPage !== 'Wallet Transfer History') {
+      return '/images/dashboard_assets.svg'
+    }
+
+    return iconMap[currentPage] ?? '/images/dasboard_home.svg'
+  }, [currentPage])
+
+  const logOut = () => {
+    localStorage.clear()
+    navigate('/')
+    window.location.reload()
+  }
 
   return (
     <>
-      {/* <div className="mobile_view" id="toggleBtn" onClick={toggleActive}>
-        <img
-          src={pageIcon}
-          alt={currentPage}
-          width={20}
-          height={20}
-          style={{ marginRight: 8 }}
-        />
+      <Helmet>
+        <title> Wrathcode Exchange | The world class new generation crypto asset exchange</title>
+      </Helmet>
+      <div className="mobile_view" id="toggleBtn" onClick={() => toggleContent()}>
+        <img src={getPageIcon} alt={currentPage} width={20} height={20} style={{ marginRight: '8px' }} />
         <div className="d-flex align-items-center justify-content-between w-100">
           {currentPage}
           <span>
-            <i className="ri-arrow-down-s-line" />
+            <i className="ri-arrow-down-s-line"></i>
           </span>
         </div>
-      </div> */}
-
-      <div className="dashboard">
-        <div
-          id="content"
-          className={
-            isActive
-              ? 'active flex-shrink-0 leftside_menu'
-              : 'flex-shrink-0 leftside_menu'
-          }
-        >
-          <ul className="list-unstyled ps-0 navi_sidebar">
-            {/* Dashboard */}
-            <li
-              onClick={toggleActive}
-              className={`${currentPage === 'Dashboard' ? 'active' : ''} mb-1`}
-            >
-              <Link to="/user_profile/dashboard">
-                <i className="ri-home-4-line navi_sidebar_icon" aria-hidden />
-                <div className="dashboard_menu_hd">Dashboard</div>
-              </Link>
-            </li>
-
-            {/* Assets */}
-            <li className="mb-1">
-              <button
-                type="button"
-                className="btn btn-toggle collapsed"
-                onClick={() => toggleSection('assets')}
-              >
-                <i className="ri-wallet-3-line navi_sidebar_icon" aria-hidden />
-                <div
-                  className={`dashboard_menu_hd ${assetsActiveUl ? 'active_ul' : ''}`}
-                >
-                  Assets
-                </div>
-                <span>
-                  <i className="ri-arrow-down-s-line" />
-                </span>
-              </button>
-              <div
-                className={`collapse ${openSection === 'assets' ? 'show' : ''}`}
-              >
-                <ul className="btn-toggle-nav list-unstyled fw-normal pb-1 small">
-                  <li
-                    onClick={toggleActive}
-                    className={currentPage === 'Overview' ? 'active' : ''}
-                  >
-                    <Link to="/user_profile/asset_overview" className="rounded">
-                      Overview
-                    </Link>
-                  </li>
-                  {walletTypes?.length > 0 &&
-                    walletTypes.map((wallet) => {
-                      const walletLabel = capitalizeWallet(wallet)
-                      return (
-                        <li
-                          key={wallet}
-                          onClick={toggleActive}
-                          className={currentPage === walletLabel ? 'active' : ''}
-                        >
-                          <Link
-                            to={`/user_profile/wallet/${wallet}`}
-                            className="rounded"
-                          >
-                            {walletLabel}
-                          </Link>
-                        </li>
-                      )
-                    })}
-                </ul>
-              </div>
-            </li>
-
-            {/* Orders */}
-            <li className="mb-1">
-              <button
-                type="button"
-                className="btn btn-toggle collapsed"
-                onClick={() => toggleSection('orders')}
-              >
-                <i
-                  className="ri-file-list-3-line navi_sidebar_icon"
-                  aria-hidden
-                />
-                <div
-                  className={`dashboard_menu_hd ${ordersActiveUl ? 'active_ul' : ''}`}
-                >
-                  Orders
-                </div>
-                <span>
-                  <i className="ri-arrow-down-s-line" />
-                </span>
-              </button>
-              <div
-                className={`collapse ${openSection === 'orders' ? 'show' : ''}`}
-              >
-                <ul className="btn-toggle-nav list-unstyled fw-normal pb-1 small">
-                  <li
-                    onClick={toggleActive}
-                    className={currentPage === 'Spot Order' ? 'active' : ''}
-                  >
-                    <Link to="/user_profile/spot_orders" className="rounded">
-                      Spot Order
-                    </Link>
-                  </li>
-                  <li
-                    onClick={toggleActive}
-                    className={currentPage === 'Open Order' ? 'active' : ''}
-                  >
-                    <Link to="/user_profile/open_orders" className="rounded">
-                      Open Order
-                    </Link>
-                  </li>
-                  <li
-                    onClick={toggleActive}
-                    className={
-                      currentPage === 'Transaction History' ? 'active' : ''
-                    }
-                  >
-                    <Link
-                      to="/user_profile/transaction_history"
-                      className="rounded"
-                    >
-                      Transaction History
-                    </Link>
-                  </li>
-                  <li
-                    onClick={toggleActive}
-                    className={currentPage === 'Swap History' ? 'active' : ''}
-                  >
-                    <Link to="/user_profile/swap_history" className="rounded">
-                      Swap History
-                    </Link>
-                  </li>
-                  <li
-                    onClick={toggleActive}
-                    className={
-                      currentPage === 'Wallet Transfer History' ? 'active' : ''
-                    }
-                  >
-                    <Link
-                      to="/user_profile/wallet_transfer_history"
-                      className="rounded"
-                    >
-                      Internal Wallet Transfer
-                    </Link>
-                  </li>
-                  <li
-                    onClick={toggleActive}
-                    className={
-                      currentPage === 'Earning Plan History' ? 'active' : ''
-                    }
-                  >
-                    <Link
-                      to="/user_profile/earning_plan_history"
-                      className="rounded"
-                    >
-                      Earning History
-                    </Link>
-                  </li>
-                </ul>
-              </div>
-            </li>
-
-            {/* Account */}
-            <li className="mb-1">
-              <button
-                type="button"
-                className="btn btn-toggle collapsed"
-                onClick={() => toggleSection('account')}
-              >
-                <i
-                  className="ri-user-settings-line navi_sidebar_icon"
-                  aria-hidden
-                />
-                <div
-                  className={`dashboard_menu_hd ${accountActiveUl ? 'active_ul' : ''}`}
-                >
-                  Account
-                </div>
-                <span>
-                  <i className="ri-arrow-down-s-line" />
-                </span>
-              </button>
-              <div
-                className={`collapse ${openSection === 'account' ? 'show' : ''}`}
-              >
-                <ul className="btn-toggle-nav list-unstyled fw-normal pb-1 small">
-                  <li
-                    onClick={toggleActive}
-                    className={currentPage === 'Settings' ? 'active' : ''}
-                  >
-                    <Link to="/user_profile/profile_setting" className="rounded">
-                      Settings
-                    </Link>
-                  </li>
-                  <li
-                    onClick={toggleActive}
-                    className={currentPage === 'Verification' ? 'active' : ''}
-                  >
-                    <Link to="/user_profile/kyc" className="rounded">
-                      Verification
-                    </Link>
-                  </li>
-                  <li
-                    onClick={toggleActive}
-                    className={currentPage === 'Support' ? 'active' : ''}
-                  >
-                    <Link to="/user_profile/support" className="rounded">
-                      Support
-                    </Link>
-                  </li>
-                </ul>
-              </div>
-            </li>
-
-            {/* Earning */}
-            <li
-              onClick={toggleActive}
-              className={`${currentPage === 'Earning' ? 'active' : ''} mb-1`}
-            >
-              <Link to="/earning">
-                <i
-                  className="ri-money-dollar-circle-line navi_sidebar_icon"
-                  aria-hidden
-                />
-                <div className="dashboard_menu_hd">Earning</div>
-              </Link>
-            </li>
-
-            {/* Security */}
-            <li
-              onClick={toggleActive}
-              className={`${currentPage === 'Security' ? 'active' : ''} mb-1`}
-            >
-              <Link to="/user_profile/two_factor_authentication">
-                <i
-                  className="ri-shield-check-line navi_sidebar_icon"
-                  aria-hidden
-                />
-                <div className="dashboard_menu_hd">Security</div>
-              </Link>
-            </li>
-
-            {/* Quick Swap */}
-            <li
-              onClick={toggleActive}
-              className={`${currentPage === 'Quick Swap' ? 'active' : ''} mb-1`}
-            >
-              <Link to="/user_profile/swap">
-                <i className="ri-swap-line navi_sidebar_icon" aria-hidden />
-                <div className="dashboard_menu_hd">Quick Swap</div>
-              </Link>
-            </li>
-
-            {/* Notification */}
-            <li
-              onClick={toggleActive}
-              className={`${currentPage === 'Notification' ? 'active' : ''} mb-1`}
-            >
-              <Link to="/user_profile/notification">
-                <i
-                  className="ri-notification-3-line navi_sidebar_icon"
-                  aria-hidden
-                />
-                <div className="dashboard_menu_hd">Notification</div>
-              </Link>
-            </li>
-
-            {/* Activity logs */}
-            <li
-              onClick={toggleActive}
-              className={`${currentPage === 'Activity logs' ? 'active' : ''} mb-1`}
-            >
-              <Link to="/user_profile/activity_logs">
-                <i className="ri-history-line navi_sidebar_icon" aria-hidden />
-                <div className="dashboard_menu_hd">Activity logs</div>
-              </Link>
-            </li>
-          </ul>
-
-          <div
-            className="logout_btn"
-            onClick={requestLogout}
-            role="button"
-            tabIndex={0}
-            onKeyDown={(e) => {
-              if (e.key === 'Enter' || e.key === ' ') {
-                e.preventDefault()
-                requestLogout()
-              }
-            }}
-          >
-            <Link to="#/" onClick={(e) => e.preventDefault()}>
-              Logout
-              <i className="ri-logout-circle-r-line" />
-            </Link>
-          </div>
-        </div>
-        <Outlet />
       </div>
 
-      <LogoutConfirmModal
-        open={logoutConfirmOpen}
-        onConfirm={confirmLogout}
-        onCancel={cancelLogout}
-      />
+      <div className={`dashboard${sidebarCollapsed ? ' dashboard--sidebar-collapsed' : ''}${hideSidebar ? ' dashboard--no-sidebar' : ''}`}>
+        {!hideSidebar && (
+          <div
+            id="content"
+            className={`${isActive ? 'active flex-shrink-0 leftside_menu' : 'flex-shrink-0 leftside_menu'} profile-sidebar-shell${sidebarCollapsed ? ' profile-sidebar-shell--collapsed' : ''}${orderRail ? ' profile-sidebar-shell--orders' : ' profile-sidebar-shell--dashboard'}`}
+          >
+            <button
+              type="button"
+              className="profile-sidebar-collapse-btn"
+              onClick={() => setSidebarCollapsed((c) => !c)}
+              aria-expanded={!sidebarCollapsed}
+              aria-label={sidebarCollapsed ? 'Expand navigation' : 'Collapse navigation'}
+            >
+              <i className={sidebarCollapsed ? 'ri-arrow-right-s-line' : 'ri-arrow-left-s-line'} aria-hidden="true" />
+            </button>
+
+            {orderRail ? (
+              <OrderSidebar toggleContent={toggleContent} />
+            ) : (
+              <DashboardSidebar toggleContent={toggleContent} walletTypes={walletTypes} />
+            )}
+            {!orderRail && (
+              <div className="logout_btn" onClick={logOut}>
+                <Link to="#/">
+                  Logout<i className="ri-logout-circle-r-line"></i>
+                </Link>
+              </div>
+            )}
+          </div>
+        )}
+        <Outlet />
+      </div>
     </>
   )
 }

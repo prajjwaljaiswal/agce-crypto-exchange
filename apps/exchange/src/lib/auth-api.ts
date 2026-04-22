@@ -29,6 +29,14 @@ import type {
   PasskeyLoginSuccess,
   PasskeyListResponse,
   GoogleAuthSetupResponse,
+  ToggleMfaPayload,
+  ToggleMfaResponse,
+  BindMfaPayload,
+  BindMfaResponse,
+  SetFundPasswordPayload,
+  ChangeFundPasswordPayload,
+  RemoveFundPasswordPayload,
+  FundPasswordResponse,
 } from '@agce/types'
 import { http } from './http.js'
 
@@ -160,6 +168,27 @@ export const authApi = {
     return http(`${PASSKEY_BASE}/passkey/${encodeURIComponent(credentialId)}`, {
       method: 'DELETE',
     })
+  },
+
+  toggleMfa(payload: ToggleMfaPayload): Promise<ToggleMfaResponse> {
+    return http(`${BASE}/toggle-mfa`, { method: 'POST', body: payload })
+  },
+
+  bindMfa(payload: BindMfaPayload): Promise<BindMfaResponse> {
+    return http(`${BASE}/bind-mfa`, { method: 'POST', body: payload })
+  },
+
+  // ── Fund Password ──
+  setFundPassword(payload: SetFundPasswordPayload): Promise<FundPasswordResponse> {
+    return http(`${BASE}/fund-password`, { method: 'POST', body: payload })
+  },
+
+  changeFundPassword(payload: ChangeFundPasswordPayload): Promise<FundPasswordResponse> {
+    return http(`${BASE}/fund-password`, { method: 'PATCH', body: payload })
+  },
+
+  removeFundPassword(payload: RemoveFundPasswordPayload): Promise<FundPasswordResponse> {
+    return http(`${BASE}/fund-password`, { method: 'DELETE', body: payload })
   },
 
   // ── Google Authenticator (TOTP) ──
