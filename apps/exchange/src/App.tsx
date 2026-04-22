@@ -34,7 +34,6 @@ import {
   OpenOrders,
   ProfileLayout,
   Settings,
-  SpotOrders,
   Support,
   Swap,
   SwapHistory,
@@ -46,6 +45,24 @@ import './App.css'
 import Trade from './features/Trade/index.js'
 import { SocketProvider } from './features/Trade/SocketContext.js'
 import Market from './features/Market/index.jsx'
+import SmsVerification from './features/user-profile/pages/security/TwofactorPage/smsVerification.js'
+import EmailVerification from './features/user-profile/pages/security/TwofactorPage/emailVerification.js'
+import AntiPhishing from './features/user-profile/pages/security/TwofactorPage/antiPhishing.js'
+import EmergencyContact from './features/user-profile/pages/security/TwofactorPage/emergencyContact.js'
+import AccountConnections from './features/user-profile/pages/security/TwofactorPage/accountConnections.js'
+import ChangeLoginPassword from './features/user-profile/pages/security/TwofactorPage/changeLoginPassword.js'
+import SetFundPassword from './features/user-profile/pages/security/TwofactorPage/setFundPassword.js'
+import AuthorizedDevices from './features/user-profile/pages/security/TwofactorPage/authorizedDevices.js'
+import SecurityLogs from './features/user-profile/pages/security/TwofactorPage/securityLogs.js'
+import DisableAccount from './features/user-profile/pages/security/TwofactorPage/disableAccount.js'
+import CloseAccount from './features/user-profile/pages/security/TwofactorPage/closeAccount.js'
+import ThirdPartyAccess from './features/user-profile/pages/security/TwofactorPage/thirdPartyAccess.js'
+import PasskeyPage from './features/user-profile/pages/security/TwofactorPage/PassKey.js'
+import GoogleAuthPage from './features/user-profile/pages/security/TwofactorPage/GoogleAuthPage.js'
+import SpotOrders from './features/user-profile/pages/Order/SpotOrders.js'
+import SpotPositionHistory from './features/user-profile/pages/Order/SpotPositionHistory.js'
+import DepositHistory from './features/user-profile/pages/Order/DepositHistory.js'
+import WithdrawHistory from './features/user-profile/pages/Order/WithdrawHistory.js'
 
 const NO_FOOTER_ROUTE_PREFIXES = [
   '/signup',
@@ -103,8 +120,16 @@ function AppInner() {
               <Route index element={<Dashboard />} />
               <Route path="dashboard" element={<Dashboard />} />
               <Route path="asset_overview" element={<AssetOverview />} />
-              <Route path="spot_orders" element={<SpotOrders />} />
-              <Route path="open_orders" element={<OpenOrders />} />
+              
+              
+              <Route path="orders" element={<SpotOrders />} />
+              <Route path="orders/spot_orders" element={<SpotOrders />} />
+              <Route path="orders/spot_order_history" element={<SpotPositionHistory />} />
+              <Route path="orders/deposit_history" element={<DepositHistory />} />
+               <Route path="orders/withdraw_history" element={<WithdrawHistory />} />
+              <Route path="orders/trade_history" element={<SpotPositionHistory />} />
+
+
               <Route path="transaction_history" element={<TransactionHistory />} />
               <Route path="swap_history" element={<SwapHistory />} />
               <Route path="wallet_transfer_history" element={<WalletTransferHistory />} />
@@ -116,6 +141,22 @@ function AppInner() {
               <Route path="swap" element={<Swap />} />
               <Route path="notification" element={<Notifications />} />
               <Route path="activity_logs" element={<ActivityLogs />} />
+
+              <Route path="security" element={<TwoFactor />} />
+              <Route path="security/smsVerification" element={<SmsVerification />} />
+              <Route path="security/emailVerification" element={<EmailVerification />} />
+              <Route path="security/antiPhishing" element={<AntiPhishing />} />
+              <Route path="security/emergencyContact" element={<EmergencyContact />} />
+              <Route path="security/accountConnections" element={<AccountConnections />} />
+              <Route path="security/changeLoginPassword" element={<ChangeLoginPassword />} />
+              <Route path="security/setFundPassword" element={<SetFundPassword />} />
+              <Route path="security/authorizedDevices" element={<AuthorizedDevices />} />
+              <Route path="security/securityLogs" element={<SecurityLogs />} />
+              <Route path="security/disableAccount" element={<DisableAccount />} />
+              <Route path="security/closeAccount" element={<CloseAccount />} />
+              <Route path="security/thirdPartyAccess" element={<ThirdPartyAccess />} />
+              <Route path="security/passkey" element={<PasskeyPage />} />
+              <Route path="security/google-authenticator" element={<GoogleAuthPage />} />
             </Route>
 
             <Route path="/asset_management" element={<AssetManagementLayout />}>

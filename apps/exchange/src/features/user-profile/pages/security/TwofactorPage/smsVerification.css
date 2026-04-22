@@ -1,0 +1,490 @@
+/* SMS Verification page — fully scoped */
+
+.smsv-page {
+  width: 100%;
+  min-height: 100%;
+  padding: 35px 0px;
+  max-width: 1150px;
+  margin: 0 auto;
+  height: 100vh;
+}
+
+.smsv-page *,
+.smsv-page *::before,
+.smsv-page *::after {
+  box-sizing: border-box;
+}
+
+.smsv-page__crumbs {
+  margin-bottom: 18px;
+}
+
+.smsv-page__crumbList {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: #8E939C;
+  font-size: 15px;
+  font-weight: 500;
+}
+
+.smsv-page__crumbItem--active {
+  color: #101828;
+  font-weight: 700;
+}
+
+.smsv-page__crumbSep {
+  color: #8E939C;
+}
+
+.smsv-page__crumbLink {
+  border: none;
+  background: transparent;
+  padding: 0;
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
+}
+
+.smsv-page__crumbLink:hover {
+  color: #101828;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.smsv-page__title {
+  margin: 0 0 30px;
+  text-align: left;
+  font-size: 40px;
+  font-weight: 600;
+  letter-spacing: 0px;
+  color: #101828;
+}
+
+.smsv-page__subtitle {
+  margin: -20px 0 28px;
+  font-size: 15px;
+  font-weight: 400;
+  color: #6b7280;
+  line-height: 1.5;
+}
+
+.smsv-page__emailHint {
+  font-size: 13px;
+  color: #6b7280;
+  font-weight: 400;
+  margin-bottom: 6px;
+}
+
+.smsv-page__emailHint strong {
+  color: #101828;
+  font-weight: 600;
+}
+
+.smsv-form {
+  width: 600px;
+  max-width: 100%;
+  margin: 50px auto;
+  text-align: left;
+  overflow: visible;
+}
+
+.smsv-field {
+  display: block;
+  margin-top: 18px;
+}
+
+.smsv-label {
+  display: block;
+  font-size: 16px;
+  font-weight: 500;
+  color: #101828;
+  margin-bottom: 5px;
+}
+
+.smsv-phoneRow {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background-color: #F5F6F7;
+  border-radius: 8px;
+  height: 54px;
+  position: relative;
+  overflow: visible;
+}
+
+.smsv-countryBtn {
+    padding: 0px 0px 0px 12px;
+    border-radius: 0px;
+    background-color: transparent;
+    border: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    flex-shrink: 0;
+}
+
+.smsv-countrySelect {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  height: 100%;
+}
+
+.smsv-countryMenu {
+  position: absolute;
+  top: calc(100% + 8px);
+  left: 0;
+  min-width: 220px;
+  padding: 8px;
+  background: #fff;
+  border: 1px solid #e6e8ec;
+  border-radius: 12px;
+  box-shadow: 0 18px 40px rgba(15, 23, 42, 0.12);
+  z-index: 9999;
+  max-height: 340px;
+  overflow: auto;
+  overscroll-behavior: contain;
+}
+
+.smsv-countryOption {
+  width: 100%;
+  border: none;
+  background: transparent;
+  border-radius: 10px;
+  padding: 10px 10px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+  text-align: left;
+}
+
+.smsv-countryOption:hover {
+  background: #f6f7f9;
+}
+
+.smsv-countryOption.is-active {
+  background: rgba(172, 138, 80, 0.12);
+}
+
+.smsv-countryLabel {
+  flex: 1 1 auto;
+  font-size: 14px;
+  font-weight: 600;
+  color: #101828;
+}
+
+.smsv-countryCode {
+  font-size: 13px;
+  font-weight: 600;
+  color: #6b7280;
+}
+
+.smsv-flag {
+  font-size: 16px;
+}
+
+.smsv-code {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--smsv-text);
+}
+
+.smsv-caret {
+  color: #717171;
+  font-size: 12px;
+}
+
+.smsv-input {
+  width: 100%;
+  height: 31px;
+  border-radius: 0px;
+  border: 1px solid var(--smsv-border);
+  background: none;
+  padding: 0 10px;
+  padding-right: 20px;
+  font-weight: 500;
+  font-size: 14px;
+  color: #84888C;
+  outline: none;
+  border-left: 1px solid #C3C6C8;
+}
+
+.smsv-input::placeholder {
+  color: #9ca3af;
+}
+
+
+.smsv-smsRow .smsv-input{ border-left: none; padding: 0px 5px; }
+
+.smsv-smsRow {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background-color: #F5F6F7;
+  border-radius: 8px;
+  height: 54px;
+
+  padding: 0px 10px;
+}
+
+.smsv-input--sms {
+  flex: 1 1 auto;
+}
+
+.smsv-sendBtn {
+    /* height: 44px; */
+    padding: 0 12px;
+    border-radius: 0px;
+    border: none;
+    background: none;
+    color: #AC8A50;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    flex-shrink: 0;
+}
+
+.smsv-hint {
+  margin-top: 7px;
+  font-size: 14px;
+  color: #AAAAAA;
+  font-weight: 500;
+}
+
+.smsv-confirmBtn {
+  width: 100%;
+  height: 52px;
+  margin-top: 20px;
+  border: none;
+  border-radius: 999px;
+  background: #303236;
+  color: #fff;
+  font-size: 18px;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.smsv-confirmBtn:hover {
+  background: #1a1b1f;
+}
+
+/* Security Verification popup (opened from Confirm) */
+.smsv-secverify-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(255, 255, 255, 0.50);
+  backdrop-filter: blur(3px);
+  -webkit-backdrop-filter: blur(3px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 18px;
+  z-index: 100000010;
+}
+
+.smsv-secverify-modal {
+  width: 1130px;
+  max-width: 92vw;
+  border-radius: 20px;
+  background: #ffffffd6;
+  border: 1px solid #eef2f6;
+  box-shadow: 0 28px 60px rgba(15, 23, 42, 0.18);
+  padding: 32px 24px;
+  position: relative;
+  text-align: left;
+}
+
+.smsv-secverify-close {
+  position: absolute;
+  top: 16px;
+  right: 18px;
+  width: 36px;
+  height: 36px;
+  border: none;
+  background: transparent;
+  color: #111827;
+  font-size: 26px;
+  line-height: 1;
+  cursor: pointer;
+  border-radius: 10px;
+}
+
+.smsv-secverify-close:hover {
+  background: rgba(17, 24, 39, 0.06);
+}
+
+.smsv-secverify-title {
+  margin: 0;
+  padding-right: 44px;
+  font-size: 24px;
+  font-weight: 600;
+  color: #111827;
+  letter-spacing: -0.02em;
+}
+
+.smsv-secverify-subtitle {
+  margin: 8px 0 18px;
+  font-size: 14px;
+  line-height: 1.5;
+  font-weight: 400;
+  color: #84888C;
+  max-width: 760px;
+}
+
+.smsv-secverify-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 6px;
+  padding-top: 10px;
+}
+
+.smsv-secverify-labelRow {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.smsv-secverify-label {
+  font-size: 16px;
+  font-weight: 500;
+  color: #070808;
+  margin-bottom: 6px;
+  display: block;
+}
+
+.smsv-secverify-link {
+  border: none;
+  background: transparent;
+  padding: 0;
+  font-size: 14px;
+  font-weight: 500;
+  color: #AC8A50;
+  cursor: pointer;
+}
+
+.smsv-secverify-inputWrap {
+  position: relative;
+  margin-bottom: 14px;
+}
+
+.smsv-secverify-input {
+  width: 100%;
+  height: 42px;
+  border-radius: 10px;
+  border: 1px solid #e5e7eb;
+  background: #EDEEEF;
+  padding: 0 44px 0 14px;
+  font-size: 14px;
+  font-weight: 500;
+  color: #111827;
+  outline: none;
+}
+
+.smsv-secverify-input::placeholder {
+  color: #9ca3af;
+  font-weight: 500;
+}
+
+.smsv-secverify-eye {
+  position: absolute;
+  top: 50%;
+  right: 12px;
+  transform: translateY(-50%);
+  width: 32px;
+  height: 32px;
+  border: none;
+  background: transparent;
+  color: #9ca3af;
+  cursor: pointer;
+  border-radius: 8px;
+}
+
+.smsv-secverify-eye:hover {
+  background: rgba(17, 24, 39, 0.06);
+  color: #6b7280;
+}
+
+.smsv-secverify-timer {
+  position: absolute;
+  top: 50%;
+  right: 12px;
+  transform: translateY(-50%);
+  font-size: 12px;
+  font-weight: 700;
+  color: #9ca3af;
+}
+
+.smsv-secverify-helper {
+  margin: 2px 0 10px;
+  font-size: 12px;
+  font-weight: 600;
+  color: #6b7280;
+}
+
+.smsv-secverify-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-top: 6px;
+  padding-top: 6px;
+}
+
+.smsv-secverify-unable {
+  border: none;
+  background: transparent;
+  padding: 0;
+  font-size: 14px;
+  font-weight: 500;
+  color: #ac8a50;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  cursor: pointer;
+}
+
+.smsv-secverify-confirm {
+  width: 435px;
+  max-width: 100%;
+  height: 48px;
+  border: none;
+  border-radius: 999px;
+  background: #2d2e32;
+  color: #fff;
+  font-size: 17px;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.smsv-secverify-confirm:hover {
+  background: #1a1b1f;
+}
+
+@media (max-width: 720px) {
+  .smsv-secverify-grid {
+    grid-template-columns: 1fr;
+  }
+  .smsv-secverify-confirm {
+    width: 100%;
+  }
+  .smsv-secverify-footer {
+    flex-direction: column-reverse;
+    align-items: stretch;
+  }
+}
+
+@media (max-width: 520px) {
+  .smsv-page {
+    padding: 22px 16px 44px;
+  }
+  .smsv-page__title {
+    font-size: 26px;
+  }
+}
+

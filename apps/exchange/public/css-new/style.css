@@ -6,6 +6,11 @@ body {
     overflow-x: hidden;
     max-width: 100%;
     position: relative;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+    text-rendering: geometricPrecision;
+    font-weight: 400;
 }
 
 @supports (overflow: clip) {
@@ -97,7 +102,7 @@ header {
 }
 
 header .logo {
-    min-width: 200px;
+    min-width: 268px;
 }
 
 header .logo a {
@@ -130,6 +135,7 @@ header .logo img.eaglelogo {
     padding: 0px !important;
     color: #ffffff;
     font-size: 13.1px;
+    font-weight: 500;
     transition: color 0.3s ease;
 }
 
@@ -307,14 +313,14 @@ header .col-lg-2.logo_s {
 .banner_content h1 {
     width: 100%;
     line-height: 130%;
-    font-weight: 600;
+    font-weight: 700;
     font-size: 62px;
 }
 
 .banner_content h1 span.sub_heading {
     color: #D1AA67;
     font-size: 48px;
-    font-weight: 400;
+    font-weight: 500;
     background-color: #ffffff20;
     border: 1px solid #6A6A6A;
     padding: 7px;
@@ -367,7 +373,7 @@ span.sub_heading_img {
     border: none;
     padding: 0px 15px;
     width: 100%;
-    font-weight: 300;
+    font-weight: 400;
     background-color: transparent;
     font-size: 15px;
     color: #f7f7f7;
@@ -377,7 +383,7 @@ span.sub_heading_img {
     background-color: #D1AA67;
     font-size: 18px;
     white-space: nowrap;
-    font-weight: 400;
+    font-weight: 500;
     padding: 14px 36px;
     border: none;
     color: #fff;
@@ -395,7 +401,7 @@ span.sub_heading_img {
 
 .social_withus_outer span {
     font-size: 15px;
-    font-weight: 300;
+    font-weight: 400;
     color: #84888C;
 }
 
@@ -722,6 +728,7 @@ button.btn.btn-danger {
 }
 
 .features_bage {
+    font-weight: 500;
     font-size: 15px;
     background-color: #E2CAA0;
     color: #222017;
@@ -752,7 +759,7 @@ button.btn.btn-danger {
 .viewmorebtn a {
     color: #D1AA67;
     font-size: 18px;
-    font-weight: 300;
+    font-weight: 400;
 }
 
 .market_update_outer {
@@ -1346,7 +1353,7 @@ img.animation_effect.bitcoin1 {
 .latest_resources h2 span {
     color: #000000;
     display: block;
-    font-weight: 600;
+    font-weight: 700;
 }
 
 .resourceslft {
@@ -1429,7 +1436,7 @@ ul.howwork_list li span.steps {
 
 ul.howwork_list li h3 {
     font-size: 24px;
-    font-weight: 600;
+    font-weight: 700;
     color: #2C3131;
     margin-bottom: 5px;
 }
@@ -1451,9 +1458,9 @@ ul.howwork_list li p {
 
 .resources_news h3 {
     line-height: 130%;
-    font-size: 28px;
+    font-size: 30px;
     color: #000;
-    font-weight: 500;
+    font-weight: 600;
 }
 
 .resources_news p {
@@ -2417,6 +2424,14 @@ body .slick-dots li.slick-active button:before {
     row-gap: 18px;
 }
 
+.form-group.mb-3.trade_amount_field_wrap.slippage_check_fill {
+    margin-bottom: 0px !important;
+}
+
+.form-group.mb-3.trade_total_field_wrap {
+    margin-bottom: 0px !important;
+}
+
 .navbar-expand-lg .navbar-nav .dropdown-menu {
     background-color: #ffffff;
     width: 364px;
@@ -2424,7 +2439,7 @@ body .slick-dots li.slick-active button:before {
     padding: 16px;
     border-radius: 0px 0px 10px 10px;
     /* padding: 0px; */
-    margin-top: 18px;
+    margin-top: 21px;
     box-shadow: 0 10px 16px rgb(140 140 140 / 25%);
     min-width: 364px;
     overflow-x: hidden;
@@ -2527,7 +2542,7 @@ body .slick-dots li.slick-active button:before {
 .navigation .navbar-nav .dropdown-menu .dropdown-item .dropdown-item-desc,
 .navbar-expand-lg .navbar-nav .dropdown-menu .dropdown-item .dropdown-item-desc {
     font-size: 12px;
-    font-weight: 400;
+    font-weight: 500;
     color: #84888C;
     line-height: 16px;
     white-space: nowrap;
@@ -5950,7 +5965,7 @@ section.faq_sec {
 }
 
 .crypto_section h2 {
-    font-weight: 400;
+    font-weight: 500;
     font-size: 52px;
 }
 
@@ -6025,7 +6040,7 @@ section.faq_sec {
 }
 
 .deposit_crypto_block_coin h2 {
-    font-size: 15px;
+    font-size: 24px;
     font-weight: 500;
 }
 
@@ -6033,11 +6048,14 @@ section.faq_sec {
     margin-top: 28px !important;
 }
 
-footer .topheading_footer.mt-4.download_app_footer h3{ margin-bottom: 0px; }
+footer .topheading_footer.mt-4.download_app_footer h3 {
+    margin-bottom: 0px;
+}
 
 .depositcrypto_lft .search_icon_s {
     padding: 11px 15px;
-    height: 50px; }
+    height: 50px;
+}
 
 .deposit_crypto_left {
     width: 100%;
@@ -6064,11 +6082,16 @@ input.input_filed:focus {
     position: relative;
 }
 
-.deposit_crypto_right .faq_container{
+.depositcrypto_lft .faq_container {
     width: 100%;
     border: 1px solid #F2F3F4;
     border-radius: 11px;
     padding: 30px;
+    margin-top: -66px;
+}
+
+.recent_deposit_list .top_heading h4 {
+    font-size: 20px;
 }
 
 
@@ -6130,9 +6153,922 @@ input.input_filed:focus {
     display: flex;
     align-items: center;
     gap: 7px;
-    color: #3d3d3d;
+    color: #99A1AF;
     cursor: pointer;
 }
+
+.address_user_tp {
+    width: 100%;
+    display: block;
+    padding: 5px 0px 10px;
+}
+
+.address_user_tp ul {
+    display: flex;
+    gap: 48px;
+}
+
+.address_user_tp ul li button {
+    border: none;
+    background-color: transparent;
+    color: #6A7282;
+    font-size: 17px;
+    font-weight: 400;
+    padding: 0px;
+    cursor: pointer;
+}
+
+/* Withdraw to — primary tabs (Address / AGCE User) */
+.address_user_tp ul li button.is-active {
+    color: #070808;
+    font-weight: 500;
+    position: relative;
+    padding-bottom: 13px;
+}
+
+.address_user_tp ul li button.is-active::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    width: 40px;
+    margin: 0 auto;
+    right: 0;
+    bottom: 0;
+    height: 2.5px;
+    background: #303236;
+    border-radius: 1px;
+}
+
+/* AGCE User — secondary pill tabs */
+.agce_recipient_tp {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0px;
+    margin-top: 4px;
+    margin-bottom: 4px;
+}
+
+.agce_recipient_tp button {
+    border: none;
+    background: transparent;
+    color: #6A7282;
+    font-size: 12px;
+    font-weight: 400;
+    padding: 7px 20px;
+    border-radius: 999px;
+    cursor: pointer;
+    line-height: 1.2;
+}
+
+.agce_recipient_tp button.is-active {
+    background: #F0F1F3;
+    color: #303236;
+    font-weight: 500;
+}
+
+.search_icon_s_inner input {
+    border: none;
+    width: 100%;
+}
+
+.search_icon_s_inner.addressfill {
+    width: 95%;
+}
+
+.user_address_fill span button {
+    background-color: transparent;
+    border: none;
+    padding: 0px;
+}
+
+.user_address_fill_btn {
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 8px;
+    transition: background-color 0.15s ease;
+}
+
+/* .user_address_fill_btn:hover {
+    background-color: rgba(7, 8, 8, 0.05);
+}
+.user_address_fill_btn:focus-visible {
+    outline: 2px solid #c5a36a;
+    outline-offset: 2px;
+} */
+
+/* Address book panel (opens from user_address_fill_btn) */
+.withdraw_address_book_stack {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    width: 100%;
+}
+
+.withdraw_ab_idbar {
+    border: 1px solid #E4E4E4;
+    border-radius: 10px;
+    padding: 14px 16px;
+    background: #fff;
+    box-sizing: border-box;
+}
+
+.withdraw_ab_idbar_text {
+    font-size: 15px;
+    font-weight: 500;
+    color: #303236;
+    letter-spacing: 0.01em;
+}
+
+.withdraw_ab_idbar_icon {
+    display: inline-flex;
+    align-items: center;
+    opacity: 0.55;
+}
+
+.withdraw_ab_idbar_icon img {
+    width: 22px;
+    height: 22px;
+    display: block;
+}
+
+.withdraw_ab_maincard {
+    border: 1px solid #E3E3E3;
+    border-radius: 10px;
+    padding: 16px 0px;
+    position: relative;
+    background: #fff;
+    box-sizing: border-box;
+    box-shadow: 0px 4px 10px #00000014;
+}
+
+.withdraw_ab_card_head {
+    margin-bottom: 0px;
+    padding: 0px 20px;
+}
+
+.withdraw_ab_tabs {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 10px;
+}
+
+.withdraw_ab_tab {
+    border: none;
+    background: transparent;
+    padding: 8px 16px;
+    font-size: 12px;
+    font-weight: 400;
+    color: #84888C;
+    border-radius: 999px;
+    cursor: pointer;
+    line-height: 1.2;
+}
+
+.withdraw_ab_tab.is-active.is-muted {
+    background: #F3F4F6;
+    color: #070808;
+    font-weight: 400;
+}
+
+.withdraw_ab_tab.is-active.is-accent {
+    background: #F3F4F6;
+    color: #070808;
+    font-weight: 400;
+}
+
+.withdraw_ab_edit_btn {
+    border: none;
+    position: absolute;
+    background: transparent;
+    right: 15px;
+    top: 15px;
+    color: #84888C;
+    cursor: pointer;
+}
+
+/* .withdraw_ab_edit_btn:hover {
+    color: #303236;
+    background: rgba(7, 8, 8, 0.05);
+} */
+
+.withdraw_ab_body {
+    padding: 20px;
+    background-color: #ffffff;
+    margin: 5px 0px 0px;
+}
+
+.withdraw_ab_coin {
+    font-size: 18px;
+    font-weight: 500;
+    color: #070808;
+    margin-bottom: 10px;
+    font-family: "Inter", system-ui, sans-serif;
+}
+
+.withdraw_ab_network_row,
+.withdraw_ab_history_row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 8px 10px;
+    font-size: 14px;
+    line-height: 1.45;
+}
+
+.withdraw_ab_network_tag {
+    color: #B98835;
+    font-weight: 400;
+    flex-shrink: 0;
+}
+
+.withdraw_ab_network_tag--bsc {
+    /* color: #C5A36A; */
+    font-size: 16px;
+}
+
+.withdraw_ab_addr_text {
+    color: #303236;
+    font-size: 18px;
+    padding-left: 24px;
+    word-break: break-all;
+}
+
+.withdraw_ab_badge_unverified {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    margin-top: 14px;
+    line-height: 20px;
+    padding: 0px 5px;
+    border-radius: 4px;
+    background: #C6A5A5;
+    color: #C21F33;
+    font-size: 14px;
+    font-weight: 300;
+}
+
+.withdraw_ab_badge_unverified i {
+    font-size: 16px;
+}
+
+.withdraw_ab_body_history {
+    margin: 15px 0px;
+    background-color: #F2F2F2;
+}
+
+/* .withdraw_ab_history_panel {
+    background: #F5F5F5;
+    border-radius: 8px;
+    padding: 14px 16px;
+} */
+
+.withdraw_ab_history_top {
+    margin-bottom: 12px;
+}
+
+.withdraw_ab_history_dash {
+    color: #84888C;
+    font-size: 14px;
+    letter-spacing: 0.08em;
+}
+
+.withdraw_ab_save_link {
+    border: none;
+    background: none;
+    padding: 0;
+    font-size: 16px;
+    font-weight: 400;
+    color: #B98835;
+    text-decoration: underline;
+    text-underline-offset: 3px;
+    cursor: pointer;
+}
+
+.withdraw_ab_save_link:hover {
+    color: #a88958;
+}
+
+.withdraw_agce_input_wrap {
+    width: 100%;
+}
+
+.withdraw_agce_input_wrap input {
+    width: 100%;
+    border: 1px solid #E4E4E4;
+    border-radius: 10px;
+    padding: 12px 15px;
+    height: 50px;
+    font-size: 14px;
+    color: #070808;
+    background: #fff;
+    outline: none;
+    box-sizing: border-box;
+}
+
+.withdraw_agce_input_wrap input::placeholder {
+    color: #99A1AF;
+}
+
+.withdraw_agce_input_wrap input:focus {
+    border-color: #c8ccd4;
+    box-shadow: 0 0 0 1px rgba(7, 8, 8, 0.06);
+}
+
+.withdraw_agce_input_wrap input.is-invalid {
+    border-color: #ef4444;
+    box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.12);
+}
+
+.withdraw_agce_phone_row.is-invalid {
+    border-color: #ef4444;
+    box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.12);
+}
+
+.withdraw_field_error {
+    margin-top: 8px;
+    font-size: 12px;
+    line-height: 1.3;
+    color: #ef4444;
+}
+
+/* AGCE User -> Phone (mobile screenshot) */
+.withdraw_agce_phone_row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    width: 100%;
+}
+
+.withdraw_country_btn {
+    flex: 0 0 auto;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    height: 32px;
+    padding: 0 7px;
+    border: 1px solid #E4E4E4;
+    border-radius: 6px;
+    background: #fff;
+    color: #6A7282;
+    cursor: pointer;
+}
+
+.withdraw_agce_input_wrap .withdraw_agce_phone_row input {
+    height: auto !important;
+    border: none;
+}
+
+.withdraw_agce_input_wrap .withdraw_agce_phone_row input:focus {
+    box-shadow: none;
+}
+
+.withdraw_country_flag {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 18px;
+    height: 18px;
+    font-size: 16px;
+    line-height: 1;
+}
+
+.withdraw_country_code {
+    font-size: 14px;
+    font-weight: 600;
+    color: #6A7282;
+}
+
+.withdraw_country_btn i {
+    font-size: 16px;
+    line-height: 1;
+    color: #A0A6B0;
+}
+
+.withdraw_agce_input_wrap .withdraw_agce_phone_row input {
+    flex: 1 1 auto;
+    padding: 0px;
+}
+
+.withdraw_agce_phone_row {
+    position: relative;
+    border: 1px solid #E4E4E4;
+    border-radius: 10px;
+    padding: 8px;
+}
+
+span.payee_text {
+    font-size: 12px;
+    color: #99A1AF;
+    font-weight: 300;
+    margin-top: 8px;
+    display: block;
+}
+
+.withdraw_country_menu {
+    position: absolute;
+    left: 0;
+    top: calc(100% + 8px);
+    width: 280px;
+    max-width: 85vw;
+    background: #fff;
+    border: 1px solid #EEF0F3;
+    border-radius: 12px;
+    box-shadow: 0 14px 40px rgba(0, 0, 0, 0.14);
+    padding: 6px;
+    z-index: 60;
+}
+
+.withdraw_country_item {
+    width: 100%;
+    display: grid;
+    grid-template-columns: 22px 52px 1fr;
+    gap: 10px;
+    align-items: center;
+    padding: 10px 10px;
+    border: none;
+    background: transparent;
+    border-radius: 10px;
+    cursor: pointer;
+    text-align: left;
+}
+
+.withdraw_country_item:hover {
+    background: #F6F7F9;
+}
+
+.withdraw_country_item[aria-selected="true"] {
+    background: #F0F1F3;
+}
+
+.withdraw_country_item_flag {
+    font-size: 16px;
+    line-height: 1;
+}
+
+.withdraw_country_item_code {
+    font-size: 13px;
+    font-weight: 700;
+    color: #303236;
+}
+
+.withdraw_country_item_label {
+    font-size: 13px;
+    color: #6A7282;
+}
+
+.withdral_bl_inner .search_icon_s .withdraw_to_network_val {
+    color: #070808;
+    flex: 1;
+    text-align: left;
+}
+
+.withdral_bl_inner .search_icon_s .withdraw_chev {
+    color: #99A1AF;
+    display: inline-flex;
+    align-items: center;
+    font-size: 18px;
+    line-height: 1;
+}
+
+.withdral_bl_inner {
+    width: 100%;
+    position: relative;
+    display: block;
+}
+
+.market_section.maindashboard {
+    padding: 28px 28px 14px;
+    border-radius: 15px;
+    box-shadow: 0px 0px 20px #00000017;
+    margin: 40px 0px 20px;
+    border: 1px solid #F3F4F6;
+}
+
+/* Withdraw — Step 3 (Figma) "Withdrawal Amount" card */
+.withdraw_step3_figma {
+    width: 100%;
+    margin-top: 14px;
+    font-family: "Inter", system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+}
+
+.withdraw_amt_field {
+    position: relative;
+    width: 100%;
+    /* background: #fff; */
+    border: 1px solid #E4E4E4;
+    border-radius: 10px;
+    padding: 12px 14px;
+    box-sizing: border-box;
+}
+
+.withdraw_amt_field input {
+    border: none;
+    outline: none;
+    background: transparent;
+    width: 100%;
+    padding-right: 110px;
+    /* space for suffix */
+    font-size: 14px;
+    color: #303236;
+}
+
+.withdraw_amt_field input::placeholder {
+    color: #A0A6B0;
+}
+
+.withdraw_amt_suffix {
+    position: absolute;
+    top: 50%;
+    right: 16px;
+    transform: translateY(-50%);
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 13px;
+    color: #303236;
+    white-space: nowrap;
+}
+
+.withdraw_amt_coin {
+    font-weight: 400;
+    letter-spacing: 0.01em;
+}
+
+.withdraw_amt_divider {
+    color: #D0D4DC;
+}
+
+.withdraw_amt_max {
+    border: none;
+    background: none;
+    padding: 0;
+    font-size: 14px;
+    font-weight: 500;
+    color: #D1AA67;
+    cursor: pointer;
+    text-transform: uppercase;
+}
+
+.withdraw_amt_max:hover {
+    color: #a88958;
+}
+
+.withdraw_amt_max:disabled {
+    color: #c4c6cb;
+    cursor: not-allowed;
+    opacity: 0.65;
+}
+
+.withdraw_amt_max:disabled:hover {
+    color: #c4c6cb;
+}
+
+.withdraw_amt_meta_row {
+    display: flex;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 14px 2px 8px;
+    color: #4A5565;
+}
+
+.withdraw_amt_meta_left {
+    min-width: 160px;
+    position: relative;
+    /* anchor popup */
+}
+
+.withdraw_amt_meta_title {
+    border: none;
+    background: none;
+    padding: 0;
+    margin: 0;
+    font-size: 14px;
+    font-weight: 400;
+    color: #4A5565;
+    cursor: pointer;
+    text-align: left;
+    text-decoration: underline wavy rgba(74, 85, 101, 0.55);
+    text-underline-offset: 4px;
+}
+
+.withdraw_amt_meta_title:hover {
+    color: #303236;
+}
+
+.amountgreen {
+    color: #008236;
+}
+
+.withdraw_amt_meta_title:focus-visible {
+    outline: 2px solid rgba(197, 163, 106, 0.65);
+    outline-offset: 4px;
+    border-radius: 6px;
+}
+
+.recent_deposit_list.withdraw_recent_v2 .withdraw_recent_table tbody tr td .withdraw_recent_list_date{ color: #9CA3AF; }
+
+.withdraw_amt_meta_sub {
+    font-size: 14px;
+    font-weight: 400;
+    margin-top: 5px;
+}
+
+div#buytab .trade_pct_slider_shell { padding-top: 0px !important; }
+
+/* Available Withdraw: source selector popup (screenshot) */
+.withdraw_avail_src_pop {
+    position: absolute;
+    left: 0;
+    top: 32px;
+    width: 440px;
+    max-width: 440px;
+    background: #fff;
+    border: 1px solid #E3E3E3;
+    border-radius: 12px;
+    box-shadow: 0 14px 40px rgba(0, 0, 0, 0.14);
+    padding: 18px 18px 14px;
+    z-index: 50;
+}
+
+.withdraw_avail_src_head {
+    font-size: 12px;
+    font-weight: 400;
+    color: #7B8595;
+    margin-bottom: 10px;
+}
+
+.withdraw_avail_src_item {
+    width: 100%;
+    display: grid;
+    grid-template-columns: 18px 1fr;
+    gap: 10px;
+    align-items: start;
+    padding: 12px 10px;
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    border-radius: 10px;
+    text-align: left;
+}
+
+.withdraw_avail_src_item:hover {
+    background: #F6F7F9;
+}
+
+.withdraw_avail_src_check {
+    width: 18px;
+    height: 18px;
+    border-radius: 2px;
+    border: 1px solid #6B7280;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+    background: transparent;
+    margin-top: 2px;
+}
+
+.withdraw_avail_src_check.is-checked {
+    background: #303236;
+    border-color: #303236;
+}
+
+.withdraw_avail_src_check i {
+    font-size: 18px;
+    line-height: 1;
+}
+
+.withdraw_avail_src_txt {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.withdraw_avail_src_title {
+    font-size: 14px;
+    font-weight: 500;
+    color: #111827;
+    line-height: 1.1;
+}
+
+.withdraw_avail_src_amt {
+    font-size: 11px;
+    font-weight: 400;
+    color: #7B8595;
+}
+
+.withdraw_avail_src_note {
+    margin: 14px 0px;
+    padding-top: 14px;
+    border-top: 1px solid #EEF0F3;
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    color: #7B8595;
+    font-size: 10px;
+    line-height: 1.45;
+}
+
+.withdraw_avail_src_bullet {
+    margin-top: 2px;
+}
+
+.withdraw_amt_meta_right {
+    text-align: right;
+    min-width: 200px;
+}
+
+.withdraw_amt_net {
+    display: inline-flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 6px;
+    font-weight: 400;
+    font-size: 14px;
+    /* color: #A0A6B0; */
+    margin-bottom: 5px;
+}
+
+.withdraw_amt_refresh {
+    border: none;
+    background: none;
+    padding: 0;
+    cursor: pointer;
+    color: #99A1AF;
+    font-size: 14px;
+    line-height: 1;
+}
+
+.withdraw_amt_refresh:hover {
+    color: #84888C;
+}
+
+.withdraw_amt_nums {
+    font-size: 14px;
+    font-weight: 400;
+}
+
+.withdraw_amt_divline {
+    height: 1px;
+    width: 100%;
+    background: #EEF0F3;
+    margin: 30px 0 12px;
+}
+
+.withdraw_amt_kv {
+    color: #4A5565;
+}
+
+.withdraw_amt_kv_row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    padding: 8px 2px;
+}
+
+.withdraw_amt_k {
+    font-size: 14px;
+    font-weight: 400;
+}
+
+.withdraw_amt_v {
+    font-size: 14px;
+    font-weight: 400;
+}
+
+.withdraw_amt_kv_row--netfee {
+    padding-top: 0;
+}
+
+.withdraw_amt_netfee_btn {
+    border: none;
+    background: none;
+    padding: 0;
+    font-weight: 400;
+    font-size: 12px;
+    color: #8f9299;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.withdraw_amt_netfee_btn i {
+    font-size: 14px;
+    line-height: 1;
+    transition: transform 0.2s ease;
+}
+
+.withdraw_amt_netfee_btn i.is-open {
+    transform: rotate(90deg);
+}
+
+/* About Network Fee — modal content typography (see withdrawal.css .withdraw_netfee_modal) */
+
+.withdraw_netfee_panel_title {
+    font-size: 16px;
+    font-weight: 700;
+    color: #0f172a;
+    letter-spacing: -0.02em;
+    margin: 0;
+}
+
+.withdraw_netfee_panel_lead {
+    margin-top: 26px;
+    font-size: 16px;
+    letter-spacing: -0.5px;
+    font-weight: 500;
+    color: #101828;
+    line-height: 1.4;
+}
+
+body .withdraw_netfee_panel_text {
+    font-size: 14px;
+    color: #6A7282;
+    margin: 10px 0px 0px;
+}
+
+.withdraw_netfee_panel_link {
+    display: inline-block;
+    margin-top: 30px;
+    padding: 0;
+    border: none;
+    background: none;
+    cursor: pointer;
+    font: inherit;
+    font-size: 14px;
+    font-weight: 500;
+    color: #D1AA67;
+    text-decoration: underline;
+    text-underline-offset: 3px;
+    text-align: left;
+}
+
+.withdraw_netfee_panel_link:hover {
+    color: #957a44;
+}
+
+.withdraw_netfee_panel_ok {
+    display: block;
+    width: 100%;
+    margin-top: 26px;
+    height: 46px;
+    border-radius: 999px;
+    border: none;
+    background: #303236;
+    color: #fff;
+    font-size: 14px;
+    font-weight: 500;
+    letter-spacing: 0.02em;
+    cursor: pointer;
+}
+
+.withdraw_netfee_panel_ok:hover {
+    background: #0b1220;
+}
+
+.withdraw_amt_btn {
+    width: 100%;
+    margin-top: 14px;
+    height: 46px;
+    border-radius: 999px;
+    border: none;
+    background: #181a20;
+    color: #ffffff;
+    font-size: 15px;
+    font-weight: 400;
+    cursor: pointer;
+}
+
+.withdraw_amt_btn:disabled {
+    background: #E5E7EB;
+    color: #99A1AF;
+    cursor: not-allowed;
+}
+
+.withdraw_amt_btn:not(:disabled):hover {
+    filter: brightness(1.05);
+}
+
+.withdraw_amt_warn {
+    margin-top: 12px;
+    border: 1px solid #EEF0F3;
+    background: #fff;
+    border-radius: 10px;
+    background-color: #F9FAFB;
+    padding: 15px;
+    font-size: 12.5px;
+    color: #84888C;
+    font-weight: 400;
+    line-height: 1.45;
+}
+
+/* Withdraw popups CSS moved to: src/ui/Pages/WithdrawPage/withdrawal.css */
 
 .withdrawal_top_list::before {
     position: absolute;
@@ -6222,10 +7158,14 @@ input.input_filed:focus {
     margin-bottom: 10px;
     position: relative;
 
-    margin-left: -34px; 
+    margin-left: -34px;
 }
 
-.depositcrypto_lft .select-option .deposit_step_badge {  border: 1.2px solid #101828; background: #fff; color: #101828; }
+.depositcrypto_lft .select-option .deposit_step_badge {
+    border: 1.2px solid #101828;
+    background: #fff;
+    color: #101828;
+}
 
 .depositcrypto_lft .deposit_step_badge {
     width: 22px;
@@ -6242,7 +7182,8 @@ input.input_filed:focus {
     font-weight: 600;
     background: #101828;
 
-    flex: 0 0 auto;/* centers over the rail at left:16px */
+    flex: 0 0 auto;
+    /* centers over the rail at left:16px */
 }
 
 .depositcrypto_lft .deposit_step_badge.is-done {
@@ -6264,11 +7205,9 @@ input.input_filed:focus {
 /* Deposit details (Figma) card */
 .depositcrypto_lft .deposit_details_card {
     width: 100%;
-    border: 1px solid #eaecf0;
-    border-radius: 12px;
-    background: #fff;
-    padding: 16px 16px 18px;
-    margin-top: 10px;
+    border: 1px solid #E4E4E4;
+    border-radius: 10px;
+    padding: 18px;
 }
 
 .depositcrypto_lft .deposit_details_label {
@@ -6335,7 +7274,22 @@ input.input_filed:focus {
     width: 100%;
 }
 
-.depositcrypto_lft .deposit_field_row + .deposit_field_row {
+.withdraw_passkey_footer.passkey_footer_text {
+    flex-direction: column;
+    gap: 2px;
+    padding-top: 10px;
+    margin-top: 30px;
+    padding-bottom: 0px;
+}
+
+.withdraw_passkey_footer.passkey_footer_text .withdraw_passkey_footer__inner {
+    display: flex;
+    gap: 5px;
+    align-items: center;
+    justify-content: center;
+}
+
+.depositcrypto_lft .deposit_field_row+.deposit_field_row {
     margin-top: 14px;
 }
 
@@ -6800,7 +7754,7 @@ button.sc-gjLLEI.kuPCgf svg>path {
     border: none;
     padding: 10px 0px;
     font-size: 15px;
-    font-weight: 400;
+    font-weight: 500;
     color: #cfcfcf;
 }
 
@@ -6819,7 +7773,7 @@ button.sc-gjLLEI.kuPCgf svg>path {
 .deposit_crypto_right .accordion-body {
     padding: 10px 0px;
     font-size: 14px;
-    font-weight: 200;
+    font-weight:400;
     color: #c7c7c7;
 }
 
@@ -7229,7 +8183,7 @@ td.green {
 .crypto_section .top_heading h4 {
     font-size: 24px;
     padding: 10px 0px;
-    font-weight: 300;
+    font-weight: 400;
     color: #F3F3F3;
     cursor: pointer;
 }
@@ -7744,9 +8698,13 @@ section.crypto_exchange_section {
 .scan_app_bl .scan_content span {
     color: #84888C;
     font-size: 19px;
-    font-weight: 300;
+    font-weight: 400;
     margin-bottom: 10px;
     display: block;
+}
+
+.crypto_future_cnt h3 {
+    font-weight: 600;
 }
 
 .scan_app_bl .scan_content a.btn {
@@ -7775,7 +8733,7 @@ ul.maclist li {
 ul.maclist li h6 {
     font-size: 19px;
     color: #070808;
-    font-weight: 300;
+    font-weight: 400;
 }
 
 .mac_icon {
@@ -7917,7 +8875,7 @@ footer h3 {
 }
 
 footer .menu li a {
-    font-size: 13.1px;
+    font-size: 13.8px;
     color: #A0A3A7;
     font-weight: 500;
 }
@@ -7947,8 +8905,8 @@ footer .footer_trade_crypto_toggle {
     border: none;
     background: none;
     font-family: inherit;
-    font-size: 13px;
-    font-weight: 300;
+    font-size: 13.8px;
+    font-weight: 500;
     line-height: inherit;
     color: #A0A3A7;
     cursor: pointer;
@@ -8109,9 +9067,12 @@ footer .menu {
 footer .copyright_s p {
     color: #84888C !important;
     font-size: 13px;
+    font-weight: 500;
 }
 
-footer .copyright_s p a{  color: #84888C; }
+footer .copyright_s p a {
+    color: #84888C;
+}
 
 
 .crypto_section.trending_crypto .features_bage {
@@ -8123,11 +9084,11 @@ footer .copyright_s p a{  color: #84888C; }
     width: 100%;
     padding-right: 30px;
     padding-bottom: 40px;
-    padding-left: 340px;
+    padding-left: 30px;
 }
 
 /* Profile shell: sidebar is position:fixed — reserve width so content does not sit underneath it. */
-.dashboard > .dashboard_right {
+.dashboard>.dashboard_right {
     flex: 1 1 0%;
     min-width: 0;
     width: auto;
@@ -8137,9 +9098,15 @@ footer .copyright_s p a{  color: #84888C; }
 .depositcrypto_lft {
     padding-left: 40px;
     margin-top: 40px;
+    margin-right: 60px;
 }
 
-.depositcrypto_lft h1{ font-size: 26px; font-weight: 500; color: #101828; margin: 0px; }
+.depositcrypto_lft h1 {
+    font-size: 26px;
+    font-weight: 600;
+    color: #101828;
+    margin: 0px;
+}
 
 .depositcrypto_lft .deposit_crypto_page_head {
     width: 66%;
@@ -8165,7 +9132,7 @@ footer .copyright_s p a{  color: #84888C; }
     background: transparent;
     font-family: inherit;
     font-size: 15px;
-    font-weight: 400;
+    font-weight: 500;
     line-height: 1.2;
     color: #101828;
     text-decoration: none;
@@ -8179,9 +9146,16 @@ footer .copyright_s p a{  color: #84888C; }
 }
 
 .depositcrypto_lft .deposit_fiat_head_arrow {
-    font-size: 1em;
-    font-weight: 400;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
     line-height: 1;
+}
+
+.depositcrypto_lft .deposit_fiat_head_arrow img {
+    width: 16px;
+    height: 16px;
+    display: block;
 }
 
 .depositcrypto_lft .deposit_fiat_placeholder_note {
@@ -8191,12 +9165,12 @@ footer .copyright_s p a{  color: #84888C; }
     color: #667085;
 }
 
-.buysellform .form-group label.stopslippage_check{
+.buysellform .form-group label.stopslippage_check {
     display: flex;
     color: #000 !important;
     gap: 4px;
     padding-bottom: 2px;
-} 
+}
 
 .buysellform .form-group label.stopslippage_check span {
     text-decoration: underline;
@@ -8229,7 +9203,8 @@ footer .copyright_s p a{  color: #84888C; }
 }
 
 .deposit_select_network_head.withdraw_select_network_head {
-    margin-bottom: 34px; }
+    margin-bottom: 34px;
+}
 
 .deposit_select_network_dialog {
     position: relative;
@@ -8257,7 +9232,7 @@ footer .copyright_s p a{  color: #84888C; }
 .deposit_select_network_title {
     margin: 0;
     font-size: 22px;
-    font-weight: 500;
+    font-weight: 600;
     color: #101828;
     line-height: 1.25;
 }
@@ -8400,14 +9375,14 @@ footer .copyright_s p a{  color: #84888C; }
 
 .deposit_select_network_code {
     font-size: 14px;
-    font-weight: 400;
+    font-weight: 500;
     color: #101828;
     line-height: 1.1;
 }
 
 .deposit_select_network_name {
     font-size: 12px;
-    font-weight: 300;
+    font-weight: 400;
     color: #667085;
     line-height: 1.25;
 }
@@ -8416,20 +9391,43 @@ footer .copyright_s p a{  color: #84888C; }
     display: flex;
     flex-direction: column;
     align-items: flex-end;
-    gap:2px;
+    gap: 2px;
     flex-shrink: 0;
 }
 
 .deposit_select_network_eta {
     font-size: 14px;
     color: #101828;
-    font-weight: 400;
+    font-weight: 500;
 }
 
 .deposit_select_network_min {
     font-size: 12px;
     color: #667085;
-    font-weight: 300;
+    font-weight: 400;
+}
+
+/* Deposit / Withdraw crypto — coin & network Bootstrap modals only */
+.deposit_crypto_block_coin .modal.search_coin td.right_t.price_tb,
+.deposit_crypto_block_coin .modal.search_form td.right_t.price_tb {
+    font-weight: 500;
+}
+
+.deposit_crypto_block_coin .modal.search_coin td.right_t.price_tb span,
+.deposit_crypto_block_coin .modal.search_form td.right_t.price_tb span {
+    font-weight: 400;
+}
+
+.deposit_crypto_block_coin .modal .hot_trading_t .price_heading span {
+    font-weight: 400;
+}
+
+.deposit_crypto_block_coin .modal .network_top_p p {
+    font-weight: 500;
+}
+
+.deposit_crypto_block_coin .modal .hot_trading_t .price_heading {
+    font-weight: 600;
 }
 
 /* KYC — Verification Center (Figma-aligned, light UI; route: /user_profile/kyc) */
@@ -8780,7 +9778,7 @@ footer .copyright_s p a{  color: #84888C; }
     margin-bottom: 20px;
 }
 
-.kyc_vc_alert > i,
+.kyc_vc_alert>i,
 .kyc_vc_alert .icon-wrapper i {
     font-size: 24px;
     color: #e7000b;
@@ -9142,7 +10140,8 @@ footer .copyright_s p a{  color: #84888C; }
     }
 
     header {
-        height: 44px; }
+        height: 44px;
+    }
 
     .kyc_vc_hero_art {
         flex: none;
@@ -9173,6 +10172,7 @@ footer .copyright_s p a{  color: #84888C; }
 
 .user_img {
     width: 50px;
+    border: 2px solid #F3F4F6;
     height: 50px;
     position: relative;
     border-radius: 50px;
@@ -9211,7 +10211,7 @@ img.round_img {
 .user_profile_cnt h3 {
     font-size: 20px;
     color: #1A1A1A;
-    font-weight: 500;
+    font-weight: 600;
     display: flex;
     margin-bottom: 2px;
     align-items: center;
@@ -9257,7 +10257,7 @@ span.hide button {
 
 span.subdel {
     font-size: 13px;
-    font-weight: 300;
+    font-weight: 400;
     color: #949AA4;
     /* margin-top: 0px; */
     display: block;
@@ -9335,25 +10335,28 @@ span.low_level i {
     border: 1px solid #c9a14a59;
     padding: 24px;
     box-shadow: 0px 1px 10px #0000001f;
-}  
-.vip_servies h6{ font-size: 18px;
-    font-weight: 500;
+}
+
+.vip_servies h6 {
+    font-size: 18px;
+    font-weight: 600;
     color: #000;
     margin-bottom: 16px;
     display: flex;
     align-items: center;
-    gap: 8px; }
+    gap: 8px;
+}
 
 .vip_servies ul.vip_services_list {
     display: flex;
     flex-direction: column;
-    gap: 10px;
+    gap: 12px;
     margin-bottom: 16px;
 }
 
 .vip_servies ul.vip_services_list li {
-    font-size: 14px;
-    font-weight: 300;
+    font-size: 15px;
+    font-weight: 400;
     color: #364153;
     padding-left: 15px;
     list-style: none;
@@ -9366,6 +10369,7 @@ span.low_level i {
     background: linear-gradient(90deg, rgba(205, 167, 84, 1) 0%, rgba(239, 220, 169, 1) 100%);
     border: none;
     color: #fff;
+    font-weight: 500;
     font-size: 18px;
     padding: 12px;
     border-radius: 50px;
@@ -9381,6 +10385,7 @@ span.low_level i {
     height: 6px;
     border-radius: 50px;
 }
+
 .profile_id.kycstatus a {
     color: #fff;
 }
@@ -9394,17 +10399,18 @@ ul.user_social li {
     margin: 2px !important;
 }
 
-/* .top_header_dash::before {
+.top_header_dash::before {
     position: absolute;
     right: 0px;
     bottom: 0px;
+    /* background-image: url(../images/top_header_dash_bular.svg); */
     background-size: contain;
     content: "";
     background-position: right;
     background-repeat: no-repeat;
     width: 219px;
     height: 100%;
-} */
+}
 
 .balance_chart_left h4 {
     font-size: 14px;
@@ -9493,7 +10499,7 @@ ul.user_social li {
 
 .profile_id {
     font-size: 14px;
-    font-weight: 400;
+    font-weight: 500;
 }
 
 .user_profile .profile_id {
@@ -9541,6 +10547,7 @@ ul.user_social li {
     display: flex;
     justify-content: space-between;
     gap: 5px;
+    font-weight: 600;
     font-size: 16px;
     color: #EAECEF;
     margin-bottom: 7px;
@@ -9723,7 +10730,7 @@ ul.user_social li {
 
 .announcements_right a.announcements_viewall {
     font-size: 13px;
-    font-weight: 400;
+    font-weight: 500;
     color: #6A7282;
     text-decoration: none;
 }
@@ -9738,21 +10745,34 @@ ul.user_social li {
 
 .afterloginheader .header_right .button_outer .login_btn.deposit-btn {
     background: #fff;
-    color: #000000; }
+    color: #000000;
+}
 
-    .afterloginheader .header_right .button_outer .login_btn.deposit-btn:hover{ color: #000; }    
+.afterloginheader .header_right .button_outer .login_btn.deposit-btn:hover {
+    color: #000;
+}
 
-    .afterloginheader .user_login.dashbtn a {
-        color: #0f0f0f;
-        background-color: transparent;
-        padding: 0px;
-        border: none; }
+.afterloginheader .user_login.dashbtn a {
+    color: #0f0f0f;
+    background-color: transparent;
+    padding: 0px;
+    border: none;
+}
 
-.afterloginheader button.orderhder_btn{ border: none; background-color: transparent;  color: #fff; font-size: 12px; font-weight: 500;  }  
-.afterloginheader button.orderhder_btn i{    color: #84888C;
+.afterloginheader button.orderhder_btn {
+    border: none;
+    background-color: transparent;
+    color: #fff;
+    font-size: 12px;
+    font-weight: 500;
+}
+
+.afterloginheader button.orderhder_btn i {
+    color: #84888C;
     font-size: 15px;
     position: relative;
-    left: -2px; }      
+    left: -2px;
+}
 
 .announcements_right a.announcement_item {
     display: flex;
@@ -9777,7 +10797,7 @@ ul.user_social li {
 
 .announcements_right .announcement_item_title {
     font-size: 14px;
-    font-weight: 400;
+    font-weight: 500;
     color: #364153;
     margin: 0;
     line-height: 1.25;
@@ -9786,6 +10806,7 @@ ul.user_social li {
 .announcements_right .announcement_item_time {
     font-size: 12px;
     color: #6A7282;
+    font-weight: 500;
     margin: 0;
 }
 
@@ -9859,7 +10880,7 @@ ul.user_social li {
 
 .dashboard_right_cards .dash_card_header h4 {
     font-size: 18px;
-    font-weight: 500;
+    font-weight: 600;
     color: #2b313c;
     margin: 0;
 }
@@ -9919,7 +10940,7 @@ ul.user_social li {
 }
 
 .dashboard_right_cards .dash_code_copy {
-     /* width: 42px; */
+    /* width: 42px; */
     /* height: 42px; */
     /* border-radius: 12px; */
     border: none;
@@ -9938,6 +10959,7 @@ ul.user_social li {
 .dashboard_right_cards .dash_outline_btn {
     width: 100%;
     display: flex;
+    font-weight: 500;
     align-items: center;
     justify-content: center;
     padding: 10px 18px;
@@ -9960,7 +10982,7 @@ ul.user_social li {
     border: none;
     text-decoration: none;
     font-size: 16px;
-    font-weight: 400;
+    font-weight: 500;
 }
 
 .dashboard_right_cards .dash_primary_btn--green {
@@ -10127,7 +11149,7 @@ body .recommendations_block ul li a:hover {
 
 .profile_id span {
     display: block;
-    font-weight: 200;
+    font-weight: 400;
     font-size: 13px;
     color: #848E9C;
 }
@@ -10160,13 +11182,14 @@ body .recommendations_block ul li a:hover {
     color: #D1AA67;
     margin-bottom: 12px;
     display: block;
+    font-weight: 500;
 }
 
 .wallet_snapshot_bl p.copycode {
-    font-size: 19px;
+    font-size: 18px;
     margin: 0px;
     color: #000;
-    font-weight: 400;
+    font-weight: 500;
     display: flex;
     align-items: center;
     gap: 16px;
@@ -10175,6 +11198,7 @@ body .recommendations_block ul li a:hover {
 .wallet_snapshot_bl_right {
     justify-content: center;
     padding: 0px 40px;
+    gap: 30px;
 }
 
 .wallet_snapshot_bl_right button {
@@ -10204,7 +11228,7 @@ body .recommendations_block ul li a:hover {
 
 .new_steps_crypto h3 {
     font-size: 24px;
-    font-weight: 500;
+    font-weight: 600;
     color: #303236;
     margin-bottom: 18px;
 }
@@ -10256,7 +11280,8 @@ body .recommendations_block ul li a:hover {
     top: 30px;
     width: 130px;
     right: 4px;
-    opacity: 0.5; }
+    opacity: 0.5;
+}
 
 .new_steps_crypto span.step_number {
     display: block;
@@ -10264,13 +11289,13 @@ body .recommendations_block ul li a:hover {
 
 .new_steps_crypto .steps_cnt span {
     font-size: 12px;
-    font-weight: 300;
+    font-weight: 400;
     margin-bottom: 7px;
 }
 
 .new_steps_crypto .steps_cnt h5 {
     font-size: 15px;
-    font-weight: 600;
+    font-weight: 700;
     margin-bottom: 6px;
 }
 
@@ -10287,11 +11312,11 @@ body .recommendations_block ul li a:hover {
 }
 
 .new_steps_crypto .steps_cnt ul li {
-    font-size: 12px;
-    font-weight: 600;
+    font-size: 13px;
+    font-weight: 700;
     background-color: #F3F4F6;
     border-radius: 4px;
-    padding: 8px 8px;
+    padding: 3px 6px;
     border: none;
     color: #000;
 }
@@ -10367,6 +11392,7 @@ body .recommendations_block ul li a:hover {
     width: 100%;
     display: flex;
     margin-top: 5px;
+    padding-right: 55px;
     gap: 20px;
 }
 
@@ -10376,7 +11402,7 @@ body .recommendations_block ul li a:hover {
 
 .listing_left_outer h4 {
     font-size: 24px;
-    font-weight: 500;
+    font-weight: 600;
     margin: 0px;
 }
 
@@ -10562,7 +11588,7 @@ body .recommendations_block ul li a:hover {
 
 .crypto_section .hot_trading_s .td_first {
     font-size: 14px;
-    font-weight: 300;
+    font-weight: 400;
 }
 
 .modal.fade .modal-dialog.verifypop {
@@ -10617,7 +11643,7 @@ body .recommendations_block ul li a:hover {
     border: none !important;
     padding: 0px 0px 12px;
     font-size: 15px;
-    font-weight: 400;
+    font-weight: 500;
     color: #6F798C;
     box-shadow: none !important;
     border-bottom: 2px solid #f3f4f600 !important;
@@ -10626,7 +11652,7 @@ body .recommendations_block ul li a:hover {
 .listing_left_outer .dashboard_summary ul li button.active {
     background-color: transparent;
     color: #EAECEF;
-    font-weight: 400;
+    font-weight: 700;
     border-bottom: 2px solid #000 !important;
 }
 
@@ -10757,9 +11783,11 @@ body {
     margin: 7px 0px;
 }
 
-.navi_sidebar li ul li a:hover {
+.navi_sidebar li ul.small{ opacity: 1; }
+
+/* .navi_sidebar li ul li a:hover {
     color: #fff;
-}
+} */
 
 .navi_sidebar li ul {
     padding-left: 15px;
@@ -10776,23 +11804,16 @@ ul.navi_sidebar {
     gap: 7px;
     height: 100%;
     padding-bottom: 150px;
-    width: 240px;
+    width: 80%;
+    max-width: 100%;
     padding: 0px 0px 50px 20px !important;
 }
 
 .enable img {
-    width: 60px;
-    height: 60px;
+    width: 20px;
+    height: 20px;
     border-radius: 50px;
-    object-fit: none;
-    box-shadow: 0px 4px 8px 0px #323232a6;
-}
-
-
-/* dark mode */
-
-body:not(.light_theme) .trade_marketvalue  {
-    border: 1px solid #323232;
+    object-fit: cover;
 }
 
 .navi_sidebar li p {
@@ -10801,14 +11822,7 @@ body:not(.light_theme) .trade_marketvalue  {
     margin: 0px;
 }
 
-.navi_sidebar li a:hover {
-    color: #fff;
-    border: 1px solid #DBDBDD;
-}
-
-.navi_sidebar li button:hover {
-    color: #fff;
-}
+body .dashboard.dashboard--sidebar-collapsed .profile-sidebar-shell ul.navi_sidebar{ width: auto; }
 
 .btn:focus-visible {
     outline: none;
@@ -10845,7 +11859,8 @@ body:not(.light_theme) .trade_marketvalue  {
 
 .dashboard_summary td .icon {
     height: 26px;
-    width: 26px; }
+    width: 26px;
+}
 
 .td_first {
     display: flex;
@@ -10855,7 +11870,9 @@ body:not(.light_theme) .trade_marketvalue  {
     font-weight: 400;
 }
 
-.dashboard_summary td span.star_btn.btn_icon i{ margin-right: 0px !important; }
+.dashboard_summary td span.star_btn.btn_icon i {
+    margin-right: 0px !important;
+}
 
 .header_right ul.navi_sidebar {
     gap: 18px;
@@ -10880,7 +11897,7 @@ body:not(.light_theme) .trade_marketvalue  {
     font-size: 15px;
     font-weight: 400;
     color: #EAECEF;
-    padding: 10px 5px;
+    padding: 14px 5px;
 }
 
 .dashboard_summary td a {
@@ -10902,7 +11919,7 @@ body:not(.light_theme) .trade_marketvalue  {
     border: none;
     font-size: 11px;
     color: #848E9C;
-    font-weight: 300;
+    font-weight: 500;
 }
 
 .dashboard_listing_section.Overview_mid .overview_section {
@@ -10923,6 +11940,7 @@ body:not(.light_theme) .trade_marketvalue  {
 
 .dashboard_summary .green {
     color: #5EBA89;
+    font-weight: 600;
 }
 
 .dashboard_summary .red {
@@ -10938,7 +11956,7 @@ body:not(.light_theme) .trade_marketvalue  {
 
 .price_heading {
     font-size: 14px;
-    font-weight: 400;
+    font-weight: 500;
     color: #fff;
 }
 
@@ -11541,15 +12559,15 @@ body .trade_summary_table_lft_position_order.position_order .table-responsive {
 .sidebar_deposit {
     color: #fff;
     position: fixed;
-    z-index: 9999999;
-    top: 0;
+    z-index: 9999;
+    top: 60px;
     right: -450px;
     width: 430px;
     height: 100%;
     background-color: #212328;
     box-shadow: -2px 0 5px rgba(0, 0, 0, 0.5);
     transition: right 0.6s ease-in-out;
-    padding: 75px 32px 32px;
+    padding: 25px 32px 32px;
 }
 
 .blog_detail a.mb-3 {
@@ -12502,7 +13520,8 @@ button.transfer_btn:hover {
 }
 
 .maindashboard .table-responsive {
-    max-height: 370px;
+    max-height: 340px;
+    min-height: 340px;
 }
 
 .market_update_sec.market_update_table tr th span.select_change {
@@ -12512,7 +13531,11 @@ button.transfer_btn:hover {
     margin-right: 4px;
 }
 
-.market_update_sec.market_update_table tr th span.select_change i{ color: #484B51; font-size: 14px; font-weight: 500; }
+.market_update_sec.market_update_table tr th span.select_change i {
+    color: #484B51;
+    font-size: 14px;
+    font-weight: 500;
+}
 
 .searchBar button {
     width: 18px;
@@ -13715,49 +14738,24 @@ td.text-danger {
     gap: 16px;
 }
 
-.market_page .custom-tab-content table.table td .btb_tbl button{ font-size: 14px; background-color: #F5F6F7; padding: 8px 15px; border-radius: 50px; }
-
-.market_page .custom-tab-content table.table td .btb_tbl button.btn.trade_btn{ background-color: #303236; color: #fff; margin: 0px; }
-
-.market_page table.table td .btb_tbl .trade_btn,
-.market_page table.table td .btb_tbl a.trade_btn,
-.market_page table.table td .btb_tbl .btn.trade_btn {
-    background-color: var(--color-primary, #e5b64a);
-    color: #0b0b0b;
-    font-size: 14px;
-    padding: 8px 18px;
+.market_page .custom-tab-content table.table td .btb_tbl button {
+    font-size: 12px;
+    background-color: #F5F6F7;
+    padding: 8px 15px;
     border-radius: 50px;
-    margin: 0;
-    text-decoration: none;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    font-weight: 600;
-    transition: background-color 0.2s ease, color 0.2s ease;
+    font-weight: 500;
 }
 
-.market_page table.table td .btb_tbl .trade_btn:hover,
-.market_page table.table td .btb_tbl a.trade_btn:hover,
-.market_page table.table td .btb_tbl .btn.trade_btn:hover {
-    background-color: var(--color-primary-hover, #d4a43e);
-    color: #0b0b0b;
-}
-
-body.light_theme .market_page table.table td .btb_tbl .trade_btn,
-body.light_theme .market_page table.table td .btb_tbl a.trade_btn,
-body.light_theme .market_page table.table td .btb_tbl .btn.trade_btn {
+.market_page .custom-tab-content table.table td .btb_tbl button.btn.trade_btn {
     background-color: #303236;
     color: #fff;
+    margin: 0px;
+    font-weight: 500;
 }
 
-body.light_theme .market_page table.table td .btb_tbl .trade_btn:hover,
-body.light_theme .market_page table.table td .btb_tbl a.trade_btn:hover,
-body.light_theme .market_page table.table td .btb_tbl .btn.trade_btn:hover {
-    background-color: #1a1b1d;
-    color: #fff;
+.market_page .custom-tab-content table.table td.right_0 {
+    padding-right: 0px;
 }
-
-.market_page .custom-tab-content table.table td.right_0{ padding-right: 0px; }
 
 .market_page img.coinimg {
     width: 28px;
@@ -13805,7 +14803,7 @@ body.light_theme .market_page table.table td .btb_tbl .btn.trade_btn:hover {
     border-radius: 0px;
     justify-content: center;
     color: #84888C;
-    font-weight: 500;
+    font-weight: 600;
     position: relative;
     background: none;
     border-bottom: none;
@@ -13828,7 +14826,7 @@ ul.funds_tab.market_tabs {
     color: #fff !important;
 }
 
-.market_tabs .nav-link::before{
+.market_tabs .nav-link::before {
     position: absolute;
     content: "";
     width: 18px;
@@ -13842,7 +14840,9 @@ ul.funds_tab.market_tabs {
     margin: 0 auto;
 }
 
-.market_tabs .nav-link.active::before{ opacity: 1; }
+.market_tabs .nav-link.active::before {
+    opacity: 1;
+}
 
 
 section.live_prices.mt-0.market_prices.market_update_sec.market_update_table {
@@ -13868,7 +14868,7 @@ section.live_prices.mt-0.market_prices.market_update_sec.market_update_table {
 .market_trade_crypto {
     width: 100%;
     display: block;
-    margin-top: 20px;
+    margin-top: 0px;
 }
 
 .trade_marketvalue {
@@ -13896,7 +14896,7 @@ header.sticky-top.afterloginheader {
 
 .trade_marketvalue .tophd h5 {
     font-size: 18px;
-    font-weight: 600;
+    font-weight: 700;
     display: flex;
     align-items: center;
     margin: 0px;
@@ -13908,6 +14908,7 @@ header.sticky-top.afterloginheader {
     min-width: 20px;
     height: 20px;
     border-radius: 50px;
+    margin-right: 4px !important;
 }
 
 .trade_marketvalue .price {
@@ -13925,11 +14926,13 @@ header.sticky-top.afterloginheader {
 
 .trade_marketvalue .value {
     font-size: 19px;
+    font-weight: 600;
 }
 
 .trade_marketvalue .privevolume {
     font-size: 16px;
     color: #8E8E8E;
+    font-weight: 500;
 }
 
 .searchBar.custom-tabs input {
@@ -13952,7 +14955,7 @@ header.sticky-top.afterloginheader {
 
 /* Market page only — larger search icon in the pairs toolbar */
 .market_update_table .searchBar.custom-tabs i {
-    font-weight: 800;
+    font-weight: 700;
     font-size: 20px;
 }
 
@@ -13962,8 +14965,20 @@ ul.futurecoin_list_tab {
     padding: 6px 0px 8px;
 }
 
-ul.futurecoin_list_tab li button{ border: none; background-color: transparent; padding: 7px 16px; border-radius: 6px; font-size: 16px; font-weight: 500; color: #929AA5; }
-ul.futurecoin_list_tab li.active button{ background-color: #F5F6F7; color: #000000; }
+ul.futurecoin_list_tab li button {
+    border: none;
+    background-color: transparent;
+    padding: 7px 16px;
+    border-radius: 6px;
+    font-size: 16px;
+    font-weight: 600;
+    color: #929AA5;
+}
+
+ul.futurecoin_list_tab li.active button {
+    background-color: #F5F6F7;
+    color: #000000;
+}
 
 
 .searchBar.custom-tabs.search_active {
@@ -14263,8 +15278,8 @@ button.signbtn {
 }
 
 .login_btn {
-   margin-top: 24px;
-   margin-top: 24px;
+    margin-top: 24px;
+    margin-top: 24px;
 }
 
 .login_btn input {
@@ -14660,7 +15675,7 @@ table td.action_td {
     margin-bottom: 15px;
 }
 
-.custom-tab-content .table-responsive {
+.market_page .table-responsive {
     overflow-x: auto;
     -webkit-overflow-scrolling: touch;
 }
@@ -14669,22 +15684,23 @@ table td.action_td {
     background-color: transparent;
 }
 
-.custom-tab-content .table> :not(caption)>tr:last-child>* {
+.market_page .table> :not(caption)>tr:last-child>* {
     border-bottom: none;
 }
 
 .market_update_sec .table> :not(caption)>*>* {
-    padding:11px 8px;
+    padding: 11px 8px;
     background-color: transparent;
 }
 
-.custom-tab-content .table>thead th {
-    color: #949AA4;
-    font-size: 12px;
-    padding: 6px 8px !important;
-    font-weight: 400;
+.market_page table tr th {
+    padding: 5px 12px;
+    background-color: transparent;
     border: none;
-    line-height: 2;
+    color: #84888C;
+    font-size: 11px;
+    font-weight: 400;
+    border-radius: 4px;
 }
 
 /* Market table headers: dotted line under label text only (#84888C) */
@@ -14733,17 +15749,21 @@ img.coinimg {
     box-shadow: none;
     color: #F7F7F7;
     text-shadow: none !important;
-    font-weight: 300;
+    font-weight: 500;
     font-size: 13px;
 }
 
 .custom-tab-content table.table td .coin_name_lft {
     font-size: 15px;
     color: #070808;
-    font-weight: 500;
+    font-weight: 600;
 }
 
-.custom-tab-content table.table td .coin_name_lft span{ font-size: 13px; color: #A0A3A7; font-weight: 300; }
+.custom-tab-content table.table td .coin_name_lft span {
+    font-size: 13px;
+    color: #A0A3A7;
+    font-weight: 300;
+}
 
 .custom-tab-content table.table td span.coin_name {
     font-size: 13px;
@@ -14752,19 +15772,19 @@ img.coinimg {
 }
 
 .custom-tab-content table.table td .last_price {
-    font-size: 16px;
+    font-size: 15px;
     color: #070808;
     line-height: 20px;
     font-weight: 500;
 }
 
 .custom-tab-content table.table td .hight_price {
-    font-size: 15px;
+    font-size: 14px;
     font-weight: 500;
 }
 
 .custom-tab-content table.table td span.price_value {
-    font-size: 14px;
+    font-size: 13px;
     color: #84888C;
     font-weight: 400;
 }
@@ -15666,7 +16686,7 @@ label {
     color: #070808;
 }
 
-.email_code .get_otp .ri-eye-line{
+.email_code .get_otp .ri-eye-line {
     font-size: 22px;
     top: -5px;
     position: relative;
@@ -16803,7 +17823,7 @@ ul.tbltabs li button {
     border: none;
     color: #84888C;
     font-size: 11px;
-    font-weight: 400;
+    font-weight: 500;
     background-color: #2B313C00;
     border-radius: 4px;
 }
@@ -19198,7 +20218,13 @@ button.copy_code {
     margin: 0px;
 }
 
-.agcf span{ font-size: 11px; color: #9CA3AF; font-weight: 300; }
+.agcf span {
+    font-size: 11px;
+    color: #9CA3AF;
+    font-weight: 400;
+}
+
+.d-flex.justify-content-between.agcf_block_midle span{ font-weight: 500;}
 
 .referral_event_item {
     flex: 0 0 calc((100% - 24px) / 2);
@@ -19281,7 +20307,21 @@ footer .container {
 }
 
 
-.login_bg.login_sec.market_page .container{ max-width: 100%; padding:0px 40px; }
+.login_bg.login_sec.market_page .container {
+    max-width: 100%;
+    padding: 0px 40px;
+}
+
+.search_icon_s_inner span {
+    color: #000;
+    font-weight: 400;
+    font-size: 15px;
+}
+
+.search_icon_s_inner {
+    font-size: 14px;
+    color: #99A1AF;
+}
 
 
 @media screen and (max-width:1700px) {
@@ -19351,7 +20391,7 @@ footer .container {
     }
 
     .listing_left_outer {
-        width: 100%;
+        width: 76%;
     }
 
 }
@@ -22759,7 +23799,7 @@ footer .container {
     }
 
     html:has(header.sticky-top) {
-        padding-top:0px;
+        padding-top: 0px;
     }
 
     section.crypto_exchange_section .scan_vector {
@@ -23212,7 +24252,8 @@ footer .container {
     }
 
     .trade_marketvalue .privevolume {
-        font-size: 14px; }
+        font-size: 14px;
+    }
 
     body .cnt_first_t .icon_currency img {
         width: 24px;
@@ -24402,8 +25443,8 @@ footer .container {
     }
 
     .themecolor_icon {
-        width: 30px;
-        height: 30px;
+        width: 23px;
+        height: 23px;
     }
 
     .profit_costs_cta_outer.costouterbg button.learnbtn {
@@ -27609,7 +28650,7 @@ footer .container {
     }
 
     .afterloginheader .header_right {
-        /* right: 34px; */
+        right: 34px;
         top: 9px;
         gap: 3px;
     }
@@ -27624,7 +28665,7 @@ footer .container {
     }
 
     .header_right {
-        /* right: 38px; */
+        right: 38px;
         top: 9px;
     }
 
@@ -29435,7 +30476,7 @@ footer .container {
     }
 
     .afterloginheader .navbar-toggler {
-        /* top: 3px; */
+        top: 3px;
     }
 
     header .logo {
@@ -29950,1711 +30991,4 @@ body.light_theme .hero_section_main input:-moz-placeholder,
 body.light_theme .hero_section_main textarea:-moz-placeholder {
     color: #ffffff !important;
     opacity: 1 !important;
-}
-
-/* ──────────────────────────────────────────────────────────────
-   Dashboard — dark-mode overrides.
-   The baseline dashboard card styles were authored against a light
-   body: white card surfaces, dark text. In dark mode (default body
-   #181A20), containers without an explicit background (top header,
-   wallet snapshot, newcomer perks) left dark text sitting on a dark
-   body. These rules give each card a dark surface and lift the text
-   colour so every field in the dashboard is legible in dark mode
-   without touching light-mode output.
-   ────────────────────────────────────────────────────────────── */
-body:not(.light_theme) .top_header_dash {
-    background-color: #1F2227;
-    border: 1px solid #2A2E35;
-}
-body:not(.light_theme) .user_profile_cnt h3 {
-    color: #EAECEF;
-}
-
-body:not(.light_theme) .agcf h6 {
-    color: #FFF;
-}
-body:not(.light_theme) .top_header_dash .user_edit button {
-    background-color: #2B313C;
-    border-color: #363b45;
-    color: #EAECEF;
-}
-body:not(.light_theme) span.vip_level {
-    background-color: #2B313C;
-    color: #EAECEF;
-}
-body:not(.light_theme) span.low_level {
-    background-color: rgba(239, 68, 68, 0.15);
-    color: #FCA5A5;
-}
-body:not(.light_theme) span.subdel {
-    color: #A3A8B3;
-}
-body:not(.light_theme) .profile_id {
-    color: #EAECEF;
-}
-body:not(.light_theme) .profile_id .textprofile {
-    color: #EAECEF;
-}
-body:not(.light_theme) .profile_id span {
-    color: #848E9C;
-}
-body:not(.light_theme) .profile_id.kycstatus a {
-    color: #EAECEF;
-}
-
-/* Wallet snapshot card */
-body:not(.light_theme) .wallet_snapshot_bl {
-    background-color: #1F2227;
-    border: 1px solid #2A2E35;
-}
-body:not(.light_theme) .wallet_snapshot_bl_left {
-    border-right-color: #2A2E35;
-}
-body:not(.light_theme) .wallet_snapshot_bl p.copycode {
-    color: #EAECEF;
-}
-body:not(.light_theme) .wallet_snapshot_bl_right button {
-    background-color: #2B313C;
-    color: #EAECEF;
-    box-shadow: 0px 0px 20px #00000040;
-}
-
-/* Newcomer perks */
-body:not(.light_theme) .new_steps_crypto h3 {
-    color: #EAECEF;
-}
-body:not(.light_theme) .steps_block_dash {
-    background-color: #1F2227;
-    border-color: #2A2E35;
-    color: #A3A8B3;
-}
-body:not(.light_theme) .steps_block_dash.active {
-    background-color: #24272D;
-    color: #EAECEF;
-}
-body:not(.light_theme) .new_steps_crypto .steps_cnt ul li {
-    background-color: #2B313C;
-    color: #EAECEF;
-}
-
-/* Spot markets card (dashboard variant) */
-body:not(.light_theme) .market_section.maindashboard .top_heading h4 {
-    color: #EAECEF;
-}
-body:not(.light_theme) .market_section.maindashboard .dashboard_summary {
-    color: #EAECEF;
-}
-body:not(.light_theme) .market_section.maindashboard .dashboard_summary th {
-    color: #848E9C;
-}
-body:not(.light_theme) .market_section.maindashboard .dashboard_summary td,
-body:not(.light_theme) .market_section.maindashboard .dashboard_summary .price_heading {
-    color: #EAECEF;
-}
-body:not(.light_theme) .market_section.maindashboard .dashboard_summary .price_heading span {
-    color: #848E9C;
-}
-body:not(.light_theme) .market_section.maindashboard .dashboard_summary ul.nav-tabs li button {
-    color: #A3A8B3;
-}
-body:not(.light_theme) .market_section.maindashboard .dashboard_summary ul.nav-tabs li button.active {
-    color: #EAECEF;
-}
-body:not(.light_theme) .market_section.maindashboard .dashboard_summary td a {
-    color: #EAECEF;
-}
-
-/* Right-column cards: Referral + Security */
-body:not(.light_theme) .dashboard_right_cards .dashboard_simple_card {
-    border-color: #2A2E35;
-    box-shadow: 0px 10px 25px #00000040;
-}
-body:not(.light_theme) .dashboard_right_cards .dashboard_simple_card.referral_program_card {
-    background: #1F2227;
-}
-body:not(.light_theme) .dashboard_right_cards .dashboard_simple_card.security_center_card {
-    background: #15261c;
-    border-color: #1f4432;
-}
-body:not(.light_theme) .dashboard_right_cards .dash_card_header h4 {
-    color: #EAECEF;
-}
-body:not(.light_theme) .dashboard_right_cards .dash_card_desc {
-    color: #A3A8B3;
-}
-body:not(.light_theme) .dashboard_right_cards .dash_code_pill {
-    background: #2B313C;
-}
-body:not(.light_theme) .dashboard_right_cards .dash_code_text {
-    color: #EAECEF;
-}
-body:not(.light_theme) .dashboard_right_cards .dash_code_copy {
-    color: #A3A8B3;
-}
-body:not(.light_theme) .dashboard_right_cards .dash_outline_btn {
-    border-color: #363b45;
-    color: #EAECEF;
-}
-
-/* Announcements + Download app cards */
-body:not(.light_theme) .announcements_right .announcements_card {
-    background: #1F2227;
-    border-color: #2A2E35;
-    box-shadow: 0px 10px 25px #00000040;
-}
-body:not(.light_theme) .announcements_right .announcements_title i,
-body:not(.light_theme) .announcements_right .announcements_title h4 {
-    color: #EAECEF;
-}
-body:not(.light_theme) .announcements_right a.announcements_viewall {
-    color: #A3A8B3;
-}
-body:not(.light_theme) .announcements_right .announcement_item_title {
-    color: #EAECEF;
-}
-body:not(.light_theme) .announcements_right .announcement_item_time {
-    color: #848E9C;
-}
-body:not(.light_theme) .announcements_right a.announcement_item i.ri-arrow-right-s-line {
-    color: #A3A8B3;
-}
-body:not(.light_theme) .announcements_right .announcement_divider {
-    background: #2A2E35;
-}
-body:not(.light_theme) .features_block {
-    background: #1F2227;
-    border-color: #2A2E35;
-    box-shadow: 0px 10px 25px #00000040;
-}
-body:not(.light_theme) .block_features h5 {
-    color: #EAECEF;
-}
-body:not(.light_theme) .block_features p {
-    color: #A3A8B3;
-}
-
-/* Sidebar — inactive links ship with border:1px solid #fff, which renders
-   as a bright outline on dark. Drop the border in the idle state and only
-   show it on hover/active so the active item still gets its highlight. */
-body:not(.light_theme) .navi_sidebar li a {
-    border-color: transparent;
-}
-body:not(.light_theme) .navi_sidebar li a:hover {
-    border-color: #363b45;
-    background-color: #1F2227;
-}
-body:not(.light_theme) .navi_sidebar li button:hover {
-    background-color: #1F2227;
-    border-radius: 12px;
-}
-body:not(.light_theme) .navi_sidebar li.active a,
-body:not(.light_theme) .navi_sidebar li.active button {
-    background-color: #2B313C;
-    border-color: #363b45;
-    color: #ffffff;
-}
-
-/* Sidebar outer column — baseline `border-right: 1px solid #EDEFF2`
-   renders as a bright vertical line against the dark page. */
-body:not(.light_theme) .leftside_menu {
-    border-right-color: #2A2E35;
-}
-
-/* Logout pill — baseline is a white button with black text. */
-body:not(.light_theme) .leftside_menu .logout_btn a {
-    background-color: #1F2227;
-    color: #EAECEF;
-    border: 1px solid #2A2E35;
-    border-radius: 8px;
-}
-
-/* VIP Services — cream/gold gradient turned into a dark gold-tinted card. */
-body:not(.light_theme) .vip_servies {
-    background: linear-gradient(145deg, #1F1C14 0%, #2A2317 60%, #1A1810 100%);
-    border: 1px solid #3a3019;
-    box-shadow: 0px 1px 10px #00000040;
-}
-body:not(.light_theme) .vip_servies h6 {
-    color: #EAECEF;
-}
-body:not(.light_theme) .vip_servies ul.vip_services_list li {
-    color: #C6CAD2;
-}
-body:not(.light_theme) .vip_servies ul.vip_services_list li::before {
-    background-color: #D1AA67;
-}
-body:not(.light_theme) .vip_servies button.vip_btn {
-    color: #1a1205;
-}
-
-/* ──────────────────────────────────────────────────────────────
-   Dashboard — responsive tweaks.
-   The baseline lays out the header-card as a two-column flex
-   (avatar + profile fields). At mid widths the 5-field strip
-   is too cramped to read. These rules progressively simplify
-   the layout, stack cards, and strip awkward flex rules so the
-   Dashboard stays usable on any viewport.
-   ────────────────────────────────────────────────────────────── */
-
-/* Baseline: the h3 (email) shouldn't be a flex container with
-   a 70px gap — it's a single text node. Drop the flex. */
-.user_profile_cnt h3 {
-    display: block;
-    gap: 0;
-}
-
-.d-flex.user_header_cnt_top {
-    flex-wrap: wrap;
-}
-
-.profile_id_s .profile_id {
-    flex: 0 0 auto;
-    white-space: nowrap;
-}
-
-.profile_id span {
-    white-space: nowrap;
-}
-
-/* ≤1440px — sidebar claims less padding; header card stacks so the
-   5-field strip can scroll horizontally with room to breathe. */
-@media screen and (max-width: 1440px) {
-    .dashboard_right {
-        padding-left: 280px;
-        padding-right: 24px;
-    }
-    .d-flex.user_header_cnt_top {
-        flex-direction: column;
-        align-items: stretch !important;
-        gap: 18px;
-    }
-    .profile_id_s {
-        width: 100%;
-    }
-    .dashboard_right_side {
-        width: 32%;
-    }
-}
-
-/* ≤1200px — tighter sidebar padding; wallet snapshot + perks shrink. */
-@media screen and (max-width: 1200px) {
-    .dashboard_right {
-        padding-left: 250px;
-        padding-right: 20px;
-    }
-    .wallet_snapshot_bl_left {
-        padding: 28px;
-    }
-    .wallet_snapshot_bl_right {
-        padding: 0 24px;
-    }
-    .wallet_snapshot_bl p.copycode {
-        font-size: 16px;
-        flex-wrap: wrap;
-        gap: 8px;
-    }
-    .steps_block_dash_outer {
-        grid-template-columns: repeat(2, 1fr);
-    }
-    .top_header_dash {
-        padding: 22px;
-    }
-}
-
-/* ≤991px — sidebar collapses; content goes full width. Left + right
-   columns stack (already handled in the existing 991px block), but
-   align the header card and side widgets to the new single column. */
-@media screen and (max-width: 991px) {
-    .dashboard_right {
-        padding: 15px 20px 40px;
-    }
-    .dashboard_listing_section {
-        padding-right: 0;
-    }
-    .top_header_dash {
-        padding: 20px;
-    }
-    .wallet_snapshot_bl {
-        grid-template-columns: 1fr;
-    }
-    .wallet_snapshot_bl_left {
-        border-right: none;
-        border-bottom: 1px solid #2A2E35;
-        padding: 24px;
-    }
-    .wallet_snapshot_bl_right {
-        padding: 18px 24px 24px;
-        justify-content: flex-start;
-        gap: 14px;
-    }
-    body.light_theme .wallet_snapshot_bl_left {
-        border-bottom-color: #f0f0f0;
-    }
-    .dashboard_right_side {
-        width:100%;
-        margin-top: 20px;
-    }
-    .dashboard_right_cards {
-        flex-direction: row;
-        flex-wrap: wrap;
-    }
-    .dashboard_right_cards .dashboard_simple_card {
-        flex: 1 1 260px;
-    }
-}
-
-/* ≤767px — phones. Single-column everywhere; comfortable padding. */
-@media screen and (max-width: 767px) {
-    .dashboard_right {
-        padding: 12px 14px 40px;
-    }
-    .top_header_dash {
-        padding: 16px;
-        gap: 16px;
-    }
-    .d-flex.user_header_cnt_top {
-        gap: 14px;
-    }
-    .user_profile {
-        gap: 14px;
-    }
-    .user_profile_cnt h3 {
-        font-size: 17px;
-    }
-    .top_header_dash .d-flex.sublevels {
-        flex-wrap: wrap;
-        gap: 6px !important;
-    }
-    .profile_id_s {
-        gap: 18px;
-    }
-    .wallet_snapshot_bl_left {
-        padding: 20px;
-    }
-    .wallet_snapshot_bl_left span {
-        font-size: 13px;
-    }
-    .wallet_snapshot_bl p.copycode {
-        font-size: 15px;
-        gap: 6px;
-    }
-    .wallet_snapshot_bl_right {
-        padding: 14px 20px 20px;
-        flex-wrap: wrap;
-        gap: 10px !important;
-    }
-    .wallet_snapshot_bl_right button {
-        font-size: 14px;
-        padding: 6px 18px 6px 8px;
-    }
-    .wallet_snapshot_bl_right button i {
-        width: 32px;
-        height: 32px;
-        font-size: 18px;
-    }
-    .steps_block_dash_outer {
-        grid-template-columns: 1fr;
-    }
-    .new_steps_crypto {
-        padding: 20px;
-    }
-    .new_steps_crypto h3 {
-        font-size: 20px;
-    }
-    .new_steps_crypto .steps_cnt {
-        width: 100%;
-    }
-    .steps_block_dash {
-        min-height: auto;
-        padding-bottom: 64px;
-    }
-    .dashboard_right_cards {
-        flex-direction: column;
-    }
-    .dashboard_right_cards .dashboard_simple_card {
-        flex: 1 1 auto;
-    }
-    .announcements_right,
-    .new_features_s,
-    .vip_servies {
-        margin-top: 16px;
-    }
-    .market_section.maindashboard .top_heading h4 {
-        font-size: 18px;
-    }
-}
-
-/* ≤480px — very small phones. Horizontal action row for wallet and
-   slightly more compact text. */
-@media screen and (max-width: 480px) {
-    .user_profile_cnt h3 {
-        font-size: 15px;
-    }
-    .wallet_snapshot_bl_right {
-        flex-direction: column;
-        align-items: stretch;
-    }
-    .wallet_snapshot_bl_right button {
-        justify-content: flex-start;
-        width: 100%;
-    }
-}
-
-/* ──────────────────────────────────────────────────────────────
-   Final overrides — the baseline dashboard grids
-   (repeat(3,1fr) for perks, repeat(2,1fr) for wallet) sit in
-   the cascade ahead of their overrides in some deployments, so
-   we force the breakpoint values with !important here. Important
-   is deliberate: without it, a hot-reload or ordered merge can
-   leave perks in 3-col at phone widths.
-   ────────────────────────────────────────────────────────────── */
-@media screen and (max-width: 1200px) {
-    .steps_block_dash_outer {
-        grid-template-columns: repeat(2, 1fr) !important;
-    }
-}
-@media screen and (max-width: 991px) {
-    .wallet_snapshot_bl {
-        grid-template-columns: 1fr !important;
-    }
-}
-@media screen and (max-width: 767px) {
-    .steps_block_dash_outer {
-        grid-template-columns: 1fr !important;
-    }
-}
-
-/* ──────────────────────────────────────────────────────────────
-   Header — mobile/tablet action row. Baseline icon boxes are
-   ~26px, which is below the iOS/Android recommended 44px touch
-   target. Enlarge the icon, expand the hit area, and restore the
-   Dashboard + Deposit pills which get stripped to transparent/dark
-   text by an existing @767px rule.
-   ────────────────────────────────────────────────────────────── */
-@media screen and (max-width: 991px) {
-    .icon_notificaton_r ul {
-        gap: 10px;
-        align-items: center;
-    }
-    .icon_notificaton_r ul li {
-        padding: 0 4px;
-        min-width: 42px;
-        min-height: 42px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-    }
-    .icon_notificaton_r ul li > svg {
-        width: 28px !important;
-        height: 28px !important;
-    }
-    .icon_notificaton_r ul li.downloadtabs > img {
-        width: 26px;
-        height: 26px;
-    }
-    .icon_notificaton_r ul li.themetbs {
-        width: 42px;
-        min-width: 42px;
-        height: 42px;
-        border-radius: 50%;
-    }
-    .icon_notificaton_r ul li.themetbs i {
-        font-size: 22px;
-    }
-    a.search_icon {
-        min-width: 42px;
-        min-height: 42px;
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-    }
-    a.search_icon i {
-        font-size: 22px;
-    }
-    .navbar-toggler {
-        padding: 8px;
-        min-width: 44px;
-        min-height: 44px;
-    }
-    .navbar-toggler .navbar-toggler-icon {
-        width: auto;
-        height: auto;
-    }
-    .navbar-toggler .navbar-toggler-icon img {
-        width: 32px;
-        height: 32px;
-    }
-
-    /* Header right: keep Deposit + Dashboard pills legible (baseline
-       mobile rule makes them transparent + near-black text, invisible
-       in dark mode). */
-    .afterloginheader .header_right .button_outer .login_btn.deposit-btn {
-        background: #ffffff;
-        color: #000000;
-        padding: 6px 14px;
-        border-radius: 999px;
-        font-size: 13px;
-        display: inline-flex;
-        align-items: center;
-        gap: 6px;
-    }
-    .afterloginheader .user_login.dashbtn a {
-        background-color: #2B313C;
-        color: #EAECEF;
-        padding: 6px 14px;
-        border: 1px solid #363b45;
-        border-radius: 999px;
-        font-size: 13px;
-        display: inline-flex;
-        align-items: center;
-    }
-    body.light_theme .afterloginheader .user_login.dashbtn a {
-        background-color: #ffffff;
-        color: #0f0f0f;
-        border-color: #e2e5ea;
-    }
-
-    .header_right .button_outer {
-        gap: 10px;
-        flex-wrap: wrap;
-    }
-}
-
-/* ≤576px — compact phone: hide the Download app icon (it's already
-   inside the mobile menu) and tighten gaps so the notification, wallet,
-   theme, hamburger row fits without overflow. */
-@media screen and (max-width: 576px) {
-    .icon_notificaton_r ul li.downloadtabs {
-        display: none;
-    }
-    .icon_notificaton_r ul {
-        gap: 6px;
-    }
-    .icon_notificaton_r ul li {
-        min-width: 40px;
-        min-height: 40px;
-    }
-    .icon_notificaton_r ul li > svg {
-        width: 24px !important;
-        height: 24px !important;
-    }
-    .afterloginheader .user_login.dashbtn a,
-    .afterloginheader .header_right .button_outer .login_btn.deposit-btn {
-        padding: 5px 12px;
-        font-size: 12px;
-    }
-    .header_right .button_outer {
-        gap: 6px;
-    }
-}
-
-/* ──────────────────────────────────────────────────────────────
-   Mobile header — stop overflow/crowding.
-   Existing mobile CSS positions .header_right as position:absolute
-   with a right offset that overlays the logo row (navbar-toggler is
-   also absolute top-right). That pattern is preserved here; we just
-   cap the logo width, shrink the icons/pills so they fit inside the
-   available slot between the logo and the hamburger, and hide the
-   search icon (duplicated in the sidebar).
-
-   Below 480px the Deposit pill is hidden — it remains reachable via
-   the Wallet dropdown and the sidebar.
-   ────────────────────────────────────────────────────────────── */
-@media screen and (max-width: 767px) {
-    header {
-        height: auto !important;
-        min-height: 56px;
-        padding: 8px 0 !important;
-    }
-    header .col-lg-2.logo_s {
-        max-width: 140px !important;
-        padding-left: 12px !important;
-    }
-    header .logo {
-        width: 100% !important;
-    }
-    header .logo .lightlogo,
-    header .logo .darklogo,
-    header .logo img:not(.eaglelogo) {
-        width: 85% !important;
-        /* max-width: 120px !important; */
-        height: auto !important;
-    }
-    header .logo img.eaglelogo {
-        width: 22px !important;
-    }
-    /* Keep absolute-positioning but tuck header_right inside viewport:
-       navbar-toggler already sits at right:6; give it 44px of clearance. */
-    .afterloginheader .header_right {
-        /* right: 48px !important;
-        top: 8px !important;
-        gap: 6px !important; */
-    }
-    .header_right .button_outer {
-        flex-wrap: nowrap !important;
-        gap: 6px !important;
-    }
-    /* Search icon duplicates Market-page search + mobile menu — hide
-       it on phones to free horizontal space. */
-    .header_right .button_outer .search_icon,
-    a.search_icon {
-        display: none !important;
-    }
-    .icon_notificaton_r ul {
-        gap: 4px !important;
-        align-items: center;
-    }
-    .icon_notificaton_r ul li {
-        width: auto !important;
-        min-width: 34px !important;
-        min-height: 34px !important;
-        padding: 0 2px !important;
-    }
-    .icon_notificaton_r ul li > svg {
-        width: 22px !important;
-        height: 22px !important;
-    }
-    .icon_notificaton_r ul li.themetbs {
-        width: 34px !important;
-        min-width: 34px !important;
-        height: 34px !important;
-    }
-    .icon_notificaton_r ul li.themetbs i {
-        font-size: 18px;
-    }
-    .navigation .navbar-toggler,
-    .afterloginheader .navbar-toggler {
-        /* padding: 4px !important; */
-        /* right: 8px !important; */
-        top: -2px !important;
-    }
-    .navigation .navbar-toggler img {
-        width: 22px !important;
-        height: 22px !important;
-    }
-    .afterloginheader .user_login.dashbtn a,
-    .afterloginheader .header_right .button_outer .login_btn.deposit-btn {
-        font-size: 11px !important;
-        padding: 4px 10px !important;
-        white-space: nowrap;
-        min-height: auto !important;
-    }
-}
-
-/* ≤480 — very narrow phones. Drop the Deposit pill. */
-@media screen and (max-width: 480px) {
-    .afterloginheader .header_right .button_outer .login_btn.deposit-btn {
-        display: none !important;
-    }
-    header .col-lg-2.logo_s {
-        max-width: 120px !important;
-    }
-    header .logo .lightlogo,
-    header .logo .darklogo,
-    header .logo img:not(.eaglelogo) {
-        width: 200px !important;
-        /* max-width: 100px !important; */
-    }
-    .afterloginheader .user_login.dashbtn a {
-        font-size: 11px !important;
-        padding: 4px 10px !important;
-    }
-    .afterloginheader .header_right {
-        right: 44px !important;
-    }
-}
-
-/* ──────────────────────────────────────────────────────────────
-   Mobile sidebar logout — baseline positions .logout_btn as
-   position:fixed at bottom:0 with width:210px, which doesn't
-   render on mobile because .leftside_menu.active fills 100vh
-   and ul.navi_sidebar with height:100% pushes the sibling
-   logout_btn out of the visible flow.
-
-   Fix: turn the open sidebar into a flex column, let the menu
-   list grow + scroll, and pin the logout button as the bottom
-   flex item with padding clearance from the mobile safe area.
-   ────────────────────────────────────────────────────────────── */
-@media screen and (max-width: 991px) {
-    .leftside_menu.active {
-        display: flex !important;
-        flex-direction: column;
-        height: 100vh !important;
-    }
-    .leftside_menu.active ul.navi_sidebar {
-        flex: 1 1 auto;
-        height: auto !important;
-        min-height: 0;
-        overflow-y: auto;
-        padding-bottom: 16px !important;
-        width: 100% !important;
-    }
-    .leftside_menu.active .logout_btn {
-        position: relative !important;
-        bottom: auto !important;
-        width: 100% !important;
-        flex: 0 0 auto;
-        padding: 12px 16px calc(16px + env(safe-area-inset-bottom));
-        border-top: 1px solid #2A2E35;
-        background: #0f1113;
-    }
-    .leftside_menu.active .logout_btn a {
-        display: flex !important;
-        align-items: center;
-        justify-content: center;
-        gap: 8px;
-        font-size: 15px;
-        padding: 10px 18px;
-        border-radius: 10px;
-    }
-    body.light_theme .leftside_menu.active .logout_btn {
-        background: #ffffff;
-        border-top-color: #e5e7eb;
-    }
-}
-
-/* Header hamburger menu — Logout item. Sits below Theme on mobile;
-   coloured as a danger action so it's easy to spot. */
-.navbar-nav .nav-item--logout .nav-link {
-    color: #EF4444 !important;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 8px;
-}
-.navbar-nav .nav-item--logout .nav-link:hover {
-    color: #DC2626 !important;
-}
-.navbar-nav .nav-item--logout .nav-link i {
-    font-size: 18px;
-}
-
-/* ──────────────────────────────────────────────────────────────
-   Logout confirmation modal — theme-aware.
-   Dark mode (default): dark card on a dim scrim.
-   Light mode (body.light_theme): light card on a translucent scrim.
-   ────────────────────────────────────────────────────────────── */
-.logout-modal-backdrop {
-    position: fixed;
-    inset: 0;
-    background: rgba(0, 0, 0, 0.55);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    z-index: 2147483646;
-    padding: 20px;
-    animation: logout-modal-fade 140ms ease-out;
-}
-
-.logout-modal-card {
-    width: 100%;
-    max-width: 400px;
-    background: #1F2227;
-    border: 1px solid #2A2E35;
-    border-radius: 18px;
-    padding: 28px 24px 22px;
-    box-shadow: 0 24px 60px rgba(0, 0, 0, 0.55);
-    text-align: center;
-    color: #EAECEF;
-    animation: logout-modal-pop 160ms ease-out;
-}
-
-.logout-modal-icon {
-    width: 56px;
-    height: 56px;
-    border-radius: 50%;
-    background: rgba(239, 68, 68, 0.12);
-    color: #F87171;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin: 0 auto 14px;
-    font-size: 26px;
-}
-
-.logout-modal-title {
-    font-size: 18px;
-    font-weight: 600;
-    margin: 0 0 6px;
-    color: inherit;
-}
-
-.logout-modal-desc {
-    font-size: 14px;
-    line-height: 1.45;
-    color: #A3A8B3;
-    margin: 0 0 20px;
-}
-
-.logout-modal-actions {
-    display: flex;
-    gap: 10px;
-    justify-content: stretch;
-}
-
-.logout-modal-btn {
-    flex: 1 1 0;
-    padding: 10px 16px;
-    border-radius: 999px;
-    border: 1px solid transparent;
-    font-size: 14px;
-    font-weight: 500;
-    cursor: pointer;
-    transition: background-color 120ms ease, border-color 120ms ease, color 120ms ease;
-}
-
-.logout-modal-btn--ghost {
-    background: transparent;
-    border-color: #363b45;
-    color: #EAECEF;
-}
-
-.logout-modal-btn--ghost:hover {
-    background: #2B313C;
-}
-
-.logout-modal-btn--danger {
-    background: #EF4444;
-    color: #ffffff;
-    border-color: #EF4444;
-}
-
-.logout-modal-btn--danger:hover {
-    background: #DC2626;
-    border-color: #DC2626;
-}
-
-.logout-modal-btn--danger:focus-visible {
-    outline: 2px solid #FCA5A5;
-    outline-offset: 2px;
-}
-
-/* Light theme override — pale card, dark text. */
-body.light_theme .logout-modal-backdrop {
-    background: rgba(17, 24, 39, 0.35);
-}
-
-body.light_theme .logout-modal-card {
-    background: #ffffff;
-    border-color: #e5e7eb;
-    color: #111827;
-    box-shadow: 0 24px 60px rgba(17, 24, 39, 0.18);
-}
-
-body.light_theme .logout-modal-desc {
-    color: #4b5563;
-}
-
-body.light_theme .logout-modal-icon {
-    background: rgba(239, 68, 68, 0.1);
-    color: #DC2626;
-}
-
-body.light_theme .logout-modal-btn--ghost {
-    border-color: #e5e7eb;
-    color: #111827;
-}
-
-body.light_theme .logout-modal-btn--ghost:hover {
-    background: #f3f4f6;
-}
-
-@keyframes logout-modal-fade {
-    from { opacity: 0; }
-    to { opacity: 1; }
-}
-
-@keyframes logout-modal-pop {
-    from { opacity: 0; transform: translateY(6px) scale(0.98); }
-    to { opacity: 1; transform: translateY(0) scale(1); }
-}
-
-@media (prefers-reduced-motion: reduce) {
-    .logout-modal-backdrop,
-    .logout-modal-card {
-        animation: none;
-    }
-}
-
-@media screen and (max-width: 480px) {
-    .logout-modal-card {
-        padding: 22px 18px 18px;
-        border-radius: 16px;
-    }
-    .logout-modal-actions {
-        flex-direction: column-reverse;
-    }
-}
-
-/* ──────────────────────────────────────────────────────────────
-   Deposit page (/asset_management/deposit) — dark-mode overrides.
-   Baseline CSS hardcodes light surfaces (#fff), light borders
-   (#eaecf0 / #F2F3F4), and near-black text (#101828 / #070709)
-   which all disappear on the default dark body. Every surface,
-   border, and text colour inside .depositcrypto_lft gets a dark
-   counterpart here; light-mode output is untouched.
-   ────────────────────────────────────────────────────────────── */
-body:not(.light_theme) .depositcrypto_lft h1 {
-    color: #EAECEF;
-}
-body:not(.light_theme) .depositcrypto_lft .deposit_fiat_head_btn,
-body:not(.light_theme) .depositcrypto_lft .deposit_fiat_head_btn:hover {
-    color: #EAECEF;
-}
-
-/* Left column: step rail, badges, headings. */
-body:not(.light_theme) .deposit_crypto_left {
-    color: #EAECEF;
-}
-body:not(.light_theme) .depositcrypto_lft .deposit_step_header h2 {
-    color: #EAECEF;
-}
-body:not(.light_theme) .depositcrypto_lft .deposit_step_section::before {
-    background: #2A2E35;
-}
-body:not(.light_theme) .depositcrypto_lft .deposit_step_badge {
-    background: #EAECEF;
-    border-color: #EAECEF;
-    color: #101828;
-}
-body:not(.light_theme) .depositcrypto_lft .select-option .deposit_step_badge {
-    background: #1F2227;
-    border-color: #363b45;
-    color: #EAECEF;
-}
-
-/* Deposit details card + QR box. */
-body:not(.light_theme) .depositcrypto_lft .deposit_details_card {
-    background: #1F2227;
-    border-color: #2A2E35;
-}
-body:not(.light_theme) .depositcrypto_lft .deposit_details_label {
-    color: #A3A8B3;
-}
-body:not(.light_theme) .depositcrypto_lft .deposit_details_caret {
-    color: #A3A8B3;
-}
-body:not(.light_theme) .depositcrypto_lft .deposit_qr_box {
-    background: #ffffff;
-    border-color: #2A2E35;
-}
-body:not(.light_theme) .depositcrypto_lft .deposit_qr_hint {
-    color: #A3A8B3;
-}
-body:not(.light_theme) .depositcrypto_lft .deposit_field_head {
-    color: #EAECEF;
-}
-body:not(.light_theme) .depositcrypto_lft .deposit_field_input input {
-    background: #16181D;
-    border-color: #2A2E35;
-    color: #EAECEF;
-}
-body:not(.light_theme) .depositcrypto_lft .deposit_field_input input::placeholder {
-    color: #6A7282;
-}
-body:not(.light_theme) .depositcrypto_lft .deposit_copy_btn {
-    background: #2B313C;
-    border-color: #363b45;
-    color: #EAECEF;
-}
-body:not(.light_theme) .depositcrypto_lft .deposit_copy_btn:hover {
-    background: #363b45;
-}
-body:not(.light_theme) .depositcrypto_lft .deposit_copy_ico {
-    color: #A3A8B3;
-}
-body:not(.light_theme) .depositcrypto_lft .deposit_details_meta {
-    color: #A3A8B3;
-}
-body:not(.light_theme) .depositcrypto_lft .deposit_meta_label {
-    color: #848E9C;
-}
-body:not(.light_theme) .depositcrypto_lft .deposit_meta_value {
-    color: #EAECEF;
-}
-
-/* Right column — FAQ card. */
-body:not(.light_theme) .deposit_crypto_right .faq_container {
-    border-color: #2A2E35;
-    background: #1F2227;
-    color: #EAECEF;
-}
-body:not(.light_theme) .deposit_crypto_right .faq_container h2 {
-    color: #EAECEF;
-}
-body:not(.light_theme) .deposit_crypto_right .accordion {
-    --bs-accordion-bg: transparent;
-    --bs-accordion-color: #EAECEF;
-    --bs-accordion-border-color: #2A2E35;
-    --bs-accordion-btn-color: #EAECEF;
-    --bs-accordion-btn-bg: transparent;
-    --bs-accordion-active-bg: transparent;
-    --bs-accordion-active-color: #ffffff;
-}
-body:not(.light_theme) .deposit_crypto_right .accordion-item {
-    background: transparent;
-    border-color: #2A2E35;
-    color: #EAECEF;
-}
-body:not(.light_theme) .deposit_crypto_right .accordion-button,
-body:not(.light_theme) .deposit_crypto_right .accordion-button:not(.collapsed) {
-    background: transparent !important;
-    color: #EAECEF !important;
-    box-shadow: none;
-}
-body:not(.light_theme) .deposit_crypto_right .accordion-body {
-    color: #A3A8B3;
-}
-body:not(.light_theme) .deposit_crypto_right .accordion-body strong {
-    color: #EAECEF;
-}
-/* FAQ caret image is filter:brightness(0) in baseline which is invisible
-   in dark. Invert it. */
-body:not(.light_theme) .deposit_crypto_right .accordion-button::after,
-body:not(.light_theme) .deposit_crypto_right .accordion-button[aria-expanded="true"]::after {
-    filter: brightness(0) invert(1) !important;
-}
-
-/* Deposit history. */
-body:not(.light_theme) .depositcrypto_lft .deposit_history_title {
-    color: #EAECEF;
-}
-body:not(.light_theme) .depositcrypto_lft .deposit_history_viewall {
-    color: #A3A8B3;
-}
-body:not(.light_theme) .depositcrypto_lft .deposit_history_viewall:hover {
-    color: #EAECEF;
-}
-body:not(.light_theme) .depositcrypto_lft .deposit_history_card,
-body:not(.light_theme) .depositcrypto_lft .deposit_history_head_wrap,
-body:not(.light_theme) .depositcrypto_lft .deposit_history_head {
-    background: transparent;
-}
-body:not(.light_theme) .depositcrypto_lft .deposit_history_head_cell {
-    color: #848E9C;
-}
-body:not(.light_theme) .depositcrypto_lft .deposit_history_empty_text {
-    color: #EAECEF;
-}
-
-/* Select coin / network rows — inputs + dropdowns read from these
-   classes elsewhere in the tree; harmless double-assignment in dark. */
-body:not(.light_theme) .depositcrypto_lft .search_icon_s {
-    background: #16181D;
-    border-color: #2A2E35;
-    color: #EAECEF;
-}
-
-/* Primary CTA button ("Generate Address" / "Transfer Completed"). */
-body:not(.light_theme) .depositcrypto_lft .coin_items_select .login_btn input[type="button"] {
-    background: #D1AA67;
-    color: #101010;
-    border: none;
-}
-
-/* ──────────────────────────────────────────────────────────────
-   Deposit page — responsive polish.
-   Baseline has a @991 rule that stacks the left/right columns,
-   but the page header is fixed at 66% width, side paddings are
-   desktop-sized, and the copy field / QR box overflow on phones.
-   ────────────────────────────────────────────────────────────── */
-@media screen and (max-width: 1200px) {
-    .depositcrypto_lft .deposit_crypto_page_head {
-        width: 100%;
-    }
-    .deposit_crypto_block_coin {
-        gap: 40px;
-    }
-}
-
-@media screen and (max-width: 991px) {
-    .depositcrypto_lft {
-        padding-left: 24px;
-        padding-right: 24px;
-        margin-top: 24px;
-    }
-    .depositcrypto_lft .deposit_crypto_left,
-    .depositcrypto_lft .deposit_crypto_right {
-        width: 100%;
-    }
-    .depositcrypto_lft .deposit_details_grid {
-        grid-template-columns: 1fr !important;
-    }
-    .depositcrypto_lft .deposit_history_head {
-        min-width: 560px;
-    }
-}
-
-@media screen and (max-width: 767px) {
-    .depositcrypto_lft {
-        padding: 16px 16px 28px;
-        margin-top: 16px;
-    }
-    .depositcrypto_lft h1 {
-        font-size: 22px;
-    }
-    .depositcrypto_lft .deposit_crypto_page_head {
-        gap: 10px;
-    }
-    .depositcrypto_lft .deposit_crypto_left {
-        padding-left: 28px;
-    }
-    .depositcrypto_lft .deposit_step_header h2 {
-        font-size: 14px;
-    }
-    .depositcrypto_lft .deposit_details_card {
-        padding: 14px;
-    }
-    .depositcrypto_lft .deposit_field_input {
-        grid-template-columns: 1fr;
-    }
-    .depositcrypto_lft .deposit_copy_btn {
-        justify-content: center;
-    }
-    .depositcrypto_lft .deposit_qr_box {
-        padding: 10px;
-    }
-    .depositcrypto_lft .deposit_qr_img {
-        width: 120px;
-        height: 120px;
-    }
-    .depositcrypto_lft .deposit_history_title {
-        font-size: 17px;
-    }
-    .depositcrypto_lft .deposit_history_empty {
-        padding: 36px 12px 44px;
-    }
-    .depositcrypto_lft .deposit_history_empty_text {
-        font-size: 15px;
-    }
-    .depositcrypto_lft .coin_items_select .col-sm-6 {
-        width: 100%;
-    }
-    .deposit_crypto_right .faq_container {
-        padding: 20px;
-    }
-}
-
-@media screen and (max-width: 480px) {
-    .depositcrypto_lft .deposit_crypto_page_head {
-        flex-direction: column;
-        align-items: flex-start;
-    }
-    .depositcrypto_lft .deposit_details_card {
-        padding: 12px;
-        border-radius: 10px;
-    }
-    .depositcrypto_lft .deposit_field_input input {
-        font-size: 12px;
-    }
-}
-
-/* ──────────────────────────────────────────────────────────────
-   Login / Signup / Forgot-password pages — dark-mode overrides.
-   Baseline hardcodes white surfaces (.login_fullhieght bg:#fff,
-   .form_block_login bg:#fff color:#000), dark text for headings
-   and labels, and light grey input fills (#F5F6F7). In dark mode
-   none of that reads. These rules scope under the body class each
-   page sets (loginbg/signupbg/forgot_password) so light mode is
-   untouched.
-   ────────────────────────────────────────────────────────────── */
-body:not(.light_theme).loginbg,
-body:not(.light_theme).signupbg {
-    background-color: #0f1113;
-}
-
-body:not(.light_theme).loginbg .login_fullhieght {
-    background-color: #0f1113 !important;
-}
-
-body:not(.light_theme).loginbg .login_section .form_block_login,
-body:not(.light_theme).signupbg .login_section .form_block_login,
-body:not(.light_theme).signupbg .login_section.bgsignup .form_block_login,
-body:not(.light_theme) .login_section.forgot_password .form_block_login {
-    background-color: transparent !important;
-    color: #EAECEF !important;
-}
-
-/* The signup wizard re-applies surfaces a few places — pin every one
-   that could carry a white fill to the dark page colour. */
-body:not(.light_theme).signupbg .login_section.bgsignup,
-body:not(.light_theme).signupbg .login_form_right,
-body:not(.light_theme).signupbg.signup-wizard-full-steps .login_form_right {
-    background-color: transparent !important;
-}
-
-/* Headings + labels */
-body:not(.light_theme) .form_block_login h2,
-body:not(.light_theme) .form_block_login h3,
-body:not(.light_theme) .form_block_login .login-wizard-title,
-body:not(.light_theme) .form_block_login .signup-wizard-step-meta {
-    color: #EAECEF;
-}
-
-body:not(.light_theme) .form_block_login label {
-    color: #C6CAD2;
-}
-
-body:not(.light_theme) .form_block_login p,
-body:not(.light_theme) .form_block_login .signup-wizard-subtitle {
-    color: #A3A8B3;
-}
-
-/* Inputs */
-body:not(.light_theme) .form_block_login .input_filed {
-    background-color: #16181D;
-    border-color: #2A2E35;
-    color: #EAECEF;
-}
-
-body:not(.light_theme) .form_block_login .input_filed:focus,
-body:not(.light_theme) .login_section .form_block_login .input_filed:focus,
-body:not(.light_theme) .login_section .form_block_login .input_filed:focus-visible {
-    border-color: #D1AA67 !important;
-    background-color: #16181D;
-}
-
-body:not(.light_theme) .form_block_login .input_filed::placeholder {
-    color: #6A7282;
-    opacity: 1;
-}
-
-/* Eye toggle + GET OTP button inside the password / OTP input */
-body:not(.light_theme) .form_block_login .get_otp,
-body:not(.light_theme) .form_block_login .get_otp.otp2 i {
-    color: #A3A8B3;
-}
-
-/* Select (country code, etc.) */
-body:not(.light_theme) .form_block_login select.input_filed {
-    background-color: #16181D;
-    color: #EAECEF;
-}
-
-body:not(.light_theme) .form_block_login select.input_filed option {
-    background-color: #16181D;
-    color: #EAECEF;
-}
-
-/* Login wizard tabs */
-body:not(.light_theme) .form_block_login.login-wizard-root .login-wizard-tabs button {
-    color: #A3A8B3;
-}
-body:not(.light_theme) .form_block_login.login-wizard-root .login-wizard-tabs button.is-active {
-    color: #EAECEF;
-}
-body:not(.light_theme) .form_block_login.login-wizard-root .login-wizard-tabs button.is-active::after {
-    background: #D1AA67;
-}
-
-/* Bind-IP checkbox row links */
-body:not(.light_theme) .form_block_login.login-wizard-root .login-wizard-bind-row a {
-    color: #D1AA67;
-}
-
-/* Primary CTA on login wizard (dark pill) — repaint for contrast */
-body:not(.light_theme) .form_block_login.login-wizard-root .login-wizard-next-btn {
-    background: #D1AA67;
-    color: #1a1205;
-}
-body:not(.light_theme) .form_block_login.login-wizard-root .login-wizard-next-btn:hover:not(:disabled) {
-    background: #E0B878;
-}
-
-/* Passkey + "Create account" links */
-body:not(.light_theme) .form_block_login.login-wizard-root .login-wizard-passkey-outline {
-    background: #1F2227;
-    border-color: #2A2E35;
-    color: #EAECEF;
-}
-body:not(.light_theme) .form_block_login.login-wizard-root .login-wizard-create-link {
-    color: #A3A8B3;
-}
-
-/* OTP cells — baseline forces background with !important, so match that. */
-body:not(.light_theme) .form_block_login .signup-wizard-otp-cell {
-    background: #1F2227 !important;
-    border-color: #2A2E35 !important;
-    color: #EAECEF;
-}
-body:not(.light_theme) .form_block_login .signup-wizard-otp-cell:focus {
-    border-color: #D1AA67 !important;
-}
-
-/* OTP resend / paste / back links */
-body:not(.light_theme) .form_block_login .signup-wizard-otp-link,
-body:not(.light_theme) .form_block_login .signup-wizard-back {
-    color: #EAECEF;
-}
-
-/* Divider + social buttons */
-body:not(.light_theme) .form_block_login .signup-wizard-divider {
-    color: #A3A8B3;
-}
-body:not(.light_theme) .form_block_login .signup-wizard-divider::before,
-body:not(.light_theme) .form_block_login .signup-wizard-divider::after {
-    background: #2A2E35;
-}
-body:not(.light_theme) .form_block_login .signup-wizard-social-btn {
-    background: #1F2227;
-    border-color: #2A2E35;
-}
-
-/* Signup password rules list */
-body:not(.light_theme) .form_block_login .signup-wizard-rule-row {
-    color: #A3A8B3;
-}
-body:not(.light_theme) .form_block_login .signup-wizard-rule-row.is-ok i {
-    color: #10B981;
-}
-body:not(.light_theme) .form_block_login .signup-wizard-rule-row.is-bad i {
-    color: #EF4444;
-}
-
-/* Signup privileges table */
-body:not(.light_theme) .form_block_login .signup-wizard-priv-table th,
-body:not(.light_theme) .form_block_login .signup-wizard-priv-table td {
-    border-bottom-color: #2A2E35;
-    color: #EAECEF;
-}
-body:not(.light_theme) .form_block_login .signup-wizard-priv-table th {
-    color: #848E9C;
-}
-
-/* Step dots (active uses gold already, faded dots need dark bg) */
-body:not(.light_theme) .form_block_login .signup-wizard-steps-bar li {
-    background: rgba(255, 255, 255, 0.15);
-}
-
-/* ── Signup split layout ── */
-body:not(.light_theme).signupbg {
-    background: linear-gradient(
-        90deg,
-        #000000 0%,
-        #000000 50%,
-        #0f1113 50%,
-        #0f1113 100%
-    ) !important;
-}
-
-body:not(.light_theme).signupbg .sign_rewards {
-    background-color: #000000 !important;
-}
-
-body:not(.light_theme).signupbg .login_section.bgsignup {
-    background-color: #0f1113 !important;
-}
-
-body:not(.light_theme).signupbg.signup-wizard-full-steps,
-body:not(.light_theme).signupbg.signup-wizard-full-steps .login_section.bgsignup {
-    background: #0f1113 !important;
-    background-color: #0f1113 !important;
-}
-
-/* Signup login-pills (tab switcher for Email/Phone).
-   Baseline uses `color: #0a0a0a !important` for active and `#84888C !important`
-   for idle tabs (see login-pills rules at ~3071 and nav-tabs rule at ~4327).
-   We match the `!important` to flip both states in dark mode. */
-body:not(.light_theme) .login-pills .nav-link,
-body:not(.light_theme) .login_section .nav.nav-tabs li button {
-    color: #A3A8B3 !important;
-}
-body:not(.light_theme) .login-pills .nav-link.active,
-body:not(.light_theme) body .login_section .login-pills li .nav-link.active,
-body:not(.light_theme) .login_section .nav.nav-tabs li button.active {
-    color: #EAECEF !important;
-}
-/* Active tab underline bar — baseline paints it `#000`, invisible on dark. */
-body:not(.light_theme) .login_section .nav.nav-tabs li button:before {
-    background-color: #D1AA67;
-}
-
-/* Verify-bonus title accent stays gold */
-body:not(.light_theme) h3.mb-2.verify_hd {
-    color: #EAECEF;
-}
-
-/* Collapse at ≤991px: signup single-column stays dark instead of white */
-@media screen and (max-width: 991px) {
-    body:not(.light_theme).signupbg,
-    body:not(.light_theme).signupbg.signup-wizard-full-steps {
-        background: #0f1113 !important;
-    }
-}
-
-/* Anti-phishing / registered-user hint pills (if rendered as .email_code) */
-body:not(.light_theme) .form_block_login .email_code {
-    color: #EAECEF;
-}
-body:not(.light_theme) .form_block_login .email_code .get_otp {
-    color: #A3A8B3;
-}
-
-/* ──────────────────────────────────────────────────────────────
-   Activity Logs page — card, table, and mobile stack.
-   Dark by default (matches the profile shell), light-theme
-   overrides below. The layout is desktop table + mobile card
-   list; both render side-by-side in the DOM and CSS toggles
-   which is visible per breakpoint.
-   ────────────────────────────────────────────────────────────── */
-.activity-logs-page {
-    padding: 24px 0 40px;
-    color: #EAECEF;
-}
-
-.activity-logs-card {
-    /* background: #1F2227; */
-    border: 1px solid #2A2E35;
-    border-radius: 16px;
-    overflow: hidden;
-    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.35);
-}
-
-.activity-logs-header {
-    /* padding: 20px 24px 16px !important; */
-    height: 90px;
-    padding: 20px;
-    border-bottom: 1px solid #2A2E35;
-}
-.activity-logs-header h1 {
-    font-size: 22px !important;
-    font-weight: 600 !important;
-    margin: 0 0 4px !important;
-    color: inherit !important;
-    line-height: 1.2 !important;
-    padding: 0 !important;
-}
-.activity-logs-header p {
-    font-size: 13px;
-    color: #A3A8B3;
-    margin: 0 !important;
-    line-height: 1.4;
-    padding: 0;
-}
-
-.activity-logs-table-wrap {
-    overflow-x: auto;
-}
-.activity-logs-table {
-    width: 100%;
-    border-collapse: collapse;
-    min-width: 640px;
-}
-.activity-logs-table thead th {
-    font-size: 12px;
-    font-weight: 500;
-    letter-spacing: 0.02em;
-    text-transform: uppercase;
-    text-align: left;
-    color: #848E9C;
-    padding: 14px 24px;
-    background: rgba(255, 255, 255, 0.02);
-    border-bottom: 1px solid #2A2E35;
-    white-space: nowrap;
-}
-.activity-logs-table thead th.right_t {
-    text-align: right;
-}
-.activity-logs-table tbody tr {
-    border-bottom: 1px solid #242830;
-    transition: background-color 120ms ease;
-}
-.activity-logs-table tbody tr:last-child {
-    border-bottom: none;
-}
-.activity-logs-table tbody tr:hover {
-    background: rgba(255, 255, 255, 0.03);
-}
-.activity-logs-table tbody td {
-    padding: 14px 24px;
-    font-size: 14px;
-    vertical-align: middle;
-    color: #EAECEF;
-}
-.activity-logs-table td.activity-log-activity {
-    font-weight: 500;
-}
-.activity-logs-table td.activity-log-ip {
-    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
-    font-size: 13px;
-    color: #A3A8B3;
-}
-.activity-logs-table td.activity-log-date {
-    color: #A3A8B3;
-    white-space: nowrap;
-}
-.activity-logs-table td.right_t {
-    text-align: right;
-}
-
-/* Severity badge */
-.activity-log-badge {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    padding: 4px 10px;
-    border-radius: 999px;
-    font-size: 12px;
-    font-weight: 500;
-    line-height: 1;
-    white-space: nowrap;
-}
-.activity-log-badge i {
-    font-size: 7px;
-}
-.activity-log-badge--success {
-    background: rgba(16, 185, 129, 0.12);
-    color: #10B981;
-}
-.activity-log-badge--warning {
-    background: rgba(234, 179, 8, 0.14);
-    color: #EAB308;
-}
-.activity-log-badge--danger {
-    background: rgba(239, 68, 68, 0.14);
-    color: #EF4444;
-}
-
-/* Mobile card list — hidden on desktop. */
-.activity-logs-mobile {
-    display: none;
-    list-style: none;
-    margin: 0;
-    padding: 0;
-}
-.activity-logs-mobile .activity-log-card {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-    padding: 14px 16px;
-    border-bottom: 1px solid #242830;
-}
-.activity-logs-mobile .activity-log-card:last-child {
-    border-bottom: none;
-}
-.activity-log-card-top {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 10px;
-}
-.activity-log-card-top .activity-log-activity {
-    font-size: 14px;
-    font-weight: 500;
-    color: #EAECEF;
-}
-.activity-log-card-meta {
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
-    font-size: 13px;
-    color: #A3A8B3;
-}
-.activity-log-card-meta span {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-}
-.activity-log-card-meta i {
-    font-size: 14px;
-    color: #6A7282;
-}
-
-/* Responsive: desktop ≥768 uses table, ≤767 uses mobile cards. */
-@media screen and (max-width: 767px) {
-    .activity-logs-page {
-        padding: 16px 0 32px;
-    }
-    .activity-logs-header {
-        padding: 18px 16px 14px;
-    }
-    .activity-logs-header h1 {
-        font-size: 18px;
-    }
-    .activity-logs-header p {
-        font-size: 12px;
-    }
-    .activity-logs-table-wrap {
-        display: none;
-    }
-    .activity-logs-mobile {
-        display: block;
-    }
-    .activity-logs-card {
-        border-radius: 14px;
-    }
-}
-
-/* Light-theme overrides — forced with !important so they beat
-   anything else in the cascade (baseline table td rules, etc.). */
-body.light_theme .activity-logs-page {
-    color: #111827 !important;
-}
-body.light_theme .activity-logs-card {
-    background: #ffffff !important;
-    border-color: #e5e7eb !important;
-    box-shadow: 0 4px 16px rgba(17, 24, 39, 0.06) !important;
-}
-body.light_theme .activity-logs-header {
-    border-bottom-color: #e5e7eb !important;
-    height: 90px;
-    color: white;
-}
-/* not light theme */
-
-body.light_theme .activity-logs-header p {
-    color: #6A7282 !important;
-}
-body.light_theme .activity-logs-table thead th {
-    background: #f9fafb !important;
-    color: #6A7282 !important;
-    border-bottom-color: #e5e7eb !important;
-}
-body.light_theme .activity-logs-table tbody tr {
-    border-bottom-color: #f1f3f5 !important;
-}
-body.light_theme .activity-logs-table tbody tr:hover {
-    background: #f9fafb !important;
-}
-body.light_theme .activity-logs-table tbody td {
-    color: #111827 !important;
-}
-body.light_theme .activity-logs-table td.activity-log-ip,
-body.light_theme .activity-logs-table td.activity-log-date {
-    color: #4b5563 !important;
-}
-body.light_theme .activity-log-card-top .activity-log-activity {
-    color: #111827 !important;
-}
-body.light_theme .activity-log-card-meta {
-    color: #4b5563 !important;
-}
-body.light_theme .activity-log-card-meta i {
-    color: #9ca3af !important;
-}
-body.light_theme .activity-logs-mobile .activity-log-card {
-    border-bottom-color: #f1f3f5 !important;
-}
-
-/* ──────────────────────────────────────────────────────────────
-   Profile/Asset-Management sidebar — hide whenever the header
-   shows the mobile hamburger (Bootstrap `navbar-expand-lg`
-   breaks at ≤991px, so the `.navbar-toggler` appears there).
-   Between 768–991px the baseline kept the desktop sidebar
-   visible alongside the hamburger — two navigation surfaces
-   on screen at once. This rule hides the desktop rail as soon
-   as the hamburger surfaces, and lets the `.active` class
-   (set by ProfileLayout's mobile toggle) still open it when
-   the user taps through.
-   Dashboard main column also reclaims its 340px sidebar gutter. */
-@media screen and (max-width: 991px) {
-    .leftside_menu {
-        display: none !important;
-    }
-    .leftside_menu.active {
-        display: flex !important;
-    }
-    .dashboard_right {
-        padding-left: 20px !important;
-    }
 }

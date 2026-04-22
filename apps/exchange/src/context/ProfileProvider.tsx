@@ -1,4 +1,4 @@
-import { createContext, useContext, type ReactNode } from 'react'
+import { createContext, useContext, useMemo, useState, type Dispatch, type ReactNode, type SetStateAction } from 'react'
 import { useAuth } from '../providers/AuthProvider.js'
 
 interface UserDetails {
@@ -10,17 +10,39 @@ interface UserDetails {
 
 interface ProfileContextValue {
   userDetails: UserDetails | null
+  currentPage: string
+  setCurrentPage: Dispatch<SetStateAction<string>>
+  walletTypes: string[]
+  setWalletTypes: Dispatch<SetStateAction<string[]>>
 }
 
-export const ProfileContext = createContext<ProfileContextValue>({ userDetails: null })
+const noop: Dispatch<SetStateAction<never>> = () => {}
+
+export const ProfileContext = createContext<ProfileContextValue>({
+  userDetails: null,
+  currentPage: '',
+  setCurrentPage: noop as Dispatch<SetStateAction<string>>,
+  walletTypes: [],
+  setWalletTypes: noop as Dispatch<SetStateAction<string[]>>,
+})
 
 export function ProfileProvider({ children }: { children: ReactNode }) {
   const { user } = useAuth()
-  return (
-    <ProfileContext.Provider value={{ userDetails: user as UserDetails | null }}>
-      {children}
-    </ProfileContext.Provider>
+  const [currentPage, setCurrentPage] = useState('')
+  const [walletTypes, setWalletTypes] = useState<string[]>([])
+
+  const value = useMemo<ProfileContextValue>(
+    () => ({
+      userDetails: user as UserDetails | null,
+      currentPage,
+      setCurrentPage,
+      walletTypes,
+      setWalletTypes,
+    }),
+    [user, currentPage, walletTypes],
   )
+
+  return <ProfileContext.Provider value={value}>{children}</ProfileContext.Provider>
 }
 
 export function useProfile(): ProfileContextValue {

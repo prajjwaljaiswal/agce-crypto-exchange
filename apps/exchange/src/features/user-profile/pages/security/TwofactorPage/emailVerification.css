@@ -1,0 +1,392 @@
+/* Email Verification flow — fully scoped */
+
+.ev-page {
+  width: 100%;
+  min-height: 100%;
+  padding: 35px 0;
+  max-width: 1150px;
+  margin: 0 auto;
+}
+
+.ev-page *,
+.ev-page *::before,
+.ev-page *::after {
+  box-sizing: border-box;
+}
+
+.ev-page__crumbs {
+  margin-bottom: 18px;
+}
+
+.ev-page__crumbList {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: #8e939c;
+  font-size: 15px;
+  font-weight: 500;
+}
+
+.ev-page__crumbItem--active {
+  color: #101828;
+  font-weight: 700;
+}
+
+.ev-page__crumbSep {
+  color: #8e939c;
+}
+
+.ev-page__crumbLink {
+  border: none;
+  background: transparent;
+  padding: 0;
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
+}
+
+.ev-page__crumbLink:hover {
+  color: #101828;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.email_verification_lft {
+  padding-top: 40px;
+  padding-left: 30px;
+}
+
+.ev-page__title {
+  margin: 0 0 10px;
+  font-size: 36px;
+  font-weight: 600;
+  color: #101828;
+}
+
+.ev-page__subtitle {
+  margin: 0 0 22px;
+  font-size: 14px;
+  line-height: 1.55;
+  color: #8e939c;
+  font-weight: 500;
+  max-width: 660px;
+}
+
+.ev-page__learn {
+  font-weight: 600;
+  color: #101828;
+}
+
+.ev-card {
+  width: 100%;
+  border-radius: 10px;
+  background: #F5F6F7;
+  padding: 23px 25px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: 35px;
+}
+
+.ev-card__left {
+  display: flex;
+  align-items: start;
+  gap: 12px;
+}
+
+.ev-card__icon {
+  width: 32px;
+  height: 32px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.ev-card__icon img {
+  width: 22px;
+  height: 22px;
+  display: block;
+}
+
+.ev-card__email {
+  font-size: 16px;
+  font-weight: 500;
+  color: #101828;
+}
+
+.ev-card__meta {
+  font-size: 12px;
+  font-weight: 500;
+  color: #8e939c;
+  margin-top: 3px;
+}
+
+.ev-card__edit {
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  border: none;
+  background: transparent;
+  color: #6b7280;
+  cursor: pointer;
+}
+
+/* .ev-card__edit:hover {
+  background: rgba(17, 24, 39, 0.06);
+  color: #111827;
+} */
+
+/* Shared modal base (reuse typography vibe from other popups) */
+.ev-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgb(255 255 255 / 25%);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 100000020;
+}
+
+.ev-modal__actions button.ev-btn.ev-btn--primary {
+  width: 100%;
+}
+
+.ev-modal {
+  width: 628px;
+  max-width: 92vw;
+  border-radius: 20px;
+  background: rgb(255 255 255 / 70%);
+  border: 1px solid #eef2f6;
+  box-shadow: 0 28px 60px rgba(15, 23, 42, 0.18);
+  padding: 26px 26px 22px;
+  position: relative;
+  text-align: center;
+}
+
+.ev-modal__close {
+  position: absolute;
+  top: 16px;
+  right: 18px;
+  width: 36px;
+  height: 36px;
+  border: none;
+  background: transparent;
+  color: #111827;
+  font-size: 26px;
+  line-height: 1;
+  cursor: pointer;
+  border-radius: 10px;
+}
+
+.ev-modal__close:hover {
+  background: rgba(17, 24, 39, 0.06);
+}
+
+.ev-modal__art {
+  width: 186px;
+  margin: 6px auto 30px;
+}
+
+.ev-modal__art img {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.ev-modal__title {
+  margin: 0;
+  font-size: 24px;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  color: #111827;
+}
+
+.ev-modal__subtitle {
+  margin: 12px auto 16px;
+  max-width: 520px;
+  font-weight: 500;
+  font-size: 14px;
+  line-height: 1.55;
+  color: #6A7282;
+}
+
+.ev-warnBox {
+  width: 505px;
+  max-width: 100%;
+  text-align: left;
+  border: 1px solid #E4E4E4;
+  border-radius: 11px;
+  padding: 16px 18px;
+  margin: 10px auto 18px;
+}
+
+.ev-warnRow {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  font-size: 14px;
+  font-weight: 500;
+  color: #6b7280 !important;
+  line-height: 1.45;
+
+}
+
+.ev-warnRow input {
+  margin-top: 2px;
+}
+
+.ev-modal__actions {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  margin-top: 26px;
+  padding: 0px 30px;
+}
+
+.ev-modal.ev-change-modal {
+  width: 539px; }
+
+.ev-btn {
+  height: 46px;
+  border-radius: 999px;
+  border: none;
+  padding: 0 22px;
+  width: 150px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.ev-btn--ghost {
+  background: #DDDDDD;
+  color: #6b7280;
+}
+
+.ev-btn--primary {
+  background: #303236;
+  color: #fff;
+}
+
+.ev-btn--primary:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+/* Change Email modal */
+.ev-change-modal {
+  text-align: left;
+  padding: 22px 22px 22px;
+}
+
+.ev-change-modal__title {
+  margin: 0;
+  padding-right: 44px;
+  font-size: 24px;
+  font-weight: 600;
+  color: #111827;
+}
+
+.ev-change-modal__subtitle {
+  margin: 13px 0 20px;
+  font-size: 17px;
+  font-weight: 500;
+  line-height: 1.45;
+  color: #6A7282;
+}
+
+.ev-change-field {
+  margin-top: 18px;
+}
+
+.ev-change-labelRow {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.ev-change-label {
+  font-size: 18px;
+  font-weight: 500;
+  color: #111827;
+  letter-spacing: -0.45px;
+  margin-bottom: 6px;
+  display: block;
+}
+
+
+.ev-change-field .ev-change-labelRow {
+  height: 48px;
+  border-radius: 10px;
+  border: 1px solid #e5e7eb;
+  align-items: center;
+  padding-right: 17px;
+}
+
+.ev-change-labelRow .ev-change-input {
+  height: 100%;
+  border: none; }
+
+  .ev-change-get {
+    white-space: nowrap; }
+
+.ev-change-get {
+  border: none;
+  background: transparent;
+  padding: 0;
+  font-size: 14px;
+  font-weight: 600;
+  color: #AC8A50;
+  cursor: pointer;
+}
+
+.ev-change-input {
+  width: 100%;
+  height: 48px;
+  border-radius: 10px;
+  border: 1px solid #e5e7eb;
+  background: #fff;
+  padding: 0 14px;
+  font-size: 13px;
+  font-weight: 500;
+  color: #111827;
+  outline: none;
+}
+
+.ev-change-submit {
+  width: 100%;
+  height: 48px;
+  margin-top: 28px;
+  border: none;
+  border-radius: 999px;
+  background: #2d2e32;
+  color: #fff;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.ev-change-submit:hover {
+  background: #1a1b1f;
+}
+
+@media (max-width: 520px) {
+  .ev-page {
+    padding: 22px 16px 44px;
+  }
+  .ev-page__title {
+    font-size: 28px;
+  }
+  .ev-modal {
+    padding: 20px 16px 16px;
+    border-radius: 16px;
+  }
+}
+

@@ -45,14 +45,14 @@ body.light_theme .price_max_total input[type="number"] {
 
 body.light_theme .dashboard_right {
     background-color: #fff;
-    color: #333;
+    color: #101828;
 }
 
 body.light_theme .dashboard_right .crypto_deposit,
 
 body.light_theme .dashboard_right .market_section.maindashboard {
     border: none;
-    color: #333;
+    color: #101828;
 }
 
 body.light_theme .dashboard_right .crypto_deposit h4,
@@ -60,13 +60,13 @@ body.light_theme .dashboard_right .crypto_deposit h4,
 body.light_theme .dashboard_right .crypto_deposit h5,
 
 body.light_theme .dashboard_right .market_section .top_heading h4 {
-    color: #333;
+    color: #101828;
 }
 
 body.light_theme .dashboard_right .top_heading h4,
 
 body.light_theme .dashboard_right .recent_deposit_list .top_heading h4 {
-    color: #333;
+    color: #101828;
 }
 
 body.light_theme .dashboard_right .top_heading .more_btn,
@@ -146,9 +146,9 @@ body.light_theme .dashboard_right .recent_deposit_list table tr {
     margin-bottom: 8px;
 }
 
-body.light_theme .dashboard_right .recent_deposit_list table tr:hover {
+/* body.light_theme .dashboard_right .recent_deposit_list table tr:hover {
     background-color: #f0f0f0;
-}
+} */
 
 body.light_theme .dashboard_right .recent_deposit_list table tr td,
 
@@ -156,9 +156,9 @@ body.light_theme .dashboard_right .recent_deposit_list .price_heading {
     color: #333;
 }
 
-body.light_theme .dashboard_right .recent_deposit_list table tr td span {
+/* body.light_theme .dashboard_right .recent_deposit_list table tr td span {
     color: #333;
-}
+} */
 
 body.light_theme .dashboard_right .deposit_history_section .deposit_history_title {
     color: #101828;
@@ -214,7 +214,7 @@ body.light_theme .dashboard_right .dashboard_summary ul.nav-tabs li button {
 }
 
 body.light_theme .dashboard_right .dashboard_summary ul.nav-tabs li button.active {
-    color: #303236; font-weight: 600;
+    color: #303236; font-weight: 700;
 }
 
 body.light_theme .dashboard_right .market_section .dashboard_summary {
@@ -304,13 +304,13 @@ body.light_theme .dashboard_right .dashboard_listing_section {
     gap: 24px;
 }
 
-body.light_theme .dashboard_right .listing_left_outer {
+/* body.light_theme .dashboard_right .listing_left_outer {
     flex: 1;
     min-width: 0;
     padding: 28px;
     border-radius: 15px;
     box-shadow: 0px 0px 20px #00000017;
-}
+} */
 
 body.light_theme .dashboard_right .crypto_deposit ul li {
     background-color: #f3f3f3;
@@ -497,9 +497,9 @@ body.light_theme .table>:not(caption)>*>* {
     border-color: transparent;
 }
 
-body.light_theme label {
+/* body.light_theme label {
     color: #161616;
-}
+} */
 
 body.light_theme .form-control {
     color: #000 !important;
@@ -578,11 +578,11 @@ body.light_theme .register_verified_form {
 }
 
 body.light_theme .register_verified_form h1 {
-    color: #f4b609;
+    color: #161616;
 }
 
 body.light_theme .login_section .form_block_login p span {
-    color: #f4b609;
+    color: #161616;
 }
 
 body.light_theme .login_btn input[type="button"] {
@@ -788,7 +788,7 @@ body.light_theme footer p {
 }
 
 body.light_theme .copyright h5 {
-    color: #F4B609;
+    color:#272727;
 }
 
 body.light_theme .copyright p span {
@@ -803,11 +803,11 @@ body.light_theme .leftside_menu {
     background-color: #fcfcfc;
 }
 
-body.light_theme .navi_sidebar li.active a {
+/* body.light_theme .navi_sidebar li.active a {
     background-color: #F2F3F7;
     border: 1px solid #DBDBDD;
-    /* color: #e7ad19; */
-}
+    color: #272727;
+} */
 
 body.light_theme .navi_sidebar li.active a:hover {
     background-color: #F2F3F7;
@@ -835,21 +835,6 @@ body.light_theme .navi_sidebar li.active button .navi_sidebar_icon {
     color: #cc9101;
 }
 
-body.light_theme .navi_sidebar li.active .dashboard_menu_hd,
-
-body.light_theme .navi_sidebar li .dashboard_menu_hd.active_ul {
-    color: #cc9101 !important;
-}
-
-/* Dropdown open / is section active: icon bhi yellow (light theme) */
-body.light_theme .navi_sidebar li:has(.dashboard_menu_hd.active_ul) .navi_sidebar_icon {
-    color: #cc9101;
-}
-
-body.light_theme .navi_sidebar li ul li.active a {
-    background-color: #e4e4e4;
-    color: #cd9306;
-}
 
 body.light_theme .navi_sidebar li p {
     color: #000;
@@ -859,18 +844,6 @@ body.light_theme .navi_sidebar li button {
     color: #292929;
 }
 
-body.light_theme .navi_sidebar li button:hover {
-    color: #000;
-}
-
-body.light_theme .navi_sidebar li a {
-    color: #292929;
-}
-
-body.light_theme .navi_sidebar li a:hover {
-    background-color: rgba(0, 0, 0, 0.05);
-    color: #000;
-}
 
 body.light_theme .login_profile_header {
     background-color: #F5F5F5;
@@ -1597,19 +1570,19 @@ body.light_theme .sell_spot_form .buysellform .input-group {
 }
 
 /* Buy / Sell spot form footer — Available/Max, FOK/IOC, CTA, fees, staking (light / mobile screenshot) */
-body.light_theme .buy_spot_form,
-body.light_theme .sell_spot_form {
+.buy_spot_form,
+.sell_spot_form {
     font-family: "Inter", sans-serif;
 }
 
-body.light_theme .buy_spot_form .limit_buy_avail,
-body.light_theme .sell_spot_form .limit_buy_avail {
-    margin-top: 16px;
+.buy_spot_form .limit_buy_avail,
+.sell_spot_form .limit_buy_avail {
+    margin-top: 0px;
     margin-bottom: 14px;
 }
 
-body.light_theme .buy_spot_form .limit_buy_avail .stop_avail_row,
-body.light_theme .sell_spot_form .limit_buy_avail .stop_avail_row {
+.buy_spot_form .limit_buy_avail .stop_avail_row,
+.sell_spot_form .limit_buy_avail .stop_avail_row {
     padding: 10px 0 0px;
     align-items: center;
 }
@@ -1647,22 +1620,22 @@ body.light_theme .sell_spot_form .limit_buy_plus {
     justify-content: center !important;
 }
 
-body.light_theme .buy_spot_form .limit_buy_checks,
-body.light_theme .sell_spot_form .limit_buy_checks {
+.buy_spot_form .limit_buy_checks,
+.sell_spot_form .limit_buy_checks {
     margin-top: 4px;
-    margin-bottom: 18px;
-    gap: 14px;
+    margin-bottom: 15px;
+    gap: 5px;
 }
 
-body.light_theme .buy_spot_form .limit_buy_checks .stop_check,
-body.light_theme .sell_spot_form .limit_buy_checks .stop_check {
+.buy_spot_form .limit_buy_checks .stop_check,
+.sell_spot_form .limit_buy_checks .stop_check {
     color: #111827;
     font-weight: 400;
     font-size: 12px;
 }
 
-body.light_theme .buy_spot_form .limit_buy_checks .stop_check input[type="checkbox"],
-body.light_theme .sell_spot_form .limit_buy_checks .stop_check input[type="checkbox"] {
+.buy_spot_form .limit_buy_checks .stop_check input[type="checkbox"],
+.sell_spot_form .limit_buy_checks .stop_check input[type="checkbox"] {
     width: 14px;
     height: 14px;
     min-width: 14px;
@@ -1671,22 +1644,35 @@ body.light_theme .sell_spot_form .limit_buy_checks .stop_check input[type="check
     accent-color: #dadada;
 }
 
-body.light_theme .buy_spot_form .limit_buy_checks .stop_check span,
-body.light_theme .sell_spot_form .limit_buy_checks .stop_check span {
+.buy_spot_form .limit_buy_checks .stop_check span,
+.sell_spot_form .limit_buy_checks .stop_check span {
     text-decoration: underline dotted;
     text-decoration-color: #9ca3af;
     text-underline-offset: 4px;
     color: #374151;
 }
 
+.buy_spot_form .custom-btn.btn-success.btn-mini {
+    background: #2BC287 !important;
+    border: none !important;
+    color: #ffffff !important;
+    font-weight: 500;
+    font-size: 15px;
+    font-family: "Inter", sans-serif;
+    border-radius: 50px !important;
+    padding: 11px 22px !important;
+    margin-top: 6px !important;
+    margin-bottom: 14px !important;
+    box-shadow: none !important;
+}
 
-body.light_theme .buy_spot_form .custom-btn.btn-success.btn-mini:hover,
-body.light_theme .buy_spot_form .custom-btn.btn-success.btn-mini:focus {
+.buy_spot_form .custom-btn.btn-success.btn-mini:hover,
+.buy_spot_form .custom-btn.btn-success.btn-mini:focus {
     background: #22b680 !important;
     color: #ffffff !important;
 }
 
-body.light_theme .sell_spot_form .custom-btn.btn-danger.btn-mini {
+.sell_spot_form .custom-btn.btn-danger.btn-mini {
     background: #e5394b !important;
     border: none !important;
     color: #ffffff !important;
@@ -1719,8 +1705,8 @@ body.light_theme .infor_row li span {
     gap: 0px;
 }
 
-body.light_theme .buy_spot_form .trade_maker_taker_fees.trade_maker_fees_split,
-body.light_theme .sell_spot_form .trade_maker_taker_fees.trade_maker_fees_split {
+.buy_spot_form .trade_maker_taker_fees.trade_maker_fees_split,
+.sell_spot_form .trade_maker_taker_fees.trade_maker_fees_split {
     display: flex;
     justify-content: start;
     align-items: center;
@@ -1735,31 +1721,31 @@ body.light_theme .sell_spot_form .trade_maker_taker_fees.trade_maker_fees_split 
     font-family: "Inter", sans-serif;
 }
 
-body.light_theme .buy_spot_form .trade_maker_fee_item,
-body.light_theme .sell_spot_form .trade_maker_fee_item {
+.buy_spot_form .trade_maker_fee_item,
+.sell_spot_form .trade_maker_fee_item {
     flex: 0 0 auto;
 }
 
-body.light_theme .buy_spot_form .stop_apr_card,
-body.light_theme .sell_spot_form .stop_apr_card {
+.buy_spot_form .stop_apr_card,
+.sell_spot_form .stop_apr_card {
     margin-top: 4px;
-    padding: 10px 16px;
-    border-radius: 8px;
+    padding: 6px 12px;
+    border-radius: 6px;
     border: 1px solid #F2F3F4;
     background: #FAFAFA;
     box-shadow: none;
 }
 
 .buy_spot_form .stop_apr_text,
- .sell_spot_form .stop_apr_text {
+.sell_spot_form .stop_apr_text {
     color: #FF9447;
     font-weight: 500;
     font-size: 12px;
     font-family: "Inter", sans-serif;
 }
 
-body.light_theme .buy_spot_form .stop_apr_card i,
-body.light_theme .sell_spot_form .stop_apr_card i {
+.buy_spot_form .stop_apr_card i,
+.sell_spot_form .stop_apr_card i {
     color: #84888C;
     font-size: 18px;
 }
@@ -1922,7 +1908,7 @@ body.light_theme .project_coin h2 {
     color: #3e3e3e;
 }
 
-body.light_theme .project_coin .viewmorebtn a:hover {
+body.light_theme .project_coin .viewmorebtn {
     color: #ce9a13;
 }
 
@@ -2434,8 +2420,8 @@ body.light_theme .withdrawal_top_list .bn_step_content {
 
 body.light_theme .sidebar_deposit {
     color: #343434;
-    background-color: #e5e5e5;
-    box-shadow: -2px 0 5px rgb(0 0 0 / 10%);
+    background-color: #ffffff;
+    box-shadow: -2px 0 12px rgb(0 0 0 / 10%);
 }
 
 body.light_theme .sidebar_deposit .deposit_list a {
