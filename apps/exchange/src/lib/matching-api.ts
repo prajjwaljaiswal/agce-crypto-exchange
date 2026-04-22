@@ -668,6 +668,10 @@ export interface TradingPair {
   referencePriceUpdatedAt?: string
   instance?: string
   iconUrl?: string
+  /** Per-asset icon URLs returned on detail + list responses. `iconUrl`
+   *  is kept as an alias for `baseIconUrl` for backwards compatibility. */
+  baseIconUrl?: string | null
+  quoteIconUrl?: string | null
 }
 
 export interface TradingPairDetail extends TradingPair {
