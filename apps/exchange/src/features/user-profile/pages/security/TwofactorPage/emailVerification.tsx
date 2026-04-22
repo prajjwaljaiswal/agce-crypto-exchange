@@ -1,9 +1,8 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { SecurityBreadcrumb } from "../components/SecurityBreadcrumb.js";
 import "./emailVerification.css";
 
 const EmailVerification = () => {
-  const navigate = useNavigate();
   const [isChangeWarnOpen, setIsChangeWarnOpen] = useState(false);
   const [isVerifyEmailOpen, setIsVerifyEmailOpen] = useState(false);
   const [isChangeFormOpen, setIsChangeFormOpen] = useState(false);
@@ -38,21 +37,7 @@ const EmailVerification = () => {
 
   return (
     <main className="ev-page" aria-labelledby="ev-title">
-      <nav className="ev-page__crumbs" aria-label="Breadcrumb">
-        <ol className="ev-page__crumbList">
-          <li className="ev-page__crumbItem">
-            <button type="button" className="ev-page__crumbLink" onClick={() => navigate("/user_profile/security")}>
-              Security
-            </button>
-          </li>
-          <li className="ev-page__crumbSep" aria-hidden="true">
-            ›
-          </li>
-          <li className="ev-page__crumbItem ev-page__crumbItem--active" aria-current="page">
-            Email
-          </li>
-        </ol>
-      </nav>
+      <SecurityBreadcrumb label="Email" />
 
 <div className="email_verification_lft">
 

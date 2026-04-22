@@ -12,45 +12,6 @@
   box-sizing: border-box;
 }
 
-.passkey-page__crumbs {
-  margin-bottom: 18px;
-}
-
-.passkey-page__crumbList {
-  list-style: none;
-  padding: 0;
-  margin: 0;
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  color: #98a2b3;
-  font-size: 13px;
-  font-weight: 400;
-}
-
-.passkey-page__crumbItem--active {
-  color: #667085;
-}
-
-.passkey-page__crumbSep {
-  color: #cbd5e1;
-}
-
-.passkey-page__crumbLink {
-  border: none;
-  background: transparent;
-  padding: 0;
-  color: inherit;
-  font: inherit;
-  cursor: pointer;
-}
-
-.passkey-page__crumbLink:hover {
-  color: #101828;
-  text-decoration: underline;
-  text-underline-offset: 3px;
-}
-
 .passkey-page__title {
   margin: 0;
   font-size: 34px;
@@ -85,14 +46,6 @@ width: 282px;
     display: flex;
     justify-content: center;
 }
-
-.passkey-page__crumbList li.passkey-page__crumbItem {
-    font-size: 15px;
-    font-weight: 500;
-    color: #8E939C;
-}
-
-.passkey-page__crumbList li.passkey-page__crumbItem.passkey-page__crumbItem--active{ color: #101828; }
 
 .passkey-page__header {
   max-width: 822px;

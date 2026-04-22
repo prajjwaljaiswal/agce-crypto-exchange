@@ -5,6 +5,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import toast from "react-hot-toast";
 import type { GoogleAuthSetupResponse } from "@agce/types";
 import { useAuth } from "../../../../../providers/AuthProvider.js";
+import { useOtpCountdown } from "../../../hooks/useOtpCountdown.js";
 import { authApi } from "../../../../../lib/auth-api.js";
 import { formatApiError } from "../../../../../lib/errors.js";
 import "./google-auth-page.css";
@@ -67,9 +68,7 @@ const GoogleAuthPage = () => {
   // ── Setup step: bind fields ──────────────────────────────────────────────────
   const [setupEmailOtp, setSetupEmailOtp] = useState("");
   const [setupTotp, setSetupTotp] = useState("");
-  const [setupResendCountdown, setSetupResendCountdown] = useState(0);
-  const setupCountdownRef = useRef<ReturnType<typeof setInterval> | null>(null);
-  useEffect(() => () => { if (setupCountdownRef.current) clearInterval(setupCountdownRef.current); }, []);
+  const { countdown: setupResendCountdown, start: startSetupCooldown } = useOtpCountdown();
 
   const makeHandlers = (
     setter: React.Dispatch<React.SetStateAction<string[]>>,
@@ -111,34 +110,7 @@ const GoogleAuthPage = () => {
     (showGa && isGaComplete);
 
   // ── Resend cooldown (verify step) ───────────────────────────────────────────
-  const RESEND_COOLDOWN = 60;
-  const [resendCountdown, setResendCountdown] = useState(0);
-  const countdownRef = useRef<ReturnType<typeof setInterval> | null>(null);
-  useEffect(() => () => { if (countdownRef.current) clearInterval(countdownRef.current); }, []);
-
-  const startCooldown = () => {
-    setResendCountdown(RESEND_COOLDOWN);
-    countdownRef.current = setInterval(() => {
-      setResendCountdown((prev) => {
-        if (prev <= 1) {
-          clearInterval(countdownRef.current!);
-          countdownRef.current = null;
-          return 0;
-        }
-        return prev - 1;
-      });
-    }, 1000);
-  };
-
-  const startSetupCooldown = () => {
-    setSetupResendCountdown(RESEND_COOLDOWN);
-    setupCountdownRef.current = setInterval(() => {
-      setSetupResendCountdown((prev) => {
-        if (prev <= 1) { clearInterval(setupCountdownRef.current!); setupCountdownRef.current = null; return 0; }
-        return prev - 1;
-      });
-    }, 1000);
-  };
+  const { countdown: resendCountdown, start: startCooldown } = useOtpCountdown();
 
   // email preferred; fall back to phone number when email is absent
   const userIdentifier = user?.email || user?.phone || "";

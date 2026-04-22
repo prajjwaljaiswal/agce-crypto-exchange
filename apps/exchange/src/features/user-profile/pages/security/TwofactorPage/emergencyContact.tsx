@@ -1,26 +1,10 @@
-import { useNavigate } from "react-router-dom";
+import { SecurityBreadcrumb } from "../components/SecurityBreadcrumb.js";
 import "./emergencyContact.css";
 
 const EmergencyContact = () => {
-  const navigate = useNavigate();
-
   return (
     <main className="ec-page" aria-labelledby="ec-title">
-      <nav className="ec-page__crumbs" aria-label="Breadcrumb">
-        <ol className="ec-page__crumbList">
-          <li className="ec-page__crumbItem">
-            <button type="button" className="ec-page__crumbLink" onClick={() => navigate("/user_profile/security")}>
-              Security
-            </button>
-          </li>
-          <li className="ec-page__crumbSep" aria-hidden="true">
-            ›
-          </li>
-          <li className="ec-page__crumbItem ec-page__crumbItem--active" aria-current="page">
-            Emergency Contact
-          </li>
-        </ol>
-      </nav>
+      <SecurityBreadcrumb label="Emergency Contact" />
 
       <h1 id="ec-title" className="ec-page__title">
         Emergency Contact

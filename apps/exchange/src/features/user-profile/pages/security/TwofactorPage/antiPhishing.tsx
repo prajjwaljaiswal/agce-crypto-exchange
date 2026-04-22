@@ -1,22 +1,16 @@
-import { useMemo, useRef, useState } from "react";
+import { useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import toast from "react-hot-toast";
 import { useAuth } from "../../../../../providers/AuthProvider.js";
+import { useOtpCountdown } from "../../../hooks/useOtpCountdown.js";
+import { maskEmail } from "../../../lib/maskEmail.js";
 import { authApi } from "../../../../../lib/auth-api.js";
 import { formatApiError } from "../../../../../lib/errors.js";
+import { SecurityBreadcrumb } from "../components/SecurityBreadcrumb.js";
 import "./antiPhishing.css";
 
 type Step = "settings" | "reset" | "bind";
-
-function maskEmail(email?: string) {
-  if (!email || !email.includes("@")) return email ?? "";
-  const [u, d] = email.split("@");
-  if (u.length <= 2) return `${u[0]}***@${d}`;
-  return `${u[0]}***${u.slice(-1)}@${d}`;
-}
-
-const RESEND_COOLDOWN = 60;
 
 const AntiPhishing = () => {
   const navigate = useNavigate();
@@ -27,8 +21,7 @@ const AntiPhishing = () => {
 
   const [antiCode, setAntiCode] = useState("");
   const [emailCode, setEmailCode] = useState("");
-  const [countdown, setCountdown] = useState(0);
-  const countdownRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const { countdown, start: startCooldown } = useOtpCountdown();
 
   const [resetMethod, setResetMethod] = useState<"" | "email">("");
   const [newEmail, setNewEmail] = useState("");
@@ -42,20 +35,6 @@ const AntiPhishing = () => {
   const isBindNextEnabled = isEmailValid && newEmailCode.trim().length >= 4;
 
   const maskedEmail = maskEmail(user?.email);
-
-  const startCooldown = () => {
-    setCountdown(RESEND_COOLDOWN);
-    countdownRef.current = setInterval(() => {
-      setCountdown((prev) => {
-        if (prev <= 1) {
-          clearInterval(countdownRef.current!);
-          countdownRef.current = null;
-          return 0;
-        }
-        return prev - 1;
-      });
-    }, 1000);
-  };
 
   const sendOtpMutation = useMutation({
     mutationFn: () =>
@@ -84,21 +63,9 @@ const AntiPhishing = () => {
 
   return (
     <main className="apc-page" aria-labelledby="apc-title">
-      <nav className="apc-page__crumbs" aria-label="Breadcrumb">
-        <ol className="apc-page__crumbList">
-          <li className="apc-page__crumbItem">
-            <button type="button" className="apc-page__crumbLink" onClick={() => navigate("/user_profile/security")}>
-              Security
-            </button>
-          </li>
-          <li className="apc-page__crumbSep" aria-hidden="true">
-            ›
-          </li>
-          <li className="apc-page__crumbItem apc-page__crumbItem--active" aria-current="page">
-            {step === "settings" ? "Anti-Phishing Code Settings" : step === "reset" ? "Reset Verification Method" : "Bind New Email"}
-          </li>
-        </ol>
-      </nav>
+      <SecurityBreadcrumb
+        label={step === "settings" ? "Anti-Phishing Code Settings" : step === "reset" ? "Reset Verification Method" : "Bind New Email"}
+      />
 
       {step === "settings" ? (
         <section className="apc-card" aria-label="Anti-Phishing Code form">

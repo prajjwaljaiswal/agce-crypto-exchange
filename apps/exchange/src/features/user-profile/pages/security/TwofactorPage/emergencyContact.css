@@ -14,45 +14,6 @@
   box-sizing: border-box;
 }
 
-.ec-page__crumbs {
-  margin-bottom: 18px;
-}
-
-.ec-page__crumbList {
-  list-style: none;
-  padding: 0;
-  margin: 0;
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  color: #8e939c;
-  font-size: 15px;
-  font-weight: 500;
-}
-
-.ec-page__crumbItem--active {
-  color: #101828;
-}
-
-.ec-page__crumbSep {
-  color: #8e939c;
-}
-
-.ec-page__crumbLink {
-  border: none;
-  background: transparent;
-  padding: 0;
-  color: inherit;
-  font: inherit;
-  cursor: pointer;
-}
-
-.ec-page__crumbLink:hover {
-  color: #101828;
-  text-decoration: underline;
-  text-underline-offset: 3px;
-}
-
 .ec-page__title {
   margin: 42px 32px 28px;
   font-size: 36px;

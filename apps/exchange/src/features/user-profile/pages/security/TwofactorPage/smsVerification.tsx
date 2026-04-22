@@ -4,8 +4,11 @@ import { useMutation } from "@tanstack/react-query";
 import { useQueryClient } from "@tanstack/react-query";
 import toast from "react-hot-toast";
 import { useAuth } from "../../../../../providers/AuthProvider.js";
+import { useOtpCountdown } from "../../../hooks/useOtpCountdown.js";
+import { maskEmail } from "../../../lib/maskEmail.js";
 import { authApi } from "../../../../../lib/auth-api.js";
 import { formatApiError } from "../../../../../lib/errors.js";
+import { SecurityBreadcrumb } from "../components/SecurityBreadcrumb.js";
 import "./smsVerification.css";
 
 interface CountryOption {
@@ -24,15 +27,6 @@ const COUNTRY_OPTIONS: CountryOption[] = [
   { flag: "🇧🇩", code: "+880", label: "Bangladesh" },
 ];
 
-const RESEND_COOLDOWN = 60;
-
-function maskEmail(email?: string) {
-  if (!email || !email.includes("@")) return email ?? "";
-  const [u, d] = email.split("@");
-  if (u.length <= 2) return `${u[0]}***@${d}`;
-  return `${u[0]}***${u.slice(-1)}@${d}`;
-}
-
 type Step = "email-verify" | "phone-link";
 
 const SmsVerification = () => {
@@ -44,8 +38,7 @@ const SmsVerification = () => {
 
   // ── Step 1: email OTP ─────────────────────────────────────────────────────
   const [emailCode, setEmailCode] = useState("");
-  const [emailCountdown, setEmailCountdown] = useState(0);
-  const emailCountdownRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const emailCountdown = useOtpCountdown();
   const emailSentRef = useRef(false);
 
   // ── Step 2: phone link ────────────────────────────────────────────────────
@@ -53,14 +46,8 @@ const SmsVerification = () => {
   const [isCountryOpen, setIsCountryOpen] = useState(false);
   const [phoneNumber, setPhoneNumber] = useState("");
   const [smsCode, setSmsCode] = useState("");
-  const [smsCountdown, setSmsCountdown] = useState(0);
-  const smsCountdownRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const smsCountdown = useOtpCountdown();
   const countryRef = useRef<HTMLDivElement | null>(null);
-
-  useEffect(() => () => {
-    if (emailCountdownRef.current) clearInterval(emailCountdownRef.current);
-    if (smsCountdownRef.current) clearInterval(smsCountdownRef.current);
-  }, []);
 
   // Auto-send email OTP when page mounts (step 1)
   useEffect(() => {
@@ -85,32 +72,12 @@ const SmsVerification = () => {
     };
   }, [isCountryOpen]);
 
-  const startEmailCooldown = () => {
-    setEmailCountdown(RESEND_COOLDOWN);
-    emailCountdownRef.current = setInterval(() => {
-      setEmailCountdown((prev) => {
-        if (prev <= 1) { clearInterval(emailCountdownRef.current!); emailCountdownRef.current = null; return 0; }
-        return prev - 1;
-      });
-    }, 1000);
-  };
-
-  const startSmsCooldown = () => {
-    setSmsCountdown(RESEND_COOLDOWN);
-    smsCountdownRef.current = setInterval(() => {
-      setSmsCountdown((prev) => {
-        if (prev <= 1) { clearInterval(smsCountdownRef.current!); smsCountdownRef.current = null; return 0; }
-        return prev - 1;
-      });
-    }, 1000);
-  };
-
   const sendEmailOtpMutation = useMutation({
     mutationFn: () =>
       authApi.sendOtp({ identifier: user?.email ?? "", type: "LOGIN" }),
     onSuccess: () => {
       toast.success("Verification code sent to your email.");
-      startEmailCooldown();
+      emailCountdown.start();
     },
     onError: (error) => {
       toast.error(formatApiError(error, "Failed to send email code."));
@@ -140,7 +107,7 @@ const SmsVerification = () => {
       authApi.sendOtp({ identifier: fullIdentifier, type: "BIND" }),
     onSuccess: () => {
       toast.success("SMS code sent.");
-      startSmsCooldown();
+      smsCountdown.start();
     },
     onError: (error) => {
       toast.error(formatApiError(error, "Failed to send SMS code."));
@@ -165,24 +132,12 @@ const SmsVerification = () => {
   });
 
   const canNextStep = emailCode.length >= 4 && !verifyEmailOtpMutation.isPending;
-  const canSendSms = phoneNumber.replace(/\D/g, "").length >= 7 && !sendSmsMutation.isPending && smsCountdown === 0;
+  const canSendSms = phoneNumber.replace(/\D/g, "").length >= 7 && !sendSmsMutation.isPending && smsCountdown.countdown === 0;
   const canConfirm = smsCode.length >= 4 && !confirmMutation.isPending;
 
   return (
     <main className="smsv-page" aria-labelledby="smsv-title">
-      <nav className="smsv-page__crumbs" aria-label="Breadcrumb">
-        <ol className="smsv-page__crumbList">
-          <li className="smsv-page__crumbItem">
-            <button type="button" className="smsv-page__crumbLink" onClick={() => navigate("/user_profile/security")}>
-              Security
-            </button>
-          </li>
-          <li className="smsv-page__crumbSep" aria-hidden="true">›</li>
-          <li className="smsv-page__crumbItem smsv-page__crumbItem--active" aria-current="page">
-            SMS verification
-          </li>
-        </ol>
-      </nav>
+      <SecurityBreadcrumb label="SMS verification" />
 
       {step === "email-verify" ? (
         <section className="smsv-form" aria-label="Email verification form">
@@ -209,13 +164,13 @@ const SmsVerification = () => {
               <button
                 type="button"
                 className="smsv-sendBtn"
-                disabled={sendEmailOtpMutation.isPending || emailCountdown > 0}
+                disabled={sendEmailOtpMutation.isPending || emailCountdown.countdown > 0}
                 onClick={() => sendEmailOtpMutation.mutate()}
               >
                 {sendEmailOtpMutation.isPending
                   ? "Sending…"
-                  : emailCountdown > 0
-                  ? `${emailCountdown}s`
+                  : emailCountdown.countdown > 0
+                  ? `${emailCountdown.countdown}s`
                   : "Resend"}
               </button>
             </div>
@@ -300,8 +255,8 @@ const SmsVerification = () => {
               >
                 {sendSmsMutation.isPending
                   ? "Sending…"
-                  : smsCountdown > 0
-                  ? `${smsCountdown}s`
+                  : smsCountdown.countdown > 0
+                  ? `${smsCountdown.countdown}s`
                   : "Send"}
               </button>
             </div>

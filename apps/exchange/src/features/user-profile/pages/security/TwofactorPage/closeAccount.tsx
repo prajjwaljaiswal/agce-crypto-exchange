@@ -1,6 +1,9 @@
-import { useContext, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { ProfileContext } from "../../../../../context/ProfileProvider.js";
+import { useAuth } from "../../../../../providers/AuthProvider.js";
+import { maskEmailForDisplay } from "../../../lib/maskEmail.js";
+import { SecurityBreadcrumb } from "../components/SecurityBreadcrumb.js";
+import { OtpVerifyModal } from "../components/OtpVerifyModal.js";
 import "./closeAccount.css";
 
 const STEP_RETENTION = 1;
@@ -14,16 +17,6 @@ const REASON_OTHERS = "others";
 type Step = typeof STEP_RETENTION | typeof STEP_REASON | typeof STEP_ASSETS;
 type Reason = typeof REASON_NO_LONGER | typeof REASON_MERGE | typeof REASON_OTHERS;
 
-function maskEmailForDisplay(raw?: string): string {
-  if (!raw || typeof raw !== "string") return "you***@email.com";
-  const at = raw.indexOf("@");
-  if (at <= 0) return "***";
-  const local = raw.slice(0, at);
-  const domain = raw.slice(at + 1);
-  const visible = Math.min(3, local.length);
-  return `${local.slice(0, visible)}***@${domain}`;
-}
-
 const CONFIRM_POINTS = [
   "If you create a new account after closing this one, your identity verification may be restricted for 30 days or longer.",
   "Please note that your transaction records will no longer be accessible once your account is closed. We recommend downloading them before proceeding with account deletion. Refer to the FAQ for download instructions.",
@@ -32,10 +25,10 @@ const CONFIRM_POINTS = [
 
 const CloseAccount = () => {
   const navigate = useNavigate();
-  const { userDetails } = useContext(ProfileContext);
+  const { user } = useAuth();
   const maskedEmail = useMemo(
-    () => maskEmailForDisplay(userDetails?.email),
-    [userDetails?.email]
+    () => maskEmailForDisplay(user?.email),
+    [user?.email]
   );
 
   const [step, setStep] = useState<Step>(STEP_RETENTION);
@@ -44,7 +37,6 @@ const CloseAccount = () => {
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [confirmChecks, setConfirmChecks] = useState<boolean[]>([false, false, false]);
   const [emailOpen, setEmailOpen] = useState(false);
-  const [emailCode, setEmailCode] = useState("");
 
   const allConfirmChecked = confirmChecks.every(Boolean);
 
@@ -60,17 +52,6 @@ const CloseAccount = () => {
     setEmailOpen(true);
   };
 
-  const closeEmailModal = () => {
-    setEmailOpen(false);
-    setEmailCode("");
-  };
-
-  const handleEmailSubmit = () => {
-    if (emailCode.length !== 6) return;
-    closeEmailModal();
-    navigate("/user_profile/security");
-  };
-
   const toggleConfirmCheck = (idx: number) => {
     setConfirmChecks((prev) => {
       const next = [...prev];
@@ -81,21 +62,7 @@ const CloseAccount = () => {
 
   return (
     <main className="ca-page" aria-labelledby="ca-title">
-      <nav className="ca-page__crumbs" aria-label="Breadcrumb">
-        <ol className="ca-page__crumbList">
-          <li className="ca-page__crumbItem">
-            <button type="button" className="ca-page__crumbLink" onClick={() => navigate("/user_profile/security")}>
-              Security
-            </button>
-          </li>
-          <li className="ca-page__crumbSep" aria-hidden="true">
-            ›
-          </li>
-          <li className="ca-page__crumbItem ca-page__crumbItem--active" aria-current="page">
-            Close Account
-          </li>
-        </ol>
-      </nav>
+      <SecurityBreadcrumb label="Close Account" />
 
       <div className="security_section_bl">
 
@@ -216,57 +183,16 @@ const CloseAccount = () => {
         </div>
       ) : null}
 
-      {emailOpen ? (
-        <div className="ca-evm-overlay" role="presentation">
-          <div className="ca-evm" role="dialog" aria-modal="true" aria-labelledby="ca-evm-title" onClick={(e) => e.stopPropagation()}>
-            <button type="button" className="ca-evm__close" aria-label="Close" onClick={closeEmailModal}>
-              ×
-            </button>
-
-            <h2 id="ca-evm-title" className="ca-evm__title">
-              Email Verification
-            </h2>
-            <p className="ca-evm__desc">Enter the 6-digit verification code sent to {maskedEmail}</p>
-
-            <label className="ca-evm__label" htmlFor="ca-evm-code">
-              Enter Verification Code
-            </label>
-            <div className="ca-evm__inputWrap">
-              <input
-                id="ca-evm-code"
-                className="ca-evm__input"
-                type="text"
-                inputMode="numeric"
-                autoComplete="one-time-code"
-                maxLength={6}
-                value={emailCode}
-                onChange={(e) => setEmailCode(e.target.value.replace(/\D/g, "").slice(0, 6))}
-              />
-              <button type="button" className="ca-evm__getCode">
-                Get Code
-              </button>
-            </div>
-
-            <button
-              type="button"
-              className="ca-evm__submit"
-              disabled={emailCode.length !== 6}
-              onClick={handleEmailSubmit}
-            >
-              Submit
-            </button>
-
-            <button type="button" className="ca-evm__help">
-              Security verification unavailable?
-            </button>
-
-            <div className="ca-evm__footer">
-              <img src="/images/protected_icon.svg" alt="shield icon" />
-              <span>Protected by Balance Risk</span>
-            </div>
-          </div>
-        </div>
-      ) : null}
+      {emailOpen && (
+        <OtpVerifyModal
+          onClose={() => setEmailOpen(false)}
+          description={`Enter the 6-digit verification code sent to ${maskedEmail}`}
+          onSubmit={() => {
+            setEmailOpen(false);
+            navigate("/user_profile/security");
+          }}
+        />
+      )}
 
 </div>
 

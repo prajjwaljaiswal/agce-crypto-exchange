@@ -1,11 +1,13 @@
-import { useState, useEffect, useRef } from "react";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useMutation } from "@tanstack/react-query";
 import toast from "react-hot-toast";
 import { startRegistration, browserSupportsWebAuthn } from "@simplewebauthn/browser";
 import { useAuth } from "../../../../../providers/AuthProvider.js";
+import { useOtpCountdown } from "../../../hooks/useOtpCountdown.js";
 import { authApi } from "../../../../../lib/auth-api.js";
 import { formatApiError } from "../../../../../lib/errors.js";
+import { SecurityBreadcrumb } from "../components/SecurityBreadcrumb.js";
 import "./passkey.css";
 
 type Step = "intro" | "verify";
@@ -114,25 +116,7 @@ const PasskeyPage = () => {
     },
   });
 
-  const RESEND_COOLDOWN = 60;
-  const [resendCountdown, setResendCountdown] = useState(0);
-  const countdownRef = useRef<ReturnType<typeof setInterval> | null>(null);
-
-  const startCooldown = () => {
-    setResendCountdown(RESEND_COOLDOWN);
-    countdownRef.current = setInterval(() => {
-      setResendCountdown((prev) => {
-        if (prev <= 1) {
-          clearInterval(countdownRef.current!);
-          countdownRef.current = null;
-          return 0;
-        }
-        return prev - 1;
-      });
-    }, 1000);
-  };
-
-  useEffect(() => () => { if (countdownRef.current) clearInterval(countdownRef.current); }, []);
+  const { countdown: resendCountdown, start: startCooldown } = useOtpCountdown();
 
   const resendMutation = useMutation({
     mutationFn: (channel: "email" | "phone") =>
@@ -308,19 +292,7 @@ const PasskeyPage = () => {
 
   return (
     <main className="passkey-page" aria-labelledby="passkey-title">
-      <nav className="passkey-page__crumbs" aria-label="Breadcrumb">
-        <ol className="passkey-page__crumbList">
-          <li className="passkey-page__crumbItem">
-            <button type="button" className="passkey-page__crumbLink" onClick={() => navigate("/user_profile/security")}>
-              Security
-            </button>
-          </li>
-          <li className="passkey-page__crumbSep" aria-hidden="true">›</li>
-          <li className="passkey-page__crumbItem passkey-page__crumbItem--active" aria-current="page">
-            Passkey
-          </li>
-        </ol>
-      </nav>
+      <SecurityBreadcrumb label="Passkey" />
 
       <div className="passkey-page__header">
         <h1 className="passkey-page__title">Passkey</h1>

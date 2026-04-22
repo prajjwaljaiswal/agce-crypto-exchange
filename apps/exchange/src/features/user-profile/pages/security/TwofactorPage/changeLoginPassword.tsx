@@ -2,6 +2,7 @@ import { useMemo, useState } from "react";
 import type { Dispatch, SetStateAction, ReactNode } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { CountryCodeSelect } from "../../../../auth/CountryCodeSelect.js";
+import { SecurityBreadcrumb } from "../components/SecurityBreadcrumb.js";
 import "./changeLoginPassword.css";
 
 const PHASE = {
@@ -181,21 +182,7 @@ const ChangeLoginPassword = () => {
   const goSecurity = () => navigate("/user_profile/security");
 
   const renderBreadcrumb = (activeLabel: string) => (
-    <nav className="pm-page__crumbs" aria-label="Breadcrumb">
-      <ol className="pm-page__crumbList">
-        <li className="pm-page__crumbItem">
-          <button type="button" className="pm-page__crumbLink" onClick={goSecurity}>
-            Security
-          </button>
-        </li>
-        <li className="pm-page__crumbSep" aria-hidden="true">
-          ›
-        </li>
-        <li className="pm-page__crumbItem pm-page__crumbItem--active" aria-current="page">
-          {activeLabel}
-        </li>
-      </ol>
-    </nav>
+    <SecurityBreadcrumb label={activeLabel} onBack={goSecurity} />
   );
 
   return (

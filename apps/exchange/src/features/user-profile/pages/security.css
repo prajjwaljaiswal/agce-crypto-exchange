@@ -328,8 +328,7 @@ body.light_theme .tf-sec-page {
 
 /* Login 2-Step Verification modal */
 .tf-sec-page__l2sv-overlay,
-.tf-sec-page__wds-overlay,
-.tf-sec-page__daev-overlay {
+.tf-sec-page__wds-overlay {
   position: fixed;
   inset: 0;
   background: rgb(255 255 255 / 50%);
@@ -342,10 +341,6 @@ body.light_theme .tf-sec-page {
   justify-content: center;
   padding: 18px;
   z-index: 100000020;
-}
-
-.tf-sec-page__daev-overlay {
-  z-index: 100000021;
 }
 
 /* Login 2-Step Verification modal */
@@ -784,169 +779,5 @@ body.light_theme .tf-sec-page {
   color: #111827;
   text-decoration: underline;
   text-underline-offset: 3px;
-}
-
-/* Disable account — email verification modal */
-.tf-sec-page__daev-modal {
-  width: 539px;
-  max-width: 92vw;
-  border-radius: 16px;
-  background: #fff;
-  border:1px solid #E1E1E1;
-  box-shadow: 0 28px 64px rgba(15, 23, 42, 0.22);
-  padding: 24px 24px 20px;
-  position: relative;
-}
-
-.tf-sec-page__daev-close {
-  position: absolute;
-  top: 14px;
-  right: 16px;
-  width: 36px;
-  height: 36px;
-  border: none;
-  background: transparent;
-  color: #111827;
-  font-size: 22px;
-  line-height: 1;
-  cursor: pointer;
-  border-radius: 10px;
-}
-
-.tf-sec-page__daev-close:hover {
-  background: rgba(17, 24, 39, 0.06);
-}
-
-.tf-sec-page__daev-title {
-  margin: 0 0 12px;
-  padding-right: 40px;
-  font-size: 24px;
-  font-weight: 600;
-  letter-spacing: -0.02em;
-  color: #070808;
-}
-
-.tf-sec-page__daev-desc {
-  margin: 0 0 18px;
-  width: 83%;
-  font-size: 15px;
-  font-weight: 500;
-  line-height: 1.5;
-  color: #84888c;
-}
-
-.tf-sec-page__daev-label {
-  display: block;
-  margin: 0 0 8px;
-  font-size: 16px;
-  font-weight: 500;
-  color: #101828;
-}
-
-.tf-sec-page__daev-inputWrap {
-  position: relative;
-  margin-bottom: 20px;
-}
-
-.tf-sec-page__daev-input {
-  width: 100%;
-  height: 48px;
-  border-radius: 10px;
-  border: 1px solid #e5e7eb;
-  padding: 0 100px 0 14px;
-  font-size: 15px;
-  font-weight: 500;
-  color: #101828;
-  background: #fff;
-  outline: none;
-}
-
-.tf-sec-page__daev-input:focus {
-  border-color: #c9a063;
-  box-shadow: 0 0 0 3px rgba(201, 160, 99, 0.15);
-}
-
-.tf-sec-page__daev-getCode {
-  position: absolute;
-  top: 50%;
-  right: 12px;
-  transform: translateY(-50%);
-  border: none;
-  background: transparent;
-  padding: 6px 4px;
-  font-size: 14px;
-  font-weight: 600;
-  color: #c9a063;
-  cursor: pointer;
-}
-
-.tf-sec-page__daev-getCode:hover {
-  color: #b08d52;
-}
-
-.tf-sec-page__daev-submit {
-  width: 100%;
-  height: 48px;
-  border: none;
-  border-radius: 999px;
-  background: #2b2b2b;
-  color: #fff;
-  font-size: 15px;
-  font-weight: 500;
-  cursor: pointer;
-  margin-bottom: 16px;
-}
-
-.tf-sec-page__daev-submit:hover {
-  background: #1a1a1a;
-}
-
-.tf-sec-page__daev-submit:disabled {
-  opacity: 0.45;
-  cursor: not-allowed;
-}
-
-.tf-sec-page__daev-help {
-  display: block;
-  width: 100%;
-  border: none;
-  background: transparent;
-  padding: 0;
-  margin: 7px 0 22px;
-  font-size: 16px;
-  letter-spacing: -0.40px;
-  font-weight: 600;
-  color: #AC8A50;
-  cursor: pointer;
-  text-align: center;
-}
-
-/* .tf-sec-page__daev-help:hover {
-  color: #b08d52;
-  text-decoration: underline;
-  text-underline-offset: 3px;
-} */
-
-.tf-sec-page__daev-footer {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 6px;
-  padding-top: 16px;
-  border-top: 1px solid #f0f0f1;
-  margin: 0px 0px;
-  padding-left: 4px;
-  padding-right: 4px;
-  font-size: 14px;
-  font-weight: 500;
-  color: #6A7282;
-}
-
-.tf-sec-page__daev-footer img {
-  width: 18px;
-  height: 18px;
-  display: block;
-  object-fit: contain;
-  flex-shrink: 0;
 }
 

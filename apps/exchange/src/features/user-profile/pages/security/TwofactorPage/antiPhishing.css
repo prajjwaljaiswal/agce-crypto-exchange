@@ -13,46 +13,6 @@
   box-sizing: border-box;
 }
 
-.apc-page__crumbs {
-  margin-bottom: 18px;
-}
-
-.apc-page__crumbList {
-  list-style: none;
-  padding: 0;
-  margin: 0;
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  color: #8e939c;
-  font-size: 15px;
-  font-weight: 500;
-}
-
-.apc-page__crumbItem--active {
-  color: #101828;
-  font-weight: 500;
-}
-
-.apc-page__crumbSep {
-  color: #8e939c;
-}
-
-.apc-page__crumbLink {
-  border: none;
-  background: transparent;
-  padding: 0;
-  color: inherit;
-  font: inherit;
-  cursor: pointer;
-}
-
-.apc-page__crumbLink:hover {
-  color: #101828;
-  text-decoration: underline;
-  text-underline-offset: 3px;
-}
-
 .apc-page__title {
   margin: 0 0 22px;
   font-size: 36px;

@@ -1,20 +1,14 @@
-import { useRef, useState } from "react";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import toast from "react-hot-toast";
 import { useAuth } from "../../../../../providers/AuthProvider.js";
+import { useOtpCountdown } from "../../../hooks/useOtpCountdown.js";
+import { maskEmail } from "../../../lib/maskEmail.js";
 import { authApi } from "../../../../../lib/auth-api.js";
 import { formatApiError } from "../../../../../lib/errors.js";
+import { SecurityBreadcrumb } from "../components/SecurityBreadcrumb.js";
 import "./setFundPassword.css";
-
-function maskEmail(email?: string) {
-  if (!email || !email.includes("@")) return email ?? "";
-  const [u, d] = email.split("@");
-  if (u.length <= 2) return `${u[0]}***@${d}`;
-  return `${u[0]}***${u.slice(-1)}@${d}`;
-}
-
-const RESEND_COOLDOWN = 60;
 
 type Mode = "set" | "change" | "remove";
 
@@ -31,8 +25,7 @@ const SetFundPassword = () => {
 
   // shared OTP field
   const [otp, setOtp] = useState("");
-  const [countdown, setCountdown] = useState(0);
-  const countdownRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const { countdown, start: startCooldown, reset: resetCountdown } = useOtpCountdown();
 
   // set mode
   const [fundPassword, setFundPassword] = useState("");
@@ -54,21 +47,10 @@ const SetFundPassword = () => {
     setCurrentFundPassword("");
     setNewFundPassword("");
     setRemoveFundPassword("");
-    setCountdown(0);
-    if (countdownRef.current) { clearInterval(countdownRef.current); countdownRef.current = null; }
+    resetCountdown();
   };
 
   const switchMode = (m: Mode) => { resetFields(); setMode(m); };
-
-  const startCooldown = () => {
-    setCountdown(RESEND_COOLDOWN);
-    countdownRef.current = setInterval(() => {
-      setCountdown((prev) => {
-        if (prev <= 1) { clearInterval(countdownRef.current!); countdownRef.current = null; return 0; }
-        return prev - 1;
-      });
-    }, 1000);
-  };
 
   const sendOtpMutation = useMutation({
     mutationFn: () => authApi.sendOtp({ identifier, type: "FUND_PASSWORD" }),
@@ -113,19 +95,7 @@ const SetFundPassword = () => {
 
   return (
     <main className="sfp-page" aria-labelledby="sfp-title">
-      <nav className="sfp-page__crumbs" aria-label="Breadcrumb">
-        <ol className="sfp-page__crumbList">
-          <li className="sfp-page__crumbItem">
-            <button type="button" className="sfp-page__crumbLink" onClick={() => navigate("/user_profile/security")}>
-              Security
-            </button>
-          </li>
-          <li className="sfp-page__crumbSep" aria-hidden="true">›</li>
-          <li className="sfp-page__crumbItem sfp-page__crumbItem--active" aria-current="page">
-            {breadcrumbLabel}
-          </li>
-        </ol>
-      </nav>
+      <SecurityBreadcrumb label={breadcrumbLabel} />
 
       <div className="set_fundform_outer">
         <h1 id="sfp-title" className="sfp-page__title">{breadcrumbLabel}</h1>
