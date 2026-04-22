@@ -113,6 +113,40 @@ function synthesizeFlatCandles(refPrice, interval, count = 200) {
 }
 
 /**
+ * Tracks how many consecutive empty/error responses we've seen for
+ * each `symbol:interval` pair. Incremented on every miss, reset to 0
+ * on a successful non-empty response.
+ *
+ * Once the counter crosses `MAX_EMPTY_BEFORE_BAIL`, subsequent calls
+ * skip the network entirely and fall straight through to the LOCAL
+ * flat-line fallback (if applicable). Stops the situation where a
+ * freshly-listed LOCAL pair has no candles and TradingView keeps
+ * paginating, burning one `/api/v1/klines` request per pagination
+ * step forever.
+ *
+ * Cleared on resolution or symbol change by resetKlineEmptyCounter().
+ */
+const emptyResponseCount = new Map();
+const MAX_EMPTY_BEFORE_BAIL = 3;
+
+function klineKey(symbol, interval) {
+	return `${symbol}:${interval}`;
+}
+
+export function resetKlineEmptyCounter(symbol, interval) {
+	if (symbol && interval) {
+		emptyResponseCount.delete(klineKey(symbol, interval));
+	} else if (symbol && !interval) {
+		// Resolution change for the same symbol — drop any interval for it.
+		for (const k of emptyResponseCount.keys()) {
+			if (k.startsWith(`${symbol}:`)) emptyResponseCount.delete(k);
+		}
+	} else {
+		emptyResponseCount.clear();
+	}
+}
+
+/**
  * Fetch historical klines from the backend. Response shape is always
  * Binance's 12-element array — see `klinesApi` in matching-api.ts.
  *
@@ -124,18 +158,33 @@ function synthesizeFlatCandles(refPrice, interval, count = 200) {
  * datafeed passes them from TradingView's periodParams when the user
  * drags the chart into older ranges.
  *
- * LOCAL fallback: if the tape is empty we draw a flat line at the
- * pair's referencePrice so the chart isn't blank. GLOBAL never falls
- * back — an empty Binance response is surfaced as-is.
+ * `isInitial` distinguishes the first load (TradingView calls getBars
+ * with firstDataRequest=true) from pagination calls. The LOCAL
+ * flat-line fallback only triggers on isInitial — on pagination, we
+ * return [] so the datafeed can send `noData: true` and TradingView
+ * stops asking. This is what fixes the "frontend keeps hitting the
+ * API" loop for pairs with no local candles.
  */
 export async function fetchKlines(
 	fromSymbol,
 	toSymbol,
 	resolution,
-	{ availability = 'LOCAL', startTime, endTime, limit = 500 } = {},
+	{ availability = 'LOCAL', startTime, endTime, limit = 500, isInitial = true } = {},
 ) {
 	const symbol = `${fromSymbol}-${toSymbol}`;
 	const interval = resolutionToMatchingInterval(resolution);
+	const key = klineKey(symbol, interval);
+
+	// Circuit breaker: after N consecutive empties, skip the API call
+	// entirely for this (symbol, interval). Saves the browser from
+	// spamming `/klines` on every pagination tick for a quiet pair.
+	const bailed = (emptyResponseCount.get(key) ?? 0) >= MAX_EMPTY_BEFORE_BAIL;
+	if (bailed) {
+		if (isInitial && availability === 'LOCAL') {
+			return await synthesizeFlatLineFromPair(symbol, interval);
+		}
+		return [];
+	}
 
 	try {
 		const candles = await klinesApi.klines(symbol, interval, {
@@ -148,47 +197,69 @@ export async function fetchKlines(
 			const bars = candles.map(mapCandle).filter(Boolean);
 			bars.sort((a, b) => a.time - b.time);
 			if (bars.length > 0) {
+				// Fresh data for this key — reset the empty counter so
+				// a later quiet window doesn't tip us into bail mode.
+				emptyResponseCount.delete(key);
 				console.log(
 					'[Chart]', availability, 'klines', symbol, interval, ':', bars.length, 'bars',
 				);
 				return bars;
 			}
 		}
+		// Empty response — count it.
+		emptyResponseCount.set(key, (emptyResponseCount.get(key) ?? 0) + 1);
 	} catch (err) {
+		emptyResponseCount.set(key, (emptyResponseCount.get(key) ?? 0) + 1);
 		console.warn('[Chart] klines fetch failed (' + availability + '):', err);
 	}
 
-	// LOCAL-only: tape empty (or /klines errored) → draw a flat line at
-	// the pair's current price so the chart isn't blank for a
-	// freshly-listed or quiet pair. GLOBAL returns whatever Binance
-	// gave us (probably also empty for an unknown symbol) without
-	// synthesizing anything.
-	//
-	// Field fallback order:
-	//   1. pair.price           → live market price maintained by the
-	//                             matching/market-data service
-	//   2. pair.initialPrice    → admin-supplied price at pair creation
-	//                             (seeded via /api/v1/pairs/admin)
-	//   3. pair.referencePrice  → legacy field name, kept for backwards
-	//                             compatibility with older backend builds
+	// Pagination empties → return [] so the datafeed tells TradingView
+	// `noData: true`. Synthesizing here would anchor candles to "now"
+	// instead of the requested window, which TradingView would reject
+	// as not-older-data and immediately ask for more — infinite loop.
+	if (!isInitial) {
+		return [];
+	}
+
+	// LOCAL-only fallback: draw a flat line at the pair's current price.
 	if (availability === 'LOCAL') {
-		try {
-			const pair = await pairsApi.get(symbol);
-			const raw =
-				pair?.price ??
-				pair?.initialPrice ??
-				pair?.referencePrice ??
-				'0';
-			const refPrice = parseFloat(raw);
-			if (Number.isFinite(refPrice) && refPrice > 0) {
-				console.log(
-					'[Chart] local tape empty — flat line at price', refPrice, 'for', symbol,
-				);
-				return synthesizeFlatCandles(refPrice, interval);
-			}
-		} catch (err) {
-			console.warn('[Chart] pairs fetch for refPrice failed:', err);
+		return await synthesizeFlatLineFromPair(symbol, interval);
+	}
+	return [];
+}
+
+/**
+ * Build a synthetic flat-line bar set from the pair's known price.
+ * Used only on the INITIAL chart load for LOCAL pairs with no trades
+ * yet, so the chart isn't blank. Not used for pagination (see
+ * fetchKlines's `isInitial` branching) — synthesizing past bars for a
+ * dragged window would trick TradingView into infinite pagination.
+ *
+ * Field fallback order when reading the pair's price:
+ *   1. pair.price           → live market price maintained by the
+ *                             matching/market-data service.
+ *   2. pair.initialPrice    → admin-supplied price at pair creation
+ *                             (seeded via /api/v1/pairs/admin).
+ *   3. pair.referencePrice  → legacy field name, kept for backwards
+ *                             compatibility with older backend builds.
+ */
+async function synthesizeFlatLineFromPair(symbol, interval) {
+	try {
+		const pair = await pairsApi.get(symbol);
+		const raw =
+			pair?.price ??
+			pair?.initialPrice ??
+			pair?.referencePrice ??
+			'0';
+		const refPrice = parseFloat(raw);
+		if (Number.isFinite(refPrice) && refPrice > 0) {
+			console.log(
+				'[Chart] local tape empty — flat line at price', refPrice, 'for', symbol,
+			);
+			return synthesizeFlatCandles(refPrice, interval);
 		}
+	} catch (err) {
+		console.warn('[Chart] pairs fetch for refPrice failed:', err);
 	}
 	return [];
 }

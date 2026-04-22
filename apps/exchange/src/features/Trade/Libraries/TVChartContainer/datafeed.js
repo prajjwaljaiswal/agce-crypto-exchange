@@ -1,4 +1,10 @@
-import { parseFullSymbol, fetchKlines, intervalToMs, resolutionToMatchingInterval } from './helpers.js';
+import {
+    parseFullSymbol,
+    fetchKlines,
+    intervalToMs,
+    resolutionToMatchingInterval,
+    resetKlineEmptyCounter,
+} from './helpers.js';
 import { subscribeOnStream, unsubscribeFromStream, setStreamAvailability } from './streaming.js';
 
 const lastBarsCache = new Map();
@@ -26,6 +32,10 @@ export function setDatafeedAvailability(next) {
     const v = next === 'GLOBAL' ? 'GLOBAL' : 'LOCAL';
     if (v === currentAvailability) return;
     currentAvailability = v;
+    // The previous source's empty-response counts are irrelevant for
+    // the new source (e.g. LOCAL may have been empty, but GLOBAL has
+    // plenty of data). Reset so the next fetch gets a fresh shot.
+    resetKlineEmptyCounter();
     setStreamAvailability(v);
 }
 
@@ -91,6 +101,12 @@ export default {
         try {
             let bars;
             if (firstDataRequest) {
+                // Fresh load for this symbol/resolution — clear any
+                // stale "this pair was empty" count from a previous
+                // visit so we give the API one real chance again.
+                resetKlineEmptyCounter(
+                    `${parsedSymbol.fromSymbol}-${parsedSymbol.toSymbol}`,
+                );
                 bars = await fetchKlines(
                     parsedSymbol.fromSymbol,
                     parsedSymbol.toSymbol,
@@ -98,6 +114,7 @@ export default {
                     {
                         availability: currentAvailability,
                         limit: Math.min(Math.max(countBack || 500, 50), 1000),
+                        isInitial: true,
                     },
                 );
             } else {
@@ -117,6 +134,7 @@ export default {
                         startTime,
                         endTime,
                         limit,
+                        isInitial: false,
                     },
                 );
             }
@@ -124,6 +142,10 @@ export default {
             if (bars.length) {
                 lastBarsCache.set(symbolInfo.name, { ...bars[bars.length - 1] });
             }
+            // `noData: true` tells TradingView "no older data exists" —
+            // it stops paginating. Critical for LOCAL pairs with no
+            // historical candles; without it the widget would drag →
+            // fetch → empty → drag → fetch → empty forever.
             onHistoryCallback(bars, { noData: bars.length === 0 });
         } catch (error) {
             onErrorCallback(error);
