@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import type { AnnouncementItem } from '../types.js'
 
@@ -95,6 +96,25 @@ interface ReferralProps {
 }
 
 export function ReferralProgramCard({ code }: ReferralProps) {
+  const [codeCopied, setCodeCopied] = useState(false)
+  const [linkCopied, setLinkCopied] = useState(false)
+
+  const referralLink = `${window.location.origin}/signup?reffcode=${code}`
+
+  function copyCode() {
+    navigator.clipboard.writeText(code).then(() => {
+      setCodeCopied(true)
+      setTimeout(() => setCodeCopied(false), 2000)
+    })
+  }
+
+  function copyLink() {
+    navigator.clipboard.writeText(referralLink).then(() => {
+      setLinkCopied(true)
+      setTimeout(() => setLinkCopied(false), 2000)
+    })
+  }
+
   return (
     <div className="dashboard_simple_card referral_program_card">
       <div className="dash_card_header">
@@ -114,14 +134,21 @@ export function ReferralProgramCard({ code }: ReferralProps) {
           type="button"
           className="dash_code_copy"
           aria-label="Copy referral code"
+          onClick={copyCode}
         >
-          <i className="ri-file-copy-line" aria-hidden />
+          <i className={codeCopied ? 'ri-check-line' : 'ri-file-copy-line'} aria-hidden />
         </button>
       </div>
 
-      <Link className="dash_outline_btn" to="/refer_earn">
-        Share Link
-      </Link>
+      <button
+        type="button"
+        className="dash_outline_btn"
+        onClick={copyLink}
+        aria-label="Copy referral link"
+      >
+        <i className={linkCopied ? 'ri-check-line' : 'ri-link'} aria-hidden />
+        {linkCopied ? 'Link Copied!' : 'Share Link'}
+      </button>
     </div>
   )
 }

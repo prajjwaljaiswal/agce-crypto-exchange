@@ -2,7 +2,7 @@ import { useCallback, useContext, useEffect, useRef } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { alertErrorMessage, alertSuccessMessage } from "./CustomAlertMessage";
 import TVChartContainer from "./Libraries/TVChartContainer/index.jsx";
-import '../TradePage/trade_new.css'
+import './trade_new.css'
 import { ProfileContext } from "../../context/ProfileProvider.js";
 import { usePlatformStatus } from "../../context/PlatformStatusProvider.js";
 import { SocketContext } from "./SocketContext.js";

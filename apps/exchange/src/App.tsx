@@ -31,7 +31,6 @@ import {
   EarningHistory,
   KycVerificationNew,
   Notifications,
-  OpenOrders,
   ProfileLayout,
   Settings,
   Support,

@@ -1,7 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "../../providers/index.js";
-import { useTheme } from "../../providers/ThemeProvider.js";
 import { LogoutConfirmModal } from "../../features/user-profile/components/LogoutConfirmModal.js";
 import { useEstimatedBalance } from "../../features/user-profile/hooks/useEstimatedBalance.js";
 
@@ -41,9 +40,6 @@ export function UserHeader() {
   const dropdownCloseTimerRef = useRef<number | null>(null);
   const downloadTimerRef = useRef<number | null>(null);
   const [logoutConfirmOpen, setLogoutConfirmOpen] = useState(false);
-
-  const { theme, toggleTheme } = useTheme();
-  const isLightTheme = theme === "light";
 
   const { data: estimated } = useEstimatedBalance();
   const preferredCurrency = estimated?.preferredCurrency ?? "USDT";
@@ -418,26 +414,6 @@ export function UserHeader() {
                       </ul>
                     </li>
 
-                    {/* Theme (mobile only) */}
-                    <li className="nav-item mbl">
-                      <Link
-                        className="nav-link"
-                        to="/"
-                        onClick={(e) => {
-                          e.preventDefault();
-                          toggleTheme();
-                          closeNavbar();
-                        }}
-                        role="button"
-                        aria-label="Toggle theme"
-                      >
-                        Theme{" "}
-                        <span>
-                          <img src="/images/themeicon.svg" alt="theme" />
-                        </span>
-                      </Link>
-                    </li>
-
                     {/* Logout (mobile only — authenticated users) */}
                     {isAuthenticated && (
                       <li className="nav-item mbl nav-item--logout">
@@ -717,43 +693,10 @@ export function UserHeader() {
                       </div>
                     </li>
 
-                    <li
-                      className="themetbs"
-                      role="button"
-                      tabIndex={0}
-                      onClick={toggleTheme}
-                      onKeyDown={(e) => {
-                        if (e.key === "Enter" || e.key === " ") toggleTheme();
-                      }}
-                      aria-label="Toggle theme"
-                    >
-                      {isLightTheme ? (
-                        <i className="ri-moon-line dark_img" />
-                      ) : (
-                        <i className="ri-sun-line light_img" />
-                      )}
-                    </li>
                   </ul>
                 </div>
               ) : (
                 <div className="button_outer">
-                  <div
-                    className="themecolor_icon"
-                    onClick={toggleTheme}
-                    role="button"
-                    tabIndex={0}
-                    onKeyDown={(e) => {
-                      if (e.key === "Enter" || e.key === " ") toggleTheme();
-                    }}
-                    aria-label="Toggle theme"
-                  >
-                    {isLightTheme ? (
-                      <i className="ri-moon-line dark_img" />
-                    ) : (
-                      <i className="ri-sun-line light-text" />
-                    )}
-                  </div>
-
                   <div
                     className={`downloadtabs${downloadActive ? " active" : ""}`}
                     onMouseEnter={openDownload}

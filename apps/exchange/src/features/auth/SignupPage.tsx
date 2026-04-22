@@ -179,6 +179,7 @@ export function SignupPage() {
         identifier: pendingIdentifier,
         password,
         jurisdiction: mapInstanceToJurisdiction(instance.id),
+        ...(invitation ? { referralCode: invitation } : {}),
       }),
     onSuccess: (response) => {
       // Persist tokens so the next page load (hard-nav to /user_profile/kyc)

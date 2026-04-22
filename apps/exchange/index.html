@@ -5,24 +5,17 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon_light.svg" />
 
-    <!-- Resolve theme synchronously before any CSS evaluates so refresh
-         doesn't flash dark before React mounts. Reads (in order):
-         agce:theme storage → legacy `theme` storage → OS preference. -->
+    <!-- Theme is fixed to light — dark mode is disabled. -->
     <script>
       (function () {
         try {
-          var stored = localStorage.getItem('agce:theme') || localStorage.getItem('theme');
-          var theme = (stored === 'light' || stored === 'dark')
-            ? stored
-            : (window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark');
-          document.documentElement.setAttribute('data-theme', theme);
-          // body class applies as soon as <body> is parsed.
+          document.documentElement.setAttribute('data-theme', 'light');
           document.addEventListener('DOMContentLoaded', function () {
-            if (theme === 'light') document.body.classList.add('light_theme');
+            document.body.classList.add('light_theme');
           });
-          localStorage.setItem('agce:theme', theme);
-          localStorage.setItem('theme', theme);
-        } catch (e) { /* storage blocked — React will resolve again */ }
+          localStorage.setItem('agce:theme', 'light');
+          localStorage.setItem('theme', 'light');
+        } catch (e) {}
       })();
     </script>
 

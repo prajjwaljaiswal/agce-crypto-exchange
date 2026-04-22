@@ -14,18 +14,7 @@ const ThemeContext = createContext<ThemeContextValue | null>(null)
 const STORAGE_KEY = 'agce:theme'
 
 function readInitialTheme(): Theme {
-  if (typeof window === 'undefined') return 'dark'
-  // The pre-React bootstrap script in index.html sets data-theme synchronously
-  // from the same sources. Reading it first keeps React in sync with whatever
-  // the page already painted, avoiding a second flip on mount.
-  const fromDom = document.documentElement.getAttribute('data-theme')
-  if (fromDom === 'light' || fromDom === 'dark') return fromDom
-  // Fallback path (storage blocked, attribute stripped, etc.) — try storage,
-  // then the legacy `theme` key, then OS preference.
-  const stored = window.localStorage.getItem(STORAGE_KEY) ?? window.localStorage.getItem('theme')
-  if (stored === 'light' || stored === 'dark') return stored
-  const prefersLight = window.matchMedia('(prefers-color-scheme: light)').matches
-  return prefersLight ? 'light' : 'dark'
+  return 'light'
 }
 
 export function ThemeProvider({ children }: { children: ReactNode }) {
@@ -43,7 +32,7 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
   }, [theme])
 
   const setTheme = useCallback((next: Theme) => setThemeState(next), [])
-  const toggleTheme = useCallback(() => setThemeState((t) => (t === 'dark' ? 'light' : 'dark')), [])
+  const toggleTheme = useCallback(() => {}, [])
 
   const value = useMemo(() => ({ theme, toggleTheme, setTheme }), [theme, toggleTheme, setTheme])
 

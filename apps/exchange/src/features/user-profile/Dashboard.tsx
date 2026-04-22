@@ -60,11 +60,14 @@ export function Dashboard() {
       uid: user.userId ?? user.id ?? PROFILE_SNAPSHOT.uid,
       kycStatus: mapKycStatus(user.kycStatus),
       verified: Boolean(user.isEmailVerified && user.isPhoneVerified),
+      referralCode: user.referralCode ?? PROFILE_SNAPSHOT.referralCode,
       signupAt,
       lastLoginAt: formatTimestamp(user.lastLoginAt) ?? PROFILE_SNAPSHOT.lastLoginAt,
       lastLoginIp: user.lastLoginIp ?? PROFILE_SNAPSHOT.lastLoginIp,
     }
   }, [user])
+
+  console.log('Profile Snapshot:', profile)
 
   return (
     <div className="dashboard_right">

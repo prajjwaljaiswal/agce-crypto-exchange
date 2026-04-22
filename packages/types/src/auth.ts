@@ -49,6 +49,7 @@ export interface RegisterPayload {
   jurisdiction: Jurisdiction
   firstName?: string
   lastName?: string
+  referralCode?: string
 }
 
 export interface RegisteredUser {
@@ -153,6 +154,7 @@ export interface MeResponse extends AuthUser {
   kycStatus?: string
   kycLevel?: string
   jurisdiction?: Jurisdiction | string
+  referralCode?: string
   preferredCurrency?: string
   // Anti-phishing: backend may return the raw code string if set, or an empty
   // string / undefined if not set. Some backends expose only `hasAntiPhishingCode`.
