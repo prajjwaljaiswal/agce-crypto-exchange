@@ -1,7 +1,49 @@
 import { useEffect, useMemo, useState } from "react";
 import { useCoinListStore } from "../stores/coinListStore.js";
-import { assetsApi, pairsApi } from "../../../lib/matching-api.js";
+import {
+    assetsApi,
+    pairsApi,
+    marketApi,
+    binanceMarketApi,
+} from "../../../lib/matching-api.js";
 import { useFavorites } from "../../Market/useFavorites.js";
+
+/**
+ * Overlay a normalized 24h ticker onto a coin-list row. All numeric
+ * ticker values are strings on the wire (matching both AGCE and Binance
+ * conventions); we parseFloat and only apply values that are finite.
+ * Missing fields leave the row's prior value intact so a partial ticker
+ * response doesn't wipe seeded data.
+ */
+function mergeTicker(
+    row: any,
+    t: {
+        last?: string;
+        change?: string;
+        changePct?: string;
+        high?: string;
+        low?: string;
+        volume?: string;
+    },
+): any {
+    const num = (v: unknown, fallback: number): number => {
+        if (v == null) return fallback;
+        const n = parseFloat(v as string);
+        return Number.isFinite(n) ? n : fallback;
+    };
+    const last = num(t.last, row.buy_price);
+    return {
+        ...row,
+        buy_price: last,
+        sell_price: last,
+        reference_price: last || row.reference_price,
+        change: num(t.change, 0),
+        change_percentage: num(t.changePct, 0),
+        high: num(t.high, 0),
+        low: num(t.low, 0),
+        volume: num(t.volume, 0),
+    };
+}
 
 export type CoinListApi = {
     search: string;
@@ -47,14 +89,40 @@ export function useCoinList(): CoinListApi {
                     const baseMeta = assetMap.get(pair.baseAsset);
                     // Server renamed `stepSize` → `lotSize`; keep both for safety.
                     const stepSize = pair.lotSize ?? pair.stepSize ?? "0.00001";
-                    // When there are no local trades yet, seed the displayed
-                    // price from the pair's referencePrice (typically Binance).
-                    // Ticker polling will overwrite this once a /market/ticker
-                    // response with a real lastPrice arrives.
-                    const seedPrice = parseFloat(pair.referencePrice ?? "0") || 0;
+                    // Fee resolution: per-pair overrides > base asset's
+                    // default fees. Backends that don't expose per-pair
+                    // fees (most of ours) fall through to the asset's
+                    // makerFee/takerFee string. Values are percentages
+                    // (e.g. "0.1" means 0.1%) — NOT multipliers.
+                    const makerFee =
+                        parseFloat(
+                            (pair.makerFee ??
+                                (baseMeta as any)?.makerFee ??
+                                "0") as string,
+                        ) || 0;
+                    const takerFee =
+                        parseFloat(
+                            (pair.takerFee ??
+                                (baseMeta as any)?.takerFee ??
+                                "0") as string,
+                        ) || 0;
+                    // Seed price priority: live `price` > admin `initialPrice`
+                    // > legacy `referencePrice`. Prior builds only read the
+                    // legacy field, which no longer exists on newer backends,
+                    // so rows came out as zero until a ticker fetch overwrote
+                    // them. The explicit ticker pass below fills change% /
+                    // high / low / volume next.
+                    const seedPrice =
+                        parseFloat(
+                            (pair.price ??
+                                pair.initialPrice ??
+                                pair.referencePrice ??
+                                "0") as string,
+                        ) || 0;
                     return {
                         _id: pair.symbol,
                         symbol: pair.symbol,
+                        availability: pair.availability,
                         base_currency: pair.baseAsset,
                         quote_currency: pair.quoteAsset,
                         base_currency_id: pair.baseAsset,
@@ -75,10 +143,53 @@ export function useCoinList(): CoinListApi {
                         high: 0,
                         low: 0,
                         volume: 0,
+                        maker_fee: makerFee,
+                        taker_fee: takerFee,
                     };
                 });
 
                 setAllData({ pairs: mappedPairs });
+
+                // Second pass: fetch 24h ticker per pair and merge the
+                // live price + change into the list. LOCAL pairs use our
+                // matching service's ticker; GLOBAL pairs pull from
+                // Binance via market-data-service. Requests fan out in
+                // parallel; one failure doesn't block the rest.
+                const enriched = await Promise.all(
+                    mappedPairs.map(async (row: any) => {
+                        try {
+                            if (row.availability === "GLOBAL") {
+                                const bSym = `${row.base_currency}${row.quote_currency}`;
+                                const t: any = await binanceMarketApi.ticker24h(bSym);
+                                return mergeTicker(row, {
+                                    last: t.lastPrice,
+                                    change: t.priceChange,
+                                    changePct: t.priceChangePercent,
+                                    high: t.highPrice,
+                                    low: t.lowPrice,
+                                    volume: t.volume,
+                                });
+                            }
+                            const lSym = `${row.base_currency}-${row.quote_currency}`;
+                            const t: any = await marketApi.ticker(lSym);
+                            return mergeTicker(row, {
+                                last: t.last ?? t.lastPrice ?? t.close,
+                                change: t.priceChange ?? t.change,
+                                changePct: t.priceChangePercent ?? t.changePercent,
+                                high: t.high ?? t.highPrice,
+                                low: t.low ?? t.lowPrice,
+                                volume: t.volume ?? t.baseVolume,
+                            });
+                        } catch {
+                            // Binance rejects unknown symbols with 502/400 and
+                            // the local ticker may 404 for pairs with no
+                            // trades — keep the seeded row unchanged so the
+                            // dropdown still shows the price.
+                            return row;
+                        }
+                    }),
+                );
+                if (!cancelled) setAllData({ pairs: enriched });
             } catch {
                 // non-critical; coin list stays empty
             } finally {

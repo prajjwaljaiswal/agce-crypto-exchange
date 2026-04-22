@@ -65,7 +65,27 @@ export interface OhlcvCandle {
   closeTime?: number
 }
 
-export type OhlcvInterval = '1m' | '5m' | '15m' | '1h' | '4h' | '1d'
+export type OhlcvInterval = '1m' | '5m' | '15m' | '30m' | '1h' | '4h' | '1d' | '1w'
+
+/**
+ * Availability decides WHERE the backend sources the data from:
+ *   LOCAL  → our matching-service trade tape / candle collection.
+ *   GLOBAL → market-data-service proxies to Binance.
+ * One query param, same response shape per endpoint.
+ */
+export type MarketAvailability = 'LOCAL' | 'GLOBAL'
+
+/**
+ * Binance kline REST response — a 12-element array per candle.
+ * Index layout:
+ *   0 openTime, 1 open, 2 high, 3 low, 4 close, 5 baseVolume,
+ *   6 closeTime, 7 quoteVolume, 8 tradeCount,
+ *   9 takerBuyBase, 10 takerBuyQuote, 11 unused
+ */
+export type BinanceKlineTuple = [
+  number, string, string, string, string, string,
+  number, string, number, string, string, string,
+]
 
 export interface PlaceOrderPayload {
   symbol: string
@@ -133,6 +153,26 @@ function getBaseUrl(): string {
   if (!raw) {
     throw new Error(
       'VITE_MATCHING_API_URL (or VITE_AUTH_API_URL as fallback) is not set.',
+    )
+  }
+  return raw.replace(/\/+$/, '')
+}
+
+/**
+ * Base URL for market-data-service endpoints (/api/v1/klines etc.).
+ * Prefers VITE_MARKET_DATA_URL (same env the socket client reads), and
+ * falls back to the matching/auth base URL so a single-gateway deploy
+ * still works without adding env vars.
+ */
+function getMarketDataBaseUrl(): string {
+  const env = import.meta.env as Record<string, string | undefined>
+  const raw =
+    env.VITE_MARKET_DATA_URL ??
+    env.VITE_MATCHING_API_URL ??
+    env.VITE_AUTH_API_URL
+  if (!raw) {
+    throw new Error(
+      'VITE_MARKET_DATA_URL (or VITE_MATCHING_API_URL / VITE_AUTH_API_URL) is not set.',
     )
   }
   return raw.replace(/\/+$/, '')
@@ -258,16 +298,113 @@ export const marketApi = {
     })
   },
 
-  ohlcv(symbol: string, interval: OhlcvInterval = '1m', limit = 500, signal?: AbortSignal) {
+  ohlcv(
+    symbol: string,
+    interval: OhlcvInterval = '1m',
+    limit = 500,
+    opts: {
+      availability?: MarketAvailability
+      from?: number
+      to?: number
+      signal?: AbortSignal
+    } = {},
+  ) {
+    const { availability = 'LOCAL', from, to, signal } = opts
+    const query: Record<string, string | number> = {
+      symbol,
+      interval,
+      limit,
+      availability,
+    }
+    if (from !== undefined) query.from = from
+    if (to !== undefined) query.to = to
     return request<OhlcvCandle[]>(`${MARKET}/ohlcv`, {
       auth: false,
       signal,
-      query: { symbol, interval, limit },
+      query,
     })
   },
 
   symbols(signal?: AbortSignal) {
     return request<string[]>(`${MARKET}/symbols`, { auth: false, signal })
+  },
+}
+
+/**
+ * Binance REST proxy exposed by market-data-service via the gateway.
+ * Useful for GLOBAL pairs where the matching engine has no trades and
+ * the local /market/ticker would return zeros — we need Binance's
+ * 24h stats for the initial paint, then WS events keep them live.
+ */
+export const binanceMarketApi = {
+  /**
+   * GET /api/v1/binance/ticker/24hr?symbol=BTCUSDT
+   * Response is Binance's raw 24h ticker shape (lastPrice, priceChange,
+   * priceChangePercent, highPrice, lowPrice, volume, quoteVolume, ...).
+   */
+  ticker24h(symbol: string, signal?: AbortSignal) {
+    // Strip dashes — Binance symbols never carry them.
+    const sym = symbol.replace(/-/g, '').toUpperCase()
+    return request<Record<string, unknown>>(
+      '/api/v1/binance/ticker/24hr',
+      { auth: false, signal, query: { symbol: sym } },
+    )
+  },
+}
+
+/**
+ * Kline endpoint on market-data-service — returns the Binance kline shape
+ * (array of 12-element arrays) regardless of availability. Prefer this
+ * over `marketApi.ohlcv` for new chart code: it supports startTime/endTime
+ * pagination for horizontal scroll and carries quote/taker-buy volumes.
+ *
+ *   GET /api/v1/klines?symbol=BTC-USDT&interval=1m
+ *                     &availability=LOCAL|GLOBAL
+ *                     &startTime=&endTime=&limit=
+ */
+export const klinesApi = {
+  async klines(
+    symbol: string,
+    interval: OhlcvInterval = '1m',
+    opts: {
+      availability?: MarketAvailability
+      startTime?: number
+      endTime?: number
+      limit?: number
+      signal?: AbortSignal
+    } = {},
+  ): Promise<BinanceKlineTuple[]> {
+    const {
+      availability = 'LOCAL',
+      startTime,
+      endTime,
+      limit = 500,
+      signal,
+    } = opts
+
+    // Binance symbols carry no dash (BTCUSDT). Our backend already handles
+    // the dash for LOCAL; for GLOBAL it collapses server-side. We still
+    // normalise here so both paths accept either form.
+    const sym = availability === 'GLOBAL' ? symbol.replace(/-/g, '') : symbol
+
+    const params = new URLSearchParams()
+    params.set('symbol', sym)
+    params.set('interval', interval)
+    params.set('availability', availability)
+    params.set('limit', String(limit))
+    if (startTime !== undefined) params.set('startTime', String(startTime))
+    if (endTime !== undefined) params.set('endTime', String(endTime))
+
+    const url = `${getMarketDataBaseUrl()}/api/v1/klines?${params.toString()}`
+    const res = await fetch(url, { method: 'GET', signal })
+    if (!res.ok) {
+      const body = await res.text().catch(() => '')
+      throw new ApiError(
+        `klines fetch failed: ${body || res.statusText}`,
+        res.status,
+      )
+    }
+    return (await res.json()) as BinanceKlineTuple[]
   },
 }
 
@@ -507,12 +644,34 @@ export interface TradingPair {
   maxOrderQty?: string
   makerFee?: string
   takerFee?: string
-  /** Fallback price (from Binance or last known) used when no local trades yet. */
+  /**
+   * Where market data for this pair is sourced:
+   *   LOCAL  → AGCE matching engine (local order book + trades).
+   *   GLOBAL → Binance (chart REST + ticker WS come through market-data-service).
+   * Set per-pair by asset-service; see PairAvailability on the backend.
+   */
+  availability?: MarketAvailability
+  /** Live market price maintained by the backend. For GLOBAL pairs this
+   *  tracks Binance; for LOCAL pairs it's updated by the matching engine
+   *  on each trade. Absent for a pair with no price yet. */
+  price?: string
+  priceUpdatedAt?: string
+  /** Admin-supplied seed price at pair creation (from /api/v1/pairs/admin).
+   *  Useful as a fallback when `price` is absent. */
+  initialPrice?: string
+  initialPriceSource?: 'admin' | 'binance' | string
+  initialPriceUpdatedAt?: string
+  /** Legacy field name. Older backend builds may still return this;
+   *  newer builds populate `price` / `initialPrice` instead. */
   referencePrice?: string
   referencePriceSource?: 'binance' | string
   referencePriceUpdatedAt?: string
   instance?: string
   iconUrl?: string
+  /** Per-asset icon URLs returned on detail + list responses. `iconUrl`
+   *  is kept as an alias for `baseIconUrl` for backwards compatibility. */
+  baseIconUrl?: string | null
+  quoteIconUrl?: string | null
 }
 
 export interface TradingPairDetail extends TradingPair {

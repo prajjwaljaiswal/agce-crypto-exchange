@@ -32,22 +32,20 @@ export function SocketProvider({ children }) {
   const { isAuthenticated, status } = useAuth();
 
   useEffect(() => {
-    // Wait until auth status resolves before opening the socket.
+    // Wait until auth status resolves before opening the socket so that
+    // a logged-in user doesn't briefly connect anonymously during boot
+    // (which would skip user-scoped channels we might add later).
     if (status === 'loading') return undefined;
 
-    // market-data-service REFUSES unauthenticated Socket.IO connections
-    // (server-side middleware). Guests get nothing live — REST seed still
-    // works, but we don't even open the socket to avoid noisy 401 loops.
-    if (!isAuthenticated) {
-      console.log('[SocketProvider] Guest — skipping socket connection (server requires auth).');
-      return undefined;
-    }
-
-    const token = tokenStore.getAccess();
-    if (!token) {
-      console.warn('[SocketProvider] Authenticated but no access token in storage — cannot open socket.');
-      return undefined;
-    }
+    // Market data on AGCE is public — ticker, kline, depth, trades.
+    // The server's socket middleware allows anonymous connections (see
+    // market_data_service/src/socket/socket.auth.ts). Guests get the
+    // full live feed for public channels; user-data channels (future)
+    // will gate themselves on the presence of `socket.data.user`.
+    //
+    // If a token exists we pass it through so the server can attach
+    // the user on connect; when it doesn't, we connect anonymously.
+    const token = isAuthenticated ? tokenStore.getAccess() : null;
 
     const opts = {
       path: MARKET_DATA_PATH,
@@ -55,10 +53,16 @@ export function SocketProvider({ children }) {
       reconnection: true,
       reconnectionAttempts: 10,
       reconnectionDelay: 2000,
-      auth: { token },
+      // `auth` must be an object — omitting the token key is fine, the
+      // server middleware handles the anonymous path explicitly.
+      auth: token ? { token } : {},
     };
 
-    console.log('[SocketProvider] Connecting to', MARKET_DATA_URL, 'path:', MARKET_DATA_PATH);
+    console.log(
+      '[SocketProvider] Connecting to', MARKET_DATA_URL,
+      'path:', MARKET_DATA_PATH,
+      'as:', token ? 'authenticated' : 'guest',
+    );
 
     const socket = io(MARKET_DATA_URL, opts);
 
