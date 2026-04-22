@@ -1,8 +1,22 @@
-import { useEffect, useRef } from "react";
-import { marketApi } from "../../../lib/matching-api.js";
+import { useEffect, useRef, useState } from "react";
+import { marketApi, pairsApi, binanceMarketApi } from "../../../lib/matching-api.js";
 import { ApiError } from "../../../lib/http.js";
 import { alertErrorMessage } from "../CustomAlertMessage/index.js";
 import { useMarketDataStore } from "../stores/marketDataStore.js";
+
+/**
+ * For GLOBAL pairs the ticker is sourced from Binance via the
+ * market-data-service proxy/multiplexer. The WS event arrives on the
+ * generic `data` channel as a DataEnvelope — we filter by channel +
+ * symbol and map Binance's single-letter field names to the same
+ * setters used by the LOCAL path so downstream components don't care.
+ */
+type Availability = 'LOCAL' | 'GLOBAL';
+
+/** Binance symbol form — no dash. "BTC-USDT" → "BTCUSDT". */
+function toBinanceSymbol(base: string, quote: string): string {
+    return `${base}${quote}`.toUpperCase();
+}
 
 // ---------------------------------------------------------------------------
 // Internal helpers (duplicated here so callers don't need to import them)
@@ -65,6 +79,33 @@ export function useMarketData(
     const buypriceRef = useRef(buyprice);
     useEffect(() => { buypriceRef.current = buyprice; }, [buyprice]);
 
+    // Resolved per-pair availability. GLOBAL pairs have their 24h ticker
+    // streamed from Binance (via market-data-service's multiplexer);
+    // LOCAL pairs use our matching engine's local:ticker events. We
+    // default to LOCAL and flip on pair lookup so a slow /pairs call
+    // doesn't delay the initial render of LOCAL pairs.
+    const [availability, setAvailability] = useState<Availability>('LOCAL');
+    useEffect(() => {
+        if (!SelectedCoin?.base_currency || !SelectedCoin?.quote_currency) return undefined;
+        const symbol = `${SelectedCoin.base_currency}-${SelectedCoin.quote_currency}`;
+        let cancelled = false;
+        const controller = new AbortController();
+        pairsApi
+            .get(symbol, controller.signal)
+            .then((pair) => {
+                if (cancelled) return;
+                setAvailability(pair?.availability === 'GLOBAL' ? 'GLOBAL' : 'LOCAL');
+            })
+            .catch(() => {
+                // Pair lookup failed — stick with LOCAL default.
+                if (!cancelled) setAvailability('LOCAL');
+            });
+        return () => {
+            cancelled = true;
+            controller.abort();
+        };
+    }, [SelectedCoin?.base_currency, SelectedCoin?.quote_currency]);
+
     // -----------------------------------------------------------------------
     // REST: seed initial state on mount / pair switch. After that, the socket
     // owns depth + trades — polling resumes only as a fallback when the socket
@@ -123,48 +164,63 @@ export function useMarketData(
             }
         };
 
+        // Only overwrite with finite positive values — empty strings
+        // from the server would parseFloat to NaN and clobber the
+        // referencePrice seeded from /pairs on initial render.
+        const setIfPos = (v: any, setter: (n: number) => void) => {
+            if (v == null) return;
+            const n = parseFloat(v);
+            if (Number.isFinite(n) && n > 0) setter(n);
+        };
+        const setIfFinite = (v: any, setter: (n: number) => void) => {
+            if (v == null) return;
+            const n = parseFloat(v);
+            if (Number.isFinite(n)) setter(n);
+        };
+
+        // Map either AGCE or Binance ticker payload → state setters.
+        // Binance uses single-letter field names in its WS frames, but
+        // the REST /ticker/24hr response uses the longer form
+        // (lastPrice, priceChangePercent, highPrice, ...). Both are
+        // handled below.
+        const applyTickerSeed = (t: any) => {
+            const last = t.last ?? t.lastPrice ?? t.close ?? t.c;
+            const ask = t.bestAsk ?? t.ask ?? t.a ?? t.askPrice;
+            const pct = t.priceChangePercent ?? t.changePercent ?? t.P;
+            const chg = t.priceChange ?? t.change ?? t.p;
+            const high = t.high ?? t.h ?? t.highPrice;
+            const low = t.low ?? t.l ?? t.lowPrice;
+            const vol = t.volume ?? t.v ?? t.baseVolume;
+            setIfPos(last, setbuyprice);
+            setIfPos(ask, setsellPrice);
+            setIfFinite(pct, setpriceChange);
+            setIfFinite(chg, setChangesHour);
+            setIfPos(high, setpriceHigh);
+            setIfPos(low, setpriceLow);
+            setIfFinite(vol, setvolume);
+        };
+
         const pullTicker = async () => {
             try {
-                const raw = await marketApi.ticker(symbol);
+                // GLOBAL pairs have no AGCE ticker to return — pull the
+                // 24h stats from Binance via market-data-service so the
+                // strip shows real values on first paint instead of a
+                // zero-flash that gets overwritten by the first WS tick.
+                const raw =
+                    availability === 'GLOBAL'
+                        ? await binanceMarketApi.ticker24h(symbol)
+                        : await marketApi.ticker(symbol);
                 if (cancelled) return;
-                if (!loggedTicker) { console.log('[Trade] ticker raw:', raw); loggedTicker = true; }
-                const t = raw as any;
-                // Server field is `last` on newer builds, `lastPrice` on older.
-                const last = t.last ?? t.lastPrice ?? t.close ?? t.c;
-                const ask = t.bestAsk ?? t.ask ?? t.a;
-                const pct = t.priceChangePercent ?? t.changePercent ?? t.P;
-                const chg = t.priceChange ?? t.change ?? t.p;
-                const high = t.high ?? t.h ?? t.highPrice;
-                const low = t.low ?? t.l ?? t.lowPrice;
-                const vol = t.volume ?? t.v ?? t.baseVolume;
-                // Only overwrite with finite positive values — empty strings
-                // from the server would parseFloat to NaN and clobber the
-                // referencePrice seeded from /pairs on initial render.
-                const setIfPos = (v: any, setter: (n: number) => void) => {
-                    if (v == null) return;
-                    const n = parseFloat(v);
-                    if (Number.isFinite(n) && n > 0) setter(n);
-                };
-                const setIfFinite = (v: any, setter: (n: number) => void) => {
-                    if (v == null) return;
-                    const n = parseFloat(v);
-                    if (Number.isFinite(n)) setter(n);
-                };
-                setIfPos(last, setbuyprice);
-                setIfPos(ask, setsellPrice);
-                setIfFinite(pct, setpriceChange);
-                setIfFinite(chg, setChangesHour);
-                setIfPos(high, setpriceHigh);
-                setIfPos(low, setpriceLow);
-                setIfFinite(vol, setvolume);
+                if (!loggedTicker) { console.log('[Trade]', availability, 'ticker raw:', raw); loggedTicker = true; }
+                applyTickerSeed(raw as any);
             } catch (err) {
                 if (!toastedTicker) { alertErrorMessage(toErrorMessage(err, 'Ticker failed')); toastedTicker = true; }
             }
         };
 
-        // Initial seed — runs once on mount and again on pair switch.
-        // After this, socket events (local:depth / local:trade / local:ticker)
-        // own all live updates; we never fall back to polling.
+        // Initial seed — runs once on mount, again on pair switch, and
+        // again when availability resolves (LOCAL default → GLOBAL after
+        // /pairs responds). After this, socket events own live updates.
         pullDepth();
         pullTrades();
         pullTicker();
@@ -172,7 +228,8 @@ export function useMarketData(
         return () => {
             cancelled = true;
         };
-    }, [SelectedCoin?.base_currency, SelectedCoin?.quote_currency]);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [SelectedCoin?.base_currency, SelectedCoin?.quote_currency, availability]);
 
     // -----------------------------------------------------------------------
     // Real-time updates via Socket.IO (matching-service local channels).
@@ -186,9 +243,22 @@ export function useMarketData(
 
         console.log('[Trade] Subscribing local socket channels for', localSymbol, '| socket id:', socket.id);
 
+        // Depth + trade tape always come from AGCE — the user is placing
+        // real orders against the local matching engine regardless of
+        // whether the pair's chart/ticker pulls from Binance.
         socket.emit('subscribe', { channel: 'local_trade', symbol: localSymbol });
         socket.emit('subscribe', { channel: 'local_depth', symbol: localSymbol });
-        socket.emit('subscribe', { channel: 'local_ticker', symbol: localSymbol });
+
+        // Ticker source depends on pair availability:
+        //   LOCAL  → local:ticker:<SYM>  (matching-service recomputes per trade)
+        //   GLOBAL → Binance `ticker` via market-data-service multiplexer —
+        //            arrives on the generic `data` envelope.
+        const binanceSymbol = toBinanceSymbol(SelectedCoin.base_currency, SelectedCoin.quote_currency);
+        if (availability === 'GLOBAL') {
+            socket.emit('subscribe', { channel: 'ticker', symbol: binanceSymbol });
+        } else {
+            socket.emit('subscribe', { channel: 'local_ticker', symbol: localSymbol });
+        }
 
         setloader(false);
 
@@ -262,24 +332,21 @@ export function useMarketData(
 
         socket.on(localDepthEvent, handleLocalDepth);
 
-        // local:ticker:<SYM> — 24h stats (last price, pct change, high, low,
-        // volume). market-data-service recomputes and emits these after every
-        // trade the matching engine produces (see matching-trades.consumer.ts
-        // line 81). Same payload shape as the REST ticker seed.
-        const localTickerEvent = `local:ticker:${localSymbol}`;
-        const handleLocalTicker = (event: any) => {
-            const e = event?.payload ?? event;
-            if (!loggedTicker) { console.log('[Trade] local_ticker event sample:', e); loggedTicker = true; }
-            const setIfPos = (v: any, setter: (n: number) => void) => {
-                if (v == null) return;
-                const n = parseFloat(v);
-                if (Number.isFinite(n) && n > 0) setter(n);
-            };
-            const setIfFinite = (v: any, setter: (n: number) => void) => {
-                if (v == null) return;
-                const n = parseFloat(v);
-                if (Number.isFinite(n)) setter(n);
-            };
+        // Shared ticker setter — used by both LOCAL and GLOBAL handlers
+        // so downstream state stays identical regardless of source.
+        // Accepts both AGCE (`last`, `priceChangePercent`, ...) and
+        // Binance (`c`, `P`, `p`, ...) single-letter field names.
+        const setIfPos = (v: any, setter: (n: number) => void) => {
+            if (v == null) return;
+            const n = parseFloat(v);
+            if (Number.isFinite(n) && n > 0) setter(n);
+        };
+        const setIfFinite = (v: any, setter: (n: number) => void) => {
+            if (v == null) return;
+            const n = parseFloat(v);
+            if (Number.isFinite(n)) setter(n);
+        };
+        const applyTicker = (e: any) => {
             setIfPos(e.last ?? e.lastPrice ?? e.close ?? e.c, setbuyprice);
             setIfPos(e.bestAsk ?? e.ask ?? e.a, setsellPrice);
             setIfFinite(e.priceChangePercent ?? e.changePercent ?? e.P, setpriceChange);
@@ -288,18 +355,49 @@ export function useMarketData(
             setIfPos(e.low ?? e.l ?? e.lowPrice, setpriceLow);
             setIfFinite(e.volume ?? e.v ?? e.baseVolume, setvolume);
         };
-        socket.on(localTickerEvent, handleLocalTicker);
+
+        // LOCAL path — per-symbol event name emitted by market-data-service
+        // after recomputing from local trades.
+        const localTickerEvent = `local:ticker:${localSymbol}`;
+        const handleLocalTicker = (event: any) => {
+            const e = event?.payload ?? event;
+            if (!loggedTicker) { console.log('[Trade] local_ticker event sample:', e); loggedTicker = true; }
+            applyTicker(e);
+        };
+
+        // GLOBAL path — Binance forwards wrap every tick in a single
+        // `data` envelope { channel, symbol, payload, ... }. We filter
+        // by channel + symbol so subscriptions for other symbols on
+        // this socket don't leak into this chart.
+        const handleBinanceData = (envelope: any) => {
+            if (envelope?.channel !== 'ticker') return;
+            if (envelope?.symbol && envelope.symbol !== binanceSymbol) return;
+            const e = envelope?.payload ?? envelope;
+            if (!loggedTicker) { console.log('[Trade] binance ticker event sample:', e); loggedTicker = true; }
+            applyTicker(e);
+        };
+
+        if (availability === 'GLOBAL') {
+            socket.on('data', handleBinanceData);
+        } else {
+            socket.on(localTickerEvent, handleLocalTicker);
+        }
 
         return () => {
             socket.emit('unsubscribe', { channel: 'local_trade', symbol: localSymbol });
             socket.emit('unsubscribe', { channel: 'local_depth', symbol: localSymbol });
-            socket.emit('unsubscribe', { channel: 'local_ticker', symbol: localSymbol });
+            if (availability === 'GLOBAL') {
+                socket.emit('unsubscribe', { channel: 'ticker', symbol: binanceSymbol });
+                socket.off('data', handleBinanceData);
+            } else {
+                socket.emit('unsubscribe', { channel: 'local_ticker', symbol: localSymbol });
+                socket.off(localTickerEvent, handleLocalTicker);
+            }
             socket.off(localTradeEvent, handleLocalTrade);
             socket.off(localDepthEvent, handleLocalDepth);
-            socket.off(localTickerEvent, handleLocalTicker);
         };
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [SelectedCoin?.base_currency, SelectedCoin?.quote_currency, isConnected]);
+    }, [SelectedCoin?.base_currency, SelectedCoin?.quote_currency, isConnected, availability]);
 
     return {
         BuyOrders, setBuyOrders,

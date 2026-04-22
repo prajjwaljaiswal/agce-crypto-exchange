@@ -1,9 +1,10 @@
 import { useContext, useEffect, useRef, useState } from 'react';
 import './index.css';
 import { widget } from '../charting_library';
-import Datafeed from './datafeed';
+import Datafeed, { setDatafeedAvailability } from './datafeed';
 import { SocketContext } from '../../SocketContext';
 import { disconnectChartSocket, setSharedSocket } from './streaming';
+import { pairsApi } from '../../../../lib/matching-api';
 import {
   applyChartThemeToWidget,
   CHART_BG_DARK,
@@ -18,9 +19,59 @@ export default function TVChartContainer({ symbol }) {
   const [tvWidget, setTvWidget] = useState(null);
   const [isReady, setIsReady] = useState(false);
   const [bodyChartTheme, setBodyChartTheme] = useState(getChartThemeFromBody);
+  // Availability is a property of the trading pair (set per-pair in
+  // asset-service): GLOBAL pairs source from Binance, LOCAL pairs from
+  // our matching engine. We fetch it on symbol change rather than
+  // exposing a user-facing toggle — the user doesn't choose the source,
+  // the pair dictates it.
+  const [availability, setAvailability] = useState('LOCAL');
   // Tracks the widget instance created in the current effect cycle so cleanup
   // uses the closed-over reference, not the potentially-stale state value.
   const widgetInstanceRef = useRef(null);
+
+  // Resolve pair availability whenever the symbol changes. We push the
+  // result into the datafeed module holder BEFORE creating the widget
+  // so the first getBars call hits the right source. The effect is
+  // cancellable so fast pair-switches don't race.
+  useEffect(() => {
+    if (!symbol || symbol.includes('undefined')) return undefined;
+    let cancelled = false;
+    const [base, quote] = symbol.split('/');
+    const pairSymbol = base && quote ? `${base}-${quote}` : null;
+    if (!pairSymbol) return undefined;
+
+    const controller = new AbortController();
+    pairsApi
+      .get(pairSymbol, controller.signal)
+      .then((pair) => {
+        if (cancelled) return;
+        const next = pair?.availability === 'GLOBAL' ? 'GLOBAL' : 'LOCAL';
+        setDatafeedAvailability(next);
+        setAvailability(next);
+        // The widget-create effect and this effect both key on [symbol];
+        // their firing order isn't guaranteed. If the widget's first
+        // getBars call landed before this promise resolved, it used the
+        // stale availability — reset so bars reload from the correct
+        // source. Safe if the chart isn't ready yet (try/catch).
+        try {
+          widgetInstanceRef.current?.chart?.()?.resetData?.();
+        } catch {
+          // widget not ready — harmless.
+        }
+      })
+      .catch(() => {
+        // Pair lookup failed — stay on LOCAL. Chart will show either
+        // local candles (if any) or the flat refPrice fallback.
+        if (!cancelled) {
+          setDatafeedAvailability('LOCAL');
+          setAvailability('LOCAL');
+        }
+      });
+    return () => {
+      cancelled = true;
+      controller.abort();
+    };
+  }, [symbol]);
 
   // Sync body class → chart theme.
   useEffect(() => {
@@ -114,9 +165,9 @@ export default function TVChartContainer({ symbol }) {
           { value: '15', label: '15 Min' },
           { value: '30', label: '30 Min' },
           { value: '60', label: '1 Hour' },
+          { value: '240', label: '4 Hour' },
           { value: 'D', label: '1 Day' },
           { value: 'W', label: '1 Week' },
-          { value: 'M', label: '1 Month' },
         ];
         intervals.forEach((interval) => {
           const button = instance.createButton();
@@ -160,7 +211,10 @@ export default function TVChartContainer({ symbol }) {
   const bgColor = bodyChartTheme === 'light' ? CHART_BG_LIGHT : CHART_BG_DARK;
 
   return (
-    <div style={{ position: 'relative', minHeight: chartHeight, height: chartHeight, backgroundColor: bgColor }}>
+    <div
+      style={{ position: 'relative', minHeight: chartHeight, height: chartHeight, backgroundColor: bgColor }}
+      data-availability={availability}
+    >
       <div
         id="TVChartContainer"
         style={{
