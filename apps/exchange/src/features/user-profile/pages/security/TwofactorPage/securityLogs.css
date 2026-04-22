@@ -1,0 +1,197 @@
+/* Security Logs — scoped .slg-* */
+
+.slg-page {
+  width: 100%;
+  min-height: 100%;
+  padding: 35px 24px 48px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.slg-page *,
+.slg-page *::before,
+.slg-page *::after {
+  box-sizing: border-box;
+}
+
+.slg-page__crumbs {
+  margin-bottom: 18px;
+}
+
+.slg-page__crumbList {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: #8e939c;
+  font-size: 15px;
+  font-weight: 500;
+}
+
+.slg-page__crumbItem--active {
+  color: #101828;
+}
+
+.security_section_bl {
+  padding-top: 40px;
+  padding-left: 30px;
+}
+
+.slg-page__crumbSep {
+  color: #8e939c;
+}
+
+.slg-page__crumbLink {
+  border: none;
+  background: transparent;
+  padding: 0;
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
+}
+
+.slg-page__title {
+  margin: 0 0 20px;
+  font-size: 36px;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  color: #101828;
+}
+
+.slg-page__sub {
+  margin: 0 0 20px;
+  font-size: 14px;
+  font-weight: 500;
+  color: #8e939c;
+  line-height: 1.5;
+  max-width: 720px;
+}
+
+.slg-page__title + .slg-page__sub {
+  margin-top: -10px;
+}
+
+.slg-tabs {
+  display: flex;
+  gap: 32px;
+  margin-bottom: 0;
+}
+
+.slg-tab {
+  border: none;
+  background: transparent;
+  padding: 0 0 5px;
+  margin-bottom: 18px;
+  font-size: 15px;
+  font-weight: 500;
+  color: #84888C;
+  cursor: pointer;
+  border-bottom: none;
+  position: relative;
+}
+
+.slg-tab::before{
+  content: '';
+  position: absolute;
+  bottom: 0;
+  width: 24px;
+  margin: 0 auto;
+  left: 0;
+  opacity: 0;
+  right: 0px;
+  height: 2px;
+  background: #101828;
+}
+
+.slg-tab:hover {
+  color: #6b7280;
+}
+
+.slg-tab.is-active {
+  color: #101828;
+  font-weight: 600;
+}
+
+.slg-tab.is-active::before {
+  opacity: 1;
+}
+
+.slg-tableWrap {
+  margin-top: 0;
+  background: #fff;
+  overflow: hidden;
+}
+
+.slg-tableScroll {
+  width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.slg-table {
+  width: 100%;
+  min-width: 880px;
+  border-collapse: collapse;
+  table-layout: auto;
+  font-size: 14px;
+}
+
+.slg-table thead th {
+  padding: 14px 16px 12px;
+  text-align: left;
+  font-size: 13px;
+  font-weight: 500;
+  color: #9ca3af;
+  letter-spacing: 0.02em;
+  text-transform: capitalize;
+  border-bottom: 1px solid #eef2f6;
+}
+
+.slg-table tbody td {
+  padding: 14px 16px;
+  color: #101828;
+  font-weight: 500;
+  vertical-align: middle;
+  word-break: break-word;
+}
+
+.slg-table tbody tr:last-child:not(.slg-table__emptyRow) td {
+  border-bottom: none;
+}
+
+.slg-table__emptyRow td {
+  border-bottom: none;
+  padding: 0;
+  vertical-align: middle;
+}
+
+.slg-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 56px 24px 56px;
+  min-height: 280px;
+}
+
+.slg-page .spot_orders_empty_telescope {
+  display: block;
+  max-width: 120px;
+  height: auto;
+  margin: 0 auto 16px;
+}
+
+.slg-empty__text {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 500;
+  color: #9ca3af;
+}
+
+@media (max-width: 768px) {
+  .slg-table {
+    min-width: 520px;
+  }
+}

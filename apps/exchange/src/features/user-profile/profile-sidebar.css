@@ -1,0 +1,434 @@
+/**
+ * User profile left rail — light “settings” style (white panel, slate text, pill active).
+ * Scoped to body.light_theme .profile-sidebar-shell
+ */
+
+.profile-sidebar-shell {
+  position: relative;
+}
+
+.dashboard--no-sidebar {
+  display: block;
+}
+
+.dashboard--no-sidebar > * {
+  width: 100%;
+}
+
+/* Account rail: subtle left accent (reference dashboard sidebar) */
+body.light_theme .profile-sidebar-shell.profile-sidebar-shell--dashboard {
+  border-left: 3px solid #3b82f6;
+}
+
+/* Rail width: smooth for light + dark */
+.profile-sidebar-shell.leftside_menu {
+  transition:
+    width 0.4s cubic-bezier(0.4, 0, 0.2, 1),
+    min-width 0.4s cubic-bezier(0.4, 0, 0.2, 1),
+    max-width 0.4s cubic-bezier(0.4, 0, 0.2, 1),
+    flex-basis 0.4s cubic-bezier(0.4, 0, 0.2, 1),
+    padding 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+body.light_theme .profile-sidebar-shell {
+  background: #ffffff;
+  border-right: 1px solid #e2e8f0;
+  padding: 48px 12px 16px 16px;
+  box-sizing: border-box;
+  width: 324px;
+  min-width: 324px;
+  max-width: 324px;
+  flex: 0 0 324px;
+}
+
+body.light_theme .profile-sidebar-shell.profile-sidebar-shell--collapsed {
+  width: 76px;
+  min-width: 76px;
+  max-width: 76px;
+  flex: 0 0 76px;
+  padding-left: 10px;
+  padding-right: 10px;
+}
+
+/* Nav list */
+body.light_theme .profile-sidebar-shell ul.navi_sidebar {
+  max-width: none;
+  padding: 0 !important;
+  padding-bottom: 24px !important;
+  gap: 4px;
+}
+
+/* Primary row: link */
+.profile-sidebar-shell .navi_sidebar li a {
+  border: 1px solid #ffffff;
+  padding: 14px 20px;
+  gap: 12px;
+  font-weight: 500;
+  box-shadow: 0px 1px 3px #00000000;
+  background-color: #fff;
+  border-radius: 14px !important;
+  font-size: 14px;
+  margin: 0px;
+  color: #303236;
+  line-height: 1.35;
+  align-items: center;
+  display: flex;
+  text-decoration: none;
+  transition: background-color 0.15s ease, color 0.15s ease, padding 0.4s cubic-bezier(0.4, 0, 0.2, 1), gap 0.35s ease;
+}
+
+.profile-sidebar-shell .navi_sidebar li a img {
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
+  object-fit: contain;
+  display: block;
+}
+
+body.light_theme .profile-sidebar-shell .navi_sidebar li.active a {
+  background-color: #F2F3F7;
+  border: 1px solid #DBDBDD;
+  box-shadow: 0px 1px 3px #00000011;
+}
+
+body .profile-sidebar-shell ul.navi_sidebar{ width: 270px; }
+
+body.light_theme .profile-sidebar-shell .navi_sidebar li.active .navi_sidebar_icon,
+body.light_theme .profile-sidebar-shell .navi_sidebar li.active a .navi_sidebar_icon {
+  color: #303236 !important;
+}
+
+/* Accordion row: button */
+.profile-sidebar-shell .navi_sidebar li button.btn-toggle {
+  border: none !important;
+  border-radius: 10px;
+  padding: 14px 20px;
+  gap: 12px;
+  color:#303236;
+  font-weight: 500;
+  font-size: 14px;
+  width: 100%;
+  position: relative;
+  transition: background-color 0.15s ease, color 0.15s ease, padding 0.4s cubic-bezier(0.4, 0, 0.2, 1), gap 0.35s ease;
+}
+
+/* body.light_theme .profile-sidebar-shell .navi_sidebar li button.btn-toggle:hover {
+  background-color: #f8fafc !important;
+  color: #334155 !important;
+} */
+
+/* body.light_theme .profile-sidebar-shell .navi_sidebar li:has(.dashboard_menu_hd.active_ul) button.btn-toggle {
+  background-color: #f1f5f9 !important;
+  color: #1e293b !important;
+} */
+
+/* body.light_theme .profile-sidebar-shell .navi_sidebar li:has(.dashboard_menu_hd.active_ul) .navi_sidebar_icon {
+  color: #1e293b !important;
+} */
+
+
+
+
+body.light_theme .profile-sidebar-shell .navi_sidebar .navi_sidebar_icon {
+  font-size: 20px;
+  width: 22px;
+  min-width: 22px;
+  color: #64748b;
+}
+
+body.light_theme .profile-sidebar-shell .navi_sidebar li.active .navi_sidebar_icon {
+  color: #1e293b !important;
+}
+
+body.light_theme .profile-sidebar-shell .dashboard_menu_hd {
+  color: inherit !important;
+  font-weight: 500;
+}
+
+body.light_theme .profile-sidebar-shell .navi_sidebar li .dashboard_menu_hd.active_ul {
+  color: #1e293b !important;
+}
+
+/* Labels + chevrons: animate width/opacity (avoid display:none snap) */
+.profile-sidebar-shell .dashboard_menu_hd,
+.profile-sidebar-shell .navi_sidebar li button > span:not(.navi_sidebar_icon) {
+  overflow: hidden;
+  white-space: nowrap;
+  min-width: 0;
+  max-width: 260px;
+  opacity: 1;
+  transition:
+    max-width 0.42s cubic-bezier(0.4, 0, 0.2, 1),
+    opacity 0.32s ease,
+    margin 0.32s ease;
+}
+
+.profile-sidebar-shell.profile-sidebar-shell--collapsed .dashboard_menu_hd,
+.profile-sidebar-shell.profile-sidebar-shell--collapsed .navi_sidebar li button > span:not(.navi_sidebar_icon) {
+  max-width: 0;
+  opacity: 0;
+  margin: 0;
+  pointer-events: none;
+}
+
+/* Chevron on section headers */
+.profile-sidebar-shell .navi_sidebar li button span {
+  right: 12px;
+  color: #94a3b8;
+}
+
+/* Nested items */
+/* body.light_theme .profile-sidebar-shell .navi_sidebar li ul {
+  padding-left: 12px;
+  padding-top: 6px;
+  margin-top: 2px;
+  border-left: 1px solid #e2e8f0;
+  margin-left: 11px;
+} */
+
+
+/* Collapsed: icon-only (labels use max-width/opacity above) */
+body.light_theme .profile-sidebar-shell.profile-sidebar-shell--collapsed .navi_sidebar li a,
+body.light_theme .profile-sidebar-shell.profile-sidebar-shell--collapsed .navi_sidebar li button.btn-toggle {
+  justify-content: center;
+  padding-left: 10px;
+  padding-right: 10px;
+  flex-direction: column;
+}
+
+.profile-sidebar-shell.profile-sidebar-shell--collapsed .navi_sidebar li a .dashboard_menu_hd{ display:none; }
+.profile-sidebar-shell.profile-sidebar-shell--collapsed .navi_sidebar li button .dashboard_menu_hd{ display:none; }
+.profile-sidebar-shell.profile-sidebar-shell--collapsed .navi_sidebar li ul {
+  display: none;
+}
+
+/* Collapse control — circle on the rail edge */
+.profile-sidebar-collapse-btn {
+  position: absolute;
+  right: 0px;
+  top: 2px;
+  z-index: 668;
+  width: 40px;
+  height: 40px;
+  border-radius: 4px;
+  border: 1px solid #646464;
+  background: #1d1d1d;
+  /* box-shadow: 0 1px 4px rgba(15, 23, 42, 0.1); */
+  display: none;
+  color: #f4f4f4;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  padding: 0;
+  transition: color 0.15s ease, box-shadow 0.15s ease, transform 0.15s ease;
+}
+
+body.light_theme .profile-sidebar-collapse-btn { 
+  color: #64748b;  
+  border: 1px solid #e2e8f0;
+  background: #ffffff; }
+
+body.light_theme .profile-sidebar-collapse-btn:hover {
+  color: #1e293b;
+  box-shadow: 0 2px 8px rgba(15, 23, 42, 0.12);
+}
+
+body.light_theme .profile-sidebar-collapse-btn i {
+  font-size: 16px;
+  line-height: 1;
+}
+
+@media (min-width: 992px) {
+  .profile-sidebar-collapse-btn {
+    display: flex;
+  }
+}
+
+/* Logout — subtle footer strip */
+body.light_theme .profile-sidebar-shell .logout_btn {
+  width: calc(100% - 8px);
+  max-width: 240px;
+  margin-left: 0;
+  border-top: 1px solid #e2e8f0;
+  padding-top: 12px;
+  background: transparent;
+}
+
+body.light_theme .profile-sidebar-shell.profile-sidebar-shell--collapsed .logout_btn {
+  width: 100%;
+  max-width: none;
+}
+
+body.light_theme .profile-sidebar-shell .logout_btn a {
+  background: transparent !important;
+  color: #64748b !important;
+  border-radius: 10px;
+  padding: 10px 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  font-weight: 500;
+}
+
+body.light_theme .profile-sidebar-shell .logout_btn a:hover {
+  background: #f8fafc !important;
+  color: #1e293b !important;
+}
+
+body.light_theme .profile-sidebar-shell .logout_btn a i {
+  font-size: 18px;
+}
+
+/*
+ * Profile layout: global .dashboard uses justify-content: space-between, which
+ * shoves the main column to the far right (huge dead gap). Global .dashboard_right
+ * also adds padding-left: 340px on top of the sidebar width — double offset.
+ */
+@media (min-width: 992px) {
+  /*
+   * Split scroll: rail scrolls inside its column; main content scrolls in .dashboard_right.
+   * Lock .dashboard to viewport below header so overflow works (header ≈ 60px).
+   */
+  body.light_theme .dashboard {
+    justify-content: flex-start;
+    align-items: stretch;
+    gap: 0;
+    background-color: #fff;
+    width: 100%;
+    max-width: 100%;
+    height: calc(100vh - 60px);
+    min-height: calc(100vh - 60px);
+    max-height: calc(100vh - 60px);
+    overflow: scroll;
+  }
+
+  /* In-flow column: same height as row — do not use fixed (breaks layout) */
+  body.light_theme .profile-sidebar-shell.leftside_menu {
+    position: relative !important;
+    top: auto;
+    left: auto;
+    bottom: auto;
+    align-self: stretch;
+    height: 100%;
+    max-height: none;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+    overscroll-behavior: contain;
+  }
+
+  body.light_theme .profile-sidebar-shell ul.navi_sidebar {
+    flex: 1 1 auto;
+    overflow-y: auto;
+    overflow-x: hidden;
+    min-height: 0;
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior: contain;
+  }
+
+  body.light_theme .profile-sidebar-shell .logout_btn {
+    position: relative !important;
+    bottom: auto !important;
+    left: auto !important;
+    margin-top: auto;
+    flex-shrink: 0;
+    width: 100% !important;
+    max-width: none !important;
+    padding-bottom: max(12px, env(safe-area-inset-bottom, 0px));
+  }
+
+  /* Main column: own vertical scroll, independent of sidebar */
+  body.light_theme .dashboard > .dashboard_right {
+    flex: 1 1 0% !important;
+    min-width: 0;
+    min-height: 0;
+    width: auto !important;
+    max-width: none !important;
+    overflow-y: auto;
+    overflow-x: hidden;
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior: contain;
+  }
+
+  /*
+   * Dashboard two-column row: left had no flex-grow, so extra width sat on the RIGHT
+   * (grey strip). Let the main stack grow; keep the widget rail at ~28%.
+   */
+  body.light_theme .dashboard .dashboard_listing_section {
+    width: 100%;
+    max-width: none;
+    padding-right: 20px;
+    align-items: flex-start;
+  }
+
+  body.light_theme .dashboard .dashboard_left_side {
+    flex: 1 1 0%;
+    min-width: 0;
+    width: auto;
+  }
+
+  body.light_theme .dashboard .dashboard_right_side {
+    flex: 0 0 28%;
+    width: 28%;
+    max-width: 28%;
+    min-width: 0;
+  }
+
+  /* Single-column listing sections (Overview, etc.): stretch the only block full width */
+  body.light_theme .dashboard .dashboard_listing_section > *:only-child {
+    flex: 1 1 0%;
+    min-width: 0;
+  }
+}
+
+@media (max-width: 991.98px) {
+  body.light_theme .dashboard {
+    background-color: #f5f5f5;
+  }
+}
+
+/* Collapsed rail: icon-only + tighter main column (all themes, desktop) */
+@media (min-width: 992px) {
+  .profile-sidebar-shell.profile-sidebar-shell--collapsed.leftside_menu {
+    width: 76px !important;
+    min-width: 76px !important;
+    max-width: 76px !important;
+  }
+
+  .dashboard .dashboard_right {
+    transition: padding-left 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  /* .dashboard.dashboard--sidebar-collapsed .dashboard_right {
+    padding-left: 96px !important;
+  } */
+}
+
+.profile-sidebar-shell.profile-sidebar-shell--collapsed .navi_sidebar li a,
+.profile-sidebar-shell.profile-sidebar-shell--collapsed .navi_sidebar li button.btn-toggle {
+  justify-content: center;
+  padding-left: 10px;
+  padding-right: 10px;
+}
+
+.profile-sidebar-shell.profile-sidebar-shell--collapsed .navi_sidebar li ul {
+  display: none !important;
+}
+
+.profile-sidebar-shell .logout_btn a {
+  transition: font-size 0.35s cubic-bezier(0.4, 0, 0.2, 1), gap 0.3s ease;
+}
+
+.profile-sidebar-shell.profile-sidebar-shell--collapsed .logout_btn a {
+  font-size: 0;
+  gap: 0;
+}
+
+.profile-sidebar-shell.profile-sidebar-shell--collapsed .logout_btn a i {
+  font-size: 18px;
+  transition: font-size 0.28s ease 0.05s;
+}
+
+
+body .profile-sidebar-shell--collapsed.profile-sidebar-shell ul.navi_sidebar{ width: auto; }
