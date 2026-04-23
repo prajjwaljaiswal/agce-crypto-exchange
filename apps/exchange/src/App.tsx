@@ -116,8 +116,8 @@ function AppInner() {
           <Route path="/account-activate/:authenticationToken" element={<RegistrationResult />} />
           <Route element={<RequireAuth />}>
             <Route path="/user_profile" element={<ProfileLayout />}>
-              <Route index element={<Dashboard />} />
-              <Route path="dashboard" element={<Dashboard />} />
+              <Route index element={<SocketProvider><Dashboard /></SocketProvider>} />
+              <Route path="dashboard" element={<SocketProvider><Dashboard /></SocketProvider>} />
               <Route path="asset_overview" element={<AssetOverview />} />
               
               

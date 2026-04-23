@@ -43,13 +43,14 @@ function formatTimestamp(iso?: string): string | undefined {
 
 export function Dashboard() {
   const { user } = useAuth()
-  const { coins: liveCoins } = useSpotMarketCoins()
+  const { coins: liveCoins, categories } = useSpotMarketCoins()
 
   useEffect(() => {
     document.title = 'AGCE — Dashboard'
   }, [])
 
   const marketCoins = liveCoins.length > 0 ? liveCoins : TRENDING_MARKETS
+
 
   const profile = useMemo<ProfileSnapshot>(() => {
     if (!user) return PROFILE_SNAPSHOT
@@ -81,7 +82,7 @@ export function Dashboard() {
           <NewcomerPerks steps={NEWCOMER_PERKS} />
 
           <div className="listing_left_outer">
-            <SpotMarketsCard coins={marketCoins} />
+            <SpotMarketsCard coins={marketCoins} categories={categories} />
           </div>
         </div>
 

@@ -1,4 +1,5 @@
 import { useMemo, useState } from "react";
+import ReactECharts from "echarts-for-react";
 import { Link } from "react-router-dom";
 import { Helmet } from "react-helmet-async";
 import "./market-quote-select.css";
@@ -95,11 +96,9 @@ function FeaturedCard({ ticker }) {
 // Local tickers don't emit OHLCV history, so we synthesize a curve anchored
 // to open/last and bounded by low/high — the shape is stable per symbol.
 function SparklineChart({ ticker }) {
-  const { symbol, openPrice, lastPrice, high, low } = ticker;
-  const positive = lastPrice >= openPrice;
-  const stroke = positive ? "#16a34a" : "#ef4444";
+  const { symbol, openPrice, lastPrice, high, low, priceChangePercent } = ticker;
 
-  const points = useMemo(() => {
+  const data = useMemo(() => {
     if (!openPrice || !lastPrice) return [];
     const seed = [...symbol].reduce((a, c) => a + c.charCodeAt(0), 0);
     const N = 24;
@@ -110,38 +109,59 @@ function SparklineChart({ ticker }) {
       const trend = openPrice + (lastPrice - openPrice) * t;
       const wobble = Math.sin((seed + i * 1.7) * 0.9) * range * 0.35
         + Math.cos((seed * 0.3 + i) * 1.3) * range * 0.15;
-      out.push(Math.max(low, Math.min(high, trend + wobble)));
+      out.push(Number(Math.max(low, Math.min(high, trend + wobble)).toFixed(8)));
     }
     return out;
   }, [symbol, openPrice, lastPrice, high, low]);
 
-  if (points.length < 2) {
+  if (data.length < 2) {
     return <span className="sparkline_empty">—</span>;
   }
 
-  const W = 110;
-  const H = 36;
-  const min = Math.min(...points);
-  const max = Math.max(...points);
-  const span = max - min || 1;
-  const coords = points.map((p, i) => {
-    const x = (i / (points.length - 1)) * W;
-    const y = H - ((p - min) / span) * H;
-    return `${x.toFixed(1)},${y.toFixed(1)}`;
-  });
-  const path = `M ${coords.join(" L ")}`;
+  const color = data[data.length - 1] >= data[0] ? "#16c784" : "#ea3943";
+  const pctSign = priceChangePercent >= 0 ? "+" : "";
+
+  const option = {
+    grid: { left: 0, right: 0, top: 0, bottom: 0 },
+    xAxis: { type: "category", show: false, data: data.map((_, i) => i) },
+    yAxis: { type: "value", show: false },
+    series: [
+      {
+        type: "line",
+        data,
+        smooth: true,
+        symbol: "circle",
+        symbolSize: 4,
+        showSymbol: false,
+        lineStyle: { width: 2, color },
+        areaStyle: { opacity: 0.1, color },
+      },
+    ],
+    tooltip: {
+      show: true,
+      trigger: "axis",
+      axisPointer: { type: "line", lineStyle: { color, width: 1, type: "dashed" } },
+      backgroundColor: "#1a1a2e",
+      borderColor: color,
+      borderWidth: 1,
+      padding: [6, 10],
+      textStyle: { color: "#fff", fontSize: 11 },
+      formatter: (params) => {
+        const val = params[0]?.value ?? 0;
+        return `<div style="line-height:1.6">
+          <div style="font-size:12px;font-weight:600;color:${color}">${fmtPrice(val)}</div>
+          <div style="font-size:11px;color:${color}">${pctSign}${Number(priceChangePercent).toFixed(2)}%</div>
+        </div>`;
+      },
+    },
+  };
 
   return (
-    <svg
-      className="sparkline_chart"
-      width={W}
-      height={H}
-      viewBox={`0 0 ${W} ${H}`}
-      preserveAspectRatio="none"
-      aria-hidden="true"
-    >
-      <path d={path} fill="none" stroke={stroke} strokeWidth="1.5" />
-    </svg>
+    <ReactECharts
+      option={option}
+      style={{ width: 116, height: 40 }}
+      opts={{ renderer: "svg" }}
+    />
   );
 }
 
@@ -456,7 +476,7 @@ const Market = () => {
                                   <div className="coin_info">
                                     <div className="coin_name_lft">
                                       {base}/{quote}
-                                      <span className="coin_symbol"> /{quote}</span>
+                                      {/* <span className="coin_symbol"> /{quote}</span> */}
                                     </div>
                                     <span className="coin_name">
                                       {t.baseName || base}

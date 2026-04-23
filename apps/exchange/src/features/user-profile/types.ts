@@ -1,4 +1,4 @@
-export type MarketTab = 'favorite' | 'trending' | 'hot' | 'new' | 'gainers'
+export type MarketTab = 'all' | 'favorite' | 'trending' | 'hot' | 'new' | 'gainers'
 
 export interface MarketCoin {
   symbol: string
@@ -7,6 +7,7 @@ export interface MarketCoin {
   icon: string
   price: string
   high: string
+  low: string
   changePct: number
   favorite: boolean
 }

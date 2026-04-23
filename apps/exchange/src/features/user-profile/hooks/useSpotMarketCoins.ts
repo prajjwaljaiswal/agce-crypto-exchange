@@ -1,15 +1,14 @@
 import { useMemo } from 'react'
 import { useMarketTickers } from '../../Market/useMarketTickers.js'
-import {
-  coinDisplayName,
-  coinIconSrc,
-  fmtPrice,
-  splitPair,
-} from '../../Market/marketFormat.js'
+import { fmtPrice, splitPair } from '../../Market/marketFormat.js'
 import type { MarketCoin } from '../types.js'
 
 interface NormalizedTicker {
   symbol: string
+  baseAsset: string | null
+  quoteAsset: string | null
+  baseName: string | null
+  baseIconUrl: string | null
   lastPrice: number
   priceChangePercent: number
   high: number
@@ -23,12 +22,13 @@ interface NormalizedTicker {
 function tickerToMarketCoin(t: NormalizedTicker): MarketCoin {
   const { base, quote } = splitPair(t.symbol)
   return {
-    symbol: base,
-    name: coinDisplayName(base),
-    pair: `${base}_${quote || 'USDT'}`,
-    icon: coinIconSrc(base),
+    symbol: t.baseAsset ?? base,
+    name: t.baseName ?? base,
+    pair: `${t.baseAsset ?? base}_${t.quoteAsset ?? quote ?? 'USDT'}`,
+    icon: t.baseIconUrl ?? '',
     price: fmtPrice(t.lastPrice),
     high: fmtPrice(t.high),
+    low: fmtPrice(t.low),
     changePct: Number.isFinite(t.priceChangePercent)
       ? Number(t.priceChangePercent.toFixed(2))
       : 0,
@@ -36,25 +36,19 @@ function tickerToMarketCoin(t: NormalizedTicker): MarketCoin {
   }
 }
 
-/**
- * Adapts live matching-service tickers (from useMarketTickers) into the
- * MarketCoin shape consumed by SpotMarketsCard. Keeps SpotMarketsCard purely
- * presentational — all data-source knowledge lives here.
- */
 export function useSpotMarketCoins(): {
   coins: MarketCoin[]
+  categories: Record<string, string[]>
   isLoading: boolean
   error: unknown
 } {
-  const { tickers, isLoading, error } = useMarketTickers()
+  const { tickers, categories, isLoading, error } = useMarketTickers()
 
   const coins = useMemo<MarketCoin[]>(() => {
-    const list = Object.values(tickers) as NormalizedTicker[]
-    return list
+    return (Object.values(tickers) as NormalizedTicker[])
       .filter((t) => t.symbol)
       .map(tickerToMarketCoin)
-      .sort((a, b) => b.changePct - a.changePct)
   }, [tickers])
 
-  return { coins, isLoading, error }
+  return { coins, categories, isLoading, error }
 }

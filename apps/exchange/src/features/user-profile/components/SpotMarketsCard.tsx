@@ -1,8 +1,10 @@
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
+import { useFavorites } from '../../Market/useFavorites.js'
 import type { MarketCoin, MarketTab } from '../types.js'
 
 const TABS: { id: MarketTab; label: string }[] = [
+  { id: 'all', label: 'All' },
   { id: 'favorite', label: 'Favorite' },
   { id: 'trending', label: 'Trending' },
   { id: 'hot', label: 'Hot' },
@@ -10,44 +12,70 @@ const TABS: { id: MarketTab; label: string }[] = [
   { id: 'gainers', label: 'Top Gainers' },
 ]
 
+const TAB_TO_CATEGORY: Partial<Record<MarketTab, string>> = {
+  trending: 'trending',
+  hot: 'hot',
+  new: 'new_listing',
+  gainers: 'top_gainers',
+}
+
 interface Props {
   coins: MarketCoin[]
+  categories: Record<string, string[]>
 }
 
-function filterCoins(coins: MarketCoin[], tab: MarketTab): MarketCoin[] {
-  switch (tab) {
-    case 'favorite':
-      return coins.filter((c) => c.favorite)
-    case 'gainers':
-      return [...coins].sort((a, b) => b.changePct - a.changePct)
-    case 'hot':
-      return [...coins].sort(
-        (a, b) => Math.abs(b.changePct) - Math.abs(a.changePct),
-      )
-    case 'new':
-      return coins.slice(-6)
-    case 'trending':
-    default:
-      return coins
+function favSymbol(coin: MarketCoin): string {
+  return coin.pair.replace('_', '-')
+}
+
+function filterCoins(
+  coins: MarketCoin[],
+  tab: MarketTab,
+  categories: Record<string, string[]>,
+  isFavorite: (s: string) => boolean,
+): MarketCoin[] {
+  if (tab === 'all') return coins
+  if (tab === 'favorite') return coins.filter((c) => isFavorite(favSymbol(c)))
+
+  const catKey = TAB_TO_CATEGORY[tab]
+  if (catKey && categories[catKey]?.length) {
+    const symbolSet = new Set(categories[catKey])
+    const ordered = categories[catKey]
+      .map((sym) => coins.find((c) => c.pair.startsWith(sym) || c.symbol === sym))
+      .filter((c): c is MarketCoin => Boolean(c))
+    const seen = new Set(ordered.map((c) => c.symbol))
+    const extra = coins.filter((c) => symbolSet.has(c.symbol) && !seen.has(c.symbol))
+    return [...ordered, ...extra]
   }
+
+  return coins
 }
 
-function CoinRow({ coin }: { coin: MarketCoin }) {
+function CoinRow({ coin, isFav, onToggle }: { coin: MarketCoin; isFav: boolean; onToggle: () => void }) {
   const dir = coin.changePct >= 0 ? 'green' : 'red'
   const sign = coin.changePct >= 0 ? '+' : ''
   return (
     <tr>
       <td>
         <div className="td_first">
-          <span
-            className={`star_btn btn_icon${coin.favorite ? ' active' : ''}`}
+          <button
+            type="button"
+            className={`star_btn btn_icon${isFav ? ' active' : ''}`}
+            onClick={onToggle}
+            style={{ background: 'transparent', border: 'none', padding: 0, cursor: 'pointer' }}
           >
-            <i
-              className={`ri ${coin.favorite ? 'ri-star-fill text-warning' : 'ri-star-line'} me-2`}
-            />
-          </span>
+            <i className={`ri ${isFav ? 'ri-star-fill text-warning' : 'ri-star-line'} me-2`} />
+          </button>
           <div className="icon">
-            <img src={coin.icon} height="30px" alt={coin.symbol} />
+            {coin.icon ? (
+              <img src={coin.icon} height="30px" alt={coin.symbol}
+                onError={(e) => { (e.currentTarget as HTMLImageElement).style.display = 'none' }}
+              />
+            ) : (
+              <span style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: 30, height: 30, borderRadius: '50%', background: '#2a2a2a', color: '#e5b64a', fontWeight: 700, fontSize: 12 }}>
+                {coin.symbol.charAt(0)}
+              </span>
+            )}
           </div>
           <div className="price_heading">
             {coin.symbol} <br />
@@ -59,10 +87,11 @@ function CoinRow({ coin }: { coin: MarketCoin }) {
         {coin.price} <br />
         <span className="fontWeight">USDT</span>
       </td>
-      <td>{coin.high}</td>
+      <td>
+        <span className="green">{coin.high}</span>
+      </td>
       <td className={dir}>
-        {sign}
-        {coin.changePct}%
+        {sign}{coin.changePct}%
       </td>
       <td className="right_t">
         <Link to={`/trade/${coin.pair}`}>Trade</Link>
@@ -71,15 +100,31 @@ function CoinRow({ coin }: { coin: MarketCoin }) {
   )
 }
 
-function CoinRowMobile({ coin }: { coin: MarketCoin }) {
+function CoinRowMobile({ coin, isFav, onToggle }: { coin: MarketCoin; isFav: boolean; onToggle: () => void }) {
   const dir = coin.changePct >= 0 ? 'green' : 'red'
   const sign = coin.changePct >= 0 ? '+' : ''
   return (
     <tr>
       <td>
         <div className="td_first">
+          <button
+            type="button"
+            className={`star_btn btn_icon${isFav ? ' active' : ''}`}
+            onClick={onToggle}
+            style={{ background: 'transparent', border: 'none', padding: 0, cursor: 'pointer' }}
+          >
+            <i className={`ri ${isFav ? 'ri-star-fill text-warning' : 'ri-star-line'} me-2`} />
+          </button>
           <div className="icon">
-            <img src={coin.icon} height="30px" alt={coin.symbol} />
+            {coin.icon ? (
+              <img src={coin.icon} height="30px" alt={coin.symbol}
+                onError={(e) => { (e.currentTarget as HTMLImageElement).style.display = 'none' }}
+              />
+            ) : (
+              <span style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: 30, height: 30, borderRadius: '50%', background: '#2a2a2a', color: '#e5b64a', fontWeight: 700, fontSize: 12 }}>
+                {coin.symbol.charAt(0)}
+              </span>
+            )}
           </div>
           <div className="price_heading">
             {coin.symbol} <br />
@@ -92,27 +137,25 @@ function CoinRowMobile({ coin }: { coin: MarketCoin }) {
         <span className="fontWeight">USDT</span>
       </td>
       <td className="right_t">
-        {coin.high}
+        <span className="green">{coin.high}</span>
         <div className={dir}>
-          {sign}
-          {coin.changePct}%
+          {sign}{coin.changePct}%
         </div>
       </td>
     </tr>
   )
 }
 
-export function SpotMarketsCard({ coins }: Props) {
-  const [activeTab, setActiveTab] = useState<MarketTab>('trending')
-  const filtered = filterCoins(coins, activeTab)
+export function SpotMarketsCard({ coins, categories }: Props) {
+  const [activeTab, setActiveTab] = useState<MarketTab>('all')
+  const { isFavorite, toggleFavorite } = useFavorites()
+  const filtered = filterCoins(coins, activeTab, categories, isFavorite)
 
   return (
     <div className="market_section maindashboard">
       <div className="top_heading">
         <h4>Spot Markets</h4>
-        <Link className="more_btn" to="/market">
-          More {'>'}
-        </Link>
+        <Link className="more_btn" to="/market">More {'>'}</Link>
       </div>
       <div className="dashboard_summary">
         <ul className="nav nav-tabs" role="tablist">
@@ -135,11 +178,7 @@ export function SpotMarketsCard({ coins }: Props) {
               <div className="table-responsive">
                 {filtered.length === 0 ? (
                   <div className="py-4 text-center">
-                    <img
-                      src="/images/no-data.svg"
-                      alt="No data"
-                      style={{ width: 120, opacity: 0.6 }}
-                    />
+                    <img src="/images/no-data.svg" alt="No data" style={{ width: 120, opacity: 0.6 }} />
                   </div>
                 ) : (
                   <table>
@@ -154,7 +193,12 @@ export function SpotMarketsCard({ coins }: Props) {
                     </thead>
                     <tbody>
                       {filtered.map((coin) => (
-                        <CoinRow key={coin.symbol} coin={coin} />
+                        <CoinRow
+                          key={coin.symbol}
+                          coin={coin}
+                          isFav={isFavorite(favSymbol(coin))}
+                          onToggle={() => toggleFavorite(favSymbol(coin))}
+                        />
                       ))}
                     </tbody>
                   </table>
@@ -173,7 +217,12 @@ export function SpotMarketsCard({ coins }: Props) {
                   </thead>
                   <tbody>
                     {filtered.map((coin) => (
-                      <CoinRowMobile key={coin.symbol} coin={coin} />
+                      <CoinRowMobile
+                          key={coin.symbol}
+                          coin={coin}
+                          isFav={isFavorite(favSymbol(coin))}
+                          onToggle={() => toggleFavorite(favSymbol(coin))}
+                        />
                     ))}
                   </tbody>
                 </table>
