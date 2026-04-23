@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useContext, useEffect, useMemo, useState } from "react";
 import { useCoinListStore } from "../stores/coinListStore.js";
 import {
     assetsApi,
@@ -7,6 +7,7 @@ import {
     binanceMarketApi,
 } from "../../../lib/matching-api.js";
 import { useFavorites } from "../../Market/useFavorites.js";
+import { SocketContext } from "../SocketContext.js";
 
 /**
  * Overlay a normalized 24h ticker onto a coin-list row. All numeric
@@ -68,6 +69,7 @@ export function useCoinList(): CoinListApi {
 
     const { favorites, toggleFavorite } = useFavorites();
     const favCoins = useMemo(() => Array.from(favorites), [favorites]);
+    const { getSocket, isConnected } = useContext(SocketContext);
 
     const [pairsLoading, setPairsLoading] = useState(false);
 
@@ -204,6 +206,104 @@ export function useCoinList(): CoinListApi {
         load();
         return () => { cancelled = true; };
     }, []);
+
+    // ---- Live overlay: market_list socket ----
+    // market-data-service emits `market:list` on every stats change
+    // (throttled server-side, ~500ms cadence). Each frame is the full
+    // active-pair set with live price / change / volume / marketCap.
+    // We merge it over the REST-seeded rows so the pair picker stays
+    // fresh without polling.
+    //
+    // Symbol format note: market_list uses storage form "BTC/USDT";
+    // AllData.pairs is keyed the same way (pair.symbol from
+    // /api/v1/pairs), so no normalisation needed.
+    useEffect(() => {
+        const socket = getSocket();
+        if (!socket || !isConnected) return undefined;
+
+        socket.emit("subscribe", { channel: "market_list" });
+
+        const handle = (payload: unknown) => {
+            const items =
+                payload && typeof payload === "object" && "items" in payload
+                    ? (payload as { items: any[] }).items
+                    : Array.isArray(payload)
+                    ? payload
+                    : [];
+            if (!items.length) return;
+
+            const bySymbol = new Map<string, any>();
+            for (const row of items) {
+                if (row?.symbol) bySymbol.set(String(row.symbol), row);
+            }
+
+            setAllData((prev: any) => {
+                const existing = prev?.pairs;
+                if (!Array.isArray(existing) || existing.length === 0) {
+                    return prev;
+                }
+                let mutated = false;
+                const next = existing.map((row: any) => {
+                    const live = bySymbol.get(row.symbol);
+                    if (!live) return row;
+
+                    const num = (v: unknown, fallback: number): number => {
+                        if (v == null) return fallback;
+                        const n = parseFloat(v as string);
+                        return Number.isFinite(n) ? n : fallback;
+                    };
+
+                    const last = num(live.price, row.buy_price);
+                    const change = num(live.priceChange, 0);
+                    const changePct = num(live.priceChangePercent, 0);
+                    const high = num(live.high, row.high ?? 0);
+                    const low = num(live.low, row.low ?? 0);
+                    const volume = num(live.volume, row.volume ?? 0);
+                    const quoteVolume = num(
+                        live.quoteVolume,
+                        row.quoteVolume ?? 0,
+                    );
+                    const marketCap = num(live.marketCap, row.market_cap ?? 0);
+
+                    // Skip the object allocation if nothing changed — stops
+                    // React re-rendering the whole list on a payload that
+                    // matches the last frame value-for-value.
+                    if (
+                        row.buy_price === last &&
+                        row.change === change &&
+                        row.change_percentage === changePct &&
+                        row.high === high &&
+                        row.low === low &&
+                        row.volume === volume
+                    ) {
+                        return row;
+                    }
+
+                    mutated = true;
+                    return {
+                        ...row,
+                        buy_price: last,
+                        sell_price: last,
+                        reference_price: last || row.reference_price,
+                        change,
+                        change_percentage: changePct,
+                        high,
+                        low,
+                        volume,
+                        quoteVolume,
+                        market_cap: marketCap,
+                    };
+                });
+                return mutated ? { ...prev, pairs: next } : prev;
+            });
+        };
+
+        socket.on("market:list", handle);
+        return () => {
+            socket.emit("unsubscribe", { channel: "market_list" });
+            socket.off("market:list", handle);
+        };
+    }, [getSocket, isConnected, setAllData]);
 
     // Keep the pair list in sync with AllData. The search term drives the
     // autosearch dropdown in CoinListPanel and no longer narrows this list,

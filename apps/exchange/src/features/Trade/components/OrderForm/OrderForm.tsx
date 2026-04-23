@@ -115,17 +115,10 @@ export function OrderForm({
                                         >
                                             Stop Limit
                                         </button>
-                                        <button
-                                            type="button"
-                                            className="spot_limit_dd_item"
-                                            role="menuitem"
-                                            onClick={() => {
-                                                setinfoPlaceOrder("STOP_MARKET");
-                                                setIsConditionalMenuOpen(false);
-                                            }}
-                                        >
-                                            Stop Market
-                                        </button>
+                                        {/* STOP_MARKET hidden — matching-service's OrderType
+                                            enum and engine don't support STOP_MARKET yet.
+                                            Re-enable once the enum / engine / validator
+                                            triad is wired (see order.validator.ts note). */}
                                     </div>
                                 ) : null}
                             </div>
