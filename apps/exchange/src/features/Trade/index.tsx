@@ -389,7 +389,11 @@ const Trade = () => {
             timeInForce,
             quantity: String(orderAmount),
         };
-        if (isLimitFamily || type === 'MARKET' || type === 'STOP_MARKET') payload.price = String(orderPrice);
+        // Matching rejects MARKET / STOP_MARKET orders that carry a
+        // `price` field ("MARKET orders must not include price").
+        // Only LIMIT and STOP_LIMIT get a price.
+        if (isLimitFamily) payload.price = String(orderPrice);
+        // STOP_LIMIT and STOP_MARKET both require a trigger price.
         if (type === 'STOP_LIMIT' || type === 'STOP_MARKET') {
             const stop = isBuy ? buyStopPrice : sellStopPrice;
             if (stop) payload.stopPrice = String(stop);
