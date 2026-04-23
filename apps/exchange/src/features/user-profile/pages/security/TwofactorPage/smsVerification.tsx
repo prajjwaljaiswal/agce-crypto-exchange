@@ -182,10 +182,10 @@ const SmsVerification = () => {
                 disabled={sendEmailOtpMutation.isPending || emailCountdown.countdown > 0}
                 onClick={() => sendEmailOtpMutation.mutate()}
               >
-                {sendEmailOtpMutation.isPending
-                  ? "Sending…"
-                  : emailCountdown.countdown > 0
+                {emailCountdown.countdown > 0
                   ? `${emailCountdown.countdown}s`
+                  : sendEmailOtpMutation.isPending
+                  ? "Sending…"
                   : "Resend"}
               </button>
             </div>

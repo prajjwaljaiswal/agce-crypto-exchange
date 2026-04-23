@@ -215,9 +215,10 @@
 }
 
 .gap-bind-label {
+  display: block;
   font-size: 13px;
   font-weight: 500;
-  color: #344054;
+  color: #344054 !important;
 }
 
 .gap-bind-row {
@@ -226,6 +227,7 @@
 }
 
 .gap-bind-input {
+  width: 100%;
   flex: 1;
   height: 44px;
   padding: 0 12px;

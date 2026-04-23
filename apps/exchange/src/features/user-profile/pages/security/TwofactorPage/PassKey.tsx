@@ -104,8 +104,8 @@ const PasskeyPage = () => {
   const sendOtpMutation = useMutation({
     mutationFn: async () => {
       const calls: Promise<unknown>[] = [];
-      if (showEmail) calls.push(authApi.sendOtp({ identifier: userIdentifier, type: "BIND" }));
-      if (showPhone) calls.push(authApi.sendOtp({ identifier: userIdentifier, type: "BIND" }));
+      if (showEmail) calls.push(authApi.sendOtp({ identifier: userIdentifier, type: "LOGIN" }));
+      if (showPhone) calls.push(authApi.sendOtp({ identifier: userIdentifier, type: "LOGIN" }));
       if (calls.length) await Promise.all(calls);
     },
     onSuccess: () => {
@@ -135,7 +135,7 @@ const PasskeyPage = () => {
       // Step 1 — verify OTP(s) before registering the passkey.
       await authApi.verifyOtp({
         identifier: userIdentifier,
-        purpose: "BIND",
+        purpose: "LOGIN",
         bindIp: false,
         ...(showEmail && isEmailComplete ? { emailOtp: emailOtp.join("") } : {}),
         ...(showPhone && isPhoneComplete ? { mobileOtp: phoneOtp.join("") } : {}),

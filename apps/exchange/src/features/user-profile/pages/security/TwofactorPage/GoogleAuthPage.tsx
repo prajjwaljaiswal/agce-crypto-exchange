@@ -378,14 +378,16 @@ const GoogleAuthPage = () => {
 
               <div className="gap-bind-field">
                 <label className="gap-bind-label">Google Authenticator Code</label>
-                <input
-                  className="gap-bind-input"
-                  inputMode="numeric"
-                  maxLength={6}
-                  placeholder="Enter 6-digit TOTP code"
-                  value={setupTotp}
-                  onChange={(e) => setSetupTotp(e.target.value.replace(/\D/g, "").slice(0, 6))}
-                />
+                <div className="gap-bind-row">
+                  <input
+                    className="gap-bind-input"
+                    inputMode="numeric"
+                    maxLength={6}
+                    placeholder="Enter 6-digit TOTP code"
+                    value={setupTotp}
+                    onChange={(e) => setSetupTotp(e.target.value.replace(/\D/g, "").slice(0, 6))}
+                  />
+                </div>
               </div>
             </div>
           </>
