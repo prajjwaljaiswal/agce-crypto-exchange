@@ -33,6 +33,9 @@ const SmsVerification = () => {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const { user } = useAuth();
+  const security = user?.security;
+
+  const showGa = Boolean(security?.googleAuthenticatorEnabled);
 
   const [step, setStep] = useState<Step>("email-verify");
 
@@ -40,6 +43,9 @@ const SmsVerification = () => {
   const [emailCode, setEmailCode] = useState("");
   const emailCountdown = useOtpCountdown();
   const emailSentRef = useRef(false);
+
+  // ── Step 1: Google TOTP ───────────────────────────────────────────────────
+  const [totpCode, setTotpCode] = useState("");
 
   // ── Step 2: phone link ────────────────────────────────────────────────────
   const [country, setCountry] = useState<CountryOption>(COUNTRY_OPTIONS[0]);
@@ -84,19 +90,25 @@ const SmsVerification = () => {
     },
   });
 
+  const emailFilled = emailCode.length >= 4;
+  const totpFilled = totpCode.length === 6;
+
   const verifyEmailOtpMutation = useMutation({
-    mutationFn: () =>
-      authApi.verifyOtp({
+    mutationFn: () => {
+      const payload: Record<string, unknown> = {
         identifier: user?.email ?? "",
         purpose: "LOGIN",
         bindIp: false,
-        emailOtp: emailCode,
-      }),
+      };
+      if (emailFilled) payload.emailOtp = emailCode;
+      if (showGa && totpFilled) payload.googleTotp = totpCode;
+      return authApi.verifyOtp(payload as Parameters<typeof authApi.verifyOtp>[0]);
+    },
     onSuccess: () => {
       setStep("phone-link");
     },
     onError: (error) => {
-      toast.error(formatApiError(error, "Invalid email code. Please try again."));
+      toast.error(formatApiError(error, "Invalid code. Please try again."));
     },
   });
 
@@ -131,7 +143,9 @@ const SmsVerification = () => {
     },
   });
 
-  const canNextStep = emailCode.length >= 4 && !verifyEmailOtpMutation.isPending;
+  const canNextStep =
+    (emailFilled || (showGa && totpFilled)) &&
+    !verifyEmailOtpMutation.isPending;
   const canSendSms = phoneNumber.replace(/\D/g, "").length >= 7 && !sendSmsMutation.isPending && smsCountdown.countdown === 0;
   const canConfirm = smsCode.length >= 4 && !confirmMutation.isPending;
 
@@ -140,14 +154,15 @@ const SmsVerification = () => {
       <SecurityBreadcrumb label="SMS verification" />
 
       {step === "email-verify" ? (
-        <section className="smsv-form" aria-label="Email verification form">
+        <section className="smsv-form" aria-label="Identity verification form">
           <h1 id="smsv-title" className="smsv-page__title">
             Security Verification
           </h1>
           <p className="smsv-page__subtitle">
-            To protect your account, please verify your identity before linking a phone number.
+            To protect your account, please verify your identity before linking a phone number. Complete any one method below.
           </p>
 
+          {/* Email OTP */}
           <label className="smsv-field">
             <span className="smsv-label">Email Verification Code</span>
             <div className="smsv-page__emailHint">
@@ -176,6 +191,30 @@ const SmsVerification = () => {
             </div>
             <div className="smsv-hint">Valid for 10 minutes</div>
           </label>
+
+          {/* Google TOTP — only shown when GA is enabled */}
+          {showGa && (
+            <>
+              <div className="smsv-divider">
+                <span>or</span>
+              </div>
+
+              <label className="smsv-field">
+                <span className="smsv-label">Google Authenticator Code</span>
+                <div className="smsv-smsRow">
+                  <input
+                    className="smsv-input smsv-input--sms"
+                    placeholder="Enter 6-digit code from your app"
+                    inputMode="numeric"
+                    maxLength={6}
+                    value={totpCode}
+                    onChange={(e) => setTotpCode(e.target.value.replace(/\D/g, "").slice(0, 6))}
+                  />
+                </div>
+                <div className="smsv-hint">Open Google Authenticator and enter the current code</div>
+              </label>
+            </>
+          )}
 
           <button
             type="button"

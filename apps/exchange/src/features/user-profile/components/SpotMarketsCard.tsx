@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
-import { useFavorites } from '../../Market/useFavorites.js'
+import { useDashboardFavorites } from '../hooks/useDashboardFavorites.js'
 import type { MarketCoin, MarketTab } from '../types.js'
 
 const TABS: { id: MarketTab; label: string }[] = [
@@ -148,7 +148,7 @@ function CoinRowMobile({ coin, isFav, onToggle }: { coin: MarketCoin; isFav: boo
 
 export function SpotMarketsCard({ coins, categories }: Props) {
   const [activeTab, setActiveTab] = useState<MarketTab>('all')
-  const { isFavorite, toggleFavorite } = useFavorites()
+  const { isFavorite, toggleFavorite } = useDashboardFavorites()
   const filtered = filterCoins(coins, activeTab, categories, isFavorite)
 
   return (

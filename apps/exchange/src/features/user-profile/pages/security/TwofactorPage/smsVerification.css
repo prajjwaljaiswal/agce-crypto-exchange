@@ -234,6 +234,24 @@
   background: #1a1b1f;
 }
 
+.smsv-divider {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 20px 0 4px;
+  color: #9ca3af;
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.smsv-divider::before,
+.smsv-divider::after {
+  content: "";
+  flex: 1;
+  height: 1px;
+  background: #e5e7eb;
+}
+
 @media (max-width: 520px) {
   .smsv-page {
     padding: 22px 16px 44px;
