@@ -1,4 +1,4 @@
-import { useContext, useEffect, useMemo, useState } from "react";
+import { useCallback, useContext, useEffect, useMemo, useRef, useState } from "react";
 import { useCoinListStore } from "../stores/coinListStore.js";
 import {
     assetsApi,
@@ -72,18 +72,22 @@ export function useCoinList(): CoinListApi {
     const { getSocket, isConnected } = useContext(SocketContext);
 
     const [pairsLoading, setPairsLoading] = useState(false);
+    // Guards for the `market:list` auto-refetch — without these a single
+    // tick with a new symbol would fire N parallel REST refetches while
+    // the first one is still in flight.
+    const refetchInFlight = useRef(false);
+    const lastRefetchAt = useRef(0);
 
-    // Fetch all pairs + all assets on mount, join by assetCode, map to legacy field shape.
-    useEffect(() => {
-        let cancelled = false;
-        async function load() {
+    const loadPairs = useCallback(
+        async (signal?: AbortSignal) => {
+            const isAborted = () => !!signal?.aborted;
             setPairsLoading(true);
             try {
                 const [pairs, assets] = await Promise.all([
                     pairsApi.list(),
                     assetsApi.list(),
                 ]);
-                if (cancelled) return;
+                if (isAborted()) return;
 
                 const assetMap = new Map(assets.map((a) => [a.assetCode, a]));
 
@@ -109,11 +113,7 @@ export function useCoinList(): CoinListApi {
                                 "0") as string,
                         ) || 0;
                     // Seed price priority: live `price` > admin `initialPrice`
-                    // > legacy `referencePrice`. Prior builds only read the
-                    // legacy field, which no longer exists on newer backends,
-                    // so rows came out as zero until a ticker fetch overwrote
-                    // them. The explicit ticker pass below fills change% /
-                    // high / low / volume next.
+                    // > legacy `referencePrice`.
                     const seedPrice =
                         parseFloat(
                             (pair.price ??
@@ -147,21 +147,16 @@ export function useCoinList(): CoinListApi {
                         volume: 0,
                         maker_fee: makerFee,
                         taker_fee: takerFee,
-                        // Keep both casings so consumers reading either
-                        // `maker_fee` (legacy UI fields) or `makerFee`
-                        // (TradingPair backend shape) pick up a value.
                         makerFee: makerFee,
                         takerFee: takerFee,
                     };
                 });
 
+                if (isAborted()) return;
                 setAllData({ pairs: mappedPairs });
 
-                // Second pass: fetch 24h ticker per pair and merge the
-                // live price + change into the list. LOCAL pairs use our
-                // matching service's ticker; GLOBAL pairs pull from
-                // Binance via market-data-service. Requests fan out in
-                // parallel; one failure doesn't block the rest.
+                // Second pass: 24h ticker per pair. LOCAL → matching
+                // ticker; GLOBAL → Binance via market-data-service.
                 const enriched = await Promise.all(
                     mappedPairs.map(async (row: any) => {
                         try {
@@ -188,24 +183,26 @@ export function useCoinList(): CoinListApi {
                                 volume: t.volume ?? t.baseVolume,
                             });
                         } catch {
-                            // Binance rejects unknown symbols with 502/400 and
-                            // the local ticker may 404 for pairs with no
-                            // trades — keep the seeded row unchanged so the
-                            // dropdown still shows the price.
                             return row;
                         }
                     }),
                 );
-                if (!cancelled) setAllData({ pairs: enriched });
+                if (!isAborted()) setAllData({ pairs: enriched });
             } catch {
                 // non-critical; coin list stays empty
             } finally {
-                if (!cancelled) setPairsLoading(false);
+                if (!isAborted()) setPairsLoading(false);
             }
-        }
-        load();
-        return () => { cancelled = true; };
-    }, []);
+        },
+        [setAllData],
+    );
+
+    // Initial mount fetch.
+    useEffect(() => {
+        const ctrl = new AbortController();
+        void loadPairs(ctrl.signal);
+        return () => ctrl.abort();
+    }, [loadPairs]);
 
     // ---- Live overlay: market_list socket ----
     // market-data-service emits `market:list` on every stats change
@@ -237,11 +234,47 @@ export function useCoinList(): CoinListApi {
                 if (row?.symbol) bySymbol.set(String(row.symbol), row);
             }
 
+            // Detect new-symbol arrivals OUTSIDE the functional setter —
+            // triggering loadPairs (which itself calls setAllData) from
+            // inside a setAllData updater confuses zustand and can drop
+            // the outer update, wiping the pair list intermittently. We
+            // read current state via the store's getState() helper, then
+            // if we need a refetch schedule it on the next microtask.
+            const currentPairs: any[] =
+                useCoinListStore.getState().AllData?.pairs ?? [];
+            if (currentPairs.length > 0) {
+                const existingSet = new Set(
+                    currentPairs.map((r: any) => r.symbol),
+                );
+                let hasNew = false;
+                for (const s of bySymbol.keys()) {
+                    if (!existingSet.has(s)) {
+                        hasNew = true;
+                        break;
+                    }
+                }
+                if (hasNew && !refetchInFlight.current) {
+                    const now = Date.now();
+                    if (now - lastRefetchAt.current > 5_000) {
+                        refetchInFlight.current = true;
+                        lastRefetchAt.current = now;
+                        // Defer one microtask so setAllData below commits
+                        // before loadPairs starts its own writes.
+                        queueMicrotask(() => {
+                            void loadPairs().finally(() => {
+                                refetchInFlight.current = false;
+                            });
+                        });
+                    }
+                }
+            }
+
             setAllData((prev: any) => {
                 const existing = prev?.pairs;
                 if (!Array.isArray(existing) || existing.length === 0) {
                     return prev;
                 }
+
                 let mutated = false;
                 const next = existing.map((row: any) => {
                     const live = bySymbol.get(row.symbol);
