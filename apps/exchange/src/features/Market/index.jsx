@@ -6,21 +6,12 @@ import MarketQuoteSelect from "./MarketQuoteSelect";
 import { useMarketTickers } from "./useMarketTickers.js";
 import { useFavorites } from "./useFavorites.js";
 import {
-  COIN_NAMES,
   splitPair,
   fmtPrice,
   fmtShortUsd,
   fmtPct,
-  marketCap,
 } from "./marketFormat.js";
 
-// useMarketTickers normalizes keys to concat form (e.g. "BTCUSDT"), so the
-// lookup symbol here must match that form — dashed lookups silently miss.
-const FEATURED = [
-  { symbol: "BTCUSDT", base: "BTC", name: "Bitcoin" },
-  { symbol: "ETHUSDT", base: "ETH", name: "Ethereum" },
-  { symbol: "BNBUSDT", base: "BNB", name: "Binance Coin" },
-];
 
 const QUOTE_OPTIONS = ["USDT", "USDC", "BTC", "ETH", "BNB", "All"];
 const SPOT_SUBTABS = [
@@ -33,27 +24,25 @@ const CHANGE_WINDOWS = ["24H", "7D", "30D"];
 const TABLE_LIMIT = 100;
 
 
-function CoinIcon({ base, iconUrl }) {
-  // Prefer the API-provided iconUrl; fall back to the bundled SVG when absent
-  // or after a load error (e.g. iconUrl: null for BTC in the current payload).
-  const localSrc = `/images/market-img/icons/${base.toLowerCase()}.svg`;
-  const initialSrc = iconUrl || localSrc;
+function CoinIcon({ base, baseIconUrl }) {
   const letter = base.charAt(0);
+  if (!baseIconUrl) {
+    return (
+      <span
+        className="coin-fallback me-2"
+        style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", width: 28, height: 28, borderRadius: "50%", background: "#2a2a2a", color: "#e5b64a", fontWeight: 700, fontSize: 12 }}
+      >
+        {letter}
+      </span>
+    );
+  }
   return (
     <img
       alt={base}
-      src={initialSrc}
-      data-fallback={localSrc}
+      src={baseIconUrl}
       className="img-fluid icon_img coinimg me-2"
       onError={(e) => {
         const img = e.currentTarget;
-        const fallback = img.getAttribute("data-fallback");
-        // First error: try the bundled SVG before giving up.
-        if (fallback && img.src !== window.location.origin + fallback && !img.src.endsWith(fallback)) {
-          img.src = fallback;
-          img.removeAttribute("data-fallback");
-          return;
-        }
         const parent = img.parentElement;
         if (!parent) return;
         img.style.display = "none";
@@ -70,30 +59,32 @@ function CoinIcon({ base, iconUrl }) {
   );
 }
 
-function FeaturedCard({ info, ticker }) {
-  const pct = ticker ? ticker.priceChangePercent : null;
-  const positive = pct != null && pct >= 0;
-  const to = `/trade/${info.base}_USDT`;
+function FeaturedCard({ ticker }) {
+  const base = ticker.baseAsset ?? splitPair(ticker.symbol).base
+  const quote = ticker.quoteAsset ?? (splitPair(ticker.symbol).quote || "USDT")
+  const pct = ticker.priceChangePercent
+  const positive = pct >= 0
+  const to = `/trade/${base}_${quote}`
   return (
     <Link to={to} className="text-decoration-none text-reset d-block">
       <div className="trade_marketvalue" style={{ cursor: "pointer" }}>
         <div className="market_value_card">
           <div className="d-flex tophd">
             <h5>
-              <CoinIcon base={info.base} iconUrl={ticker?.iconUrl} />
-              {info.base}
+              <CoinIcon base={base} baseIconUrl={ticker.baseIconUrl} />
+              {base}
             </h5>
             <div className={positive ? "value text-green" : "value text-danger"}>
-              {ticker ? fmtPct(pct) : "—"}
+              {fmtPct(pct)}
             </div>
           </div>
           <div className="price">
-            {ticker ? `$${fmtPrice(ticker.lastPrice)}` : "—"}
+            ${fmtPrice(ticker.lastPrice)}
           </div>
         </div>
         <div className="privevolume">
           <span>24H Volume：</span>
-          {ticker ? `${fmtPrice(ticker.quoteVolume)} (USD)` : "—"}
+          {fmtPrice(ticker.quoteVolume)} (USD)
         </div>
       </div>
     </Link>
@@ -199,14 +190,14 @@ function getSortValue(t, key) {
     case "quoteVolume":
       return t.quoteVolume;
     case "marketCap":
-      return marketCap(splitPair(t.symbol).base, t.lastPrice);
+      return t.marketCap ?? 0;
     default:
       return 0;
   }
 }
 
 const Market = () => {
-  const { tickers, isLoading, error } = useMarketTickers();
+  const { tickers, categories, isLoading, error } = useMarketTickers();
   const { isFavorite, toggleFavorite } = useFavorites();
   const [topTab, setTopTab] = useState("spot");
   const [quoteFilter, setQuoteFilter] = useState("USDT");
@@ -217,10 +208,12 @@ const Market = () => {
 
   const allList = useMemo(() => Object.values(tickers), [tickers]);
 
-  const featuredCards = FEATURED.map((info) => ({
-    info,
-    ticker: tickers[info.symbol],
-  }));
+  const featuredCards = useMemo(() => {
+    const symbols = categories.trending.length
+      ? categories.trending
+      : allList.sort((a, b) => b.quoteVolume - a.quoteVolume).map((t) => t.symbol)
+    return symbols.slice(0, 3).map((sym) => tickers[sym]).filter(Boolean)
+  }, [categories.trending, allList, tickers]);
 
   const toggleSort = (key) => {
     setSort((prev) =>
@@ -259,13 +252,15 @@ const Market = () => {
     } else if (subTab === "losers") {
       list.sort((a, b) => a.priceChangePercent - b.priceChangePercent);
     } else if (subTab === "trending") {
-      list.sort((a, b) => b.count - a.count);
+      const trendingSet = new Set(categories.trending)
+      list = list.filter((t) => trendingSet.has(t.symbol))
+      list.sort((a, b) => categories.trending.indexOf(a.symbol) - categories.trending.indexOf(b.symbol))
     } else {
       list.sort((a, b) => b.quoteVolume - a.quoteVolume);
     }
 
     return list.slice(0, TABLE_LIMIT);
-  }, [allList, topTab, quoteFilter, subTab, search, sort, isFavorite]);
+  }, [allList, topTab, quoteFilter, subTab, search, sort, isFavorite, categories]);
 
   return (
     <>
@@ -281,17 +276,17 @@ const Market = () => {
         <div className="market_trade_crypto">
           <div className="container">
             <div className="row d-none d-md-flex">
-              {featuredCards.map(({ info, ticker }) => (
-                <div className="col-sm-4" key={info.symbol}>
-                  <FeaturedCard info={info} ticker={ticker} />
+              {featuredCards.map((ticker) => (
+                <div className="col-sm-4" key={ticker.symbol}>
+                  <FeaturedCard ticker={ticker} />
                 </div>
               ))}
             </div>
 
             <div className="d-md-none market_trade_crypto_slider">
-              {featuredCards.map(({ info, ticker }) => (
-                <div className="mb-3" key={`m-${info.symbol}`}>
-                  <FeaturedCard info={info} ticker={ticker} />
+              {featuredCards.map((ticker) => (
+                <div className="mb-3" key={`m-${ticker.symbol}`}>
+                  <FeaturedCard ticker={ticker} />
                 </div>
               ))}
             </div>
@@ -320,7 +315,7 @@ const Market = () => {
                     Spot
                   </button>
                 </li>
-                <li className="nav-item">
+                {/* <li className="nav-item">
                   <button type="button" className="nav-link">Futures</button>
                 </li>
                 <li className="nav-item">
@@ -328,7 +323,7 @@ const Market = () => {
                 </li>
                 <li className="nav-item">
                   <button type="button" className="nav-link">Alpha</button>
-                </li>
+                </li> */}
               </ul>
 
               <div className="searchBar custom-tabs">
@@ -440,7 +435,7 @@ const Market = () => {
                           const { base, quote } = splitPair(t.symbol);
                           const positive = t.priceChangePercent >= 0;
                           const tradePath = `/trade/${base}_${quote || "USDT"}`;
-                          const mcap = marketCap(base, t.lastPrice);
+                          const mcap = t.marketCap ?? 0;
                           const favSymbol = `${base}-${quote || "USDT"}`;
                           const favorited = isFavorite(favSymbol);
                           return (
@@ -457,14 +452,14 @@ const Market = () => {
                                   >
                                     <i className={`${favorited ? "ri-star-fill" : "ri-star-line"} text-warning me-2`}></i>
                                   </button>
-                                  <CoinIcon base={base} iconUrl={t.iconUrl} />
+                                  <CoinIcon base={base} baseIconUrl={t.baseIconUrl} />
                                   <div className="coin_info">
                                     <div className="coin_name_lft">
                                       {base}/{quote}
                                       <span className="coin_symbol"> /{quote}</span>
                                     </div>
                                     <span className="coin_name">
-                                      {COIN_NAMES[base] || base}
+                                      {t.baseName || base}
                                     </span>
                                   </div>
                                 </div>

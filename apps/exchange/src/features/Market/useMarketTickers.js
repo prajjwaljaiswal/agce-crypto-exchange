@@ -1,154 +1,123 @@
 import { useContext, useEffect, useState } from 'react'
 import { SocketContext } from '../Trade/SocketContext.js'
-import { marketApi } from '../../lib/matching-api.js'
 
-/**
- * Market-page data source — LOCAL AGCE pairs only, via the
- * `local_all_tickers` broadcast on market-data-service.
- *
- *   URL:       VITE_MARKET_DATA_URL  (gateway, e.g. http://192.168.1.13:8080)
- *   Path:      VITE_MARKET_DATA_PATH (/market-data/socket.io/)
- *   Subscribe: { channel: "local_all_tickers" }
- *   Event:     "local:all_tickers"  (array payload, every ~1s)
- *
- * REST seed on mount — `GET /api/v1/market/symbols` (matching-service
- * through the gateway) populates rows with zero placeholders instantly
- * so the table isn't blank while waiting for the first socket tick.
- * The socket then overlays live stats as trades happen on each pair.
- */
+/** "BTC/USDT" or "BTC-USDT" → "BTCUSDT" */
+function normalizeKey(symbol) {
+    return String(symbol || '').replace(/[/\-]/g, '').toUpperCase()
+}
 
-const MATCHING_BASE =
+const MATCHING_BASE = (
     import.meta.env.VITE_MATCHING_API_URL ||
     import.meta.env.VITE_AUTH_API_URL ||
     'http://localhost:8080'
+).replace(/\/$/, '')
 
-/** "BTC-USDT" → "BTCUSDT"; match the FEATURED / UI symbol format. */
-function normalizeKey(symbol) {
-    return String(symbol || '').replace(/-/g, '').toUpperCase()
+/** Prefix a relative icon path with the API base URL. */
+function resolveIcon(path) {
+    if (!path) return null
+    if (path.startsWith('http')) return path
+    return `${MATCHING_BASE}${path}`
 }
 
-/** Zero-filled row used while a pair has no trade history yet. */
-function emptyRow(meta) {
-    // meta may be a plain string (legacy shape) or an object from
-    // /api/v1/market/symbols carrying baseAsset / quoteAsset / iconUrl / etc.
-    const sym = typeof meta === 'string' ? meta : meta?.symbol
-    const refPrice = Number(meta?.referencePrice ?? 0) || 0
-    return {
-        symbol: normalizeKey(sym),
-        baseAsset: typeof meta === 'object' ? meta?.baseAsset ?? null : null,
-        quoteAsset: typeof meta === 'object' ? meta?.quoteAsset ?? null : null,
-        iconUrl: typeof meta === 'object' ? meta?.iconUrl ?? null : null,
-        // Seed with the server-provided reference price so the table doesn't
-        // render zeros before the first socket frame arrives.
-        lastPrice: refPrice,
-        priceChange: 0,
-        priceChangePercent: 0,
-        high: refPrice,
-        low: refPrice,
-        volume: 0,
-        quoteVolume: 0,
-        openPrice: refPrice,
-        count: 0,
-    }
-}
-
-/** Map a `local_all_tickers` row → the shape Market/index.jsx consumes. */
-function normalizeLocal(t) {
-    const last = Number(t.last ?? 0)
-    const volume = Number(t.volume ?? 0)
+/** Normalize a ticker from the ui:categories payload shape. */
+function normalizeTicker(t) {
     return {
         symbol: normalizeKey(t.symbol),
-        lastPrice: last,
+        baseAsset: t.baseAsset ?? null,
+        quoteAsset: t.quoteAsset ?? null,
+        baseName: t.baseName ?? null,
+        baseIconUrl: resolveIcon(t.baseIconUrl),
+        lastPrice: Number(t.price ?? 0),
         priceChange: Number(t.priceChange ?? 0),
         priceChangePercent: Number(t.priceChangePercent ?? 0),
         high: Number(t.high ?? 0),
         low: Number(t.low ?? 0),
-        volume,
-        // local ticker doesn't emit quoteVolume — estimate as base vol × last.
-        quoteVolume: last * volume,
+        volume: Number(t.volume ?? 0),
+        quoteVolume: Number(t.quoteVolume ?? 0),
         openPrice: Number(t.open ?? 0),
         count: Number(t.count ?? 0),
+        marketCap: Number(t.marketCap ?? 0),
     }
+}
+
+const EMPTY_CATEGORIES = { trending: [], hot: [], new_listing: [], top_gainers: [] }
+
+function applyCategories(data, setTickers, setCategories, setIsLoading, setError) {
+    if (!data || typeof data !== 'object') return
+    const tickerMap = {}
+    const catKeys = {}
+    for (const [cat, items] of Object.entries(data)) {
+        if (!Array.isArray(items)) continue
+        catKeys[cat] = []
+        for (const raw of items) {
+            if (!raw?.symbol) continue
+            const row = normalizeTicker(raw)
+            tickerMap[row.symbol] = row
+            catKeys[cat].push(row.symbol)
+        }
+    }
+    setTickers((prev) => {
+        const next = { ...tickerMap }
+        for (const sym of Object.keys(next)) {
+            next[sym] = {
+                ...next[sym],
+                // Icons come from the REST seed; socket updates must not overwrite them.
+                baseIconUrl: prev[sym]?.baseIconUrl ?? next[sym].baseIconUrl,
+            }
+        }
+        return next
+    })
+    setCategories((prev) => ({ ...prev, ...catKeys }))
+    setIsLoading(false)
+    if (setError) setError(null)
 }
 
 export function useMarketTickers() {
     const { getSocket, isConnected } = useContext(SocketContext)
     const [tickers, setTickers] = useState({})
+    const [categories, setCategories] = useState(EMPTY_CATEGORIES)
     const [isLoading, setIsLoading] = useState(true)
     const [error, setError] = useState(null)
 
-    // REST seed — get the pair list up so the table isn't empty while
-    // we wait for the first socket frame.
+    // REST seed — populate immediately on mount before socket connects.
     useEffect(() => {
         let cancelled = false
-        const url = `${MATCHING_BASE.replace(/\/$/, '')}/api/v1/market/symbols`
+        const url = `${MATCHING_BASE.replace(/\/$/, '')}/api/v1/market-data/ui-categories`
         fetch(url)
             .then((r) => (r.ok ? r.json() : Promise.reject(new Error(`HTTP ${r.status}`))))
             .then((body) => {
                 if (cancelled) return
-                // matching-service returns { success, data: [...] }; tolerate either shape.
-                const symbols = Array.isArray(body?.data) ? body.data : Array.isArray(body) ? body : []
-                const seed = {}
-                for (const s of symbols) {
-                    // Each entry may be a plain "BTC-USDT" string or an object with
-                    // { symbol, baseAsset, quoteAsset, iconUrl, referencePrice, ... }.
-                    const sym = typeof s === 'string' ? s : s?.symbol
-                    const key = normalizeKey(sym)
-                    if (key) seed[key] = emptyRow(s)
-                }
-                setTickers((prev) => ({ ...seed, ...prev }))
-                setIsLoading(false)
-                setError(null)
+                // Response: { success: true, data: { ts, categories: { trending, hot, new_listing, top_gainers } } }
+                const categories = body?.data?.categories
+                applyCategories(categories, setTickers, setCategories, setIsLoading, setError)
             })
             .catch((err) => {
                 if (cancelled) return
-                console.warn('[useMarketTickers] /market/symbols seed failed:', err.message)
+                console.warn('[useMarketTickers] REST seed failed:', err.message)
                 setError(err)
                 setIsLoading(false)
             })
-        return () => {
-            cancelled = true
-        }
+        return () => { cancelled = true }
     }, [])
 
-    // Live overlay — subscribe to local_all_tickers, merge every frame.
     useEffect(() => {
         const socket = getSocket()
         if (!socket || !isConnected) return undefined
 
-        socket.emit('subscribe', { channel: 'local_all_tickers' })
+        socket.emit('subscribe', { channel: 'ui_categories' })
 
         const handle = (payload) => {
-            const rows = Array.isArray(payload) ? payload : [payload]
-            if (!rows.length) return
-            setTickers((prev) => {
-                const next = { ...prev }
-                for (const raw of rows) {
-                    if (!raw?.symbol) continue
-                    const row = normalizeLocal(raw)
-                    // Preserve REST-seeded metadata (iconUrl, baseAsset, quoteAsset)
-                    // that the socket frame doesn't carry.
-                    const existing = next[row.symbol]
-                    next[row.symbol] = {
-                        iconUrl: existing?.iconUrl ?? null,
-                        baseAsset: existing?.baseAsset ?? null,
-                        quoteAsset: existing?.quoteAsset ?? null,
-                        ...row,
-                    }
-                }
-                return next
-            })
-            // Any real frame clears a stale "failed" state from the REST seed.
-            setError(null)
-            setIsLoading(false)
+            // payload: { ts, categories: {...} } or bare categories object
+            const data = payload?.categories ?? payload
+            applyCategories(data, setTickers, setCategories, setIsLoading, setError)
         }
 
-        socket.on('local:all_tickers', handle)
+        socket.on('ui:categories', handle)
         return () => {
-            socket.emit('unsubscribe', { channel: 'local_all_tickers' })
-            socket.off('local:all_tickers', handle)
+            socket.emit('unsubscribe', { channel: 'ui_categories' })
+            socket.off('ui:categories', handle)
         }
     }, [getSocket, isConnected])
 
-    return { tickers, isLoading, error }
+    return { tickers, categories, isLoading, error }
 }

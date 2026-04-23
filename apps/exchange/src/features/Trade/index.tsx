@@ -67,7 +67,6 @@ const Trade = () => {
     // UI-only state (Zustand)
     const {
         SelectedCoin, setSelectedCoin,
-        desAndLinks, setDesAndLinks,
         showTab, setShowTab,
         showMobileFavouritesPopup, setShowMobileFavouritesPopup,
         isFavouritesOpen, setIsFavouritesOpen,
@@ -252,7 +251,6 @@ const Trade = () => {
             baseIconUrl: normalizedBaseIcon,
             quoteIconUrl: normalizedQuoteIcon,
         });
-        setDesAndLinks({ description: pair.description ?? "", links: [] });
         setIsPricePositive(pair.buy_price >= buyprice);
         setbuyprice(pair.buy_price);
         setsellPrice(pair.sell_price);
@@ -334,7 +332,6 @@ const Trade = () => {
         setbuyprice(data?.buy_price);
         setsellPrice(data?.sell_price);
         setExpandedRowIndex(null);
-        setDesAndLinks({ description: data?.description ?? "", links: [] });
         setIsFavouritesOpen(false);
     };
 
@@ -392,7 +389,7 @@ const Trade = () => {
             timeInForce,
             quantity: String(orderAmount),
         };
-        if (isLimitFamily) payload.price = String(orderPrice);
+        if (isLimitFamily || type === 'MARKET' || type === 'STOP_MARKET') payload.price = String(orderPrice);
         if (type === 'STOP_LIMIT' || type === 'STOP_MARKET') {
             const stop = isBuy ? buyStopPrice : sellStopPrice;
             if (stop) payload.stopPrice = String(stop);
@@ -478,7 +475,7 @@ const Trade = () => {
                                     <TVChartContainer symbol={SelectedCoin?.base_currency && SelectedCoin?.quote_currency ? `${SelectedCoin.base_currency}/${SelectedCoin.quote_currency}` : ''} />
                                 </div>
                                 <div id="tab_2" className={`cc_tab ${showTab !== "token_info" && "d-none"}`}>
-                                    <TokenInfoTab SelectedCoin={SelectedCoin} desAndLinks={desAndLinks} />
+                                    <TokenInfoTab SelectedCoin={SelectedCoin} />
                                 </div>
                             </div>
                         </div>

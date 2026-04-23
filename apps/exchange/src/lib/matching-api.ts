@@ -588,14 +588,25 @@ export interface AssetNetwork {
   isActive: boolean
 }
 
+export interface AssetLink {
+  label: string
+  url: string
+}
+
 export interface Asset {
   assetCode: string
   name: string
   iconUrl: string
   description: string
   decimals: number
-  minDeposit: string
-  depositFee: string
+  minDeposit?: string
+  depositFee?: string
+  makerFee?: string
+  takerFee?: string
+  totalSupply?: string
+  circulatingSupply?: string
+  issueDate?: string
+  links?: AssetLink[]
   category: 'CRYPTO' | 'STABLECOIN' | 'FIAT' | string
   isActive: boolean
   instance: string
